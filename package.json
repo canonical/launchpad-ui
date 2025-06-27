@@ -15,8 +15,11 @@
     "check:fix": "bun run check:svelte && bun run lint:fix",
     "check:svelte": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "check:svelte:watch": "bun run check:svelte -- --watch",
-    "test:unit": "vitest",
     "test": "npm run test:unit -- --run",
+    "test:unit": "vitest",
+    "test:server": "vitest --project=server",
+    "test:client": "vitest --project=client",
+    "test:ssr": "vitest --project=ssr",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },
