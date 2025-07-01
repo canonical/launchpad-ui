@@ -1,6 +1,6 @@
 <script lang="ts">
   /* @canonical/generator-ds 0.9.0-experimental.22 */
-  import type { BoxProps } from "./types.js";
+  import { type BoxProps } from "./types.js";
   import "./styles.css";
 
   const componentCssClassName = "ds box";
