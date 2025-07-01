@@ -1,0 +1,126 @@
+:root {
+  --color-caution: #c48831;
+  --color-information: #5ea6ed;
+  --color-negative: #d17b85;
+  --color-positive: #62a36c;
+  --color-transparent: #ffffff00;
+  --color-background-active: #373737;
+  --color-background-alt: #202020;
+  --color-background-canonical-logo: #e95420;
+  --color-background-checkbox-checked: var(--color-text-link-default, #0066cc);
+  --color-background-code: #ffffff08;
+  --color-background-default: #262626;
+  --color-background-hover: #313131;
+  --color-background-input: #2f2f2f;
+  --color-background-overlay: #111111d9;
+  --color-background-radio-checked: var(--color-text-link-default, #0066cc);
+  --color-background-tooltip: #f7f7f7;
+  --color-background-badge-default: var(--color-text-default, #000000);
+  --color-background-badge-negative: var(
+    --color-background-button-negative-default,
+    #c7162b
+  );
+  --color-background-button-base-active: var(
+    --color-background-active,
+    #ebebeb
+  );
+  --color-background-button-base-default: #26262600;
+  --color-background-button-base-hover: var(--color-background-hover, #f2f2f2);
+  --color-background-button-brand-active: #cc4414;
+  --color-background-button-brand-default: #e95420;
+  --color-background-button-brand-hover: #da4816;
+  --color-background-button-default-active: var(
+    --color-background-active,
+    #ebebeb
+  );
+  --color-background-button-default-default: var(
+    --color-background-default,
+    #ffffff
+  );
+  --color-background-button-default-hover: var(
+    --color-background-hover,
+    #f2f2f2
+  );
+  --color-background-button-negative-active: #7c0e1b;
+  --color-background-button-negative-default: #a11223;
+  --color-background-button-negative-hover: #8a0f1e;
+  --color-background-button-positive-active: #00570d;
+  --color-background-button-positive-default: #008013;
+  --color-background-button-positive-hover: #00670f;
+  --color-background-caution-caution-active: #ff73005c;
+  --color-background-caution-default: #ff730033;
+  --color-background-caution-hover: #ff8f334d;
+  --color-background-information-active: #0089ff5c;
+  --color-background-information-default: #0089ff33;
+  --color-background-information-hover: #0089ff4d;
+  --color-background-negative-active: #ff66785c;
+  --color-background-negative-default: #ff667833;
+  --color-background-negative-hover: #ff66784d;
+  --color-background-neutral-active: #ffffff40;
+  --color-background-neutral-default: #ffffff26;
+  --color-background-neutral-hover: #ffffff33;
+  --color-background-positive-active: #00c71e5c;
+  --color-background-positive-default: #0abd2533;
+  --color-background-positive-hover: #00c71e4d;
+  --color-background-slider-progress: var(--color-text-link-default, #0066cc);
+  --color-background-slider-track: var(--color-border-default, #00000033);
+  --color-background-status-label-caution: #cc7900;
+  --color-background-status-label-default: #666666;
+  --color-background-status-label-information: #24598f;
+  --color-background-status-label-negative: #c7162b;
+  --color-background-status-label-positive: #0e8420;
+  --color-background-switch-checked: var(--color-text-link-default, #0066cc);
+  --color-background-switch-knob: var(--color-background-default, #ffffff);
+  --color-background-switch-track: var(--color-border-high-contrast, #707070);
+  --color-border-accent: #0f95a1;
+  --color-border-caution: var(--color-caution, #cc7900);
+  --color-border-default: #ffffff33;
+  --color-border-focus: #99ccff;
+  --color-border-high-contrast: #939393;
+  --color-border-highlight: #ffffff;
+  --color-border-information: var(--color-information, #24598f);
+  --color-border-low-contrast: #ffffff1a;
+  --color-border-negative: var(--color-negative, #c7162b);
+  --color-border-neutral: #a6a6a6;
+  --color-border-positive: var(--color-positive, #0e8420);
+  --color-border-switch-knob: var(--color-border-high-contrast, #707070);
+  --color-border-tab-active: var(--color-border-highlight, #000000);
+  --color-icon-canonical-logo: #ffffff;
+  --color-icon-caution: var(--color-caution, #cc7900);
+  --color-icon-default: var(--color-text-default, #000000);
+  --color-icon-information: var(--color-information, #24598f);
+  --color-icon-link: var(--color-text-link-default, #0066cc);
+  --color-icon-muted: var(--color-text-muted, #00000099);
+  --color-icon-negative: var(--color-negative, #c7162b);
+  --color-icon-positive: var(--color-positive, #0e8420);
+  --color-icon-pull-quote-quotation-mark: var(--color-text-muted, #00000099);
+  --color-icon-button-base: var(--color-text-default, #000000);
+  --color-icon-button-brand: #ffffff;
+  --color-icon-button-default: var(--color-icon-default, #000000);
+  --color-icon-button-negative: #ffffff;
+  --color-icon-button-positive: #ffffff;
+  --color-icon-status-queued: #808080;
+  --color-icon-status-shade-1: #f7f7f7;
+  --color-icon-status-shade-2: #d9d9d9;
+  --color-text-caution: var(--color-caution, #cc7900);
+  --color-text-default: #ffffff;
+  --color-text-inactive: #ffffffbf;
+  --color-text-muted: #ffffff99;
+  --color-text-negative: var(--color-negative, #c7162b);
+  --color-text-positive: var(--color-positive, #0e8420);
+  --color-text-search-and-filter-overflow: var(
+    --color-text-link-default,
+    #0066cc
+  );
+  --color-text-status-label: #ffffff;
+  --color-text-tooltip: #000000;
+  --color-text-badge-default: var(--color-background-default, #ffffff);
+  --color-text-badge-negative: var(--color-text-button-negative, #ffffff);
+  --color-text-button-base: var(--color-text-default, #000000);
+  --color-text-button-brand: #ffffff;
+  --color-text-button-default: var(--color-text-default, #000000);
+  --color-text-button-negative: #ffffff;
+  --color-text-button-positive: #ffffff;
+  --color-text-link-default: #6699cc;
+  --color-text-link-visited: #a679d2;
+}
