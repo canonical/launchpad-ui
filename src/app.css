@@ -1,0 +1,12 @@
+@import "normalize.css";
+@import "$lib/styles/primitives/typography.css";
+@import "$lib/styles/primitives/dimensions.css";
+
+html {
+  font-family: var(--font-family-sans);
+  font-weight: var(--font-weight-default);
+  font-size: var(--font-size-default);
+  line-height: var(--line-height-default);
+  color: var(--color-text-default);
+  background-color: var(--color-background-default);
+}
