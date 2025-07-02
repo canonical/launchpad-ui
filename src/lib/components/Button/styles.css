@@ -1,0 +1,172 @@
+/* @canonical/generator-ds 0.9.0-experimental.22 */
+
+.ds.button {
+  --dimension-padding-block-button-default: var(--dimension-scale-050);
+  --dimension-padding-inline-button-default: var(--dimension-scale-100);
+  --dimension-margin-inline-button-text-default: var(--dimension-scale-100);
+  --dimension-padding-block-button-dense: var(
+    --dimension-scale-025
+  ); /* TODO: Should be 0.5px */
+  --dimension-padding-inline-button-dense: var(--dimension-scale-100);
+  --dimension-margin-inline-button-text-dense: var(--dimension-scale-100);
+  --dimension-padding-block-button-small: 0;
+  --dimension-padding-inline-button-small: var(--dimension-scale-050);
+  --dimension-margin-inline-button-text-small: var(--dimension-scale-050);
+
+  --opacity-button-disabled: 0.33; /* TODO: Missing token */
+
+  border-style: solid;
+  cursor: pointer;
+  text-decoration: none;
+
+  border-width: var(--dimension-stroke-thickness-medium);
+  font-size: var(--font-size-default);
+  font-weight: var(--font-weight-default);
+  line-height: var(--line-height-default);
+
+  display: inline-grid;
+  grid-template-areas: "main";
+  place-items: center;
+  > * {
+    grid-area: main;
+  }
+
+  &.appearance-default {
+    color: var(--color-text-button-default);
+    background-color: var(--color-background-button-default-default);
+    border-color: var(--color-border-high-contrast);
+
+    &:hover:not(:disabled) {
+      background-color: var(--color-background-button-default-hover);
+    }
+
+    &:active:not(:disabled) {
+      background-color: var(--color-background-button-default-active);
+    }
+  }
+
+  &.appearance-brand {
+    color: var(--color-text-button-brand);
+    background-color: var(--color-background-button-brand-default);
+    border-color: var(--color-background-button-brand-default);
+
+    &:hover:not(:disabled) {
+      background-color: var(--color-background-button-brand-hover);
+      border-color: var(--color-background-button-brand-hover);
+    }
+
+    &:active:not(:disabled) {
+      background-color: var(--color-background-button-brand-active);
+      border-color: var(--color-background-button-brand-active);
+    }
+  }
+
+  &.appearance-primary {
+    color: var(--color-text-button-positive);
+    background-color: var(--color-background-button-positive-default);
+    border-color: var(--color-background-button-positive-default);
+
+    &:hover:not(:disabled) {
+      background-color: var(--color-background-button-positive-hover);
+      border-color: var(--color-background-button-positive-hover);
+    }
+
+    &:active:not(:disabled) {
+      background-color: var(--color-background-button-positive-active);
+      border-color: var(--color-background-button-positive-active);
+    }
+  }
+
+  &.appearance-negative {
+    color: var(--color-text-button-negative);
+    background-color: var(--color-background-button-negative-default);
+    border-color: var(--color-background-button-negative-default);
+
+    &:hover:not(:disabled) {
+      background-color: var(--color-background-button-negative-hover);
+      border-color: var(--color-background-button-negative-hover);
+    }
+
+    &:active:not(:disabled) {
+      background-color: var(--color-background-button-negative-active);
+      border-color: var(--color-background-button-negative-active);
+    }
+  }
+
+  &.appearance-base {
+    color: var(--color-text-default);
+    background-color: var(--color-background-button-base-default);
+    border-color: var(--color-background-button-base-default);
+
+    &:hover:not(:disabled) {
+      background-color: var(--color-background-button-base-hover);
+      border-color: var(--color-background-button-base-hover);
+    }
+
+    &:active:not(:disabled) {
+      background-color: var(--color-background-button-base-active);
+      border-color: var(--color-background-button-base-active);
+    }
+  }
+
+  &.size-default {
+    padding-block: var(--dimension-padding-block-button-default);
+    padding-inline: var(--dimension-padding-inline-button-default);
+
+    .text {
+      margin-inline: var(--dimension-margin-inline-button-text-default);
+    }
+  }
+
+  &.size-dense {
+    padding-block: var(--dimension-padding-block-button-dense);
+    padding-inline: var(--dimension-padding-inline-button-dense);
+
+    .text {
+      margin-inline: var(--dimension-margin-inline-button-text-dense);
+    }
+  }
+
+  &.size-small {
+    padding-block: var(--dimension-padding-block-button-small);
+    padding-inline: var(--dimension-padding-inline-button-small);
+
+    .text {
+      margin-inline: var(--dimension-margin-inline-button-text-small);
+    }
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+  }
+
+  &.visually-disabled {
+    opacity: var(--opacity-button-disabled);
+  }
+
+  &.loading {
+    > .content {
+      visibility: hidden;
+    }
+  }
+
+  /* TODO: Replace with <Spinner /> */
+  .spinner {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    border: 2px solid currentColor;
+    border-top-color: transparent;
+    border-right-color: transparent;
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

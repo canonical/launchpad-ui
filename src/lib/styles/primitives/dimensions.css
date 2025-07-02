@@ -1,20 +1,20 @@
 :root {
-  --dimension-scale-100: 0.5rem;
-  --dimension-scale-150: 0.75rem;
-  --dimension-scale-175: 0.875rem;
-  --dimension-scale-200: 1rem;
-  --dimension-scale-250: 1.25rem;
-  --dimension-scale-300: 1.5rem;
-  --dimension-scale-400: 2rem;
-  --dimension-scale-500: 2.5rem;
-  --dimension-scale-600: 3rem;
-  --dimension-scale-700: 3.5rem;
-  --dimension-scale-800: 4rem;
-  --dimension-scale-900: 4.5rem;
-  --dimension-scale-1000: 5rem;
-  --dimension-scale-1100: 5.5rem;
-  --dimension-scale-025: 0.125rem;
-  --dimension-scale-050: 0.25rem;
+  --dimension-scale-100: 0.5rem; /* 8px */
+  --dimension-scale-150: 0.75rem; /* 12px */
+  --dimension-scale-175: 0.875rem; /* 14px  */
+  --dimension-scale-200: 1rem; /* 16px  */
+  --dimension-scale-250: 1.25rem; /* 20px  */
+  --dimension-scale-300: 1.5rem; /* 24px  */
+  --dimension-scale-400: 2rem; /* 32px  */
+  --dimension-scale-500: 2.5rem; /* 40px  */
+  --dimension-scale-600: 3rem; /* 48px  */
+  --dimension-scale-700: 3.5rem; /* 56px  */
+  --dimension-scale-800: 4rem; /* 64px  */
+  --dimension-scale-900: 4.5rem; /* 72px  */
+  --dimension-scale-1000: 5rem; /* 80px  */
+  --dimension-scale-1100: 5.5rem; /* 88px  */
+  --dimension-scale-025: 0.125rem; /* 2px   */
+  --dimension-scale-050: 0.25rem; /* 4px   */
   --dimension-stroke-thickness-medium: 1.5px;
   --dimension-stroke-thickness-large: 3px;
 }
