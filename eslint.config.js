@@ -87,6 +87,7 @@ export default ts.config(
       ".svelte-kit/**",
       "*storybook.log",
       "storybook-static/**",
+      ".storybook/*.svelte",
     ],
   },
   {
