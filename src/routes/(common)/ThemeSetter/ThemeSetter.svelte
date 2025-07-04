@@ -1,6 +1,6 @@
 <!-- @canonical/generator-ds 0.9.0-experimental.22 -->
 <script lang="ts">
-  import { type ThemeSetterProps } from "./types";
+  import type { ThemeSetterProps } from "./types";
 
   let { theme }: ThemeSetterProps = $props();
 </script>

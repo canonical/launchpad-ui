@@ -1,8 +1,8 @@
 <script lang="ts">
-  import { type Snippet } from "svelte";
+  import type { Snippet } from "svelte";
   import "../app.css";
   import { themes } from "$lib/theme";
-  import { type LayoutData } from "./$types";
+  import type { LayoutData } from "./$types";
   import { ThemeSetter } from "./(common)/ThemeSetter";
   import { enhance } from "$app/forms";
 

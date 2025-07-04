@@ -1,6 +1,7 @@
 import { DecoratorHelpers } from "@storybook/addon-themes";
-import { type Decorator, type Preview } from "@storybook/sveltekit";
-import { type Theme, themes } from "../src/lib/theme";
+import type { Decorator, Preview } from "@storybook/sveltekit";
+import { themes } from "../src/lib/theme";
+import type { Theme } from "../src/lib/theme";
 import ThemeProvider from "./ThemeProvider.svelte";
 import "../src/app.css";
 import "./styles.css";
