@@ -37,7 +37,6 @@ export default ts.config(
             "sibling",
             "index",
             "object",
-            "type",
           ],
           pathGroups: [
             {
@@ -73,8 +72,8 @@ export default ts.config(
           "newlines-between": "never",
         },
       ],
-      "import/consistent-type-specifier-style": ["error", "prefer-inline"],
-      "import/no-duplicates": ["error", { "prefer-inline": true }],
+      "import/consistent-type-specifier-style": ["error", "prefer-top-level"],
+      "import/no-duplicates": ["error", { "prefer-inline": false }],
     },
   },
   {
