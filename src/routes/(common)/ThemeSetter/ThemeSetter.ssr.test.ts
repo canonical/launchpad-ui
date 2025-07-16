@@ -10,32 +10,27 @@ describe("ThemeSetter SSR", () => {
     }).not.toThrow();
   });
 
-  describe("adds the correct stylesheet", () => {
+  describe("adds the correct styles", () => {
     it("for light theme", () => {
       const { head } = render(Component, { props: { theme: "light" } });
-      expect(head).toContain(
-        '<link rel="stylesheet" href="/styles/colors/light.css"/>',
-      );
-      expect(head).not.toContain("dark.css");
-      expect(head).not.toContain("system.css");
+      expect((head.match(/:root\s*{/g) || []).length).toBe(1);
+      expect(head).not.toContain("@media (prefers-color-scheme:");
     });
 
     it("for dark theme", () => {
       const { head } = render(Component, { props: { theme: "dark" } });
-      expect(head).toContain(
-        '<link rel="stylesheet" href="/styles/colors/dark.css"/>',
-      );
-      expect(head).not.toContain("light.css");
-      expect(head).not.toContain("system.css");
+      expect((head.match(/:root\s*{/g) || []).length).toBe(1);
+      expect(head).not.toContain("@media (prefers-color-scheme:");
     });
 
     it("for system theme", () => {
       const { head } = render(Component, { props: { theme: "system" } });
-      expect(head).toContain(
-        '<link rel="stylesheet" href="/styles/colors/system.css"/>',
+      expect(head).toMatch(
+        /@media\s*\(prefers-color-scheme:\s*light\)\s*{\s*:root\s*{/,
       );
-      expect(head).not.toContain("light.css");
-      expect(head).not.toContain("dark.css");
+      expect(head).toMatch(
+        /@media\s*\(prefers-color-scheme:\s*dark\)\s*{\s*:root\s*{/,
+      );
     });
   });
 
