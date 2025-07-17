@@ -1,4 +1,5 @@
 @import "normalize.css";
+@import "$lib/styles/reset.css";
 @import "$lib/styles/font-faces.css";
 @import "@canonical/launchpad-design-tokens/dist/css/dimension/responsive.css";
 @import "@canonical/launchpad-design-tokens/dist/css/typography/responsive.css";
