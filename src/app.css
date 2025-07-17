@@ -3,6 +3,15 @@
 @import "@canonical/launchpad-design-tokens/dist/css/dimension/responsive.css";
 @import "@canonical/launchpad-design-tokens/dist/css/typography/responsive.css";
 
+/* TODO: Consider using other css reset than normalize.css */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
 html {
   font: var(--tmp-typography-paragraph-default);
   color: var(--tmp-color-text-default);

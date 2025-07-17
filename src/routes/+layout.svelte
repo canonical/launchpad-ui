@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { Snippet } from "svelte";
   import "../app.css";
+  import { Tabs } from "$lib/components/Tabs";
   import { themes } from "$lib/theme";
   import type { LayoutData } from "./$types";
   import { ThemeSetter } from "./(common)/ThemeSetter";
@@ -21,5 +22,11 @@
   </select>
   <button>Change</button>
 </form>
+
+<Tabs>
+  <Tabs.Tab href="/">Home</Tabs.Tab>
+  <Tabs.Tab href="/activities">Activities</Tabs.Tab>
+  <Tabs.Tab href="/changes">Changes</Tabs.Tab>
+</Tabs>
 
 {@render children()}
