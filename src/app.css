@@ -5,6 +5,6 @@
 
 html {
   font: var(--tmp-typography-paragraph-default);
-  color: var(--tmp-color-text);
+  color: var(--tmp-color-text-default);
   background-color: var(--tmp-color-background-default);
 }
