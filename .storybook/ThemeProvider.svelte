@@ -1,5 +1,6 @@
 <script lang="ts">
   import { type Snippet } from "svelte";
+  import "../src/lib/modifiers";
   import { ThemeSetter } from "../src/routes/(common)/ThemeSetter";
 
   let { theme, children }: { theme: string; children?: Snippet } = $props();

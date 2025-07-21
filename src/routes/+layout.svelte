@@ -1,11 +1,12 @@
 <script lang="ts">
+  import { enhance } from "$app/forms";
+  import { Tabs } from "$lib/components/Tabs";
+  import "$lib/modifiers";
+  import { themes } from "$lib/theme";
   import type { Snippet } from "svelte";
   import "../app.css";
-  import { Tabs } from "$lib/components/Tabs";
-  import { themes } from "$lib/theme";
   import type { LayoutData } from "./$types";
   import { ThemeSetter } from "./(common)/ThemeSetter";
-  import { enhance } from "$app/forms";
 
   let { children, data }: { children: Snippet; data: LayoutData } = $props();
 

@@ -1,0 +1,86 @@
+/* @canonical/generator-ds 0.9.1-experimental.0 */
+
+.ds.chip {
+  --font-chip-base: var(--tmp-typography-paragraph-s);
+  --font-chip-key-value: var(--tmp-typography-paragraph-default);
+
+  --dimension-inline-padding-chip: 0.5rem;
+  --dimension-block-padding-chip: 0.125rem;
+
+  --dimension-inline-padding-chip: var(
+    --dimension-inline-padding-context,
+    0.5rem
+  );
+  --dimension-block-padding-chip: var(
+    --dimension-block-padding-context,
+    0.125rem
+  );
+
+  --dimension-inline-gap-chip: 0.25rem;
+  --dimension-inline-badge-gap: 0.5rem 0;
+  --dimension-icon-size-chip: 1rem;
+
+  --typography-letter-spacing-chip-leader: var(
+    --tmp-typography-letter-spacing-l
+  );
+
+  --border-radius-chip: 1rem;
+  --border-style-chip: solid;
+  --border-width-chip: 1px;
+  --border-color-chip: var(--tmp-color-border-context);
+
+  font: var(--font-chip-base);
+  display: inline-flex;
+  align-items: center;
+  border-radius: var(--border-radius-chip);
+  border-style: var(--border-style-chip);
+  border-width: var(--border-width-chip);
+  border-color: var(--border-color-chip);
+  padding-block: var(--dimension-block-padding-chip);
+  padding-inline: var(--dimension-inline-padding-chip);
+
+  &:is(button) {
+    cursor: pointer;
+  }
+
+  &.is-read-only {
+    --border-width-chip: 0;
+    background-color: aliceblue;
+  }
+
+  > .icon {
+    width: var(--dimension-icon-size-chip);
+    height: var(--dimension-icon-size-chip);
+    display: inline-block;
+    margin-right: var(--dimension-inline-gap-chip);
+  }
+
+  > .lead {
+    font: var(--font-chip-key-value);
+    font-variant-caps: all-small-caps;
+    font-variant-numeric: oldstyle-nums;
+    letter-spacing: var(--typography-letter-spacing-chip-leader);
+
+    & + .value::before {
+      content: ": ";
+    }
+  }
+
+  > .value {
+    font: var(--font-chip-key-value);
+  }
+
+  > .badge {
+    margin-inline: var(--dimension-inline-badge-gap);
+  }
+
+  > .dismiss {
+    display: inline-block;
+    width: var(--dimension-icon-size-chip);
+    height: var(--dimension-icon-size-chip);
+    margin-left: var(--dimension-inline-gap-chip);
+    cursor: pointer;
+    padding: 0;
+    border: none;
+  }
+}
