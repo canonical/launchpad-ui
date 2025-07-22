@@ -5,7 +5,10 @@
 @import "@canonical/launchpad-design-tokens/dist/css/typography/responsive.css";
 
 html {
-  font: var(--tmp-typography-paragraph-default);
   color: var(--tmp-color-text-default);
   background-color: var(--tmp-color-background-default);
+}
+
+body {
+  font: var(--tmp-typography-paragraph-s);
 }
