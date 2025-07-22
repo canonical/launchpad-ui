@@ -30,7 +30,7 @@
   args={{
     key: "Lead",
     value: "Value",
-    variant: "positive",
+    modifiers: ["positive"],
   }}
 />
 
@@ -39,7 +39,7 @@
   args={{
     key: "Lead",
     value: "Value",
-    variant: "information",
+    modifiers: ["information"],
   }}
 />
 
@@ -48,7 +48,7 @@
   args={{
     key: "Lead",
     value: "Value",
-    variant: "caution",
+    modifiers: ["caution"],
   }}
 >
   {#snippet template(args)}
@@ -74,7 +74,7 @@
   args={{
     key: "Lead",
     value: "Value",
-    variant: "negative",
+    modifiers: ["negative"],
   }}
 />
 
@@ -116,7 +116,7 @@
   args={{
     key: "Lead",
     value: "Value",
-    isDense: true,
+    modifiers: ["dense"],
   }}
 />
 
@@ -142,7 +142,7 @@
   args={{
     key: "Lead",
     value: "Value",
-    variant: "positive",
+    modifiers: ["positive"],
     isReadonly: true,
   }}
 />
@@ -152,7 +152,7 @@
   args={{
     key: "Lead",
     value: "Value",
-    variant: "information",
+    modifiers: ["information"],
     isReadonly: true,
   }}
 />
@@ -161,7 +161,7 @@
   args={{
     key: "Lead",
     value: "Value",
-    variant: "caution",
+    modifiers: ["caution"],
     isReadonly: true,
   }}
 >
@@ -188,7 +188,7 @@
   args={{
     key: "Lead",
     value: "Value",
-    variant: "negative",
+    modifiers: ["negative"],
     isReadonly: true,
   }}
 />

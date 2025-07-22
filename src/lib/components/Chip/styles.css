@@ -3,31 +3,45 @@
 .ds.chip {
   --font-chip-base: var(--tmp-typography-paragraph-s);
   --font-chip-key-value: var(--tmp-typography-paragraph-default);
-
-  --dimension-inline-padding-chip: 0.5rem;
-  --dimension-block-padding-chip: 0.125rem;
-
-  --dimension-inline-padding-chip: var(
-    --dimension-inline-padding-context,
-    0.5rem
-  );
-  --dimension-block-padding-chip: var(
-    --dimension-block-padding-context,
-    0.125rem
-  );
-
-  --dimension-inline-gap-chip: 0.25rem;
-  --dimension-inline-badge-gap: 0.5rem 0;
-  --dimension-icon-size-chip: 1rem;
-
   --typography-letter-spacing-chip-leader: var(
     --tmp-typography-letter-spacing-l
   );
 
+  --dimension-inline-padding-chip: var(
+    --dimension-inline-padding-context,
+    var(--tmp-dimension-spacing-inline-s)
+  );
+  --dimension-block-padding-chip: var(
+    --dimension-block-padding-context,
+    var(--tmp-dimension-spacing-inline-xxxs)
+  );
+  --dimension-inline-gap-chip: var(--tmp-dimension-spacing-inline-xxs);
+  --dimension-inline-badge-gap: var(--tmp-dimension-spacing-inline-xs)
+    var(--tmp-dimension-spacing-inline-minimum);
+
+  --dimension-icon-size-chip: var(--tmp-dimension-spacing-inline-m);
+  --dimension-close-icon-size-chip: 0.85rem;
+
   --border-radius-chip: 1rem;
   --border-style-chip: solid;
-  --border-width-chip: 1px;
-  --border-color-chip: var(--tmp-color-border-context);
+  --border-width-chip: var(--dimension-stroke-thickness-default);
+  --border-color-chip: var(
+    --tmp-border-color-context,
+    var(--tmp-color-border-default)
+  );
+
+  --background-color-chip: var(
+    --tmp-background-color-context,
+    var(--tmp-color-background-neutral-default)
+  );
+  --background-color-chip-hover: var(
+    --tmp-background-color-hover-context,
+    var(--tmp-color-background-neutral-hover)
+  );
+  --background-color-chip-active: var(
+    --tmp-background-color-active-context,
+    var(--tmp-color-background-neutral-active)
+  );
 
   font: var(--font-chip-base);
   display: inline-flex;
@@ -36,22 +50,31 @@
   border-style: var(--border-style-chip);
   border-width: var(--border-width-chip);
   border-color: var(--border-color-chip);
+  background-color: var(--background-color-chip);
   padding-block: var(--dimension-block-padding-chip);
   padding-inline: var(--dimension-inline-padding-chip);
 
-  &:is(button) {
+  &:is(button),
+  .dismiss {
     cursor: pointer;
+
+    &:hover {
+      background-color: var(--background-color-chip-hover);
+    }
+    &:active {
+      background-color: var(--background-color-chip-active);
+    }
   }
 
   &.is-read-only {
-    --border-width-chip: 0;
-    background-color: aliceblue;
+    --tmp-border-color-context: var(--tmp-color-background-default);
   }
 
   > .icon {
     width: var(--dimension-icon-size-chip);
     height: var(--dimension-icon-size-chip);
     display: inline-block;
+
     margin-right: var(--dimension-inline-gap-chip);
   }
 
@@ -76,11 +99,12 @@
 
   > .dismiss {
     display: inline-block;
-    width: var(--dimension-icon-size-chip);
-    height: var(--dimension-icon-size-chip);
+    width: var(--dimension-close-icon-size-chip);
+    height: var(--dimension-close-icon-size-chip);
     margin-left: var(--dimension-inline-gap-chip);
+    background-color: transparent;
     cursor: pointer;
-    padding: 0;
-    border: none;
+    border: var(--dimension-stroke-thickness-default) solid transparent;
+    border-radius: 100%;
   }
 }

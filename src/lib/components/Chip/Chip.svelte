@@ -8,13 +8,12 @@
   let {
     id,
     class: className,
+    modifiers,
     style,
     value,
     key,
     badge,
     icon,
-    isDense = false,
-    variant = "default",
     isReadonly = false,
     ...rest
   }: ChipProps = $props();
@@ -22,7 +21,6 @@
   const isDismissable = "onDismiss" in rest;
 
   const rootElement = isDismissable || isReadonly ? "span" : "button";
-  console.log(icon);
 </script>
 
 <svelte:element
@@ -30,8 +28,8 @@
   class={[
     componentCssClassName,
     className,
-    variant,
-    { "is-dense": isDense, "is-read-only": isReadonly },
+    modifiers,
+    { "is-read-only": isReadonly },
   ]}
   {id}
   {style}
@@ -64,7 +62,12 @@
         fill="currentColor"
         viewBox="0 0 16 16"
       >
-        <path xmlns="http://www.w3.org/2000/svg" fill="#000" fill-rule="nonzero" d="M13.041 1.898l1.06 1.06L9.062 8l5.04 5.042-1.06 1.06L8 9.062 2.96 14.1l-1.06-1.06L6.938 8 1.9 2.96l1.06-1.06 5.04 5.04z"/>
+        <path
+          xmlns="http://www.w3.org/2000/svg"
+          fill="currentColor"
+          fill-rule="nonzero"
+          d="M13.041 1.898l1.06 1.06L9.062 8l5.04 5.042-1.06 1.06L8 9.062 2.96 14.1l-1.06-1.06L6.938 8 1.9 2.96l1.06-1.06 5.04 5.04z"
+        ></path>
       </svg>
     </button>
   {/if}

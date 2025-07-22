@@ -34,7 +34,7 @@ export type ChipProps = {
   style?: string | undefined | null;
 
   /** Chip modifiers to apply for styling */
-  modifiers?: SemanticModifiers<["density", "severity"]>
+  modifiers?: SemanticModifiers<["density", "severity"]>;
 
   /** The value of the chip */
   value: string;
