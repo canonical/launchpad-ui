@@ -4,7 +4,7 @@
     "": {
       "name": "launchpad-ui",
       "devDependencies": {
-        "@canonical/launchpad-design-tokens": "^1.0.4",
+        "@canonical/launchpad-design-tokens": "^1.0.6",
         "@chromatic-com/storybook": "^4.0.1",
         "@eslint/js": "^9.18.0",
         "@storybook/addon-a11y": "^9.0.15",
@@ -51,7 +51,7 @@
 
     "@babel/runtime": ["@babel/runtime@7.27.6", "", {}, "sha512-vbavdySgbTTrmFE+EsiqUTzlOr5bzlnJtUv9PynGCAKvfQqjIXbvFdumPM/GxMDfyuGMJaJAU6TO4zc1Jf1i8Q=="],
 
-    "@canonical/launchpad-design-tokens": ["@canonical/launchpad-design-tokens@1.0.4", "", {}, "sha512-VDfx/UsqXKfRU8hAUUfTvhBm4SHbzvw83+UFcSI1d+RblVMfI+NSTpny+EQtWc432rVdLcSg7Me81R3lzb5MAQ=="],
+    "@canonical/launchpad-design-tokens": ["@canonical/launchpad-design-tokens@1.0.6", "", {}, "sha512-lKG+r/LNBJLAa0JZAj/JV/SLTOSgMqarBGanttvZOIF0HH46vwRtCqtJbzpt+A/j4W8kW0q68NfaRJZ/Omw1UQ=="],
 
     "@chromatic-com/storybook": ["@chromatic-com/storybook@4.0.1", "", { "dependencies": { "@neoconfetti/react": "^1.0.0", "chromatic": "^12.0.0", "filesize": "^10.0.12", "jsonfile": "^6.1.0", "strip-ansi": "^7.1.0" }, "peerDependencies": { "storybook": "^0.0.0-0 || ^9.0.0 || ^9.1.0-0" } }, "sha512-GQXe5lyZl3yLewLJQyFXEpOp2h+mfN2bPrzYaOFNCJjO4Js9deKbRHTOSaiP2FRwZqDLdQwy2+SEGeXPZ94yYw=="],
 
