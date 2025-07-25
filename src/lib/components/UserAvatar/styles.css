@@ -1,0 +1,45 @@
+/* @canonical/generator-ds 0.9.0-experimental.22 */
+
+.ds.user-avatar {
+  --color-background-user-avatar: var(--tmp-color-background-alt);
+  --color-border-user-avatar: var(--tmp-color-border-default);
+  --dimension-border-width-user-avatar: var(
+    --dimension-stroke-thickness-default
+  );
+  --dimension-size-user-avatar-large: var(--tmp-dimension-size-l);
+  --dimension-size-user-avatar-medium: var(--tmp-dimension-size-m);
+  --dimension-size-user-avatar-small: var(--tmp-dimension-size-s);
+
+  display: inline-grid;
+  place-content: center;
+  overflow: hidden;
+  line-height: 1;
+  aspect-ratio: 1 / 1;
+  flex: none;
+  user-select: none;
+
+  border: var(--dimension-border-width-user-avatar) solid
+    var(--color-border-user-avatar);
+  background-color: var(--color-background-user-avatar);
+  font-weight: var(--tmp-typography-weight-bold);
+
+  &.size-small {
+    width: var(--dimension-size-user-avatar-small);
+    font-size: var(--tmp-typography-font-size-xs);
+  }
+
+  &.size-medium {
+    width: var(--dimension-size-user-avatar-medium);
+    font-size: var(--tmp-typography-font-size-s);
+  }
+
+  &.size-large {
+    width: var(--dimension-size-user-avatar-large);
+    font-size: var(--tmp-typography-font-size-m);
+  }
+
+  > abbr {
+    text-transform: uppercase;
+    text-decoration: none;
+  }
+}
