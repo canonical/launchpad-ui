@@ -1,0 +1,85 @@
+/* @canonical/generator-ds 0.9.0-experimental.22 */
+
+.ds.user-avatar {
+  --color-background-user-avatar: var(--tmp-color-background-alt);
+  --color-border-user-avatar: var(--tmp-color-border-default);
+  --dimension-border-width-user-avatar: var(
+    --dimension-stroke-thickness-default
+  );
+  --dimension-size-user-avatar-large: var(--tmp-dimension-size-l);
+  --dimension-size-user-avatar-medium: var(--tmp-dimension-size-m);
+  --dimension-size-user-avatar-small: var(--tmp-dimension-size-s);
+
+  display: inline-grid;
+  place-content: center;
+  overflow: hidden;
+  flex: none;
+  user-select: none;
+  position: relative;
+
+  border: var(--dimension-border-width-user-avatar) solid
+    var(--color-border-user-avatar);
+  background-color: var(--color-background-user-avatar);
+  font-weight: var(--tmp-typography-weight-bold);
+
+  &.size-small {
+    width: var(--dimension-size-user-avatar-small);
+    height: var(--dimension-size-user-avatar-small);
+    font-size: var(--tmp-typography-font-size-xs);
+  }
+
+  &.size-medium {
+    width: var(--dimension-size-user-avatar-medium);
+    height: var(--dimension-size-user-avatar-medium);
+    font-size: var(--tmp-typography-font-size-s);
+  }
+
+  &.size-large {
+    width: var(--dimension-size-user-avatar-large);
+    height: var(--dimension-size-user-avatar-large);
+    font-size: var(--tmp-typography-font-size-m);
+  }
+
+  > img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    position: absolute;
+
+    &::before {
+      /* Cover the broken image icon */
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-color: var(--color-background-user-avatar);
+    }
+
+    &::after {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    &.fallback-initials::after {
+      content: var(--initials);
+    }
+
+    &.fallback-icon::after {
+      content: "";
+      width: var(--tmp-dimension-size-xs);
+      height: var(--tmp-dimension-size-xs);
+      background-color: currentColor;
+      mask-image: url(/icons/monotone/user.svg);
+      mask-repeat: no-repeat;
+      mask-size: 100% 100%;
+      mask-mode: alpha;
+    }
+  }
+
+  > abbr {
+    text-transform: uppercase;
+    text-decoration: none;
+  }
+}
