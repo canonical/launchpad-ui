@@ -1,14 +1,5 @@
 /* @canonical/generator-ds 0.9.0-experimental.22 */
 
-import type { Snippet } from "svelte";
+import type { HTMLAttributes } from "svelte/elements";
 
-export type TabListProps = {
-  /** A unique identifier for the TabList */
-  id?: string | undefined | null;
-  /** Additional CSS classes */
-  class?: string | undefined | null;
-  /** Child elements */
-  children?: Snippet | undefined | null;
-  /** Inline styles */
-  style?: string | undefined | null;
-};
+export type TabListProps = HTMLAttributes<HTMLElement>;
