@@ -1,58 +1,54 @@
 /* @canonical/generator-ds 0.9.1-experimental.0 */
 
 .ds.chip {
+  --background-color-chip-active: var(
+    --tmp-background-color-active-context,
+    var(--tmp-color-background-neutral-active)
+  );
+  --background-color-chip-hover: var(
+    --tmp-background-color-hover-context,
+    var(--tmp-color-background-neutral-hover)
+  );
+  --background-color-chip: var(
+    --tmp-background-color-context,
+    var(--tmp-color-background-neutral-default)
+  );
+  --border-style-chip: solid;
+  --color-border-chip: var(
+    --tmp-color-border-context,
+    var(--tmp-color-border-default)
+  );
+  --dimension-close-icon-size-chip: 0.85rem;
+  --dimension-gap-inline-chip: var(--tmp-dimension-spacing-inline-xxs);
+  --dimension-icon-size-chip: var(--tmp-dimension-spacing-inline-m);
+  --dimension-gap-inline-chip-badge: var(--tmp-dimension-spacing-inline-xs)
+    var(--tmp-dimension-spacing-inline-minimum);
+  --dimension-padding-block-chip: var(
+    --dimension-padding-block-context,
+    var(--tmp-dimension-spacing-block-xxxs)
+  );
+  --dimension-padding-inline-chip: var(
+    --dimension-padding-inline-context,
+    var(--tmp-dimension-spacing-inline-s)
+  );
+  --dimension-radius-border-chip: var(--dimension-radius-full);
+  --dimension-width-border-chip: var(--dimension-stroke-thickness-default);
   --font-chip-base: var(--tmp-typography-paragraph-s);
   --font-chip-key-value: var(--tmp-typography-paragraph-default);
   --typography-letter-spacing-chip-leader: var(
     --tmp-typography-letter-spacing-l
   );
 
-  --dimension-inline-padding-chip: var(
-    --dimension-inline-padding-context,
-    var(--tmp-dimension-spacing-inline-s)
-  );
-  --dimension-block-padding-chip: var(
-    --dimension-block-padding-context,
-    var(--tmp-dimension-spacing-inline-xxxs)
-  );
-  --dimension-inline-gap-chip: var(--tmp-dimension-spacing-inline-xxs);
-  --dimension-inline-badge-gap: var(--tmp-dimension-spacing-inline-xs)
-    var(--tmp-dimension-spacing-inline-minimum);
-
-  --dimension-icon-size-chip: var(--tmp-dimension-spacing-inline-m);
-  --dimension-close-icon-size-chip: 0.85rem;
-
-  --border-radius-chip: 1rem;
-  --border-style-chip: solid;
-  --border-width-chip: var(--dimension-stroke-thickness-default);
-  --border-color-chip: var(
-    --tmp-border-color-context,
-    var(--tmp-color-border-default)
-  );
-
-  --background-color-chip: var(
-    --tmp-background-color-context,
-    var(--tmp-color-background-neutral-default)
-  );
-  --background-color-chip-hover: var(
-    --tmp-background-color-hover-context,
-    var(--tmp-color-background-neutral-hover)
-  );
-  --background-color-chip-active: var(
-    --tmp-background-color-active-context,
-    var(--tmp-color-background-neutral-active)
-  );
-
   font: var(--font-chip-base);
   display: inline-flex;
   align-items: center;
-  border-radius: var(--border-radius-chip);
+  border-radius: var(--dimension-radius-border-chip);
   border-style: var(--border-style-chip);
-  border-width: var(--border-width-chip);
-  border-color: var(--border-color-chip);
+  border-width: var(--dimension-width-border-chip);
+  border-color: var(--color-border-chip);
   background-color: var(--background-color-chip);
-  padding-block: var(--dimension-block-padding-chip);
-  padding-inline: var(--dimension-inline-padding-chip);
+  padding-block: var(--dimension-padding-block-chip);
+  padding-inline: var(--dimension-padding-inline-chip);
 
   &:is(button),
   .dismiss {
@@ -67,7 +63,7 @@
   }
 
   &.is-read-only {
-    --tmp-border-color-context: var(--tmp-color-background-default);
+    --tmp-color-border-context: var(--tmp-color-background-default);
   }
 
   > .icon {
@@ -75,7 +71,7 @@
     height: var(--dimension-icon-size-chip);
     display: inline-block;
 
-    margin-right: var(--dimension-inline-gap-chip);
+    margin-right: var(--dimension-gap-inline-chip);
   }
 
   > .lead {
@@ -94,14 +90,14 @@
   }
 
   > .badge {
-    margin-inline: var(--dimension-inline-badge-gap);
+    margin-inline: var(--dimension-gap-inline-chip-badge);
   }
 
   > .dismiss {
     display: inline-block;
     width: var(--dimension-close-icon-size-chip);
     height: var(--dimension-close-icon-size-chip);
-    margin-left: var(--dimension-inline-gap-chip);
+    margin-left: var(--dimension-gap-inline-chip);
     background-color: transparent;
     cursor: pointer;
     border: var(--dimension-stroke-thickness-default) solid transparent;

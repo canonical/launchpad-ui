@@ -1,19 +1,14 @@
 export const SEMANTIC_MODIFIERS = {
   density: ["dense"],
-  severity: ["error", "information", "caution", "success"],
+  severity: ["error", "information", "caution", "positive"],
 } as const;
 
-type SemanticModifierValues<K extends keyof typeof SEMANTIC_MODIFIERS> =
-  (typeof SEMANTIC_MODIFIERS)[K][number];
-
-type SemanticModifierKey = keyof typeof SEMANTIC_MODIFIERS;
-
-export type SemanticModifier<K extends SemanticModifierKey> =
-  | SemanticModifierValues<K>
-  | undefined;
-
-export type SemanticModifiers<K extends readonly SemanticModifierKey[]> = Array<
-  K[number] extends SemanticModifierKey
-    ? SemanticModifierValues<K[number]>
-    : never
->;
+/**
+ * Creates a type for an array containing possible modifier values for the
+ * given categories. The entire list can also be `undefined`.
+ *
+ * @template T - A readonly array of keys from `SEMANTIC_MODIFIERS`.
+ */
+export type SemanticModifiers<
+  T extends readonly (keyof typeof SEMANTIC_MODIFIERS)[],
+> = (typeof SEMANTIC_MODIFIERS)[T[number]][number][] | undefined;

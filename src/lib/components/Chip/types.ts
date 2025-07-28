@@ -1,7 +1,7 @@
 /* @canonical/generator-ds 0.9.1-experimental.0 */
 import type { Snippet } from "svelte";
 import type { HTMLAttributes } from "svelte/elements";
-import type { SemanticModifiers } from "../constants";
+import type { SemanticModifiers } from "$lib/modifiers";
 
 type BadgeOptions = {
   /** The value of the badge */
