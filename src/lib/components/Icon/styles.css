@@ -1,0 +1,15 @@
+/* @canonical/generator-ds 0.9.0-experimental.22 */
+
+.ds.icon {
+  --dimension-size-icon: var(--tmp-dimension-spacing-block-m);
+
+  display: inline-block;
+  background-color: currentColor;
+  mask-repeat: no-repeat;
+  mask-size: 100% 100%;
+  mask-mode: alpha;
+
+  width: var(--dimension-size-icon);
+  height: var(--dimension-size-icon);
+  mask-image: var(--icon-url);
+}
