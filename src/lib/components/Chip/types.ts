@@ -1,16 +1,7 @@
 /* @canonical/generator-ds 0.9.1-experimental.0 */
 import type { Snippet } from "svelte";
-import type { HTMLAttributes } from "svelte/elements";
 import type { SemanticModifiers } from "$lib/modifiers";
-
-type BadgeOptions = {
-  /** The value of the badge */
-  value: string;
-  /** The type of the badge.
-   * @default `default`
-   */
-  type?: "default" | "error";
-} & HTMLAttributes<HTMLSpanElement>;
+import { SEMANTIC_MODIFIERS } from "$lib/modifiers";
 
 /** Either the chip can be clicked or the dismiss button can be clicked.
  * We cannot have both click and dismiss events at the same time.
@@ -34,19 +25,18 @@ export type ChipProps = {
   style?: string | undefined | null;
 
   /** Chip modifiers to apply for styling */
-  modifiers?: SemanticModifiers<["density", "severity"]>;
-
+  modifiers?: SemanticModifiers<
+    [
+      (typeof SEMANTIC_MODIFIERS)["density"],
+      (typeof SEMANTIC_MODIFIERS)["severity"],
+    ]
+  >;
   /** The value of the chip */
   value: string;
   /** The key of the chip
    * @default no key
    */
   key?: string;
-  /** The badge of the chip
-   * @default no badge
-   */
-  badge?: BadgeOptions;
-  // TODO: this will most likely change once we define SVG icons
   /** The icon of the Chip
    * @default no icon
    */

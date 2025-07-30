@@ -12,15 +12,17 @@
     style,
     value,
     key,
-    badge,
+    // TODO: implement badge component
+    // badge,
     icon,
     isReadonly = false,
     ...rest
   }: ChipProps = $props();
 
   const isDismissable = "onDismiss" in rest;
-
-  const rootElement = isDismissable || isReadonly ? "span" : "button";
+  const isClickable = "onClick" in rest;
+  const rootElement =
+    isDismissable || isReadonly || !isClickable ? "span" : "button";
 </script>
 
 <svelte:element
@@ -47,12 +49,13 @@
   <span class="value">
     {value}
   </span>
-  {#if badge}
+  <!-- TODO: implement badge component -->
+  <!-- {#if badge}
     {@const { value, type = "default", ...badgeProps } = badge}
     <span class={["badge", type]} {...badgeProps}>
       {value}
     </span>
-  {/if}
+  {/if} -->
   {#if isDismissable}
     <button class="dismiss">
       <!-- TODO: use a proper icon once SVG icons are implemented -->
