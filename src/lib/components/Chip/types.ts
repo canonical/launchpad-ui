@@ -1,6 +1,7 @@
 /* @canonical/generator-ds 0.9.1-experimental.0 */
 import type { Snippet } from "svelte";
-import type { SemanticModifiers } from "$lib/modifiers";
+import type { HTMLAttributes } from "svelte/elements";
+import type { SemanticModifier } from "$lib/modifiers";
 import { SEMANTIC_MODIFIERS } from "$lib/modifiers";
 
 /** Either the chip can be clicked or the dismiss button can be clicked.
@@ -9,40 +10,35 @@ import { SEMANTIC_MODIFIERS } from "$lib/modifiers";
 type ChipClickOptions =
   | {
       /** Callback function to handle click events on the chip */
-      onClick?: (event: MouseEvent) => void;
+      onclick?: (event: MouseEvent) => void;
     }
   | {
       /** Callback function to handle dismiss events on the chip */
-      onDismiss?: (event: MouseEvent) => void;
+      ondismiss?: (event: MouseEvent) => void;
     };
 
-export type ChipProps = {
-  /** A unique identifier for the Chip */
-  id?: string | undefined | null;
-  /** Additional CSS classes */
-  class?: string | undefined | null;
-  /** Inline styles */
-  style?: string | undefined | null;
-
+export type ChipProps = HTMLAttributes<HTMLElement> & {
   /** Chip modifiers to apply for styling */
-  modifiers?: SemanticModifiers<
-    [
-      (typeof SEMANTIC_MODIFIERS)["density"],
-      (typeof SEMANTIC_MODIFIERS)["severity"],
-    ]
-  >;
+  modifiers?: (
+    | SemanticModifier<
+        [
+          (typeof SEMANTIC_MODIFIERS)["density"],
+          (typeof SEMANTIC_MODIFIERS)["severity"],
+        ]
+      >
+    | "readonly"
+  )[];
+
   /** The value of the chip */
   value: string;
+
   /** The key of the chip
-   * @default no key
+   * @default no value
    */
-  key?: string;
+  lead?: string;
+
   /** The icon of the Chip
    * @default no icon
    */
   icon?: Snippet | undefined | null;
-  /** Whether the chip is readonly or clickable.
-   * @default clickable (`false`)
-   */
-  isReadonly?: boolean;
 } & ChipClickOptions;

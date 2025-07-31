@@ -1,49 +1,48 @@
 <script lang="ts">
-  /* @canonical/generator-ds 0.9.1-experimental.0 */
+  import { Icon } from "../Icon";
   import "./styles.css";
   import type { ChipProps } from "./types.js";
 
   const componentCssClassName = "ds chip";
 
-  let {
+  const {
     id,
     class: className,
     modifiers,
     style,
     value,
-    key,
+    lead,
     // TODO: implement badge component
     // badge,
     icon,
-    isReadonly = false,
     ...rest
   }: ChipProps = $props();
-
-  const isDismissable = "onDismiss" in rest;
-  const isClickable = "onClick" in rest;
-  const rootElement =
-    isDismissable || isReadonly || !isClickable ? "span" : "button";
+  const ondismiss = $derived("ondismiss" in rest ? rest.ondismiss : undefined);
+  const onclick = $derived("onclick" in rest ? rest.onclick : undefined);
+  const dismissible = $derived(ondismiss !== undefined);
+  const isClickable = $derived(onclick !== undefined);
+  const isReadonly = $derived(modifiers?.includes("readonly") ?? false);
+  const rootElement = $derived(
+    dismissible || isReadonly || !isClickable ? "span" : "button",
+  );
 </script>
 
 <svelte:element
   this={rootElement}
-  class={[
-    componentCssClassName,
-    className,
-    modifiers,
-    { "is-read-only": isReadonly },
-  ]}
+  class={[componentCssClassName, className, modifiers]}
   {id}
   {style}
+  {onclick}
+  {...rest}
 >
   {#if icon}
     <span class="icon">
       {@render icon()}
     </span>
   {/if}
-  {#if key}
+  {#if lead}
     <span class="lead">
-      {key}
+      {lead}
     </span>
   {/if}
   <span class="value">
@@ -56,22 +55,9 @@
       {value}
     </span>
   {/if} -->
-  {#if isDismissable}
-    <button class="dismiss">
-      <!-- TODO: use a proper icon once SVG icons are implemented -->
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        width="100%"
-        fill="currentColor"
-        viewBox="0 0 16 16"
-      >
-        <path
-          xmlns="http://www.w3.org/2000/svg"
-          fill="currentColor"
-          fill-rule="nonzero"
-          d="M13.041 1.898l1.06 1.06L9.062 8l5.04 5.042-1.06 1.06L8 9.062 2.96 14.1l-1.06-1.06L6.938 8 1.9 2.96l1.06-1.06 5.04 5.04z"
-        ></path>
-      </svg>
+  {#if dismissible}
+    <button class="dismiss" onclick={ondismiss} aria-label="Dismiss">
+      <Icon name="close" />
     </button>
   {/if}
 </svelte:element>
@@ -82,5 +68,8 @@
 ## Example Usage
 ```svelte
 <Chip value="Value"/>
+<Chip lead="Lead" value="Value" />
+<Chip lead="Lead" value="Value" modifiers={["caution"]} />
+<Chip lead="Lead" value="Value" modifiers={["readonly", "dense", "caution"]} />
 ```
 -->

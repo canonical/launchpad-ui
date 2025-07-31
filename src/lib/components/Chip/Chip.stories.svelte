@@ -16,7 +16,7 @@
   name="Default interactive chip"
   args={{
     value: "Value",
-    onClick: fn(),
+    onclick: fn(),
   }}
 />
 
@@ -24,11 +24,12 @@
   {#snippet template()}
     {#each SEMANTIC_MODIFIERS.severity as modifier (modifier)}
       <Chip
-        key="Severity"
+        lead="Severity"
         value={modifier.charAt(0).toUpperCase() + modifier.slice(1)}
         modifiers={[modifier]}
+        onclick={fn()}
       />
-      <Chip key="Lead" value="Value" modifiers={[modifier]} />
+      <Chip lead="Lead" value="Value" modifiers={[modifier]} onclick={fn()} />
       <br />
       <br />
     {/each}
@@ -38,7 +39,7 @@
 <Story
   name="With icon and lead"
   args={{
-    key: "Lead",
+    lead: "Lead",
     value: "Value",
     modifiers: ["caution"],
   }}
@@ -55,15 +56,16 @@
 <Story
   name="Dismissable chip"
   args={{
-    value: "Value",
-    onDismiss: fn(),
+    lead: "Owner",
+    value: "Bob",
+    ondismiss: fn(),
   }}
 />
 
 <Story
   name="Dense chip"
   args={{
-    key: "Lead",
+    lead: "Lead",
     value: "Value",
     modifiers: ["dense"],
   }}
@@ -73,7 +75,7 @@
   name="Read-only"
   args={{
     value: "Value",
-    isReadonly: true,
+    modifiers: ["readonly"],
   }}
 />
 
@@ -81,12 +83,11 @@
   {#snippet template()}
     {#each SEMANTIC_MODIFIERS.severity as modifier (modifier)}
       <Chip
-        key="Severity"
+        lead="Severity"
         value={modifier.charAt(0).toUpperCase() + modifier.slice(1)}
-        modifiers={[modifier]}
-        isReadonly
+        modifiers={["readonly", modifier]}
       />
-      <Chip key="Lead" value="Value" modifiers={[modifier]} isReadonly />
+      <Chip lead="Lead" value="Value" modifiers={["readonly", modifier]} />
       <br />
       <br />
     {/each}
@@ -96,19 +97,17 @@
 <Story
   name="Read-only positive dense"
   args={{
-    key: "Lead",
+    lead: "Lead",
     value: "Value",
-    isReadonly: true,
-    modifiers: ["positive", "dense"],
+    modifiers: ["readonly", "dense", "positive"],
   }}
 />
 
 <Story
   name="Read-only negative"
   args={{
-    key: "Lead",
+    lead: "Lead",
     value: "Value",
-    modifiers: ["negative"],
-    isReadonly: true,
+    modifiers: ["readonly", "negative"],
   }}
 />
