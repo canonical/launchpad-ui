@@ -1,4 +1,6 @@
+import type { Modifiers } from "./types.js";
+
 export const SEMANTIC_MODIFIERS = {
-  density: ["dense"],
-  severity: ["negative", "information", "caution", "positive"],
-} as const;
+  DENSITY: ["dense"],
+  SEVERITY: ["negative", "information", "caution", "positive"],
+} as const satisfies Modifiers;

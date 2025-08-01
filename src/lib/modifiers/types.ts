@@ -8,3 +8,5 @@ export type SemanticModifier<T extends readonly (readonly string[])[]> =
   | T[number][number]
   | undefined
   | null;
+
+export type Modifiers = Record<string, string[]>;

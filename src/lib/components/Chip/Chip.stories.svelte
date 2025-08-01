@@ -22,7 +22,7 @@
 
 <Story name="Severities" args={{}}>
   {#snippet template()}
-    {#each SEMANTIC_MODIFIERS.severity as modifier (modifier)}
+    {#each SEMANTIC_MODIFIERS.SEVERITY as modifier (modifier)}
       <Chip
         lead="Severity"
         value={modifier.charAt(0).toUpperCase() + modifier.slice(1)}
@@ -81,7 +81,7 @@
 
 <Story name="Read-only severities" args={{}}>
   {#snippet template()}
-    {#each SEMANTIC_MODIFIERS.severity as modifier (modifier)}
+    {#each SEMANTIC_MODIFIERS.SEVERITY as modifier (modifier)}
       <Chip
         lead="Severity"
         value={modifier.charAt(0).toUpperCase() + modifier.slice(1)}
