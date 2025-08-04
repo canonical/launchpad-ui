@@ -1,0 +1,55 @@
+name: Sync with Launchpad repository
+
+on:
+  schedule:
+    # Runs every 10 minutes from 9am to 8pm
+    - cron: "*/1 9-20 * * *"
+  workflow_dispatch: {}
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check for repository updates
+        id: check_updates
+        run: |
+          # Fetch the page, extract all commit hashes, sort them, and create a single hash.
+          # This gives us a stable representation of the repository's state.
+          curl -s https://git.launchpad.net/launchpad-ui | \
+          grep -o 'id=[a-f0-9]\{40\}' | \
+          sort | \
+          sha256sum | \
+          awk '{print $1}' > launchpad_hash.txt
+          echo "hash=$(cat launchpad_hash.txt)" >> $GITHUB_OUTPUT
+          echo "Current Launchpad commit hash is: $(cat launchpad_hash.txt)"
+
+      - name: Check cache for hash
+        id: cache-check
+        uses: actions/cache@v4
+        with:
+          path: launchpad_hash.txt
+          key: launchpad-sync-${{ steps.check_updates.outputs.hash }}
+
+      - name: Skip if hash is cached
+        if: steps.cache-check.outputs.cache-hit == 'true'
+        run: echo "No new commits found on Launchpad. Skipping sync."
+
+      - name: Mirror from Launchpad to GitHub
+        if: steps.cache-check.outputs.cache-hit != 'true'
+        env:
+          TARGET_REPO: ${{ github.repository }}
+        run: |
+          set -e
+          echo "New commits found. Syncing from https://git.launchpad.net/launchpad-ui to ${TARGET_REPO}"
+
+          # Clone the Launchpad repository as a mirror.
+          git clone --mirror https://git.launchpad.net/launchpad-ui launchpad-ui.git
+          cd launchpad-ui.git
+
+          # Set the push URL to the GitHub repository.
+          # This uses the GITHUB_TOKEN for authentication.
+          git remote set-url --push origin "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${TARGET_REPO}"
+
+          # Push all branches and tags to the GitHub repository.
+          # The --mirror flag ensures all refs (branches, tags, etc.) are mirrored.
+          git push --mirror --force

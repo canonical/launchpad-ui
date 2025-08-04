@@ -57,5 +57,8 @@
     "vite-plugin-devtools-json": "^0.2.0",
     "vitest": "^3.2.3",
     "vitest-browser-svelte": "^0.1.0"
+  },
+  "patchedDependencies": {
+    "@storybook/svelte-vite@9.0.15": "patches/@storybook%2Fsvelte-vite@9.0.15.patch"
   }
 }
