@@ -4,6 +4,7 @@ pipeline:
 jobs:
   test:
     architectures: amd64
+    series: focal
     snaps:
       - bun-js
     run: |
