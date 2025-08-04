@@ -76,7 +76,7 @@
           collapseClickOpened = !collapseClickOpened;
         }}
       >
-        <ol role="none">
+        <ol role="none" data-testid="collapsed-segments">
           {#each collapsed as segment, i (i)}
             <li role="listitem">
               {@render item(segment, i === segments.length - 1)}
