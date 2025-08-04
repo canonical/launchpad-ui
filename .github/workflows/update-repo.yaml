@@ -49,6 +49,12 @@ jobs:
         if: steps.cache-check.outputs.cache-hit == 'true'
         run: echo "No new commits found on Launchpad. Skipping sync."
 
+      - name: Setup SSH
+        if: steps.cache-check.outputs.cache-hit != 'true'
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.PUSH_DEPLOY_PRIVATE_KEY }}
+
       - name: Mirror from Launchpad to GitHub
         if: steps.cache-check.outputs.cache-hit != 'true'
         env:
@@ -62,8 +68,7 @@ jobs:
           cd launchpad-ui.git
 
           # Set the push URL to the GitHub repository.
-          # This uses the GITHUB_TOKEN for authentication.
-          git remote set-url --push origin "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${TARGET_REPO}"
+          git remote set-url --push origin "git@github.com:${TARGET_REPO}.git"
 
           # Push all branches and tags to the GitHub repository.
           # The --mirror flag ensures all refs (branches, tags, etc.) are mirrored.
