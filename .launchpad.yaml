@@ -6,7 +6,8 @@ jobs:
     architectures: amd64
     series: focal
     snaps:
-      - bun-js
+      - name: bun-js
+        classic: false
     run: |
       bun install
       bunx playwright install
