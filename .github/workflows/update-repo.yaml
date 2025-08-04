@@ -10,16 +10,31 @@ jobs:
   sync:
     runs-on: ubuntu-latest
     steps:
+      - name: Install Bun
+        uses: oven-sh/setup-bun@v2
+
       - name: Check for repository updates
         id: check_updates
         run: |
-          # Fetch the page, extract all commit hashes, sort them, and create a single hash.
-          # This gives us a stable representation of the repository's state.
-          curl -s https://git.launchpad.net/launchpad-ui | \
-          grep -o 'id=[a-f0-9]\{40\}' | \
-          sort | \
-          sha256sum | \
-          awk '{print $1}' > launchpad_hash.txt
+          bun add -g jsdom
+          cat <<EOF > launchpad_hash.js
+            const { JSDOM } = require("jsdom");
+            const html = await fetch("https://git.launchpad.net/launchpad-ui").then(res => res.text());
+            const dom = new JSDOM(html);
+            const document = dom.window.document;
+            const branchesEditAtEls = document.querySelectorAll("#cgit > div.content > table > tbody > tr > td:nth-child(4) > span");
+            const branchesEditAt = Array.from(branchesEditAtEls).map(el => el.getAttribute("title"));
+            branchesEditAt.sort((a, b) => new Date(a) - new Date(b))
+            console.log("--------------------------------");
+            console.log("Latest branch edit at:", branchesEditAt[branchesEditAt.length - 1]);
+            console.log("--------------------------------");
+            const hasher = new Bun.CryptoHasher("sha256");
+            const key = branchesEditAt.join("\n")
+            hasher.update(key);
+            const hash = hasher.digest("hex");
+            await Bun.write("launchpad_hash.txt", hash);
+          EOF
+          bun launchpad_hash.js
           echo "hash=$(cat launchpad_hash.txt)" >> $GITHUB_OUTPUT
           echo "Current Launchpad commit hash is: $(cat launchpad_hash.txt)"
 
