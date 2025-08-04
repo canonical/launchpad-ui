@@ -1,0 +1,13 @@
+pipeline:
+  - test
+
+jobs:
+  test:
+    architectures: amd64
+    series: focal
+    snaps:
+      - bun-js
+    run: |
+      bun install
+      bunx playwright install
+      bun run test
