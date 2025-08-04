@@ -1,0 +1,32 @@
+name: Sync with Launchpad repository
+
+on:
+  schedule:
+    # Runs every 30 minutes
+    - cron: "*/30 * * * *"
+  workflow_dispatch: {}
+  repository_dispatch:
+    types: [sync-launchpad]
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Mirror from Launchpad to GitHub
+        env:
+          TARGET_REPO: ${{ github.repository }}
+        run: |
+          set -e
+          echo "Syncing from https://git.launchpad.net/launchpad-ui to ${TARGET_REPO}"
+
+          # Clone the Launchpad repository as a mirror.
+          git clone --mirror https://git.launchpad.net/launchpad-ui launchpad-ui.git
+          cd launchpad-ui.git
+
+          # Set the push URL to the GitHub repository.
+          # This uses the GITHUB_TOKEN for authentication.
+          git remote set-url --push origin "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${TARGET_REPO}"
+
+          # Push all branches and tags to the GitHub repository.
+          # The --mirror flag ensures all refs (branches, tags, etc.) are mirrored.
+          git push --mirror --force
