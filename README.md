@@ -1,6 +1,6 @@
 # Launchpad UI
 
-A new face for [launchpad.net](https://launchpad.net) built with Svelte.
+A new face for [launchpad.net](https://launchpad.net/) built with Svelte.
 
 ## Getting Started
 
