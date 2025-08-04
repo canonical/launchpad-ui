@@ -18,9 +18,8 @@
     ...rest
   }: ChipProps = $props();
   const ondismiss = $derived("ondismiss" in rest ? rest.ondismiss : undefined);
-  const onclick = $derived("onclick" in rest ? rest.onclick : undefined);
   const dismissible = $derived(ondismiss !== undefined);
-  const isClickable = $derived(onclick !== undefined);
+  const isClickable = $derived("onclick" in rest);
   const isReadonly = $derived(modifiers?.includes("readonly") ?? false);
   const rootElement = $derived(
     dismissible || isReadonly || !isClickable ? "span" : "button",
@@ -32,7 +31,6 @@
   class={[componentCssClassName, className, modifiers]}
   {id}
   {style}
-  {onclick}
   {...rest}
 >
   {#if icon}
