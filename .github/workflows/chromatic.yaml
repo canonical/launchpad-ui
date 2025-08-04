@@ -1,6 +1,12 @@
 name: "Chromatic"
 
-on: push
+on:
+  push:
+    branches:
+      - "**"
+    tags-ignore:
+      - "**"
+  pull_request:
 
 jobs:
   chromatic:
@@ -21,3 +27,4 @@ jobs:
         uses: chromaui/action@latest
         with:
           projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+          autoAcceptChanges: ${{ github.ref_name == 'main' && 'main' || '' }}
