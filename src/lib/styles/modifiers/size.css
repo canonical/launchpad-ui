@@ -1,0 +1,9 @@
+.small {
+  --typography-font-size-context: var(--tmp-typography-font-size-xs);
+  --dimension-size-context: var(--tmp-dimension-size-s);
+}
+
+.large {
+  --typography-font-size-context: var(--tmp-typography-font-size-m);
+  --dimension-size-context: var(--tmp-dimension-size-l);
+}

@@ -10,12 +10,12 @@
     class: className,
     userName,
     userAvatarUrl,
-    size = "medium",
+    modifiers,
     ...rest
   }: UserAvatarProps = $props();
   const avatarProps = $derived({
     ...rest,
-    class: [componentCssClassName, `size-${size}`, className],
+    class: [componentCssClassName, className, modifiers],
   });
 </script>
 

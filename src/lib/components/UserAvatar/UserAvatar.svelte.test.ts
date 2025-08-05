@@ -92,24 +92,18 @@ describe("UserAvatar component", () => {
     });
   });
 
-  describe("size variations", () => {
-    it("renders medium size by default", () => {
-      const { container } = render(Component);
-      const icon = container.querySelector(".ds.user-avatar");
-      expect(icon?.classList.contains("size-medium")).toBe(true);
-    });
+  describe("modifiers", () => {
+    const sizeModifiers = ["small", "large"] as const;
 
-    const sizes = ["small", "medium", "large"] as const;
-
-    it.each(sizes)("renders %s size", (size) => {
-      const { container } = render(Component, { size });
+    it.each(sizeModifiers)("applies %s modifier", (size) => {
+      const { container } = render(Component, { modifiers: [size] });
       const icon = container.querySelector(".ds.user-avatar");
 
       assert(icon !== null);
-      expect(icon.classList.contains(`size-${size}`)).toBe(true);
-      sizes.forEach((s) => {
+      expect(icon.classList.contains(size)).toBe(true);
+      sizeModifiers.forEach((s) => {
         if (s !== size) {
-          expect(icon.classList.contains(`size-${s}`)).toBe(false);
+          expect(icon.classList.contains(s)).toBe(false);
         }
       });
     });

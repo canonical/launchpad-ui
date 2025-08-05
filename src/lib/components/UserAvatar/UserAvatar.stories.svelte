@@ -48,7 +48,7 @@
   name="Large with initials"
   args={{
     userName: "Isaac Newton",
-    size: "large",
+    modifiers: ["large"],
   }}
 />
 
@@ -56,7 +56,7 @@
   name="Large with icon"
   args={{
     userName: undefined,
-    size: "large",
+    modifiers: ["large"],
   }}
 />
 
@@ -64,13 +64,13 @@
   name="Small with initials"
   args={{
     userName: "Walter White",
-    size: "small",
+    modifiers: ["small"],
   }}
 />
 
 <Story
   name="Small with icon"
   args={{
-    size: "small",
+    modifiers: ["small"],
   }}
 />

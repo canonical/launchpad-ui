@@ -6,12 +6,14 @@
   --dimension-border-width-user-avatar: var(
     --dimension-stroke-thickness-default
   );
-  --dimension-size-user-avatar-large: var(--tmp-dimension-size-l);
-  --dimension-size-user-avatar-medium: var(--tmp-dimension-size-m);
-  --dimension-size-user-avatar-small: var(--tmp-dimension-size-s);
-  --typography-font-size-user-avatar-large: var(--tmp-typography-font-size-m);
-  --typography-font-size-user-avatar-medium: var(--tmp-typography-font-size-s);
-  --typography-font-size-user-avatar-small: var(--tmp-typography-font-size-xs);
+  --dimension-size-user-avatar: var(
+    --dimension-size-context,
+    var(--tmp-dimension-size-m)
+  );
+  --typography-font-size-user-avatar: var(
+    --typography-font-size-context,
+    var(--tmp-typography-font-size-s)
+  );
 
   display: inline-grid;
   place-content: center;
@@ -26,20 +28,8 @@
   background-color: var(--color-background-user-avatar);
   font-weight: var(--tmp-typography-weight-bold);
 
-  &.size-small {
-    width: var(--dimension-size-user-avatar-small);
-    font-size: var(--typography-font-size-user-avatar-small);
-  }
-
-  &.size-medium {
-    width: var(--dimension-size-user-avatar-medium);
-    font-size: var(--typography-font-size-user-avatar-medium);
-  }
-
-  &.size-large {
-    width: var(--dimension-size-user-avatar-large);
-    font-size: var(--typography-font-size-user-avatar-large);
-  }
+  width: var(--dimension-size-user-avatar);
+  font-size: var(--typography-font-size-user-avatar);
 
   > abbr {
     text-transform: uppercase;
