@@ -8,17 +8,14 @@ import type { LOCAL_MODIFIERS } from "./modifiers";
 /** Either the chip can be clicked or the dismiss button can be clicked.
  * We cannot have both click and dismiss events at the same time.
  */
-type ChipClickOptions =
-  | {
-      /** Callback function to handle click events on the chip */
-      onclick?: (event: MouseEvent) => void;
-    }
-  | {
-      /** Callback function to handle dismiss events on the chip */
-      ondismiss?: (event: MouseEvent) => void;
-    };
+type ChipClickOptions = {
+  /** Callback function to handle click events on the chip */
+  onclick?: (event: MouseEvent) => void;
+  /** Callback function to handle dismiss events on the chip */
+  ondismiss?: (event: MouseEvent) => void;
+};
 
-export type ChipProps = HTMLAttributes<HTMLElement> & {
+export interface ChipProps extends Omit<HTMLAttributes<HTMLElement>, "onclick">, ChipClickOptions {
   /** Chip modifiers to apply for styling */
   modifiers?: SemanticModifier<
     [
@@ -40,4 +37,4 @@ export type ChipProps = HTMLAttributes<HTMLElement> & {
    * @default no icon
    */
   icon?: Snippet | undefined | null;
-} & ChipClickOptions;
+};

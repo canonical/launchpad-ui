@@ -6,21 +6,22 @@
   const componentCssClassName = "ds chip";
 
   const {
-    id,
     class: className,
     modifiers,
-    style,
-    value,
     lead,
+    value,
+    icon,
     // TODO: implement badge component
     // badge,
-    icon,
+    ondismiss,
+    onclick,
     ...rest
   }: ChipProps = $props();
-  const ondismiss = $derived("ondismiss" in rest ? rest.ondismiss : undefined);
+
   const dismissible = $derived(ondismiss !== undefined);
-  const isClickable = $derived("onclick" in rest);
+  const isClickable = $derived(onclick !== undefined);
   const isReadonly = $derived(modifiers?.includes("readonly") ?? false);
+
   const rootElement = $derived(
     dismissible || isReadonly || !isClickable ? "span" : "button",
   );
@@ -29,8 +30,9 @@
 <svelte:element
   this={rootElement}
   class={[componentCssClassName, className, modifiers]}
-  {id}
-  {style}
+  type={rootElement === "button" ? "button" : undefined}
+  {onclick}
+  data-testid="chip"
   {...rest}
 >
   {#if icon}
@@ -48,20 +50,22 @@
   </span>
   <!-- TODO: implement badge component -->
   <!-- {#if badge}
-    {@const { value, type = "default", ...badgeProps } = badge}
-    <span class={["badge", type]} {...badgeProps}>
-      {value}
-    </span>
+   ...
   {/if} -->
   {#if dismissible}
-    <button class="dismiss" onclick={ondismiss} aria-label="Dismiss">
+    <button
+      class="dismiss"
+      onclick={ondismiss}
+      aria-label="Dismiss"
+      type="button"
+    >
       <Icon name="close" />
     </button>
   {/if}
 </svelte:element>
 
 <!-- @component
-`Chip` displays small actionable pieces of information.
+`Chip` displays a small actionable pieces of information.
 
 ## Example Usage
 ```svelte
