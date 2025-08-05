@@ -5,6 +5,7 @@ import devtoolsJson from "vite-plugin-devtools-json";
 export default defineConfig({
   plugins: [sveltekit(), devtoolsJson()],
   test: {
+    silent: false,
     projects: [
       {
         extends: "./vite.config.ts",
@@ -13,6 +14,7 @@ export default defineConfig({
           environment: "browser",
           browser: {
             enabled: true,
+            headless: true,
             provider: "playwright",
             instances: [{ browser: "chromium" }],
           },

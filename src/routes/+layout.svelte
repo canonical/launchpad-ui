@@ -1,7 +1,7 @@
 <script lang="ts">
   import type { Snippet } from "svelte";
-  import "../app.css";
   import { themes } from "$lib/theme";
+  import "../app.css";
   import type { LayoutData } from "./$types";
   import { ThemeSetter } from "./(common)/ThemeSetter";
   import { enhance } from "$app/forms";

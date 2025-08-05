@@ -20,11 +20,11 @@
     "test:server": "vitest --project=server",
     "test:client": "vitest --project=client",
     "test:ssr": "vitest --project=ssr",
-    "storybook": "storybook dev -p 6006",
+    "storybook": "storybook dev -p 6006 --no-open",
     "build-storybook": "storybook build"
   },
   "devDependencies": {
-    "@canonical/launchpad-design-tokens": "^1.0.9",
+    "@canonical/launchpad-design-tokens": "^1.0.15",
     "@chromatic-com/storybook": "^4.0.1",
     "@eslint/js": "^9.18.0",
     "@storybook/addon-a11y": "^9.0.15",
