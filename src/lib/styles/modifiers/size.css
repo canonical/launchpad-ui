@@ -1,9 +1,11 @@
 .small {
   --typography-font-size-context: var(--tmp-typography-font-size-xs);
   --dimension-size-context: var(--tmp-dimension-size-s);
+  --dimension-gap-context: var(--tmp-dimension-spacing-inline-xxs);
 }
 
 .large {
   --typography-font-size-context: var(--tmp-typography-font-size-m);
   --dimension-size-context: var(--tmp-dimension-size-l);
+  --dimension-gap-context: var(--tmp-dimension-spacing-inline-xs);
 }
