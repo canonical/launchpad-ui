@@ -14,11 +14,9 @@ vi.mock("../Icon", () => ({
 describe("Chip", () => {
   describe("Initial Rendering", () => {
     it("should render with default props as a non-interactive element", async () => {
-      const {
-        container: { firstElementChild: element },
-      } = render(Component, { value: "Default Chip" });
+      render(Component, { value: "Default Chip" });
 
-      expect(element?.tagName).not.toEqual("BUTTON");
+      await expect.element(page.getByRole("button")).not.toBeInTheDocument();
     });
 
     it("should render with a lead element", async () => {
@@ -38,13 +36,13 @@ describe("Chip", () => {
     });
 
     it("should apply custom class and modifiers", async () => {
-      const {
-        container: { firstElementChild: element },
-      } = render(Component, {
+      render(Component, {
         value: "Styled Chip",
         class: "extra-class",
         modifiers: ["dense", "caution"],
       });
+
+      const element = page.getByTestId("chip");
 
       await expect.element(element).toHaveClass("extra-class");
       await expect.element(element).toHaveClass("dense");
@@ -52,61 +50,45 @@ describe("Chip", () => {
     });
 
     it("should apply the id attribute", async () => {
-      const {
-        container: { firstElementChild: element },
-      } = render(Component, { value: "ID Chip", id: "my-chip-id" });
+      render(Component, { value: "ID Chip", id: "my-chip-id" });
 
-      expect(element?.id).toBe("my-chip-id");
+      await expect.element(page.getByTestId("chip")).toHaveAttribute("id", "my-chip-id");
+    });
+    it("should not render a button when dismiss is provided", async () => {
+      render(Component, { value: "Dismissible", ondismiss: () => { } });
+
+      await expect.element(page.getByTestId("chip")).not.toHaveAttribute("type", "button");
+      await expect.element(page.getByRole("button")).toHaveAccessibleName("Dismiss");
+    });
+
+    it("should not render a button when readonly is provided", async () => {
+      render(Component, { value: "Readonly", modifiers: ["readonly"], onclick: () => { } });
+
+      await expect.element(page.getByRole("button")).not.toBeInTheDocument();
     });
   });
 
   describe("Interactions & States", () => {
-    it("should render as a button when onclick is provided", async () => {
-      const {
-        container: { firstElementChild: element },
-      } = render(Component, { value: "Clickable", onclick: () => { } });
+    it("should render a working button when onclick is provided", async () => {
+      const onclick = vi.fn();
+      render(Component, { value: "Clickable", onclick });
 
-      expect(element?.tagName).toBe("BUTTON");
+      const element = page.getByRole("button");
+      await expect.element(element).toBeInTheDocument();
+      await element.click();
+      expect(onclick).toHaveBeenCalled();
     });
 
-    it("should render a dismiss button when ondismiss is provided", async () => {
-      const {
-        container: { firstElementChild: element },
-      } = render(Component, { value: "Dismissible", ondismiss: () => { } });
+    it("should render a working dismiss button when ondismiss is provided", async () => {
+      const ondismiss = vi.fn();
+      render(Component, { value: "Dismissible", ondismiss });
 
       const dissmissButton = page.getByLabelText("Dismiss");
       await expect.element(dissmissButton).toBeInTheDocument();
 
-      expect(element?.tagName).not.toEqual("BUTTON");
-      expect(dissmissButton.element().tagName).toBe("BUTTON");
-    });
-  });
-
-  describe("Edge Cases", () => {
-    it("should be non-interactive when readonly modifier is present", async () => {
-      const {
-        container: { firstElementChild: element },
-      } = render(Component, {
-        value: "Readonly Chip",
-        modifiers: ["readonly"],
-      });
-
-      expect(element?.tagName).not.toEqual("BUTTON");
-      expect(element?.classList).toContain("readonly");
-    });
-  });
-
-  describe("Accessibility", () => {
-    it("should have proper ARIA role for a clickable chip", async () => {
-      render(Component, { value: "ARIA Button", onclick: () => { } });
-      const button = page.getByRole("button", { name: "ARIA Button" });
-      await expect.element(button).toBeInTheDocument();
-    });
-
-    it("should have a proper accessible name for the dismiss button", async () => {
-      render(Component, { value: "Dismissible", ondismiss: () => { } });
-      const dismissButton = page.getByRole("button", { name: "Dismiss" });
-      await expect.element(dismissButton).toBeInTheDocument();
+      await expect.element(dissmissButton).toBeInTheDocument();
+      await dissmissButton.click();
+      expect(ondismiss).toHaveBeenCalled();
     });
   });
 });
