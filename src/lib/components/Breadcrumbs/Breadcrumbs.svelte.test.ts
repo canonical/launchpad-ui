@@ -123,7 +123,7 @@ describe("Breadcrumbs component", () => {
     it("has all segments visible if no collapse is applied", async () => {
       const page = render(Component, {
         segments,
-        keepExpanded: "all",
+        minNumExpanded: "all",
       });
 
       for (const segment of segments) {
@@ -136,7 +136,7 @@ describe("Breadcrumbs component", () => {
     it("properly collapses if width is insufficient", async () => {
       const page = render(Component, {
         segments,
-        keepExpanded: 0,
+        minNumExpanded: 0,
       });
 
       // Mock narrow container
@@ -160,10 +160,10 @@ describe("Breadcrumbs component", () => {
     });
 
     it("properly works with the numeric collapse value", async () => {
-      const keepExpanded = 3;
+      const minNumExpanded = 3;
       const page = render(Component, {
         segments,
-        keepExpanded,
+        minNumExpanded,
       });
 
       // Mock narrow container
@@ -173,15 +173,14 @@ describe("Breadcrumbs component", () => {
       await expectAreCollapsed(page);
       expect(
         collapsedLocator(page).getByRole("listitem").elements(),
-      ).toHaveLength(segments.length - keepExpanded);
+      ).toHaveLength(segments.length - minNumExpanded);
     });
 
     describe("edge cases", () => {
-      it("works properly when keepExpanded is greater than segments count", async () => {
-        const keepExpanded = 1000;
+      it("works properly when minNumExpanded is greater than segments count", async () => {
         const page = render(Component, {
           segments,
-          keepExpanded,
+          minNumExpanded: 1000,
         });
 
         page.container.style.width = "100px";
@@ -190,11 +189,10 @@ describe("Breadcrumbs component", () => {
         expect(page.getByRole("link").elements()).toHaveLength(segments.length);
       });
 
-      it("works properly when keepExpanded is set to negative value", async () => {
-        const keepExpanded = -1;
+      it("works properly when minNumExpanded is set to negative value", async () => {
         const page = render(Component, {
           segments,
-          keepExpanded,
+          minNumExpanded: -1,
         });
 
         page.container.style.width = "100px";
@@ -221,7 +219,7 @@ describe("Breadcrumbs component", () => {
       it("uses proper flat list structure with collapsed segments", async () => {
         const page = render(Component, {
           segments,
-          keepExpanded: 1,
+          minNumExpanded: 1,
         });
 
         page.container.style.width = "100px";

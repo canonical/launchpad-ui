@@ -1,0 +1,14 @@
+/* @canonical/generator-ds 0.9.1-experimental.0 */
+
+a.ds.item {
+  text-decoration: none;
+  color: var(--color-text-link-breadcrumbs-link-default);
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+  &:visited {
+    color: var(--color-text-link-breadcrumbs-link-visited);
+  }
+}

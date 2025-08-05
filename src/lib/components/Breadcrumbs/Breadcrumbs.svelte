@@ -1,12 +1,8 @@
 <!-- @canonical/generator-ds 0.9.1-experimental.0 -->
 
 <script lang="ts">
-  import { onMount } from "svelte";
-  import type {
-    BreadcrumbsProps,
-    PossiblyHiddenSegment,
-    Segment,
-  } from "./types.js";
+  import { CollapsedItems, ExpandedItems } from "./common/index.js";
+  import type { BreadcrumbsProps, PossiblyHiddenSegment } from "./types.js";
   import "./styles.css";
 
   const componentCssClassName = "ds breadcrumbs";
@@ -14,17 +10,17 @@
   const {
     class: className,
     segments,
-    keepExpanded = 1,
+    minNumExpanded = 1,
     ...rest
   }: BreadcrumbsProps = $props();
 
   const maxNumCollapsed = $derived(
-    keepExpanded === "all"
+    minNumExpanded === "all"
       ? 0
-      : Math.max(0, segments.length - Math.max(0, keepExpanded)),
+      : Math.max(0, segments.length - Math.max(0, minNumExpanded)),
   );
   let containerWidth = $state<number>();
-  const segmentWidths = $state<number[]>([]);
+  let segmentWidths = $state<number[]>([]);
 
   const [collapsed, expanded] = $derived.by(
     (): [
@@ -32,8 +28,7 @@
       expanded: PossiblyHiddenSegment[],
     ] => {
       if (
-        // Bail out if we don't want to collapse any segments
-        // before reading `containerWidth` or `segmentWidths`
+        // Bail out if we don't want to collapse any segments before reading `containerWidth` or `segmentWidths`
         // This way `$derived` won't rerun unnecessarily when the widths change
         maxNumCollapsed === 0 ||
         // We have not measured the container width yet
@@ -44,18 +39,14 @@
       }
 
       let expandedWidth = segmentWidths
-        // When the number of segments passed as a prop decreases,
-        // the widths of the unmounted `li`s are not removed from the `segmentWidths`,
-        // This makes sure, that we use the widths of the segments
-        // that are actually rendered in any given moment
+        // When the number of segments passed as a prop decreases, the widths of the unmounted `li`s are not removed from the `segmentWidths`,
+        // This makes sure, that we use the widths of the segments that are actually rendered in any given moment
         .slice(0, segments.length)
         .reduce((acc, width) => acc + width, 0);
 
       const collapsed: PossiblyHiddenSegment[] = [];
       let i = 0;
-      // Move the segments from the start one by one to the collapsed list
-      // until we can fit the rest in the `containerWidth`
-      // or we have collapsed the maximum number of segments
+      // Move the segments from the start one by one to the collapsed list until we can fit the rest in the `containerWidth` or we have collapsed the maximum number of segments
       while (
         i < segments.length &&
         expandedWidth >= containerWidth &&
@@ -72,28 +63,7 @@
       return [collapsed, expanded];
     },
   );
-
-  // This only keeps track of whether the menu opened by clicking on the trigger
-  // Focus and hover-triggered opening is handled 100% in CSS
-  let collapseClickOpened = $state(false);
-
-  let mounted = $state(false);
-  onMount(() => (mounted = true));
-  const wrapExpanded = $derived(
-    // Allow wrapping of the expanded segments if JavaScript is not available
-    // or we have already collapsed all there is to collapse
-    !mounted || collapsed.length === maxNumCollapsed,
-  );
 </script>
-
-<svelte:window
-  onclick={() => (collapseClickOpened = false)}
-  onkeydown={(e) => {
-    if (e.key === "Escape") {
-      collapseClickOpened = false;
-    }
-  }}
-/>
 
 <nav
   aria-label="Breadcrumbs"
@@ -102,58 +72,16 @@
 >
   <ol>
     {#if collapsed.length > 0}
-      <!-- This doesn't need keyboard navigation, as the links inside themselves are always tab-focusable. The click handler is for sighted use of touch devices on which hover does not exist -->
-
-      <li
-        role="none"
-        class="collapsed"
-        class:open={collapseClickOpened}
-        onclick={(e) => {
-          if (e.target !== e.currentTarget) return;
-          e.stopPropagation();
-          collapseClickOpened = !collapseClickOpened;
-        }}
-      >
-        <ol role="none" data-testid="collapsed-segments">
-          {#each collapsed as segment, i (i)}
-            <li role="listitem">
-              {@render item(segment, i === segments.length - 1)}
-            </li>
-          {/each}
-        </ol>
-      </li>
+      <CollapsedItems segments={collapsed} hasCurrent={expanded.length === 0} />
     {/if}
-    <li
-      role="none"
-      class="expanded"
-      style:white-space={wrapExpanded ? "normal" : "nowrap"}
-      bind:clientWidth={containerWidth}
-    >
-      <ol role="none">
-        {#each [...collapsed, ...expanded] as segment, i (i)}
-          <li
-            role="listitem"
-            bind:offsetWidth={segmentWidths[i]}
-            class:hidden={segment.hidden}
-            aria-hidden={segment.hidden}
-          >
-            {@render item(segment, i === segments.length - 1)}
-          </li>
-        {/each}
-      </ol>
-    </li>
+    <ExpandedItems
+      segments={[...collapsed, ...expanded]}
+      bind:segmentWidths
+      bind:containerWidth
+      canCollapseMore={collapsed.length < maxNumCollapsed}
+    />
   </ol>
 </nav>
-
-{#snippet item(segment: Segment, current: boolean)}
-  {#if segment.href}
-    <a href={segment.href} aria-current={current ? "page" : undefined}>
-      {segment.label}
-    </a>
-  {:else}
-    <span aria-current={current ? "page" : undefined}>{segment.label}</span>
-  {/if}
-{/snippet}
 
 <!-- @component
 `Breadcrumbs` is a navigation component used to display the current page's location within a navigational hierarchy. It allows users to easily navigate back to previous pages or sections.
@@ -173,7 +101,7 @@
       href: "/launchpad/launchpad-ui/merge-proposals/475346",
     },
   ]}
-  keepExpanded={2}
+  minNumExpanded={2}
 />
 ```
 -->

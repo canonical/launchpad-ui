@@ -15,12 +15,12 @@ export interface BreadcrumbsProps
    */
   segments: Segment[];
   /**
-   * The number of segments to keep expanded (from the end).
+   * The number of segments, from the end, that should never be collapsed.
    * If set to `all` or a number greater or equal to the total number of segments, no segments will be collapsed.
    *
    * @default 1
    */
-  keepExpanded?: "all" | number;
+  minNumExpanded?: "all" | number;
 }
 
 export interface PossiblyHiddenSegment extends Segment {

@@ -64,7 +64,9 @@ describe("Breadcrumbs SSR", () => {
     it("renders segments without links", () => {
       const segments = [{ label: "Current Page" }];
       const { body } = render(Component, { props: { segments } });
-      expect(body).toContain("<span>Current Page</span>");
+      expect(body).toContain("Current Page");
+      expect(body).not.toContain("<a");
+      expect(body).not.toContain('href="');
     });
 
     it("marks last segment as current page", () => {
@@ -79,10 +81,10 @@ describe("Breadcrumbs SSR", () => {
 
   describe("collapse prop", () => {
     it.each(["all", 0, 1, 2] as const)(
-      "renders with keepExpanded='%s'",
-      (keepExpanded) => {
+      "renders with minNumExpanded='%s'",
+      (minNumExpanded) => {
         const { body } = render(Component, {
-          props: { segments: defaultSegments, keepExpanded },
+          props: { segments: defaultSegments, minNumExpanded },
         });
         expect(body).toContain("Home");
         expect(body).toContain("Category");

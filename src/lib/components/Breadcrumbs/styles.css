@@ -65,151 +65,19 @@
   padding-inline: var(--dimension-padding-inline-breadcrumbs);
   padding-block: var(--dimension-padding-block-breadcrumbs);
 
-  ol {
-    list-style: none;
-  }
-
-  a {
-    text-decoration: none;
-    color: var(--color-text-link-breadcrumbs-link-default);
-
-    &:hover {
-      text-decoration: underline;
-    }
-
-    &:visited {
-      color: var(--color-text-link-breadcrumbs-link-visited);
-    }
-  }
-
   > ol {
     display: flex;
     align-items: start;
     justify-content: flex-start;
 
-    > li.collapsed {
-      position: relative;
-
-      border: var(--border-breadcrumbs-collapse-menu);
-      padding-inline: var(
-        --dimension-padding-inline-breadcrumbs-collapse-trigger
-      );
-      background-color: var(
-        --color-background-breadcrumbs-collapse-trigger-default
-      );
-
-      > ol {
-        left: calc(
-          var(--dimension-border-width-breadcrumbs-collapse-menu) * -1
-        );
-        display: flex;
-        flex-direction: column;
-        position: absolute;
-        /* `visibility: hidden` hides the elements from tab navigation, which is not what we want */
-        opacity: 0;
-        pointer-events: none;
-
-        padding-block: var(--dimension-padding-block-breadcrumbs-collapse-menu);
-        min-width: var(--dimension-min-width-breadcrumbs-collapse-menu);
-        margin-top: var(--dimension-margin-top-breadcrumbs-collapse-menu);
-
-        > li {
-          > * {
-            display: block;
-
-            padding-block: var(
-              --dimension-padding-block-breadcrumbs-collapse-menu-item
-            );
-            padding-inline: var(
-              --dimension-padding-inline-breadcrumbs-collapse-menu-item
-            );
-          }
-
-          > a {
-            &:hover {
-              background-color: var(
-                --color-background-breadcrumbs-collapse-menu-item-hover
-              );
-            }
-
-            &:active {
-              background-color: var(
-                --color-background-breadcrumbs-collapse-menu-item-active
-              );
-            }
-          }
-        }
-      }
-
-      &:focus-within,
-      &:hover,
-      &.open {
-        background-color: var(
-          --color-background-breadcrumbs-collapse-trigger-active
-        );
-
-        &::after {
-          /* This is to not to lose hover when moving the mouse overt the gap to the child <ol> */
-          content: "";
-          position: absolute;
-          top: 100%;
-          left: 0;
-          width: 100%;
-
-          height: var(--dimension-margin-top-breadcrumbs-collapse-menu);
-        }
-
-        > ol {
-          opacity: 1;
-          pointer-events: auto;
-
-          border: var(--border-breadcrumbs-collapse-menu);
-          background: var(--color-background-breadcrumbs-collapse-menu-default);
-        }
-      }
-
-      &::before {
-        content: "..." / "";
-      }
-
-      + li li::before {
-        /* Show separator before all the segments if there is a collapse section */
-        content: "/" / "";
-        margin-inline: var(--dimension-margin-inline-breadcrumbs-separator);
-      }
+    .ds.collapsed-items + .ds.expanded-items li::before {
+      /* Show separator before all the segments if there is a collapse section */
+      content: "/" / "";
+      margin-inline: var(--dimension-margin-inline-breadcrumbs-separator);
     }
+  }
 
-    > li.expanded {
-      flex-grow: 1;
-      flex-shrink: 1;
-      overflow: hidden;
-
-      ol,
-      li {
-        display: inline-block;
-        max-width: 100%;
-      }
-
-      li {
-        white-space: nowrap;
-
-        &:not(.hidden) {
-          overflow: hidden;
-          text-overflow: ellipsis;
-
-          + li::before {
-            /* Show separator before all the segments that follow a non-hidden segment. This is in practice applies only when there is no collapse section */
-            content: "/" / "";
-            margin-inline: var(--dimension-margin-inline-breadcrumbs-separator);
-          }
-        }
-
-        &.hidden {
-          visibility: hidden;
-          position: absolute;
-          pointer-events: none;
-        }
-      }
-    }
+  ol {
+    list-style: none;
   }
 }
