@@ -1,7 +1,7 @@
 <script module lang="ts">
   import { defineMeta } from "@storybook/addon-svelte-csf";
   import { fn } from "storybook/test";
-  import { SEMANTIC_MODIFIERS } from "$lib/modifiers";
+  import { GLOBAL_MODIFIERS } from "$lib/modifiers";
   import { Icon } from "../Icon";
   import Chip from "./Chip.svelte";
 
@@ -22,7 +22,7 @@
 
 <Story name="Severities" args={{}}>
   {#snippet template()}
-    {#each SEMANTIC_MODIFIERS.SEVERITY as modifier (modifier)}
+    {#each GLOBAL_MODIFIERS.SEVERITY as modifier (modifier)}
       <Chip
         lead="Severity"
         value={modifier.charAt(0).toUpperCase() + modifier.slice(1)}
@@ -81,7 +81,7 @@
 
 <Story name="Read-only severities" args={{}}>
   {#snippet template()}
-    {#each SEMANTIC_MODIFIERS.SEVERITY as modifier (modifier)}
+    {#each GLOBAL_MODIFIERS.SEVERITY as modifier (modifier)}
       <Chip
         lead="Severity"
         value={modifier.charAt(0).toUpperCase() + modifier.slice(1)}
