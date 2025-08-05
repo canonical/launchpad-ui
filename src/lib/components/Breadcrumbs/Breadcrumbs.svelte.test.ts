@@ -123,7 +123,7 @@ describe("Breadcrumbs component", () => {
     it("has all segments visible if no collapse is applied", async () => {
       const page = render(Component, {
         segments,
-        collapse: "none",
+        keepExpanded: "all",
       });
 
       for (const segment of segments) {
@@ -136,7 +136,7 @@ describe("Breadcrumbs component", () => {
     it("properly collapses if width is insufficient", async () => {
       const page = render(Component, {
         segments,
-        collapse: "all",
+        keepExpanded: 0,
       });
 
       // Mock narrow container
@@ -160,10 +160,10 @@ describe("Breadcrumbs component", () => {
     });
 
     it("properly works with the numeric collapse value", async () => {
-      const maxNumCollapsed = 3;
+      const keepExpanded = 3;
       const page = render(Component, {
         segments,
-        collapse: maxNumCollapsed,
+        keepExpanded,
       });
 
       // Mock narrow container
@@ -173,7 +173,37 @@ describe("Breadcrumbs component", () => {
       await expectAreCollapsed(page);
       expect(
         collapsedLocator(page).getByRole("listitem").elements(),
-      ).toHaveLength(maxNumCollapsed);
+      ).toHaveLength(segments.length - keepExpanded);
+    });
+
+    describe("edge cases", () => {
+      it("works properly when keepExpanded is greater than segments count", async () => {
+        const keepExpanded = 1000;
+        const page = render(Component, {
+          segments,
+          keepExpanded,
+        });
+
+        page.container.style.width = "100px";
+
+        await expectNoCollapsed(page);
+        expect(page.getByRole("link").elements()).toHaveLength(segments.length);
+      });
+
+      it("works properly when keepExpanded is set to negative value", async () => {
+        const keepExpanded = -1;
+        const page = render(Component, {
+          segments,
+          keepExpanded,
+        });
+
+        page.container.style.width = "100px";
+
+        await expectAreCollapsed(page);
+        expect(
+          collapsedLocator(page).getByRole("listitem").elements(),
+        ).toHaveLength(segments.length);
+      });
     });
   });
 
@@ -191,7 +221,7 @@ describe("Breadcrumbs component", () => {
       it("uses proper flat list structure with collapsed segments", async () => {
         const page = render(Component, {
           segments,
-          collapse: 1,
+          keepExpanded: 1,
         });
 
         page.container.style.width = "100px";

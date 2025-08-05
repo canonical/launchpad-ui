@@ -8,9 +8,9 @@
     tags: ["autodocs"],
     component: Breadcrumbs,
     argTypes: {
-      collapse: {
+      keepExpanded: {
         control: "select",
-        options: ["none", "all", 1, 2, 3],
+        options: ["all", 0, 1, 2, 3],
       },
     },
     args: {
@@ -81,7 +81,7 @@
 <Story
   name="Collapsed when too narrow"
   args={{
-    collapse: "all",
+    keepExpanded: 0,
   }}
   template={narrow}
 />
@@ -89,7 +89,7 @@
 <Story
   name="Limited number of segments collapsed"
   args={{
-    collapse: 3,
+    keepExpanded: 4,
   }}
   template={narrow}
 />
@@ -104,7 +104,7 @@
         href: "/long-url",
       },
     ],
-    collapse: 1,
+    keepExpanded: 1,
   }}
   template={narrow}
 />

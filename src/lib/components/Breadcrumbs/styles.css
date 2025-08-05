@@ -184,10 +184,6 @@
       flex-shrink: 1;
       overflow: hidden;
 
-      &.no-wrap {
-        white-space: nowrap;
-      }
-
       ol,
       li {
         display: inline-block;

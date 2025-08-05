@@ -78,11 +78,11 @@ describe("Breadcrumbs SSR", () => {
   });
 
   describe("collapse prop", () => {
-    it.each(["none", "all", 2] as const)(
-      "renders with collapse='%s'",
-      (collapse) => {
+    it.each(["all", 0, 1, 2] as const)(
+      "renders with keepExpanded='%s'",
+      (keepExpanded) => {
         const { body } = render(Component, {
-          props: { segments: defaultSegments, collapse },
+          props: { segments: defaultSegments, keepExpanded },
         });
         expect(body).toContain("Home");
         expect(body).toContain("Category");

@@ -3,10 +3,10 @@
 import type { HTMLAttributes } from "svelte/elements";
 import type { WithoutChildren } from "$lib/type-utils";
 
-export type Segment = {
+export interface Segment {
   label: string;
   href?: string;
-};
+}
 
 export interface BreadcrumbsProps
   extends WithoutChildren<HTMLAttributes<HTMLElement>> {
@@ -15,10 +15,14 @@ export interface BreadcrumbsProps
    */
   segments: Segment[];
   /**
-   * Controls how the segments are collapsed if there are too many to fit in the available space.
-   * - `"all"`: All segments can be collapsed.
-   * - `"none"`: Segments are never collapsed.
-   * - `number`: The number of segments (from the start) that are allowed to be collapsed.
+   * The number of segments to keep expanded (from the end).
+   * If set to `all` or a number greater or equal to the total number of segments, no segments will be collapsed.
+   *
+   * @default 1
    */
-  collapse?: "all" | "none" | number;
+  keepExpanded?: "all" | number;
+}
+
+export interface PossiblyHiddenSegment extends Segment {
+  hidden?: boolean;
 }

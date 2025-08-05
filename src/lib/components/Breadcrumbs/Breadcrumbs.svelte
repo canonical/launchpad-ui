@@ -2,7 +2,11 @@
 
 <script lang="ts">
   import { onMount } from "svelte";
-  import type { BreadcrumbsProps, Segment } from "./types.js";
+  import type {
+    BreadcrumbsProps,
+    PossiblyHiddenSegment,
+    Segment,
+  } from "./types.js";
   import "./styles.css";
 
   const componentCssClassName = "ds breadcrumbs";
@@ -10,31 +14,48 @@
   const {
     class: className,
     segments,
-    collapse = "none",
+    keepExpanded = 1,
     ...rest
   }: BreadcrumbsProps = $props();
 
   const maxNumCollapsed = $derived(
-    collapse === "all" ? segments.length : collapse === "none" ? 0 : collapse,
+    keepExpanded === "all"
+      ? 0
+      : Math.max(0, segments.length - Math.max(0, keepExpanded)),
   );
   let containerWidth = $state<number>();
   const segmentWidths = $state<number[]>([]);
 
-  type HiddenSegment = Segment & {
-    hidden?: boolean;
-  };
   const [collapsed, expanded] = $derived.by(
-    (): [HiddenSegment[], HiddenSegment[]] => {
-      if (collapse === "none" || containerWidth === undefined)
+    (): [
+      collapsed: PossiblyHiddenSegment[],
+      expanded: PossiblyHiddenSegment[],
+    ] => {
+      if (
+        // Bail out if we don't want to collapse any segments
+        // before reading `containerWidth` or `segmentWidths`
+        // This way `$derived` won't rerun unnecessarily when the widths change
+        maxNumCollapsed === 0 ||
+        // We have not measured the container width yet
+        containerWidth === undefined
+      ) {
+        // No segments are collapsed
         return [[], segments];
+      }
 
       let expandedWidth = segmentWidths
+        // When the number of segments passed as a prop decreases,
+        // the widths of the unmounted `li`s are not removed from the `segmentWidths`,
+        // This makes sure, that we use the widths of the segments
+        // that are actually rendered in any given moment
         .slice(0, segments.length)
         .reduce((acc, width) => acc + width, 0);
-      if (expandedWidth < containerWidth) return [[], segments];
 
-      const collapsed: HiddenSegment[] = [];
+      const collapsed: PossiblyHiddenSegment[] = [];
       let i = 0;
+      // Move the segments from the start one by one to the collapsed list
+      // until we can fit the rest in the `containerWidth`
+      // or we have collapsed the maximum number of segments
       while (
         i < segments.length &&
         expandedWidth >= containerWidth &&
@@ -44,18 +65,35 @@
         expandedWidth -= segmentWidths[i];
         i++;
       }
+
+      // The rest of the segments are expanded
       const expanded = segments.slice(i);
 
       return [collapsed, expanded];
     },
   );
 
+  // This only keeps track of whether the menu opened by clicking on the trigger
+  // Focus and hover-triggered opening is handled 100% in CSS
   let collapseClickOpened = $state(false);
+
   let mounted = $state(false);
   onMount(() => (mounted = true));
+  const wrapExpanded = $derived(
+    // Allow wrapping of the expanded segments if JavaScript is not available
+    // or we have already collapsed all there is to collapse
+    !mounted || collapsed.length === maxNumCollapsed,
+  );
 </script>
 
-<svelte:window onclick={() => (collapseClickOpened = false)} />
+<svelte:window
+  onclick={() => (collapseClickOpened = false)}
+  onkeydown={(e) => {
+    if (e.key === "Escape") {
+      collapseClickOpened = false;
+    }
+  }}
+/>
 
 <nav
   aria-label="Breadcrumbs"
@@ -88,9 +126,7 @@
     <li
       role="none"
       class="expanded"
-      class:no-wrap={mounted &&
-        collapse !== "none" &&
-        collapsed.length < maxNumCollapsed}
+      style:white-space={wrapExpanded ? "normal" : "nowrap"}
       bind:clientWidth={containerWidth}
     >
       <ol role="none">
@@ -115,7 +151,7 @@
       {segment.label}
     </a>
   {:else}
-    <span>{segment.label}</span>
+    <span aria-current={current ? "page" : undefined}>{segment.label}</span>
   {/if}
 {/snippet}
 
@@ -137,7 +173,7 @@
       href: "/launchpad/launchpad-ui/merge-proposals/475346",
     },
   ]}
-  collapse={3}
+  keepExpanded={2}
 />
 ```
 -->
