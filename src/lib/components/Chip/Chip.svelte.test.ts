@@ -52,17 +52,27 @@ describe("Chip", () => {
     it("should apply the id attribute", async () => {
       render(Component, { value: "ID Chip", id: "my-chip-id" });
 
-      await expect.element(page.getByTestId("chip")).toHaveAttribute("id", "my-chip-id");
+      await expect
+        .element(page.getByTestId("chip"))
+        .toHaveAttribute("id", "my-chip-id");
     });
     it("should not render a button when dismiss is provided", async () => {
-      render(Component, { value: "Dismissible", ondismiss: () => { } });
+      render(Component, { value: "Dismissible", ondismiss: () => {} });
 
-      await expect.element(page.getByTestId("chip")).not.toHaveAttribute("type", "button");
-      await expect.element(page.getByRole("button")).toHaveAccessibleName("Dismiss");
+      await expect
+        .element(page.getByTestId("chip"))
+        .not.toHaveAttribute("type", "button");
+      await expect
+        .element(page.getByRole("button"))
+        .toHaveAccessibleName("Dismiss");
     });
 
     it("should not render a button when readonly is provided", async () => {
-      render(Component, { value: "Readonly", modifiers: ["readonly"], onclick: () => { } });
+      render(Component, {
+        value: "Readonly",
+        modifiers: ["readonly"],
+        onclick: () => {},
+      });
 
       await expect.element(page.getByRole("button")).not.toBeInTheDocument();
     });

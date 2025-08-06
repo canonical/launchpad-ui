@@ -35,14 +35,14 @@ describe("Chip SSR", () => {
   describe("State Variants", () => {
     it("should render as a button when onclick is provided", () => {
       const { body } = render(Component, {
-        props: { value: "Clickable", onclick: () => { } },
+        props: { value: "Clickable", onclick: () => {} },
       });
       expect(body).toContain('<button class="ds chip');
     });
 
     it("should render a dismiss button when ondismiss is provided", () => {
       const { body } = render(Component, {
-        props: { value: "Dismissible", ondismiss: () => { } },
+        props: { value: "Dismissible", ondismiss: () => {} },
       });
       expect(body).toContain('<span class="ds chip');
       expect(body).toContain('<button class="dismiss" aria-label="Dismiss"');
@@ -60,7 +60,7 @@ describe("Chip SSR", () => {
   describe("Accessibility", () => {
     it("should include aria-label on dismiss button", () => {
       const { body } = render(Component, {
-        props: { value: "Dismissible", ondismiss: () => { } },
+        props: { value: "Dismissible", ondismiss: () => {} },
       });
       expect(body).toContain('aria-label="Dismiss"');
     });

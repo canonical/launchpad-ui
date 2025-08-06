@@ -15,7 +15,9 @@ type ChipClickOptions = {
   ondismiss?: (event: MouseEvent) => void;
 };
 
-export interface ChipProps extends Omit<HTMLAttributes<HTMLElement>, "onclick">, ChipClickOptions {
+export interface ChipProps
+  extends Omit<HTMLAttributes<HTMLElement>, "onclick">,
+    ChipClickOptions {
   /** Chip modifiers to apply for styling */
   modifiers?: SemanticModifier<
     [
@@ -37,4 +39,4 @@ export interface ChipProps extends Omit<HTMLAttributes<HTMLElement>, "onclick">,
    * @default no icon
    */
   icon?: Snippet | undefined | null;
-};
+}
