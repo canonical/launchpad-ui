@@ -2,8 +2,7 @@ name: Sync with Launchpad repository
 
 on:
   schedule:
-    # Runs every 10 minutes from 9am to 8pm
-    - cron: "*/1 9-20 * * *"
+    - cron: "*/1 * * * *"
   workflow_dispatch: {}
 
 jobs:
