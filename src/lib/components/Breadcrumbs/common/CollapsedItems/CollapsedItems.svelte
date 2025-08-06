@@ -3,7 +3,6 @@
 <script lang="ts">
   import { Item } from "../common/index.js";
   import type { CollapsedItemsProps } from "./types.js";
-  import "./styles.css";
 
   const componentCssClassName = "ds collapsed-items";
 
@@ -42,3 +41,87 @@
     {/each}
   </ol>
 </li>
+
+<style>
+  .ds.collapsed-items {
+    position: relative;
+
+    border: var(--border-breadcrumbs-collapse-menu);
+    padding-inline: var(
+      --dimension-padding-inline-breadcrumbs-collapse-trigger
+    );
+    background-color: var(
+      --color-background-breadcrumbs-collapse-trigger-default
+    );
+
+    &::before {
+      content: "..." / "";
+    }
+
+    :global(.ds.item) {
+      display: block;
+
+      padding-block: var(
+        --dimension-padding-block-breadcrumbs-collapse-menu-item
+      );
+      padding-inline: var(
+        --dimension-padding-inline-breadcrumbs-collapse-menu-item
+      );
+    }
+
+    :global(.ds.item) {
+      &:hover {
+        background-color: var(
+          --color-background-breadcrumbs-collapse-menu-item-hover
+        );
+      }
+
+      &:active {
+        background-color: var(
+          --color-background-breadcrumbs-collapse-menu-item-active
+        );
+      }
+    }
+
+    > ol {
+      left: calc(var(--dimension-border-width-breadcrumbs-collapse-menu) * -1);
+      display: flex;
+      flex-direction: column;
+      position: absolute;
+      /* `visibility: hidden` hides the elements from tab navigation, which is not what we want */
+      opacity: 0;
+      pointer-events: none;
+
+      padding-block: var(--dimension-padding-block-breadcrumbs-collapse-menu);
+      min-width: var(--dimension-min-width-breadcrumbs-collapse-menu);
+      margin-top: var(--dimension-margin-top-breadcrumbs-collapse-menu);
+    }
+
+    &:focus-within,
+    &:hover,
+    &.open {
+      background-color: var(
+        --color-background-breadcrumbs-collapse-trigger-active
+      );
+
+      > ol {
+        opacity: 1;
+        pointer-events: auto;
+
+        border: var(--border-breadcrumbs-collapse-menu);
+        background: var(--color-background-breadcrumbs-collapse-menu-default);
+      }
+
+      &::after {
+        /* This is to not to lose hover when moving the mouse overt the gap to the child <ol> */
+        content: "";
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+
+        height: var(--dimension-margin-top-breadcrumbs-collapse-menu);
+      }
+    }
+  }
+</style>

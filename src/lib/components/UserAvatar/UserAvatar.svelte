@@ -2,7 +2,6 @@
   /* @canonical/generator-ds 0.9.0-experimental.22 */
   import { Icon } from "$lib/components/Icon/index.js";
   import type { UserAvatarProps } from "./types.js";
-  import "./styles.css";
 
   const componentCssClassName = "ds user-avatar";
 
@@ -70,3 +69,42 @@ The avatar will display the user's image if available and able to be loaded, oth
 <UserAvatar user={{ imageUrl: "https://example.com/avatar.png", name: "John Doe" }} />
 ```
 -->
+
+<style>
+  .ds.user-avatar {
+    --color-background-user-avatar: var(--tmp-color-background-alt);
+    --color-border-user-avatar: var(--tmp-color-border-default);
+    --dimension-border-width-user-avatar: var(
+      --dimension-stroke-thickness-default
+    );
+    --dimension-size-user-avatar: var(
+      --dimension-size-context,
+      var(--tmp-dimension-size-m)
+    );
+    --typography-font-size-user-avatar: var(
+      --typography-font-size-context,
+      var(--tmp-typography-font-size-s)
+    );
+
+    display: inline-grid;
+    place-content: center;
+    overflow: hidden;
+    line-height: 1;
+    aspect-ratio: 1 / 1;
+    flex: none;
+    user-select: none;
+
+    border: var(--dimension-border-width-user-avatar) solid
+      var(--color-border-user-avatar);
+    background-color: var(--color-background-user-avatar);
+    font-weight: var(--tmp-typography-weight-bold);
+
+    width: var(--dimension-size-user-avatar);
+    font-size: var(--typography-font-size-user-avatar);
+
+    > abbr {
+      text-transform: uppercase;
+      text-decoration: none;
+    }
+  }
+</style>

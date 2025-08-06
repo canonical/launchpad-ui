@@ -1,7 +1,6 @@
 <script lang="ts">
   /* @canonical/generator-ds 0.9.0-experimental.22 */
   import type { IconProps } from "./types.js";
-  import "./styles.css";
 
   const componentCssClassName = "ds icon";
 
@@ -24,3 +23,19 @@ Icons color follows the current text color.
 <Icon name="edit"/>
 ```
 -->
+
+<style>
+  .ds.icon {
+    --dimension-size-icon: var(--tmp-dimension-size-xs);
+
+    display: inline-block;
+    background-color: currentColor;
+    mask-repeat: no-repeat;
+    mask-size: 100% 100%;
+    mask-mode: alpha;
+
+    width: var(--dimension-size-icon);
+    height: var(--dimension-size-icon);
+    mask-image: var(--icon-url);
+  }
+</style>

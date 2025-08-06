@@ -2,7 +2,6 @@
 
 <script lang="ts">
   import type { ItemProps } from "./types.js";
-  import "./styles.css";
 
   const componentCssClassName = "ds item";
 
@@ -23,3 +22,18 @@
     {segment.label}
   </span>
 {/if}
+
+<style>
+  a.ds.item {
+    text-decoration: none;
+    color: var(--color-text-link-breadcrumbs-link-default);
+
+    &:hover {
+      text-decoration: underline;
+    }
+
+    &:visited {
+      color: var(--color-text-link-breadcrumbs-link-visited);
+    }
+  }
+</style>

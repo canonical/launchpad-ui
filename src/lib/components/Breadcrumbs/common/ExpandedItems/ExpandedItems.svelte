@@ -4,7 +4,6 @@
   import { onMount } from "svelte";
   import { Item } from "../common/index.js";
   import type { ExpandedItemsProps } from "./types.js";
-  import "./styles.css";
 
   const componentCssClassName = "ds expanded-items";
 
@@ -42,3 +41,38 @@
     {/each}
   </ol>
 </li>
+
+<style>
+  .ds.expanded-items {
+    flex-grow: 1;
+    flex-shrink: 1;
+    overflow: hidden;
+
+    ol,
+    li {
+      display: inline-block;
+      max-width: 100%;
+    }
+
+    li {
+      white-space: nowrap;
+
+      &:not(.hidden) {
+        overflow: hidden;
+        text-overflow: ellipsis;
+
+        + li::before {
+          /* Show separator before all the segments that follow a non-hidden segment. This is in practice applies only when there is no collapse section */
+          content: "/" / "";
+          margin-inline: var(--dimension-margin-inline-breadcrumbs-separator);
+        }
+      }
+
+      &.hidden {
+        visibility: hidden;
+        position: absolute;
+        pointer-events: none;
+      }
+    }
+  }
+</style>

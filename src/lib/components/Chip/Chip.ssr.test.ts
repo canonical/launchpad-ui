@@ -27,8 +27,8 @@ describe("Chip SSR", () => {
       const { body } = render(Component, {
         props: { lead: "Key:", value: "Value" },
       });
-      expect(body).toContain('<span class="lead">Key:</span>');
-      expect(body).toContain('<span class="value">Value</span>');
+      expect(body).toMatch(/<span class="[^"]*lead[^"]*">Key:<\/span>/);
+      expect(body).toMatch(/<span class="[^"]*value[^"]*">Value<\/span>/);
     });
   });
 
@@ -45,7 +45,9 @@ describe("Chip SSR", () => {
         props: { value: "Dismissible", ondismiss: () => {} },
       });
       expect(body).toContain('<span class="ds chip');
-      expect(body).toContain('<button class="dismiss" aria-label="Dismiss"');
+      expect(body).toMatch(
+        /<button class="[^"]*dismiss[^"]*" aria-label="Dismiss"/,
+      );
     });
 
     it("should be non-interactive when readonly", () => {
