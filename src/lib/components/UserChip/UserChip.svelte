@@ -3,7 +3,6 @@
 <script lang="ts">
   import { UserAvatar } from "$lib/components/UserAvatar/index.js";
   import type { UserChipProps } from "./types.js";
-  import "./styles.css";
 
   const componentCssClassName = "ds user-chip";
 
@@ -34,3 +33,22 @@
 <UserChip user={{ name: "John Doe", imageUrl: "https://example.com/avatar.png" }} />
 ```
 -->
+
+<style>
+  .ds.user-chip {
+    --typography-font-size-user-chip: var(
+      --typography-font-size-context,
+      var(--tmp-typography-font-size-s)
+    );
+    --dimension-gap-user-chip: var(
+      --dimension-gap-context,
+      var(--tmp-dimension-spacing-inline-xs)
+    );
+
+    display: inline-flex;
+    align-items: center;
+    font-weight: var(--tmp-typography-weight-bold);
+    font-size: var(--typography-font-size-user-chip);
+    gap: var(--dimension-gap-user-chip);
+  }
+</style>

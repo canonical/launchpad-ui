@@ -3,7 +3,6 @@
 <script lang="ts">
   import { CollapsedItems, ExpandedItems } from "./common/index.js";
   import type { BreadcrumbsProps, PossiblyHiddenSegment } from "./types.js";
-  import "./styles.css";
 
   const componentCssClassName = "ds breadcrumbs";
 
@@ -105,3 +104,91 @@
 />
 ```
 -->
+
+<style>
+  .ds.breadcrumbs {
+    --color-background-breadcrumbs-collapse-menu-default: var(
+      --tmp-color-background-default
+    );
+    --color-background-breadcrumbs-collapse-menu-item-active: var(
+      --tmp-color-background-active
+    );
+    --color-background-breadcrumbs-collapse-menu-item-default: var(
+      --tmp-color-background-default
+    );
+    --color-background-breadcrumbs-collapse-menu-item-hover: var(
+      --tmp-color-background-hover
+    );
+    --color-background-breadcrumbs-collapse-trigger-active: var(
+      --tmp-color-background-active
+    );
+    --color-background-breadcrumbs-collapse-trigger-default: var(
+      --tmp-color-background-default
+    );
+    --color-border-breadcrumbs-collapse-menu: var(
+      --tmp-color-border-high-contrast
+    );
+    --color-text-breadcrumbs: var(--tmp-color-text-default);
+    --color-text-link-breadcrumbs-link-default: var(
+      --tmp-color-text-link-default
+    );
+    --color-text-link-breadcrumbs-link-visited: var(
+      --tmp-color-text-link-visited
+    );
+    --dimension-border-width-breadcrumbs-collapse-menu: var(
+      --dimension-stroke-thickness-default
+    );
+    --dimension-margin-inline-breadcrumbs-separator: var(
+      --tmp-dimension-spacing-inline-xxs
+    );
+    --dimension-margin-top-breadcrumbs-collapse-menu: var(
+      --tmp-dimension-spacing-block-xxs
+    );
+    --dimension-min-width-breadcrumbs-collapse-menu: min(17rem, 100vw);
+    --dimension-padding-block-breadcrumbs-collapse-menu-item: var(
+      --tmp-dimension-spacing-block-xxs
+    );
+    --dimension-padding-block-breadcrumbs-collapse-menu: var(
+      --tmp-dimension-spacing-block-xs
+    );
+    --dimension-padding-block-breadcrumbs: var(
+      --tmp-dimension-spacing-block-xs
+    );
+    --dimension-padding-inline-breadcrumbs-collapse-menu-item: var(
+      --tmp-dimension-spacing-inline-m
+    );
+    --dimension-padding-inline-breadcrumbs-collapse-trigger: var(
+      --tmp-dimension-spacing-inline-s
+    );
+    --dimension-padding-inline-breadcrumbs: var(
+      --tmp-dimension-spacing-inline-l
+    );
+    --typography-font-breadcrumbs: var(--tmp-typography-paragraph-s);
+
+    --border-breadcrumbs-collapse-menu: var(
+        --dimension-border-width-breadcrumbs-collapse-menu
+      )
+      solid var(--color-border-breadcrumbs-collapse-menu);
+
+    font: var(--typography-font-breadcrumbs);
+    color: var(--color-text-breadcrumbs);
+    padding-inline: var(--dimension-padding-inline-breadcrumbs);
+    padding-block: var(--dimension-padding-block-breadcrumbs);
+
+    > ol {
+      display: flex;
+      align-items: start;
+      justify-content: flex-start;
+
+      :global(.ds.collapsed-items + .ds.expanded-items li::before) {
+        /* Show separator before all the segments if there is a collapse section */
+        content: "/" / "";
+        margin-inline: var(--dimension-margin-inline-breadcrumbs-separator);
+      }
+    }
+
+    :global(ol) {
+      list-style: none;
+    }
+  }
+</style>

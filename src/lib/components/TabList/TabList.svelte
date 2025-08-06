@@ -2,7 +2,6 @@
 
 <script lang="ts">
   import type { TabListProps } from "./types.js";
-  import "./styles.css";
 
   const componentCssClassName = "ds tabs";
 
@@ -27,3 +26,11 @@
 </TabList>
 ```
 -->
+
+<style>
+  .ds.tabs {
+    > ul {
+      display: flex;
+    }
+  }
+</style>

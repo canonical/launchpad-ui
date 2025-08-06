@@ -27,25 +27,27 @@ describe("Chip SSR", () => {
       const { body } = render(Component, {
         props: { lead: "Key:", value: "Value" },
       });
-      expect(body).toContain('<span class="lead">Key:</span>');
-      expect(body).toContain('<span class="value">Value</span>');
+      expect(body).toMatch(/<span class="[^"]*lead[^"]*">Key:<\/span>/);
+      expect(body).toMatch(/<span class="[^"]*value[^"]*">Value<\/span>/);
     });
   });
 
   describe("State Variants", () => {
     it("should render as a button when onclick is provided", () => {
       const { body } = render(Component, {
-        props: { value: "Clickable", onclick: () => { } },
+        props: { value: "Clickable", onclick: () => {} },
       });
       expect(body).toContain('<button class="ds chip');
     });
 
     it("should render a dismiss button when ondismiss is provided", () => {
       const { body } = render(Component, {
-        props: { value: "Dismissible", ondismiss: () => { } },
+        props: { value: "Dismissible", ondismiss: () => {} },
       });
       expect(body).toContain('<span class="ds chip');
-      expect(body).toContain('<button class="dismiss" aria-label="Dismiss"');
+      expect(body).toMatch(
+        /<button class="[^"]*dismiss[^"]*" aria-label="Dismiss"/,
+      );
     });
 
     it("should be non-interactive when readonly", () => {
@@ -60,7 +62,7 @@ describe("Chip SSR", () => {
   describe("Accessibility", () => {
     it("should include aria-label on dismiss button", () => {
       const { body } = render(Component, {
-        props: { value: "Dismissible", ondismiss: () => { } },
+        props: { value: "Dismissible", ondismiss: () => {} },
       });
       expect(body).toContain('aria-label="Dismiss"');
     });

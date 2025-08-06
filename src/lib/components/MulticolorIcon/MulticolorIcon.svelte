@@ -1,7 +1,6 @@
 <script lang="ts">
   /* @canonical/generator-ds 0.9.0-experimental.22 */
   import type { MulticolorIconProps } from "./types.js";
-  import "./styles.css";
 
   const componentCssClassName = "ds multicolor-icon";
 
@@ -24,3 +23,17 @@ Multicolor icons bring their own colors and are not affected by the styling.
 <MulticolorIcon name="error"/>
 ```
 -->
+
+<style>
+  .ds.multicolor-icon {
+    --dimension-size-icon: var(--tmp-dimension-size-xs);
+
+    display: inline-block;
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+
+    width: var(--dimension-size-icon);
+    height: var(--dimension-size-icon);
+    background-image: var(--icon-url);
+  }
+</style>

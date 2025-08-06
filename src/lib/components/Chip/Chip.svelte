@@ -1,6 +1,5 @@
 <script lang="ts">
   import { Icon } from "../Icon";
-  import "./styles.css";
   import type { ChipProps } from "./types.js";
 
   const componentCssClassName = "ds chip";
@@ -75,3 +74,167 @@
 <Chip lead="Lead" value="Value" modifiers={["readonly", "dense", "caution"]} />
 ```
 -->
+
+<style>
+  .ds.chip {
+    --color-background-chip-active: var(
+      --tmp-color-background-active-context,
+      var(--tmp-color-background-neutral-active)
+    );
+    --color-background-chip-hover: var(
+      --tmp-color-background-hover-context,
+      var(--tmp-color-background-neutral-hover)
+    );
+    --color-background-chip: var(
+      --tmp-color-background-context,
+      var(--tmp-color-background-neutral-default)
+    );
+    --border-style-chip: solid;
+    --color-border-chip: var(
+      --tmp-color-border-context,
+      var(--tmp-color-border-default)
+    );
+    --dimension-size-chip-close-icon: 0.85rem;
+    --dimension-gap-inline-chip: var(--tmp-dimension-spacing-inline-xxs);
+    --dimension-gap-inline-chip-badge: var(--tmp-dimension-spacing-inline-xs)
+      var(--tmp-dimension-spacing-inline-minimum);
+    --dimension-padding-block-chip: var(
+      --dimension-padding-block-context,
+      var(--tmp-dimension-spacing-block-xxxs)
+    );
+    --dimension-padding-inline-chip: var(
+      --dimension-padding-inline-context,
+      var(--tmp-dimension-spacing-inline-s)
+    );
+    --dimension-radius-chip: var(--dimension-radius-full);
+    --dimension-border-width-chip: var(--dimension-stroke-thickness-default);
+    --typography-chip: var(--tmp-typography-paragraph-s);
+    --typography-letter-spacing-chip-leader: var(
+      --tmp-typography-letter-spacing-l
+    );
+
+    display: inline-flex;
+    align-items: center;
+    font: var(--typography-chip);
+    border-radius: var(--dimension-radius-chip);
+    border: var(--dimension-border-width-chip) var(--border-style-chip)
+      var(--color-border-chip);
+    background-color: var(--color-background-chip);
+    padding-block: var(--dimension-padding-block-chip);
+    padding-inline: var(--dimension-padding-inline-chip);
+
+    &:is(button),
+    .dismiss {
+      cursor: pointer;
+
+      &:hover {
+        background-color: var(--color-background-chip-hover);
+      }
+
+      &:active {
+        background-color: var(--color-background-chip-active);
+      }
+    }
+
+    > .icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: var(--dimension-gap-inline-chip);
+    }
+
+    > .lead {
+      font-variant-caps: all-small-caps;
+      font-variant-numeric: oldstyle-nums;
+      letter-spacing: var(--typography-letter-spacing-chip-leader);
+
+      & + .value::before {
+        content: ": ";
+      }
+    }
+
+    > .badge {
+      margin-inline: var(--dimension-gap-inline-chip-badge);
+    }
+
+    > .dismiss {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: transparent;
+      cursor: pointer;
+      border-radius: var(--dimension-radius-full);
+      width: var(--dimension-size-chip-close-icon);
+      height: var(--dimension-size-chip-close-icon);
+      margin-left: var(--dimension-gap-inline-chip);
+      border: var(--dimension-stroke-thickness-default) solid transparent;
+
+      :global(.ds.icon) {
+        --dimension-size-icon: 100%;
+      }
+    }
+
+    /* modifiers */
+    &.dense {
+      --dimension-padding-block-context: 0;
+    }
+
+    &.positive {
+      --tmp-color-border-context: var(--tmp-color-border-positive);
+      --tmp-color-background-context: var(
+        --tmp-color-background-positive-default
+      );
+      --tmp-color-background-hover-context: var(
+        --tmp-color-background-positive-hover
+      );
+      --tmp-color-background-active-context: var(
+        --tmp-color-background-positive-active
+      );
+    }
+
+    &.negative {
+      --tmp-color-border-context: var(--tmp-color-border-negative);
+      --tmp-color-background-context: var(
+        --tmp-color-background-negative-default
+      );
+      --tmp-color-background-hover-context: var(
+        --tmp-color-background-negative-hover
+      );
+      --tmp-color-background-active-context: var(
+        --tmp-color-background-negative-active
+      );
+    }
+
+    &.caution {
+      --tmp-color-border-context: var(--tmp-color-border-caution);
+      --tmp-color-background-context: var(
+        --tmp-color-background-caution-default
+      );
+      --tmp-color-background-hover-context: var(
+        --tmp-color-background-caution-hover
+      );
+      --tmp-color-background-active-context: var(
+        --tmp-color-background-caution-active
+      );
+    }
+
+    &.information {
+      --tmp-color-border-context: var(--tmp-color-border-information);
+      --tmp-color-background-context: var(
+        --tmp-color-background-information-default
+      );
+      --tmp-color-background-hover-context: var(
+        --tmp-color-background-information-hover
+      );
+      --tmp-color-background-active-context: var(
+        --tmp-color-background-information-active
+      );
+    }
+
+    /* TODO: Consider splitting the chip component into two separate components */
+    /* Where the read-only local modifier won't be needed anymore. */
+    &.readonly {
+      --tmp-color-border-context: var(--tmp-color-background-default);
+    }
+  }
+</style>
