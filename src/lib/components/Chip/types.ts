@@ -1,9 +1,7 @@
 /* @canonical/generator-ds 0.9.1-experimental.0 */
 import type { Snippet } from "svelte";
 import type { HTMLAttributes } from "svelte/elements";
-import type { SemanticModifier } from "$lib/modifiers";
-import { SEMANTIC_MODIFIERS } from "$lib/modifiers";
-import type { LOCAL_MODIFIERS } from "./modifiers";
+import type { ChipModifiers } from "./modifiers";
 
 /** Either the chip can be clicked or the dismiss button can be clicked.
  * We cannot have both click and dismiss events at the same time.
@@ -19,13 +17,7 @@ export interface ChipProps
   extends Omit<HTMLAttributes<HTMLElement>, "onclick">,
     ChipClickOptions {
   /** Chip modifiers to apply for styling */
-  modifiers?: SemanticModifier<
-    [
-      (typeof SEMANTIC_MODIFIERS)["DENSITY"],
-      (typeof SEMANTIC_MODIFIERS)["SEVERITY"],
-      (typeof LOCAL_MODIFIERS)["READ_MODE"],
-    ]
-  >[];
+  modifiers?: ChipModifiers;
 
   /** The value of the chip */
   value: string;
