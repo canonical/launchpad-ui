@@ -6,12 +6,11 @@ import Component from "./UserAvatar.svelte";
 
 describe("UserAvatar component", () => {
   describe("renders", () => {
-    it("with image when imageUrl is provided", async () => {
-      const user = {
-        imageUrl: "https://example.com/avatar.png",
-        name: "John Doe",
-      };
-      const { container } = render(Component, { user });
+    it("with image when userAvatarUrl is provided", async () => {
+      const { container } = render(Component, {
+        userAvatarUrl: "https://example.com/avatar.png",
+        userName: "John Doe",
+      });
 
       const objectElement = container.querySelector("object[title='John Doe']");
       await expect.element(objectElement).toBeInTheDocument();
@@ -21,9 +20,8 @@ describe("UserAvatar component", () => {
       await expect.element(objectElement).toHaveAttribute("type", "image/png");
     });
 
-    it("initials when name is provided but no imageUrl", async () => {
-      const user = { name: "John Doe" };
-      const page = render(Component, { user });
+    it("initials when name is provided but no userAvatarUrl", async () => {
+      const page = render(Component, { userName: "John Doe" });
 
       const abbrElement = page.getByTitle("John Doe");
       await expect.element(abbrElement).toBeInTheDocument();
@@ -31,8 +29,7 @@ describe("UserAvatar component", () => {
     });
 
     it("only first letter from single name", async () => {
-      const user = { name: "John" };
-      const page = render(Component, { user });
+      const page = render(Component, { userName: "John" });
 
       const abbrElement = page.getByTitle("John");
       await expect.element(abbrElement).toBeInTheDocument();
@@ -40,8 +37,7 @@ describe("UserAvatar component", () => {
     });
 
     it("first letter from first two words of multi-word names", async () => {
-      const user = { name: "John Jacob Smith" };
-      const page = render(Component, { user });
+      const page = render(Component, { userName: "John Jacob Smith" });
 
       const abbrElement = page.getByTitle("John Jacob Smith");
       await expect.element(abbrElement).toBeInTheDocument();
@@ -56,16 +52,14 @@ describe("UserAvatar component", () => {
     });
 
     it("default icon when user object is empty", async () => {
-      const user = {};
-      const page = render(Component, { user });
+      const page = render(Component);
 
       const iconElement = page.getByLabelText("User avatar");
       await expect.element(iconElement).toBeInTheDocument();
     });
 
     it("default icon when user name is empty", async () => {
-      const user = { name: "" };
-      const page = render(Component, { user });
+      const page = render(Component, { userName: "" });
 
       const iconElement = page.getByLabelText("User avatar");
       await expect.element(iconElement).toBeInTheDocument();
@@ -98,24 +92,18 @@ describe("UserAvatar component", () => {
     });
   });
 
-  describe("size variations", () => {
-    it("renders medium size by default", () => {
-      const { container } = render(Component);
-      const icon = container.querySelector(".ds.user-avatar");
-      expect(icon?.classList.contains("size-medium")).toBe(true);
-    });
+  describe("modifiers", () => {
+    const sizeModifiers = ["small", "large"] as const;
 
-    const sizes = ["small", "medium", "large"] as const;
-
-    it.each(sizes)("renders %s size", (size) => {
-      const { container } = render(Component, { size });
+    it.each(sizeModifiers)("applies %s modifier", (size) => {
+      const { container } = render(Component, { modifiers: [size] });
       const icon = container.querySelector(".ds.user-avatar");
 
       assert(icon !== null);
-      expect(icon.classList.contains(`size-${size}`)).toBe(true);
-      sizes.forEach((s) => {
+      expect(icon.classList.contains(size)).toBe(true);
+      sizeModifiers.forEach((s) => {
         if (s !== size) {
-          expect(icon.classList.contains(`size-${s}`)).toBe(false);
+          expect(icon.classList.contains(s)).toBe(false);
         }
       });
     });

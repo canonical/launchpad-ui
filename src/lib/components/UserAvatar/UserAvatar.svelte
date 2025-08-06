@@ -8,26 +8,27 @@
 
   const {
     class: className,
-    user,
-    size = "medium",
+    userName,
+    userAvatarUrl,
+    modifiers,
     ...rest
   }: UserAvatarProps = $props();
   const avatarProps = $derived({
     ...rest,
-    class: [componentCssClassName, `size-${size}`, className],
+    class: [componentCssClassName, className, modifiers],
   });
 </script>
 
-{#if user?.imageUrl}
+{#if userAvatarUrl}
   <!--
   Testing shows that on both Chrome and Firefox, the PNG and JPEG images are displayed correctly, when the type is set to "image/png".
   SVGs are displayed correctly by Chrome, but Firefox immediately resorts to the fallback.
   -->
   <object
-    data={user.imageUrl}
-    title={user.name}
+    data={userAvatarUrl}
+    title={userName}
     role="img"
-    aria-label={!user.name ? "User avatar" : undefined}
+    aria-label={!userName ? "User avatar" : undefined}
     type="image/png"
     {...avatarProps}
   >
@@ -40,9 +41,9 @@
 {/if}
 
 {#snippet avatarFallback(ariaHidden: boolean = false)}
-  {#if user?.name}
-    <abbr title={user.name} aria-hidden={ariaHidden}
-      >{user.name
+  {#if userName}
+    <abbr title={userName} aria-hidden={ariaHidden}
+      >{userName
         .split(" ")
         .slice(0, 2)
         .map((word) => word[0])
