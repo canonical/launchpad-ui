@@ -3,6 +3,7 @@
 @import "$lib/styles/font-faces.css";
 @import "@canonical/launchpad-design-tokens/dist/css/dimension/responsive.css";
 @import "@canonical/launchpad-design-tokens/dist/css/typography/responsive.css";
+@import "@canonical/launchpad-design-tokens/dist/css/opacity/opacity.css";
 @import "$lib/styles/modifiers/index.css";
 
 html {
