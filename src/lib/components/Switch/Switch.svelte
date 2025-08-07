@@ -54,6 +54,7 @@ As an input control, it requires a `<label>` associated with it.
 
     appearance: none;
     position: relative;
+    cursor: pointer;
 
     width: var(--dimension-width-switch);
     height: var(--dimension-height-switch);

@@ -11,7 +11,7 @@
     argTypes: {
       checked: {
         control: { type: "boolean" },
-        description: "Whether the switch is on or off. @bindable",
+        description: "Whether the switch is on or off\n\n**@bindable**",
         type: "boolean",
         table: {
           defaultValue: { summary: "false" },
@@ -19,7 +19,7 @@
       },
       disabled: {
         control: { type: "boolean" },
-        description: "Disables the switch, preventing user interaction.",
+        description: "Disables the switch, preventing user interaction",
         type: "boolean",
         defaultValue: false,
       },
