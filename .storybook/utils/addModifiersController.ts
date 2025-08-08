@@ -17,7 +17,7 @@ export const addModifiersController: ArgTypesEnhancer = ({ argTypes }) => {
         ...argTypes,
         modifiers: {
           ...argTypes.modifiers,
-          control: { type: "inline-check", labels: { test: "hello?" } },
+          control: { type: "inline-check" },
           options,
         },
       };

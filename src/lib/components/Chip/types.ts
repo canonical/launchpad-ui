@@ -1,6 +1,7 @@
 /* @canonical/generator-ds 0.9.1-experimental.0 */
 import type { Snippet } from "svelte";
 import type { HTMLAttributes } from "svelte/elements";
+import type { ModifiedBy } from "$lib/type-utils";
 import type { ChipModifiers } from "./modifiers";
 
 /** Either the chip can be clicked or the dismiss button can be clicked.
@@ -14,11 +15,9 @@ type ChipClickOptions = {
 };
 
 export interface ChipProps
-  extends Omit<HTMLAttributes<HTMLElement>, "onclick">,
+  extends Omit<HTMLAttributes<HTMLElement>, "onclick" | "children">,
+    ModifiedBy<ChipModifiers>,
     ChipClickOptions {
-  /** Chip modifiers to apply for styling */
-  modifiers?: ChipModifiers;
-
   /** The value of the chip */
   value: string;
 

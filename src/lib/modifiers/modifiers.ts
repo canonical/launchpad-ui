@@ -1,5 +1,5 @@
-export function modifiers<T extends readonly (readonly string[])[]>(
+export function modifiers<T extends ReadonlyArray<ReadonlyArray<string>>>(
   ...modifiers: T
-): (T[number][number] | undefined | null)[] {
+): Array<T[number][number] | undefined | null> {
   return modifiers.flat();
 }
