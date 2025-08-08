@@ -4,6 +4,7 @@
 @import "@canonical/launchpad-design-tokens/dist/css/dimension/responsive.css";
 @import "@canonical/launchpad-design-tokens/dist/css/typography/responsive.css";
 @import "$lib/modifiers/styles/index.css";
+@import "@canonical/launchpad-design-tokens/dist/css/opacity/opacity.css";
 
 html {
   color: var(--tmp-color-text-default);
