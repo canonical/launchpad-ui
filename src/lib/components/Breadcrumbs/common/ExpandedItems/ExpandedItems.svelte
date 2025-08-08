@@ -1,7 +1,7 @@
 <!-- @canonical/generator-ds 0.9.1-experimental.0 -->
 
 <script lang="ts">
-  import { onMount } from "svelte";
+  import { useIsMounted } from "$lib/useIsMounted.svelte.js";
   import { Item } from "../common/index.js";
   import type { ExpandedItemsProps } from "./types.js";
 
@@ -14,11 +14,10 @@
     canCollapseMore,
   }: ExpandedItemsProps = $props();
 
-  let mounted = $state(false);
-  onMount(() => (mounted = true));
+  const isMounted = useIsMounted();
   const wrapExpanded = $derived(
     // Allow wrapping of the expanded segments if JavaScript is not available (we never mount) or we have already collapsed all there is to collapse
-    !mounted || !canCollapseMore,
+    !isMounted.value || !canCollapseMore,
   );
 </script>
 
