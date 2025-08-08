@@ -95,7 +95,7 @@
 </Story>
 
 <Story
-  name="Read-only positive dense"
+  name="Read-only positive dense chip"
   args={{
     lead: "Lead",
     value: "Value",
@@ -104,7 +104,7 @@
 />
 
 <Story
-  name="Read-only negative"
+  name="Read-only negative chip"
   args={{
     lead: "Lead",
     value: "Value",
