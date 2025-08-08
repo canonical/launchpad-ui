@@ -1,24 +1,7 @@
-import { DecoratorHelpers } from "@storybook/addon-themes";
-import type { Decorator, Preview } from "@storybook/sveltekit";
-import { themes } from "../src/lib/theme";
-import type { Theme } from "../src/lib/theme";
-import ThemeProvider from "./ThemeProvider.svelte";
+import type { Preview } from "@storybook/sveltekit";
 import "../src/app.css";
 import "./styles.css";
-
-const { pluckThemeFromContext, initializeThemeState } = DecoratorHelpers;
-
-const getThemeDecorator = (): Decorator => {
-  const defaultTheme: Theme = "light";
-  initializeThemeState([...themes], defaultTheme);
-
-  return (_, context) => ({
-    Component: ThemeProvider,
-    props: {
-      theme: pluckThemeFromContext(context) || defaultTheme,
-    },
-  });
-};
+import { addModifiersController, getThemeDecorator } from "./utils";
 
 const preview: Preview = {
   parameters: {
@@ -31,6 +14,7 @@ const preview: Preview = {
     backgrounds: { disable: true },
   },
   decorators: [getThemeDecorator()],
+  argTypesEnhancers: [addModifiersController],
 };
 
 export default preview;
