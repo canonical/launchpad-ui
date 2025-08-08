@@ -1,6 +1,7 @@
 <!-- @canonical/generator-ds 0.10.0-experimental.0 -->
 
 <script lang="ts">
+  import { useIsMounted } from "$lib/useIsMounted.svelte.js";
   import type { SwitchProps } from "./types.js";
 
   const componentCssClassName = "ds switch";
@@ -11,6 +12,10 @@
     disabled,
     ...rest
   }: SwitchProps = $props();
+
+  const isMounted = useIsMounted();
+  // If there is no JS, we have no way to update the `aria-checked` attribute even though, the checkbox remains functional. Don't set `aria-checked` server-side, to avoid mismatched `checked` and `aria-checked` states.
+  const ariaChecked = $derived(isMounted.value ? checked : undefined);
 </script>
 
 <input
@@ -19,7 +24,7 @@
   class={[componentCssClassName, className]}
   bind:checked
   {disabled}
-  aria-checked={checked}
+  aria-checked={ariaChecked}
   aria-readonly={disabled}
   {...rest}
 />

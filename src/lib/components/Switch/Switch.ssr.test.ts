@@ -34,15 +34,28 @@ describe("Switch SSR", () => {
   });
 
   describe("Switch state", () => {
+    it("doesn't include aria-checked attribute", () => {
+      const { body: bodyDefault } = render(Component);
+      const { body: bodyChecked } = render(Component, {
+        props: { checked: true },
+      });
+      const { body: bodyNotChecked } = render(Component, {
+        props: { checked: false },
+      });
+
+      expect(bodyDefault).not.toContain("aria-checked");
+      expect(bodyChecked).not.toContain("aria-checked");
+      expect(bodyNotChecked).not.toContain("aria-checked");
+    });
+
     it("is not checked by default", () => {
       const { body } = render(Component);
-      expect(body).toContain('aria-checked="false"');
-      expect(body).toContain('type="checkbox"');
+      expect(body).not.toContain("checked");
     });
 
     it("can be checked", () => {
       const { body } = render(Component, { props: { checked: true } });
-      expect(body).toContain('aria-checked="true"');
+      expect(body).toContain("checked");
     });
 
     it("isn't disabled by default", () => {
