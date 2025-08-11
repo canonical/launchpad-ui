@@ -5,3 +5,10 @@
 .docs-story {
   background-color: var(--tmp-color-background-default);
 }
+
+.row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 0.5rem;
+}

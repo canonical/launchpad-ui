@@ -1,3 +1,10 @@
 .dense {
   --dimension-padding-block-context: 0;
+  --dimension-padding-inline-context: var(--tmp-dimension-spacing-inline-m);
+}
+
+.compact {
+  --dimension-padding-block-context: 0;
+  --dimension-padding-inline-context: var(--tmp-dimension-spacing-inline-xs);
+  --tmp-typography-context: var(--tmp-typography-paragraph-s);
 }
