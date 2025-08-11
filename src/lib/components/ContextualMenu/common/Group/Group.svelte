@@ -56,6 +56,8 @@
     --dimension-padding-inline-group-legend: var(
       --tmp-dimension-spacing-inline-m
     );
+    --border-group-separator: var(--dimension-stroke-thickness-default) solid
+      var(--tmp-color-border-default);
 
     padding-inline: 0;
     border: none;
@@ -71,6 +73,10 @@
       letter-spacing: var(--typography-letter-spacing-group-legend);
       color: var(--color-text-group-legend);
       padding-inline: var(--dimension-padding-inline-group-legend);
+    }
+
+    + :global(.ds.group) {
+      border-top: var(--border-group-separator);
     }
   }
 </style>
