@@ -2,6 +2,7 @@
 
 <script lang="ts">
   import { Switch } from "$lib/components/Switch/index.js";
+  import { getGroupContext } from "../../context.js";
   import { ItemContent } from "../common/index.js";
   import type { SwitchItemProps } from "./types.js";
   import "../item.css";
@@ -17,9 +18,12 @@
     icon,
     secondaryText,
     trailingText,
-    disabled,
+    disabled: disabledProp,
     ...rest
   }: SwitchItemProps = $props();
+
+  const groupContext = getGroupContext();
+  const disabled = $derived(groupContext?.disabled || disabledProp);
 </script>
 
 <label

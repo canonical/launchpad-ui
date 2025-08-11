@@ -1,6 +1,7 @@
 <!-- @canonical/generator-ds 0.10.0-experimental.0 -->
 
 <script lang="ts">
+  import { getGroupContext } from "../../context.js";
   import { ItemContent } from "../common/index.js";
   import type { LinkItemProps } from "./types.js";
   import "../item.css";
@@ -13,10 +14,13 @@
     icon,
     secondaryText,
     trailingText,
-    disabled,
+    disabled: disabledProp,
     href,
     ...rest
   }: LinkItemProps = $props();
+
+  const groupContext = getGroupContext();
+  const disabled = $derived(groupContext?.disabled || disabledProp);
 </script>
 
 <a
