@@ -1,0 +1,45 @@
+.ds.contextual-menu-item {
+  --color-background-item: var(--tmp-color-background-default);
+  --color-background-item-hover: var(--tmp-color-background-hover);
+  --color-background-item-active: var(--tmp-color-background-active);
+  --opacity-item-disabled: var(--tmp-opacity-muted);
+  --dimension-padding-inline-item: var(--tmp-dimension-spacing-inline-m);
+  --dimension-padding-block-item: var(--tmp-dimension-spacing-block-xxs);
+  --typography-font-item: var(--tmp-typography-paragraph-default);
+  --typography-font-item-secondary: var(--tmp-typography-paragraph-xs);
+  --color-text-item: var(--tmp-color-text-default);
+  --color-text-item-secondary: var(--tmp-color-text-muted);
+  --dimension-margin-end-item-checkable: var(--tmp-dimension-spacing-inline-m);
+  --dimension-margin-end-item-icon: var(--tmp-dimension-spacing-inline-xs);
+  --dimension-margin-start-item-trailing-text: var(
+    --tmp-dimension-spacing-inline-xs
+  );
+  --dimension-margin-start-item-switch: var(--tmp-dimension-spacing-inline-xs);
+
+  text-align: left;
+  display: grid;
+  align-items: center;
+  grid-template:
+    "checkable icon text trailing-text switch" auto
+    ". . secondary-text . ." auto / auto auto 1fr auto auto;
+  cursor: pointer;
+
+  background-color: var(--color-background-item);
+  padding-inline: var(--dimension-padding-inline-item);
+  padding-block: var(--dimension-padding-block-item);
+  font: var(--typography-font-item);
+  color: var(--color-text-item);
+
+  &:hover:not(.disabled) {
+    background-color: var(--color-background-item-hover);
+  }
+
+  &:active:not(.disabled) {
+    background-color: var(--color-background-item-active);
+  }
+
+  &.disabled {
+    cursor: not-allowed;
+    opacity: var(--opacity-item-disabled);
+  }
+}
