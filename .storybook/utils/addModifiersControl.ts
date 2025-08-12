@@ -1,6 +1,6 @@
 import type { ArgTypesEnhancer } from "storybook/internal/types";
 
-export const addModifiersController: ArgTypesEnhancer = ({ argTypes }) => {
+export const addModifiersControl: ArgTypesEnhancer = ({ argTypes }) => {
   if ("modifiers" in argTypes) {
     const modifiers = argTypes.modifiers.type?.name || "";
     const options = modifiers

@@ -1,7 +1,12 @@
 import type { Preview } from "@storybook/sveltekit";
 import "../src/app.css";
 import "./styles.css";
-import { addModifiersController, getThemeDecorator } from "./utils";
+import {
+  addModifiersControl,
+  changeSnippetControl,
+  getThemeDecorator,
+  transformSnippetArgs,
+} from "./utils";
 
 const preview: Preview = {
   parameters: {
@@ -13,8 +18,8 @@ const preview: Preview = {
     },
     backgrounds: { disable: true },
   },
-  decorators: [getThemeDecorator()],
-  argTypesEnhancers: [addModifiersController],
+  decorators: [getThemeDecorator(), transformSnippetArgs],
+  argTypesEnhancers: [addModifiersControl, changeSnippetControl],
 };
 
 export default preview;
