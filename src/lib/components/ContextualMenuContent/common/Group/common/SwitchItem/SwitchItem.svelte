@@ -37,13 +37,11 @@
 </label>
 
 <!-- @component
-`SwitchItem` [FIXME] (placeholder) A reusable UI component that renders content in a div container.
+`ContextualMenuContent.SwitchItem` renders a switch control.
 
 ## Example Usage
 ```svelte
-<SwitchItem class="custom-class" id="unique-id">
-  <p>Content goes here</p>
-</SwitchItem>
+<ContextualMenuContent.SwitchItem text="Auto-save changes" bind:checked={autoSave} />
 ```
 -->
 

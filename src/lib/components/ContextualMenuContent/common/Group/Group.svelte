@@ -29,13 +29,14 @@
 </fieldset>
 
 <!-- @component
-`Group` [FIXME] (placeholder) A reusable UI component that renders content in a div container.
+`ContextualMenuContent.Group` groups related menu items under an optional title. Can disable all nested items via the `disabled` prop.
 
 ## Example Usage
 ```svelte
-<Group class="custom-class" id="unique-id">
-  <p>Content goes here</p>
-</Group>
+<ContextualMenuContent.Group groupTitle="Diff layout">
+  <ContextualMenuContent.RadioItem name="layout" value="inline" text="Inline" />
+  <ContextualMenuContent.RadioItem name="layout" value="side-by-side" text="Side-by-side" />
+</ContextualMenuContent.Group>
 ```
 -->
 

@@ -26,12 +26,20 @@
 </div>
 
 <!-- @component
-`ContextualMenuContent` [FIXME] (placeholder) A reusable UI component that renders content in a div container.
+`ContextualMenuContent` is the container for contextual menu groups and items. It renders its children and an optional helper footer used to provide additional context for the menu.
 
 ## Example Usage
 ```svelte
-<ContextualMenuContent class="custom-class" id="unique-id">
-  <p>Content goes here</p>
+<ContextualMenuContent>
+  <ContextualMenuContent.Group groupTitle="Preferences">
+    <ContextualMenuContent.CheckboxItem text="Show whitespace" />
+  </ContextualMenuContent.Group>
+
+  {#snippet helper(id)}
+    <ContextualMenuContent.Helper {id}>
+      Use the options above to customize the view
+    </ContextualMenuContent.Helper>
+  {/snippet}
 </ContextualMenuContent>
 ```
 -->

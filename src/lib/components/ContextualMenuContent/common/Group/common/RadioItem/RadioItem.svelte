@@ -36,13 +36,12 @@
 </label>
 
 <!-- @component
-`RadioItem` [FIXME] (placeholder) A reusable UI component that renders content in a div container.
+`ContextualMenuContent.RadioItem` renders a radio control.
 
 ## Example Usage
 ```svelte
-<RadioItem class="custom-class" id="unique-id">
-  <p>Content goes here</p>
-</RadioItem>
+<ContextualMenuContent.RadioItem name="layout" value="inline" text="Inline" checked />
+<ContextualMenuContent.RadioItem name="layout" value="side-by-side" text="Side-by-side" />
 ```
 -->
 

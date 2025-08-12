@@ -34,13 +34,11 @@
 </button>
 
 <!-- @component
-`ButtonItem` [FIXME] (placeholder) A reusable UI component that renders content in a div container.
+`ContextualMenuContent.ButtonItem` renders a button-style menu action.
 
 ## Example Usage
 ```svelte
-<ButtonItem class="custom-class" id="unique-id">
-  <p>Content goes here</p>
-</ButtonItem>
+<ContextualMenuContent.ButtonItem text="Reset to default" onclick={resetToDefault} />
 ```
 -->
 

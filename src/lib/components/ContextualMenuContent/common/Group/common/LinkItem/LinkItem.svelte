@@ -35,13 +35,12 @@
 </a>
 
 <!-- @component
-`LinkItem` [FIXME] (placeholder) A reusable UI component that renders content in a div container.
+`ContextualMenuContent.LinkItem` renders an anchor menu item.
 
 ## Example Usage
 ```svelte
-<LinkItem class="custom-class" id="unique-id">
-  <p>Content goes here</p>
-</LinkItem>
+<ContextualMenuContent.LinkItem href="/comments" text="See new comments" trailingText="4" />
+<ContextualMenuContent.LinkItem href="https://launchpad.net" target="_blank" rel="noopener noreferrer" text="View in Launchpad Classic" />
 ```
 -->
 

@@ -14,13 +14,17 @@
 </div>
 
 <!-- @component
-`Helper` [FIXME] (placeholder) A reusable UI component that renders content in a div container.
+`ContextualMenuContent.Helper` renders a helper/footer row at the bottom of the menu. To associate it's content with the menu, forward the `id` provided as the snippet argument.
 
 ## Example Usage
 ```svelte
-<Helper class="custom-class" id="unique-id">
-  <p>Content goes here</p>
-</Helper>
+<ContextualMenuContent>
+  {#snippet helper(id)}
+    <ContextualMenuContent.Helper {id}>
+      Use the options above to customize the view
+    </ContextualMenuContent.Helper>
+  {/snippet}
+</ContextualMenuContent>
 ```
 -->
 

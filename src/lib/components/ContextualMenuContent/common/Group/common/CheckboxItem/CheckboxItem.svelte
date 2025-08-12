@@ -37,13 +37,11 @@
 </label>
 
 <!-- @component
-`CheckboxItem` [FIXME] (placeholder) A reusable UI component that renders content in a div container.
+`ContextualMenuContent.CheckboxItem` renders a checkbox control.
 
 ## Example Usage
 ```svelte
-<CheckboxItem class="custom-class" id="unique-id">
-  <p>Content goes here</p>
-</CheckboxItem>
+<ContextualMenuContent.CheckboxItem text="Show whitespace changes" bind:checked={showWhitespace} />
 ```
 -->
 
