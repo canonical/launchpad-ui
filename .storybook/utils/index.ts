@@ -1,2 +1,3 @@
 export * from "./getThemeDecorator";
-export * from "./addModifiersController";
+export * from "./addModifiersControl";
+export * from "./changeSnippetControl";
