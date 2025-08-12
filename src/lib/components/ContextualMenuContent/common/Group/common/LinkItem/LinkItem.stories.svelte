@@ -2,16 +2,17 @@
   import { defineMeta } from "@storybook/addon-svelte-csf";
   import { Icon } from "$lib/components/Icon/index.js";
   import { commonArgTypes } from "../stories.js";
-  import CheckboxItem from "./CheckboxItem.svelte";
+  import LinkItem from "./LinkItem.svelte";
 
   const { Story } = defineMeta({
-    title: "ContextualMenu/Items/CheckboxItem",
+    title: "ContextualMenuContent/Items/LinkItem",
     tags: ["autodocs"],
-    component: CheckboxItem,
+    component: LinkItem,
     argTypes: {
       ...commonArgTypes,
     },
     args: {
+      href: "#",
       text: "Text",
     },
   });
@@ -25,11 +26,11 @@
 
 <Story name="With icon">
   {#snippet template(args)}
-    <CheckboxItem {...args} checked={false}>
+    <LinkItem {...args}>
       {#snippet icon()}
         <Icon name="edit" />
       {/snippet}
-    </CheckboxItem>
+    </LinkItem>
   {/snippet}
 </Story>
 
@@ -41,11 +42,11 @@
   }}
 >
   {#snippet template(args)}
-    <CheckboxItem {...args} checked={false}>
+    <LinkItem {...args}>
       {#snippet icon()}
         <Icon name="edit" />
       {/snippet}
-    </CheckboxItem>
+    </LinkItem>
   {/snippet}
 </Story>
 
@@ -55,13 +56,14 @@
     secondaryText: "Secondary Text",
     trailingText: "Trailing Text",
     disabled: true,
+    href: "#",
   }}
 >
   {#snippet template(args)}
-    <CheckboxItem {...args} checked={false}>
+    <LinkItem {...args}>
       {#snippet icon()}
         <Icon name="edit" />
       {/snippet}
-    </CheckboxItem>
+    </LinkItem>
   {/snippet}
 </Story>

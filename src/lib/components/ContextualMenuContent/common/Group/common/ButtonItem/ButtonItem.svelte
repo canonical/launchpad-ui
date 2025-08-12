@@ -3,55 +3,50 @@
 <script lang="ts">
   import { getGroupContext } from "../../context.js";
   import { ItemContent } from "../common/index.js";
-  import type { CheckboxItemProps } from "./types.js";
+  import type { ButtonItemProps } from "./types.js";
   import "../item.css";
 
-  const componentCssClassName = "ds checkbox-item contextual-menu-item";
+  const componentCssClassName = "ds button-item contextual-menu-content-item";
 
   let {
-    id,
     class: className,
-    style,
-    checked = $bindable(),
     text,
     icon,
     secondaryText,
     trailingText,
     disabled: disabledProp,
+    // Override default button type, so that if used inside the form it doesn't submit it by default
+    type = "button",
     ...rest
-  }: CheckboxItemProps = $props();
+  }: ButtonItemProps = $props();
 
   const groupContext = getGroupContext();
   const disabled = $derived(groupContext?.disabled || disabledProp);
 </script>
 
-<label
-  {id}
+<button
   class={[componentCssClassName, className, { disabled }]}
-  {style}
-  data-testid="checkbox-item"
+  {disabled}
+  {type}
+  {...rest}
 >
   <ItemContent {text} {icon} {secondaryText} {trailingText} />
-  <!-- TODO: Replace with <Checkbox> -->
-  <input type="checkbox" bind:checked {disabled} {...rest} />
-</label>
+</button>
 
 <!-- @component
-`CheckboxItem` [FIXME] (placeholder) A reusable UI component that renders content in a div container.
+`ButtonItem` [FIXME] (placeholder) A reusable UI component that renders content in a div container.
 
 ## Example Usage
 ```svelte
-<CheckboxItem class="custom-class" id="unique-id">
+<ButtonItem class="custom-class" id="unique-id">
   <p>Content goes here</p>
-</CheckboxItem>
+</ButtonItem>
 ```
 -->
 
 <style>
-  .ds.checkbox-item {
-    > input {
-      grid-area: checkable;
-      margin-inline-end: var(--dimension-margin-end-item-checkable);
-    }
+  .ds.button-item {
+    inline-size: 100%;
+    border: none;
   }
 </style>

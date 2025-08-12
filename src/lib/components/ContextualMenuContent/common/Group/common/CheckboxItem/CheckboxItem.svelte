@@ -1,13 +1,12 @@
 <!-- @canonical/generator-ds 0.10.0-experimental.0 -->
 
 <script lang="ts">
-  import { Switch } from "$lib/components/Switch/index.js";
   import { getGroupContext } from "../../context.js";
   import { ItemContent } from "../common/index.js";
-  import type { SwitchItemProps } from "./types.js";
+  import type { CheckboxItemProps } from "./types.js";
   import "../item.css";
 
-  const componentCssClassName = "ds switch-item contextual-menu-item";
+  const componentCssClassName = "ds checkbox-item contextual-menu-content-item";
 
   let {
     id,
@@ -20,7 +19,7 @@
     trailingText,
     disabled: disabledProp,
     ...rest
-  }: SwitchItemProps = $props();
+  }: CheckboxItemProps = $props();
 
   const groupContext = getGroupContext();
   const disabled = $derived(groupContext?.disabled || disabledProp);
@@ -30,29 +29,29 @@
   {id}
   class={[componentCssClassName, className, { disabled }]}
   {style}
-  data-testid="switch-item"
+  data-testid="checkbox-item"
 >
   <ItemContent {text} {icon} {secondaryText} {trailingText} />
-  <Switch bind:checked {disabled} {...rest} />
+  <!-- TODO: Replace with <Checkbox> -->
+  <input type="checkbox" bind:checked {disabled} {...rest} />
 </label>
 
 <!-- @component
-`SwitchItem` [FIXME] (placeholder) A reusable UI component that renders content in a div container.
+`CheckboxItem` [FIXME] (placeholder) A reusable UI component that renders content in a div container.
 
 ## Example Usage
 ```svelte
-<SwitchItem class="custom-class" id="unique-id">
+<CheckboxItem class="custom-class" id="unique-id">
   <p>Content goes here</p>
-</SwitchItem>
+</CheckboxItem>
 ```
 -->
 
 <style>
-  .ds.switch-item {
-    > :global(.ds.switch) {
-      grid-area: switch;
-      margin-inline-start: var(--dimension-margin-start-item-switch);
-      opacity: 1;
+  .ds.checkbox-item {
+    > input {
+      grid-area: checkable;
+      margin-inline-end: var(--dimension-margin-end-item-checkable);
     }
   }
 </style>

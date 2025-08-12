@@ -4,9 +4,9 @@ import { createRawSnippet } from "svelte";
 import { describe, expect, it } from "vitest";
 import { render } from "vitest-browser-svelte";
 import type { RenderResult } from "vitest-browser-svelte";
-import Component from "./ContextualMenu.svelte";
+import Component from "./ContextualMenuContent.svelte";
 
-describe("ContextualMenu component", () => {
+describe("ContextualMenuContent component", () => {
   it("renders", async () => {
     const page = render(Component);
     await expect.element(testIdLocator(page)).toBeInTheDocument();
@@ -59,5 +59,5 @@ describe("ContextualMenu component", () => {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function testIdLocator(page: RenderResult<any>) {
-  return page.getByTestId("contextual-menu");
+  return page.getByTestId("contextual-menu-content");
 }

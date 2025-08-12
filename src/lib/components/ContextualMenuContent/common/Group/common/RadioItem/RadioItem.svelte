@@ -3,50 +3,54 @@
 <script lang="ts">
   import { getGroupContext } from "../../context.js";
   import { ItemContent } from "../common/index.js";
-  import type { LinkItemProps } from "./types.js";
+  import type { RadioItemProps } from "./types.js";
   import "../item.css";
 
-  const componentCssClassName = "ds link-item contextual-menu-item";
+  const componentCssClassName = "ds radio-item contextual-menu-content-item";
 
   let {
+    id,
     class: className,
+    style,
     text,
     icon,
     secondaryText,
     trailingText,
     disabled: disabledProp,
-    href,
     ...rest
-  }: LinkItemProps = $props();
+  }: RadioItemProps = $props();
 
   const groupContext = getGroupContext();
   const disabled = $derived(groupContext?.disabled || disabledProp);
 </script>
 
-<a
+<label
+  {id}
   class={[componentCssClassName, className, { disabled }]}
-  href={disabled ? undefined : href}
-  role={disabled ? "link" : undefined}
-  aria-disabled={disabled}
-  tabindex={disabled ? -1 : 0}
-  {...rest}
+  {style}
+  data-testid="radio-item"
 >
   <ItemContent {text} {icon} {secondaryText} {trailingText} />
-</a>
+  <!-- TODO: Replace with <Radio> -->
+  <input type="radio" {disabled} {...rest} />
+</label>
 
 <!-- @component
-`LinkItem` [FIXME] (placeholder) A reusable UI component that renders content in a div container.
+`RadioItem` [FIXME] (placeholder) A reusable UI component that renders content in a div container.
 
 ## Example Usage
 ```svelte
-<LinkItem class="custom-class" id="unique-id">
+<RadioItem class="custom-class" id="unique-id">
   <p>Content goes here</p>
-</LinkItem>
+</RadioItem>
 ```
 -->
 
 <style>
-  .ds.link-item {
-    text-decoration: none;
+  .ds.radio-item {
+    > input {
+      grid-area: checkable;
+      margin-inline-end: var(--dimension-margin-end-item-checkable);
+    }
   }
 </style>

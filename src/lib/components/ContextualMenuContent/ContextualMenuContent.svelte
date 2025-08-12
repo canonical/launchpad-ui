@@ -3,7 +3,7 @@
 <script lang="ts">
   import type { ContextualMenuProps } from "./types.js";
 
-  const componentCssClassName = "ds contextual-menu";
+  const componentCssClassName = "ds contextual-menu-content";
 
   let {
     class: className,
@@ -18,7 +18,7 @@
 <div
   class={[componentCssClassName, className]}
   aria-describedby={helper ? helperId : undefined}
-  data-testid="contextual-menu"
+  data-testid="contextual-menu-content"
   {...rest}
 >
   {@render children?.()}
@@ -26,21 +26,21 @@
 </div>
 
 <!-- @component
-`ContextualMenu` [FIXME] (placeholder) A reusable UI component that renders content in a div container.
+`ContextualMenuContent` [FIXME] (placeholder) A reusable UI component that renders content in a div container.
 
 ## Example Usage
 ```svelte
-<ContextualMenu class="custom-class" id="unique-id">
+<ContextualMenuContent class="custom-class" id="unique-id">
   <p>Content goes here</p>
-</ContextualMenu>
+</ContextualMenuContent>
 ```
 -->
 
 <style>
-  .ds.contextual-menu {
-    --border-contextual-menu: var(--dimension-stroke-thickness-default) solid
-      var(--tmp-color-border-high-contrast);
+  .ds.contextual-menu-content {
+    --border-contextual-menu-content: var(--dimension-stroke-thickness-default)
+      solid var(--tmp-color-border-high-contrast);
 
-    border: var(--border-contextual-menu);
+    border: var(--border-contextual-menu-content);
   }
 </style>

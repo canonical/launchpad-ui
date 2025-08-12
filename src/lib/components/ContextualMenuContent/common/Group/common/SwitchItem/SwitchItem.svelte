@@ -1,24 +1,26 @@
 <!-- @canonical/generator-ds 0.10.0-experimental.0 -->
 
 <script lang="ts">
+  import { Switch } from "$lib/components/Switch/index.js";
   import { getGroupContext } from "../../context.js";
   import { ItemContent } from "../common/index.js";
-  import type { RadioItemProps } from "./types.js";
+  import type { SwitchItemProps } from "./types.js";
   import "../item.css";
 
-  const componentCssClassName = "ds radio-item contextual-menu-item";
+  const componentCssClassName = "ds switch-item contextual-menu-content-item";
 
   let {
     id,
     class: className,
     style,
+    checked = $bindable(),
     text,
     icon,
     secondaryText,
     trailingText,
     disabled: disabledProp,
     ...rest
-  }: RadioItemProps = $props();
+  }: SwitchItemProps = $props();
 
   const groupContext = getGroupContext();
   const disabled = $derived(groupContext?.disabled || disabledProp);
@@ -28,29 +30,29 @@
   {id}
   class={[componentCssClassName, className, { disabled }]}
   {style}
-  data-testid="radio-item"
+  data-testid="switch-item"
 >
   <ItemContent {text} {icon} {secondaryText} {trailingText} />
-  <!-- TODO: Replace with <Radio> -->
-  <input type="radio" {disabled} {...rest} />
+  <Switch bind:checked {disabled} {...rest} />
 </label>
 
 <!-- @component
-`RadioItem` [FIXME] (placeholder) A reusable UI component that renders content in a div container.
+`SwitchItem` [FIXME] (placeholder) A reusable UI component that renders content in a div container.
 
 ## Example Usage
 ```svelte
-<RadioItem class="custom-class" id="unique-id">
+<SwitchItem class="custom-class" id="unique-id">
   <p>Content goes here</p>
-</RadioItem>
+</SwitchItem>
 ```
 -->
 
 <style>
-  .ds.radio-item {
-    > input {
-      grid-area: checkable;
-      margin-inline-end: var(--dimension-margin-end-item-checkable);
+  .ds.switch-item {
+    > :global(.ds.switch) {
+      grid-area: switch;
+      margin-inline-start: var(--dimension-margin-start-item-switch);
+      opacity: 1;
     }
   }
 </style>

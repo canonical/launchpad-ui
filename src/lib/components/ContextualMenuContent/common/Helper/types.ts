@@ -7,7 +7,7 @@ type BaseProps = SvelteHTMLElements["div"];
 
 export interface HelperProps extends BaseProps {
   /**
-   * Identifier passed from the `ContextualMenu`, to properly associate the helper with its parent.
+   * Identifier passed from the `ContextualMenuContent`, to properly associate the helper with its parent.
    */
   id: string;
   /**

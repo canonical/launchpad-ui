@@ -2,12 +2,12 @@
   import { defineMeta } from "@storybook/addon-svelte-csf";
   import { Icon } from "$lib/components/Icon/index.js";
   import { commonArgTypes } from "../stories.js";
-  import ButtonItem from "./ButtonItem.svelte";
+  import RadioItem from "./RadioItem.svelte";
 
   const { Story } = defineMeta({
-    title: "ContextualMenu/Items/ButtonItem",
+    title: "ContextualMenuContent/Items/RadioItem",
     tags: ["autodocs"],
-    component: ButtonItem,
+    component: RadioItem,
     argTypes: {
       ...commonArgTypes,
     },
@@ -19,17 +19,27 @@
 
 <Story name="Default" />
 
-<Story name="With secondary text" args={{ secondaryText: "Secondary Text" }} />
+<Story
+  name="With secondary text"
+  args={{
+    secondaryText: "Secondary Text",
+  }}
+/>
 
-<Story name="With trailing text" args={{ trailingText: "Trailing Text" }} />
+<Story
+  name="With trailing text"
+  args={{
+    trailingText: "Trailing Text",
+  }}
+/>
 
 <Story name="With icon">
   {#snippet template(args)}
-    <ButtonItem {...args}>
+    <RadioItem {...args}>
       {#snippet icon()}
         <Icon name="edit" />
       {/snippet}
-    </ButtonItem>
+    </RadioItem>
   {/snippet}
 </Story>
 
@@ -41,11 +51,11 @@
   }}
 >
   {#snippet template(args)}
-    <ButtonItem {...args}>
+    <RadioItem {...args}>
       {#snippet icon()}
         <Icon name="edit" />
       {/snippet}
-    </ButtonItem>
+    </RadioItem>
   {/snippet}
 </Story>
 
@@ -58,10 +68,10 @@
   }}
 >
   {#snippet template(args)}
-    <ButtonItem {...args}>
+    <RadioItem {...args}>
       {#snippet icon()}
         <Icon name="edit" />
       {/snippet}
-    </ButtonItem>
+    </RadioItem>
   {/snippet}
 </Story>

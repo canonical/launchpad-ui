@@ -3,9 +3,9 @@
 import { createRawSnippet } from "svelte";
 import { render } from "svelte/server";
 import { assert, describe, expect, it } from "vitest";
-import Component from "./ContextualMenu.svelte";
+import Component from "./ContextualMenuContent.svelte";
 
-describe("ContextualMenu SSR", () => {
+describe("ContextualMenuContent SSR", () => {
   it("doesn't throw", () => {
     expect(() => {
       render(Component);

@@ -1,4 +1,4 @@
-.ds.contextual-menu-item {
+.ds.contextual-menu-content-item {
   --color-background-item: var(--tmp-color-background-default);
   --color-background-item-hover: var(--tmp-color-background-hover);
   --color-background-item-active: var(--tmp-color-background-active);
