@@ -34,7 +34,6 @@
   .ds.button-content {
     display: inline-grid;
     grid-auto-flow: column;
-    grid-auto-columns: max-content;
     grid-auto-rows: minmax(1lh, auto);
     align-items: center;
 
@@ -45,12 +44,6 @@
 
     > .icon {
       display: inline-flex;
-      width: var(--dimension-size-button-icon);
-      height: var(--dimension-size-button-icon);
-
-      :global(.ds.icon) {
-        --dimension-size-icon: 100%;
-      }
     }
 
     /* icon inline center within the padding */

@@ -1,7 +1,7 @@
 <!-- @canonical/generator-ds 0.10.0-experimental.2 -->
 
 <script lang="ts">
-  import Icon from "../Icon/Icon.svelte";
+  import { Spinner } from "../index.js";
   import { Content } from "./common";
   import type { ButtonProps } from "./types.js";
 
@@ -17,11 +17,18 @@
     disabled,
     ...rest
   }: ButtonProps = $props();
+
+  const isDisabled = $derived(loading || disabled);
 </script>
 
 <button
-  class={[componentCssClassName, className, modifiers, { loading }]}
-  disabled={loading || disabled}
+  class={[
+    componentCssClassName,
+    className,
+    modifiers,
+    { loading, "explicit-disabled": disabled },
+  ]}
+  disabled={isDisabled}
   {...rest}
 >
   <Content {iconLeft} {iconRight}>
@@ -29,7 +36,7 @@
   </Content>
   {#if loading}
     <span class="loader">
-      <Icon name="spinner" modifiers={["spin"]} />
+      <Spinner />
     </span>
   {/if}
 </button>
@@ -39,7 +46,7 @@
 
 ## Example Usage
 ```svelte
-<Button appearance="primary" size="small">
+<Button modifiers={["dense", "brand"]}>
   {#snippet iconLeft()}
     <Icon name="check" />
   {/snippet}
@@ -53,17 +60,29 @@
 
 <style>
   .ds.button {
-    --dimension-border-width-button: var(--dimension-stroke-thickness-default);
-    --dimension-radius-button: var(--dimension-radius-medium);
     --border-style-button: solid;
+    --color-background-button-active: var(
+      --tmp-color-background-active-context,
+      var(--tmp-color-background-neutral-active)
+    );
+    --color-background-button-hover: var(
+      --tmp-color-background-hover-context,
+      var(--tmp-color-background-neutral-hover)
+    );
+    --color-background-button: var(
+      --tmp-color-background-context,
+      var(--tmp-color-background-default)
+    );
     --color-border-button: var(
       --tmp-color-border-context,
       var(--tmp-color-border-high-contrast)
     );
-    --typography-button: var(
-      --tmp-typography-context,
-      var(--tmp-typography-paragraph-default)
+    --color-text-button: var(
+      --tmp-color-text-context,
+      var(--tmp-color-text-default)
     );
+    --dimension-border-width-button: var(--dimension-stroke-thickness-default);
+    --dimension-gap-inline-icon: var(--tmp-dimension-spacing-inline-xs);
     --dimension-padding-block-button: var(
       --dimension-padding-block-context,
       var(--tmp-dimension-spacing-block-xxs)
@@ -72,48 +91,39 @@
       --dimension-padding-inline-context,
       var(--tmp-dimension-spacing-inline-s)
     );
-    --color-background-button: var(
-      --tmp-color-background-context,
-      var(--tmp-color-background-default)
-    );
-    --color-background-button-hover: var(
-      --tmp-color-background-hover-context,
-      var(--tmp-color-background-neutral-hover)
-    );
-    --color-background-button-active: var(
-      --tmp-color-background-active-context,
-      var(--tmp-color-background-neutral-active)
-    );
-    --color-text-button: var(
-      --tmp-color-text-context,
-      var(--tmp-color-text-default)
-    );
+    --dimension-radius-button: var(--dimension-radius-medium);
     --opacity-button: 1;
-    --dimension-gap-inline-icon: var(--tmp-dimension-spacing-inline-xs);
-    --dimension-size-button-icon: var(--tmp-dimension-size-xs);
+    --typography-button: var(
+      --tmp-typography-context,
+      var(--tmp-typography-paragraph-default)
+    );
 
-    /* display: inline-flex; */
-    font: var(--typography-button);
+    align-items: center;
+    background-color: var(--color-background-button);
+    border-radius: var(--dimension-radius-button);
     border: var(--dimension-border-width-button) var(--border-style-button)
       var(--color-border-button);
-    border-radius: var(--dimension-radius-button);
-    background-color: var(--color-background-button);
     color: var(--color-text-button);
-    opacity: var(--opacity-button);
-    transition-property: background-color, border-color;
-    transition-duration: 0.1s;
-    transition-timing-function: cubic-bezier(0.55, 0.055, 0.675, 0.19);
     cursor: pointer;
     display: inline-flex;
-    align-items: center;
+    font: var(--typography-button);
     justify-content: center;
+    opacity: var(--opacity-button);
+    /* TODO: replace with new transitions tokens */
+    transition-duration: 0.1s;
+    transition-property: background-color, border-color;
+    transition-timing-function: cubic-bezier(0.55, 0.055, 0.675, 0.19);
 
     &:disabled {
-      --opacity-button: 0.5;
       cursor: not-allowed;
-      &.loading {
-        --opacity-button: 1;
-      }
+    }
+
+    &.explicit-disabled {
+      --opacity-button: var(--tmp-opacity-muted);
+    }
+
+    &:not(.explicit-disabled) {
+      --opacity-button: 1;
     }
 
     &:not(:disabled) {
@@ -128,9 +138,6 @@
     &.loading {
       position: relative;
 
-      --tmp-color-background-context: var(
-        --tmp-color-background-active-context
-      );
       > :global(.button-content) {
         visibility: hidden;
       }

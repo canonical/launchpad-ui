@@ -7,6 +7,19 @@
     title: "Button",
     tags: ["autodocs"],
     component: Button,
+    argTypes: {
+      children: {
+        description: "The content of the button",
+        table: {
+          type: { summary: "Snippet<[]>" },
+        },
+      },
+      disabled: {
+        control: "boolean",
+        description: "Whether the button is disabled",
+        type: { name: "boolean", required: false },
+      },
+    },
   });
 </script>
 
@@ -122,6 +135,45 @@
     <Button {...args} modifiers={["positive", ...(args?.modifiers ?? [])]}>
       {#snippet iconLeft()}
         <Icon name="fork" />
+      {/snippet}
+    </Button>
+  {/snippet}
+</Story>
+
+<Story name="Disabled button" tags={["!autodocs"]}>
+  {#snippet template(args)}
+    <Button {...args} disabled>Disabled</Button>
+  {/snippet}
+</Story>
+
+<Story name="Disabled loading button" tags={["!autodocs"]}>
+  {#snippet template(args)}
+    <Button {...args} disabled loading>Disabled loading</Button>
+  {/snippet}
+</Story>
+
+<Story name="Icon left, text and right icon" tags={["!autodocs"]}>
+  {#snippet template(args)}
+    <Button {...args}>
+      {#snippet iconLeft()}
+        <Icon name="fork" />
+      {/snippet}
+      Default
+      {#snippet iconRight()}
+        <Icon name="chevron-down" />
+      {/snippet}
+    </Button>
+  {/snippet}
+</Story>
+
+<Story name="Icon left right icon" tags={["!autodocs"]}>
+  {#snippet template(args)}
+    <Button {...args}>
+      {#snippet iconLeft()}
+        <Icon name="fork" />
+      {/snippet}
+      {#snippet iconRight()}
+        <Icon name="chevron-down" />
       {/snippet}
     </Button>
   {/snippet}
