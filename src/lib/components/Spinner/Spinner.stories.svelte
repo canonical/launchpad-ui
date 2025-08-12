@@ -3,7 +3,7 @@
   import Spinner from "./Spinner.svelte";
 
   const { Story } = defineMeta({
-    title: "Spinner",
+    title: "Components/Spinner",
     tags: ["autodocs"],
     component: Spinner,
   });

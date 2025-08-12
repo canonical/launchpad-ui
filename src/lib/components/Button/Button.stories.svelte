@@ -4,7 +4,7 @@
   import Button from "./Button.svelte";
 
   const { Story } = defineMeta({
-    title: "Button",
+    title: "Components/Button",
     tags: ["autodocs"],
     component: Button,
     argTypes: {
