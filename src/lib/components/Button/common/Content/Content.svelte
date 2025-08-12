@@ -64,7 +64,12 @@
     }
 
     &:has(.text:empty) {
-      padding-inline-start: 0;
+      &:has(.icon.left) {
+        padding-inline-start: 0;
+      }
+      &:has(.icon.right) {
+        padding-inline-end: 0;
+      }
 
       > .icon {
         &.left {
