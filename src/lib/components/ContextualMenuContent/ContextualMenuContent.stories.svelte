@@ -4,7 +4,7 @@
   import { ContextualMenuContent } from "./index.js";
 
   const { Story } = defineMeta({
-    title: "ContextualMenuContent",
+    title: "Components/ContextualMenuContent",
     tags: ["autodocs"],
     component: ContextualMenuContent,
   });

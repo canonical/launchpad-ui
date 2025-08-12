@@ -5,7 +5,7 @@
   import RadioItem from "./RadioItem.svelte";
 
   const { Story } = defineMeta({
-    title: "ContextualMenuContent/Items/RadioItem",
+    title: "Components/ContextualMenuContent/RadioItem",
     tags: ["autodocs"],
     component: RadioItem,
     argTypes: {

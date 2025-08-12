@@ -5,7 +5,7 @@
   import ButtonItem from "./ButtonItem.svelte";
 
   const { Story } = defineMeta({
-    title: "ContextualMenuContent/Items/ButtonItem",
+    title: "Components/ContextualMenuContent/ButtonItem",
     tags: ["autodocs"],
     component: ButtonItem,
     argTypes: {

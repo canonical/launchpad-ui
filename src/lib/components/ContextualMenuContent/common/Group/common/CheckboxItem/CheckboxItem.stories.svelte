@@ -5,7 +5,7 @@
   import CheckboxItem from "./CheckboxItem.svelte";
 
   const { Story } = defineMeta({
-    title: "ContextualMenuContent/Items/CheckboxItem",
+    title: "Components/ContextualMenuContent/CheckboxItem",
     tags: ["autodocs"],
     component: CheckboxItem,
     argTypes: {

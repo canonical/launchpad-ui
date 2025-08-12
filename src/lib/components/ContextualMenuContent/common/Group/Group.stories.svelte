@@ -11,7 +11,7 @@
   } from "./common/index.js";
 
   const { Story } = defineMeta({
-    title: "ContextualMenuContent/Group",
+    title: "Components/ContextualMenuContent/Group",
     tags: ["autodocs"],
     component: Group,
     args: {

@@ -5,7 +5,7 @@
   import LinkItem from "./LinkItem.svelte";
 
   const { Story } = defineMeta({
-    title: "ContextualMenuContent/Items/LinkItem",
+    title: "Components/ContextualMenuContent/LinkItem",
     tags: ["autodocs"],
     component: LinkItem,
     argTypes: {

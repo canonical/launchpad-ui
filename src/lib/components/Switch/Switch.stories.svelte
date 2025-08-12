@@ -4,7 +4,7 @@
   import type { SwitchProps } from "./types.js";
 
   const { Story } = defineMeta({
-    title: "Switch",
+    title: "Components/Switch",
     tags: ["autodocs"],
     component: Switch,
     render,

@@ -5,7 +5,7 @@
   import SwitchItem from "./SwitchItem.svelte";
 
   const { Story } = defineMeta({
-    title: "ContextualMenuContent/Items/SwitchItem",
+    title: "Components/ContextualMenuContent/SwitchItem",
     tags: ["autodocs"],
     component: SwitchItem,
     argTypes: {

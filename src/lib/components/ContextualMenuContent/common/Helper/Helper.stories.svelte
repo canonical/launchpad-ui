@@ -4,7 +4,7 @@
   import Helper from "./Helper.svelte";
 
   const { Story } = defineMeta({
-    title: "ContextualMenuContent/Helper",
+    title: "Components/ContextualMenuContent/Helper",
     tags: ["autodocs"],
     component: Helper,
     args: {
