@@ -6,13 +6,17 @@
 
   const componentCssClassName = "ds spinner";
 
-  let { class: className, ...rest }: SpinnerProps = $props();
+  let {
+    class: className,
+    "aria-label": ariaLabel,
+    ...rest
+  }: SpinnerProps = $props();
 </script>
 
 <Icon
   name="spinner"
   class={[componentCssClassName, className]}
-  aria-label="Loading"
+  aria-label={ariaLabel || "Loading"}
   {...rest}
 />
 
