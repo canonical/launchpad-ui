@@ -3,7 +3,7 @@
   import { TabList } from "./index.js";
 
   const { Story } = defineMeta({
-    title: "TabList",
+    title: "Components/TabList",
     tags: ["autodocs"],
     component: TabList,
   });

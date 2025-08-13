@@ -1,0 +1,71 @@
+.ds.contextual-menu-content-item {
+  --color-background-contextual-menu-content-item: var(
+    --tmp-color-background-default
+  );
+  --color-background-contextual-menu-content-item-hover: var(
+    --tmp-color-background-hover
+  );
+  --color-background-contextual-menu-content-item-active: var(
+    --tmp-color-background-active
+  );
+  --opacity-contextual-menu-content-item-disabled: var(--tmp-opacity-muted);
+  --dimension-padding-inline-contextual-menu-content-item: var(
+    --tmp-dimension-spacing-inline-m
+  );
+  --dimension-padding-block-contextual-menu-content-item: var(
+    --tmp-dimension-spacing-block-xxs
+  );
+  --typography-font-contextual-menu-content-item: var(
+    --tmp-typography-paragraph-default
+  );
+  --typography-font-contextual-menu-content-item-secondary: var(
+    --tmp-typography-paragraph-xs
+  );
+  --color-text-contextual-menu-content-item: var(--tmp-color-text-default);
+  --color-text-contextual-menu-content-item-secondary: var(
+    --tmp-color-text-muted
+  );
+  --dimension-margin-end-contextual-menu-content-item-checkable: var(
+    --tmp-dimension-spacing-inline-m
+  );
+  --dimension-margin-end-contextual-menu-content-item-icon: var(
+    --tmp-dimension-spacing-inline-xs
+  );
+  --dimension-margin-start-contextual-menu-content-item-trailing-text: var(
+    --tmp-dimension-spacing-inline-xs
+  );
+  --dimension-margin-start-contextual-menu-content-item-switch: var(
+    --tmp-dimension-spacing-inline-xs
+  );
+
+  text-align: left;
+  display: grid;
+  align-items: center;
+  grid-template:
+    "checkable icon text trailing-text switch" auto
+    ". . secondary-text . ." auto / auto auto 1fr auto auto;
+  cursor: pointer;
+
+  background-color: var(--color-background-contextual-menu-content-item);
+  padding-inline: var(--dimension-padding-inline-contextual-menu-content-item);
+  padding-block: var(--dimension-padding-block-contextual-menu-content-item);
+  font: var(--typography-font-contextual-menu-content-item);
+  color: var(--color-text-contextual-menu-content-item);
+
+  &:hover:not(.disabled) {
+    background-color: var(
+      --color-background-contextual-menu-content-item-hover
+    );
+  }
+
+  &:active:not(.disabled) {
+    background-color: var(
+      --color-background-contextual-menu-content-item-active
+    );
+  }
+
+  &.disabled {
+    cursor: not-allowed;
+    opacity: var(--opacity-contextual-menu-content-item-disabled);
+  }
+}

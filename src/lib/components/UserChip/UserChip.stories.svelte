@@ -5,7 +5,7 @@
   const userAvatarUrl = "https://i.pravatar.cc/150?img=68";
 
   const { Story } = defineMeta({
-    title: "UserChip",
+    title: "Components/UserChip",
     tags: ["autodocs"],
     component: UserChip,
     args: {

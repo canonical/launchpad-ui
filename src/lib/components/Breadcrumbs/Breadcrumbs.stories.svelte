@@ -4,7 +4,7 @@
   import type { BreadcrumbsProps } from "./types.js";
 
   const { Story } = defineMeta({
-    title: "Breadcrumbs",
+    title: "Components/Breadcrumbs",
     tags: ["autodocs"],
     component: Breadcrumbs,
     argTypes: {

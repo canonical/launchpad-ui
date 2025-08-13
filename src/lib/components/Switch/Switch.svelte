@@ -8,7 +8,7 @@
 
   let {
     class: className,
-    checked = $bindable(false),
+    checked = $bindable(),
     disabled,
     ...rest
   }: SwitchProps = $props();

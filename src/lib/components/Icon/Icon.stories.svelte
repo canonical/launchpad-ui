@@ -4,7 +4,7 @@
   import { iconNames } from "./iconNames.js";
 
   const { Story } = defineMeta({
-    title: "Icon",
+    title: "Components/Icon",
     tags: ["autodocs"],
     component: Icon,
     argTypes: {

@@ -4,7 +4,7 @@
   import { iconNames } from "./iconNames.js";
 
   const { Story } = defineMeta({
-    title: "MulticolorIcon",
+    title: "Components/MulticolorIcon",
     tags: ["autodocs"],
     component: MulticolorIcon,
     argTypes: {
