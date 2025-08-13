@@ -78,15 +78,15 @@
 <style>
   .ds.chip {
     --color-background-chip-active: var(
-      --tmp-color-background-active-context,
+      --tmp-color-background-secondary-active-context,
       var(--tmp-color-background-neutral-active)
     );
     --color-background-chip-hover: var(
-      --tmp-color-background-hover-context,
+      --tmp-color-background-secondary-hover-context,
       var(--tmp-color-background-neutral-hover)
     );
     --color-background-chip: var(
-      --tmp-color-background-context,
+      --tmp-color-background-secondary-context,
       var(--tmp-color-background-neutral-default)
     );
     --border-style-chip: solid;

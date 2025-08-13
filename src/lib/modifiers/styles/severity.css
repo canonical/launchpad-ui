@@ -1,27 +1,45 @@
 .positive {
   --tmp-color-border-context: var(--tmp-color-border-positive);
-  --tmp-color-background-context: var(--tmp-color-background-positive-default);
-  --tmp-color-background-hover-context: var(
+
+  --tmp-color-text-context: var(--tmp-color-text-reversed);
+  --tmp-color-background-context: var(--tmp-color-positive);
+  --tmp-color-background-hover-context: var(--tmp-color-fill-positive-hover);
+  --tmp-color-background-active-context: var(--tmp-color-fill-positive-active);
+
+  --tmp-color-background-secondary-context: var(
+    --tmp-color-background-positive-default
+  );
+  --tmp-color-background-secondary-hover-context: var(
     --tmp-color-background-positive-hover
   );
-  --tmp-color-background-active-context: var(
+  --tmp-color-background-secondary-active-context: var(
     --tmp-color-background-positive-active
   );
 }
 
 .negative {
   --tmp-color-border-context: var(--tmp-color-border-negative);
-  --tmp-color-background-context: var(--tmp-color-background-negative-default);
-  --tmp-color-background-hover-context: var(
+
+  --tmp-color-text-context: var(--tmp-color-text-reversed);
+  --tmp-color-background-context: var(--tmp-color-negative);
+  --tmp-color-background-hover-context: var(--tmp-color-fill-negative-hover);
+  --tmp-color-background-active-context: var(--tmp-color-fill-negative-active);
+
+  --tmp-color-background-secondary-context: var(
+    --tmp-color-background-negative-default
+  );
+  --tmp-color-background-secondary-hover-context: var(
     --tmp-color-background-negative-hover
   );
-  --tmp-color-background-active-context: var(
+  --tmp-color-background-secondary-active-context: var(
     --tmp-color-background-negative-active
   );
 }
 
 .caution {
   --tmp-color-border-context: var(--tmp-color-border-caution);
+
+  --tmp-color-text-context: var(--tmp-color-text-default);
   --tmp-color-background-context: var(--tmp-color-background-caution-default);
   --tmp-color-background-hover-context: var(
     --tmp-color-background-caution-hover
@@ -29,10 +47,22 @@
   --tmp-color-background-active-context: var(
     --tmp-color-background-caution-active
   );
+
+  --tmp-color-background-secondary-context: var(
+    --tmp-color-background-caution-default
+  );
+  --tmp-color-background-secondary-hover-context: var(
+    --tmp-color-background-caution-hover
+  );
+  --tmp-color-background-secondary-active-context: var(
+    --tmp-color-background-caution-active
+  );
 }
 
 .information {
   --tmp-color-border-context: var(--tmp-color-border-information);
+
+  --tmp-color-text-context: var(--tmp-color-text-default);
   --tmp-color-background-context: var(
     --tmp-color-background-information-default
   );
@@ -40,6 +70,16 @@
     --tmp-color-background-information-hover
   );
   --tmp-color-background-active-context: var(
+    --tmp-color-background-information-active
+  );
+
+  --tmp-color-background-secondary-context: var(
+    --tmp-color-background-information-default
+  );
+  --tmp-color-background-secondary-hover-context: var(
+    --tmp-color-background-information-hover
+  );
+  --tmp-color-background-secondary-active-context: var(
     --tmp-color-background-information-active
   );
 }

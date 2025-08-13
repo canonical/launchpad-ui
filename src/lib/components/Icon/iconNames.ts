@@ -140,6 +140,7 @@ export const iconNames = new Set([
   "status-waiting-small",
   "stop",
   "submit-bug",
+  "success",
   "success-grey",
   "switcher",
   "switcher-dashboard",
