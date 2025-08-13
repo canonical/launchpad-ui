@@ -8,7 +8,7 @@
   let { class: className, children, icon, ...rest }: HelperProps = $props();
 </script>
 
-<div class={[componentCssClassName, className]} {...rest} data-testid="helper">
+<div class={[componentCssClassName, className]} data-testid="helper" {...rest}>
   {@render icon?.()}
   {@render children()}
 </div>

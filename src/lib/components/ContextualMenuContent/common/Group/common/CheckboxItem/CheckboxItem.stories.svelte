@@ -1,7 +1,6 @@
 <script module lang="ts">
   import { defineMeta } from "@storybook/addon-svelte-csf";
   import { Icon } from "$lib/components/Icon/index.js";
-  import { commonArgTypes } from "../stories.js";
   import CheckboxItem from "./CheckboxItem.svelte";
 
   const { Story } = defineMeta({
@@ -9,7 +8,18 @@
     tags: ["autodocs"],
     component: CheckboxItem,
     argTypes: {
-      ...commonArgTypes,
+      icon: {
+        control: false,
+      },
+      disabled: {
+        control: "boolean",
+        description: "Whether the item is disabled.",
+        table: {
+          type: {
+            summary: "boolean",
+          },
+        },
+      },
     },
     args: {
       text: "Text",
