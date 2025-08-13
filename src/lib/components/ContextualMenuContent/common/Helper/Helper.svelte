@@ -3,7 +3,7 @@
 <script lang="ts">
   import type { HelperProps } from "./types.js";
 
-  const componentCssClassName = "ds helper";
+  const componentCssClassName = "ds contextual-menu-content-helper";
 
   let { class: className, children, icon, ...rest }: HelperProps = $props();
 </script>
@@ -29,22 +29,36 @@
 -->
 
 <style>
-  .ds.helper {
-    --color-background-helper: var(--tmp-color-background-default);
-    --dimension-padding-inline-helper: var(--tmp-dimension-spacing-inline-m);
-    --dimension-padding-block-helper: var(--tmp-dimension-spacing-block-xs);
-    --border-top-helper: var(--dimension-stroke-thickness-default) solid
-      var(--tmp-color-border-high-contrast);
-    --dimension-gap-helper: var(--tmp-dimension-spacing-inline-xs);
+  .ds.contextual-menu-content-helper {
+    --color-background-contextual-menu-content-helper: var(
+      --tmp-color-background-default
+    );
+    --dimension-padding-inline-contextual-menu-content-helper: var(
+      --tmp-dimension-spacing-inline-m
+    );
+    --dimension-padding-block-contextual-menu-content-helper: var(
+      --tmp-dimension-spacing-block-xs
+    );
+    --border-top-contextual-menu-content-helper: var(
+        --dimension-stroke-thickness-default
+      )
+      solid var(--tmp-color-border-high-contrast);
+    --dimension-gap-contextual-menu-content-helper: var(
+      --tmp-dimension-spacing-inline-xs
+    );
 
     display: flex;
     justify-content: flex-start;
     align-items: center;
-    gap: var(--dimension-gap-helper);
+    gap: var(--dimension-gap-contextual-menu-content-helper);
 
-    background-color: var(--color-background-helper);
-    padding-inline: var(--dimension-padding-inline-helper);
-    padding-block: var(--dimension-padding-block-helper);
-    border-top: var(--border-top-helper);
+    background-color: var(--color-background-contextual-menu-content-helper);
+    padding-inline: var(
+      --dimension-padding-inline-contextual-menu-content-helper
+    );
+    padding-block: var(
+      --dimension-padding-block-contextual-menu-content-helper
+    );
+    border-top: var(--border-top-contextual-menu-content-helper);
   }
 </style>

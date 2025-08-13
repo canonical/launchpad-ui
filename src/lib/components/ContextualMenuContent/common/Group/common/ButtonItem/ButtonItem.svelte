@@ -6,7 +6,8 @@
   import type { ButtonItemProps } from "./types.js";
   import "../item.css";
 
-  const componentCssClassName = "ds button-item contextual-menu-content-item";
+  const componentCssClassName =
+    "ds contextual-menu-content-button-item contextual-menu-content-item";
 
   let {
     class: className,
@@ -43,7 +44,7 @@
 -->
 
 <style>
-  .ds.button-item {
+  .ds.contextual-menu-content-button-item {
     inline-size: 100%;
     border: none;
   }

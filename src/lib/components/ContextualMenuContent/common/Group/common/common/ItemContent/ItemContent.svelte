@@ -22,7 +22,9 @@
     grid-area: icon;
     display: inline-flex;
     align-items: center;
-    margin-inline-end: var(--dimension-margin-end-item-icon);
+    margin-inline-end: var(
+      --dimension-margin-end-contextual-menu-content-item-icon
+    );
   }
 
   .text {
@@ -31,12 +33,14 @@
 
   .secondary-text {
     grid-area: secondary-text;
-    font: var(--typography-font-item-secondary);
-    color: var(--color-text-item-secondary);
+    font: var(--typography-font-contextual-menu-content-item-secondary);
+    color: var(--color-text-contextual-menu-content-item-secondary);
   }
 
   .trailing-text {
     grid-area: trailing-text;
-    margin-inline-start: var(--dimension-margin-start-item-trailing-text);
+    margin-inline-start: var(
+      --dimension-margin-start-contextual-menu-content-item-trailing-text
+    );
   }
 </style>

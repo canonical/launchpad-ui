@@ -6,7 +6,8 @@
   import type { CheckboxItemProps } from "./types.js";
   import "../item.css";
 
-  const componentCssClassName = "ds checkbox-item contextual-menu-content-item";
+  const componentCssClassName =
+    "ds contextual-menu-content-checkbox-item contextual-menu-content-item";
 
   let {
     id,
@@ -46,10 +47,12 @@
 -->
 
 <style>
-  .ds.checkbox-item {
+  .ds.contextual-menu-content-checkbox-item {
     > input {
       grid-area: checkable;
-      margin-inline-end: var(--dimension-margin-end-item-checkable);
+      margin-inline-end: var(
+        --dimension-margin-end-contextual-menu-content-item-checkable
+      );
     }
   }
 </style>

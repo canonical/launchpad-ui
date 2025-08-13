@@ -7,7 +7,8 @@
   import type { SwitchItemProps } from "./types.js";
   import "../item.css";
 
-  const componentCssClassName = "ds switch-item contextual-menu-content-item";
+  const componentCssClassName =
+    "ds contextual-menu-content-switch-item contextual-menu-content-item";
 
   let {
     id,
@@ -46,10 +47,12 @@
 -->
 
 <style>
-  .ds.switch-item {
+  .ds.contextual-menu-content-switch-item {
     > :global(.ds.switch) {
       grid-area: switch;
-      margin-inline-start: var(--dimension-margin-start-item-switch);
+      margin-inline-start: var(
+        --dimension-margin-start-contextual-menu-content-item-switch
+      );
       opacity: 1;
     }
   }

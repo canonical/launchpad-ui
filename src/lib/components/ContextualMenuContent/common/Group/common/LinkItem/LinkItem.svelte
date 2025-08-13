@@ -6,7 +6,8 @@
   import type { LinkItemProps } from "./types.js";
   import "../item.css";
 
-  const componentCssClassName = "ds link-item contextual-menu-content-item";
+  const componentCssClassName =
+    "ds contextual-menu-content-link-item contextual-menu-content-item";
 
   let {
     class: className,
@@ -45,7 +46,7 @@
 -->
 
 <style>
-  .ds.link-item {
+  .ds.contextual-menu-content-link-item {
     text-decoration: none;
   }
 </style>
