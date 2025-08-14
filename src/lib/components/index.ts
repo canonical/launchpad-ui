@@ -9,4 +9,6 @@ export * from "./TabList/index.js";
 export * from "./UserAvatar/index.js";
 export * from "./UserChip/index.js";
 export * from "./Radio/index.js";
+
+export * from "./Checkbox/index.js";
 export * from "./ContextualMenuContent/index.js";

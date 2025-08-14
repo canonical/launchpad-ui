@@ -1,6 +1,6 @@
 /* @canonical/generator-ds 0.10.0-experimental.0 */
 
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { render } from "vitest-browser-svelte";
 import Component from "./Radio.svelte";
 
@@ -80,6 +80,19 @@ describe("Radio component", () => {
         props: { group: "test-value", value: "test-value" },
       });
       await expect.element(page.getByRole("radio")).toBeChecked();
+    });
+  });
+
+  describe("Events", () => {
+    it("emits change event on click", async () => {
+      const onchange = vi.fn();
+
+      const page = render(Component, { props: { onchange } });
+      const radio = page.getByRole("radio");
+
+      await expect.element(radio).not.toBeChecked();
+      await radio.click();
+      expect(onchange).toHaveBeenCalledOnce();
     });
   });
 });

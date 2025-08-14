@@ -74,6 +74,14 @@ export default ts.config(
       ],
       "import/consistent-type-specifier-style": ["error", "prefer-top-level"],
       "import/no-duplicates": ["error", { "prefer-inline": false }],
+      "no-unused-vars": "off",
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        {
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+        },
+      ],
     },
   },
   {
