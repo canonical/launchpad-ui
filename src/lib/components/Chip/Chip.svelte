@@ -122,6 +122,9 @@
     background-color: var(--color-background-chip);
     padding-block: var(--dimension-padding-block-chip);
     padding-inline: var(--dimension-padding-inline-chip);
+    transition-duration: var(--tmp-transition-duration-snap);
+    transition-property: background-color, border-color;
+    transition-timing-function: var(--tmp-transition-timing-ease-in);
 
     &:is(button),
     .dismiss {

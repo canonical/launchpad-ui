@@ -51,6 +51,8 @@
   padding-block: var(--dimension-padding-block-contextual-menu-content-item);
   font: var(--typography-font-contextual-menu-content-item);
   color: var(--color-text-contextual-menu-content-item);
+  transition: background-color var(--tmp-transition-duration-snap)
+    var(--tmp-transition-timing-ease-in);
 
   &:hover:not(.disabled) {
     background-color: var(

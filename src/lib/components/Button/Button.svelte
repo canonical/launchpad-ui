@@ -109,10 +109,9 @@
     font: var(--typography-button);
     justify-content: center;
     opacity: var(--opacity-button);
-    /* TODO: replace with new transitions tokens */
-    transition-duration: 0.1s;
+    transition-duration: var(--tmp-transition-duration-snap);
     transition-property: background-color, border-color;
-    transition-timing-function: cubic-bezier(0.55, 0.055, 0.675, 0.19);
+    transition-timing-function: var(--tmp-transition-timing-ease-in);
 
     &:disabled {
       cursor: not-allowed;
