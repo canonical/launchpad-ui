@@ -75,11 +75,11 @@
     </label>
     <label>
       <Radio {...args} bind:group value="Option 3" />
-      Option 2
+      Option 3
     </label>
     <label>
       <Radio {...args} bind:group value="Option 4" />
-      Option 2
+      Option 4
     </label>
   {/snippet}
 </Story>
