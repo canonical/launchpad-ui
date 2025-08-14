@@ -6,17 +6,13 @@
 
   const componentCssClassName = "ds spinner";
 
-  let {
-    class: className,
-    "aria-label": ariaLabel,
-    ...rest
-  }: SpinnerProps = $props();
+  let { class: className, ...rest }: SpinnerProps = $props();
 </script>
 
 <Icon
   name="spinner"
   class={[componentCssClassName, className]}
-  aria-label={ariaLabel || "Loading"}
+  aria-label="Loading"
   {...rest}
 />
 
@@ -31,7 +27,7 @@
 
 <style>
   :global(.ds.spinner) {
-    animation: spin 1s infinite linear;
+    animation: spin var(--tmp-transition-duration-sleepy) infinite linear;
   }
 
   @keyframes spin {

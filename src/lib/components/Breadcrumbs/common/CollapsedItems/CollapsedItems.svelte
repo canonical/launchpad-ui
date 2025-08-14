@@ -67,9 +67,9 @@
       padding-inline: var(
         --dimension-padding-inline-breadcrumbs-collapse-menu-item
       );
-    }
+      transition: background-color var(--tmp-transition-duration-snap)
+        var(--tmp-transition-timing-ease-in);
 
-    :global(.ds.item) {
       &:hover {
         background-color: var(
           --color-background-breadcrumbs-collapse-menu-item-hover

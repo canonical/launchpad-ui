@@ -78,8 +78,8 @@ As an input control, it requires a `<label>` associated with it.
       border-radius: var(--dimension-radius-switch);
       border: var(--dimension-padding-switch) solid
         var(--color-background-switch);
-      /* TODO: Replace with transition tokens when available */
-      transition: transform 0.5s cubic-bezier(0.215, 0.61, 0.355, 1);
+      transition: transform var(--tmp-transition-duration-slow)
+        var(--tmp-transition-timing-ease-out);
     }
 
     &:checked {
