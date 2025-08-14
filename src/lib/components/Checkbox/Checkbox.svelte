@@ -90,6 +90,15 @@ If `bind:group` is used, the `checked` prop must be omitted, and each checkbox i
     --dimension-inset-checkbox-checked-marker: calc(
       var(--dimension-size-checkbox) * 0.1
     );
+    --clip-path-checkbox-checked-marker: polygon(
+      2.86% 50%,
+      38.21% 85.36%,
+      97.14% 26.43%,
+      85.36% 14.64%,
+      38.21% 61.78%,
+      14.64% 38.22%
+    );
+    --clip-path-checkbox-indeterminate-marker: inset(40% 0);
 
     position: relative;
     cursor: pointer;
@@ -122,14 +131,7 @@ If `bind:group` is used, the `checked` prop must be omitted, and each checkbox i
 
       &:after {
         display: block;
-        clip-path: polygon(
-          2.86% 50%,
-          38.21% 85.36%,
-          97.14% 26.43%,
-          85.36% 14.64%,
-          38.21% 61.78%,
-          14.64% 38.22%
-        );
+        clip-path: var(--clip-path-checkbox-checked-marker);
       }
     }
 
@@ -148,7 +150,7 @@ If `bind:group` is used, the `checked` prop must be omitted, and each checkbox i
 
       &:after {
         display: block;
-        clip-path: inset(40% 0);
+        clip-path: var(--clip-path-checkbox-indeterminate-marker);
       }
     }
   }
