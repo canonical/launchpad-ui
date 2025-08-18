@@ -139,6 +139,7 @@ export const iconNames = new Set([
   "status-succeeded-small",
   "status-waiting-small",
   "stop",
+  "skip",
   "submit-bug",
   "success",
   "success-grey",

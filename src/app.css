@@ -6,6 +6,7 @@
 @import "@canonical/launchpad-design-tokens/dist/css/opacity/opacity.css";
 @import "@canonical/launchpad-design-tokens/dist/css/transition/preferred.css";
 @import "$lib/modifiers/styles/index.css";
+@import "$lib/modifiers-app/styles/index.css";
 
 html {
   color: var(--tmp-color-text-default);

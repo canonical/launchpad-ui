@@ -1,0 +1,15 @@
+.pending {
+  --tmp-color-text-context: var(--tmp-color-text-default);
+}
+
+.approve {
+  --tmp-color-text-context: var(--tmp-color-positive);
+}
+
+.needs-fixing {
+  --tmp-color-text-context: var(--tmp-color-caution);
+}
+
+.disapprove {
+  --tmp-color-text-context: var(--tmp-color-negative);
+}
