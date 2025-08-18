@@ -4,38 +4,39 @@ import { createRawSnippet } from "svelte";
 import { render } from "svelte/server";
 import { describe, expect, it } from "vitest";
 import Component from "./CheckboxItem.svelte";
+import type { CheckboxItemProps } from "./types.js";
 
 describe("CheckboxItem SSR", () => {
   it("doesn't throw", () => {
     expect(() => {
-      render(Component, { props: { text: "Text" } });
+      renderCheckboxItem({ text: "Text" });
     }).not.toThrow();
   });
 
   it("renders", () => {
-    const { body } = render(Component, { props: { text: "Text" } });
+    const { body } = renderCheckboxItem({ text: "Text" });
     expect(body).toContain("<label");
     expect(body).toContain('type="checkbox"');
   });
 
   describe("Basic attributes", () => {
     it("applies id", () => {
-      const { body } = render(Component, {
-        props: { text: "Text", id: "test-id" },
-      });
+      const { body } = renderCheckboxItem({ text: "Text", id: "test-id" });
       expect(body).toContain('id="test-id"');
     });
 
     it("applies class", () => {
-      const { body } = render(Component, {
-        props: { text: "Text", class: "test-class" },
+      const { body } = renderCheckboxItem({
+        text: "Text",
+        class: "test-class",
       });
       expect(body).toMatch(/class="[^"]*test-class[^"]*"/);
     });
 
     it("applies style", () => {
-      const { body } = render(Component, {
-        props: { text: "Text", style: "color: red;" },
+      const { body } = renderCheckboxItem({
+        text: "Text",
+        style: "color: red;",
       });
       expect(body).toContain('style="color: red;"');
     });
@@ -43,13 +44,14 @@ describe("CheckboxItem SSR", () => {
 
   describe("Disabled state", () => {
     it("is not disabled by default", () => {
-      const { body } = render(Component, { props: { text: "Text" } });
+      const { body } = renderCheckboxItem({ text: "Text" });
       expect(body).not.toContain("disabled");
     });
 
     it("can be disabled", () => {
-      const { body } = render(Component, {
-        props: { text: "Text", disabled: true },
+      const { body } = renderCheckboxItem({
+        text: "Text",
+        disabled: true,
       });
       expect(body).toContain("disabled");
     });
@@ -57,13 +59,14 @@ describe("CheckboxItem SSR", () => {
 
   describe("Checked state", () => {
     it("is not checked by default", () => {
-      const { body } = render(Component, { props: { text: "Text" } });
+      const { body } = renderCheckboxItem({ text: "Text" });
       expect(body).not.toMatch(/type="checkbox"[^>]*checked/);
     });
 
     it("can be rendered checked", () => {
-      const { body } = render(Component, {
-        props: { text: "Text", checked: true },
+      const { body } = renderCheckboxItem({
+        text: "Text",
+        checked: true,
       });
       expect(body).toMatch(/type="checkbox"[^>]*checked/);
     });
@@ -71,34 +74,39 @@ describe("CheckboxItem SSR", () => {
 
   describe("Contents", () => {
     it("renders text", () => {
-      const { body } = render(Component, { props: { text: "Main Text" } });
+      const { body } = renderCheckboxItem({ text: "Main Text" });
       expect(body).toContain("Main Text");
     });
 
     it("renders secondary text", () => {
-      const { body } = render(Component, {
-        props: { text: "Main Text", secondaryText: "Secondary Text" },
+      const { body } = renderCheckboxItem({
+        text: "Main Text",
+        secondaryText: "Secondary Text",
       });
       expect(body).toContain("Secondary Text");
     });
 
     it("renders trailing text", () => {
-      const { body } = render(Component, {
-        props: { text: "Main Text", trailingText: "Trailing Text" },
+      const { body } = renderCheckboxItem({
+        text: "Main Text",
+        trailingText: "Trailing Text",
       });
       expect(body).toContain("Trailing Text");
     });
 
     it("renders icon", () => {
-      const { body } = render(Component, {
-        props: {
-          text: "Main Text",
-          icon: createRawSnippet(() => ({
-            render: () => `<span class="text-icon-class"></span>`,
-          })),
-        },
+      const { body } = renderCheckboxItem({
+        text: "Main Text",
+        icon: createRawSnippet(() => ({
+          render: () => `<span class="text-icon-class"></span>`,
+        })),
       });
       expect(body).toContain('class="text-icon-class"');
     });
   });
 });
+
+function renderCheckboxItem(props: CheckboxItemProps) {
+  // @ts-expect-error TypeScript reports `Expression produces a union type that is too complex to represent.ts(2590)`
+  return render(Component, { props });
+}
