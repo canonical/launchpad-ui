@@ -1,6 +1,7 @@
 <!-- @canonical/generator-ds 0.10.0-experimental.0 -->
 
-<script lang="ts">
+<script lang="ts" generics="T">
+  import type { ChangeEventHandler } from "svelte/elements";
   import { useIsMounted } from "$lib/useIsMounted.svelte.js";
   import type { SwitchProps } from "./types.js";
 
@@ -8,22 +9,46 @@
 
   let {
     class: className,
-    checked = $bindable(),
+    group = $bindable(),
+    checked: checkedProp = $bindable(),
+    onchange: onchangeProp,
+    value,
     disabled,
     ...rest
-  }: SwitchProps = $props();
+  }: SwitchProps<T> = $props();
+
+  const onchange: ChangeEventHandler<HTMLInputElement> = $derived((e) => {
+    onchangeProp?.(e);
+    const newChecked = (e.target as HTMLInputElement).checked;
+    checkedProp = newChecked;
+    if (value && group) {
+      if (newChecked) {
+        // Don't use push, because if the passed group is not bound, it would mutate not owned state
+        group = [...group, value];
+      } else {
+        // Don't use splice for the same reason
+        group = group.filter((v) => v !== value);
+      }
+    }
+  });
+
+  const checked = $derived(
+    value !== undefined && group?.includes(value) ? true : checkedProp,
+  );
 
   const isMounted = useIsMounted();
   // If there is no JS, we have no way to update the `aria-checked` attribute even though, the checkbox remains functional. Don't set `aria-checked` server-side, to avoid mismatched `checked` and `aria-checked` states.
-  const ariaChecked = $derived(isMounted.value ? checked : undefined);
+  const ariaChecked = $derived(isMounted.value ? Boolean(checked) : undefined);
 </script>
 
 <input
   type="checkbox"
   role="switch"
   class={[componentCssClassName, className]}
-  bind:checked
+  {onchange}
+  {value}
   {disabled}
+  {checked}
   aria-checked={ariaChecked}
   aria-readonly={disabled}
   {...rest}
@@ -42,6 +67,29 @@ As an input control, it requires a `<label>` associated with it.
 <label>
   <Switch bind:checked />
   Toggle me
+</label>
+```
+
+## Group Control
+The component supports `bind:group` for controlling a group of switches, similarly to [native Svelte bind:group](https://svelte.dev/docs/svelte/bind#input-bind:group) of checkbox inputs.
+
+If `bind:group` is used, the `checked` prop must be omitted, and each switch in the group must have a `value` prop set. The bound `group` should be an array of values.
+
+The presence of a Switch's `value` in the `group` array determines (and is reflected by) its checked state.
+
+### Example Usage
+```svelte
+<script lang="ts">
+  let selected = $state<string[]>([]);
+</script>
+
+<label>
+  <Switch bind:group={selected} value="alpha" />
+  Alpha
+</label>
+<label>
+  <Switch bind:group={selected} value="beta" />
+  Beta
 </label>
 ```
 -->
