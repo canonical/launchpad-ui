@@ -28,12 +28,15 @@
 </span>
 
 <!-- @component
-`IconText` [FIXME] (placeholder) A reusable UI component that renders content in a div container.
+`IconText` displays text alongside an icon in a inline layout.
 
 ## Example Usage
 ```svelte
-<IconText class="custom-class" id="unique-id">
-  <p>Content goes here</p>
+<IconText modifiers={["small", "approve"]}>
+  {#snippet icon()}
+    <Icon name="success" />
+  {/snippet}
+  Approved
 </IconText>
 ```
 -->
