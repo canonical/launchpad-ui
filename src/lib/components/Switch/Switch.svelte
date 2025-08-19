@@ -1,7 +1,6 @@
 <!-- @canonical/generator-ds 0.10.0-experimental.0 -->
 
 <script lang="ts" generics="T">
-  import type { ChangeEventHandler } from "svelte/elements";
   import { useIsMounted } from "$lib/useIsMounted.svelte.js";
   import type { SwitchProps } from "./types.js";
 
@@ -17,7 +16,7 @@
     ...rest
   }: SwitchProps<T> = $props();
 
-  const onchange: ChangeEventHandler<HTMLInputElement> = $derived((e) => {
+  const onchange: typeof onchangeProp = $derived((e) => {
     onchangeProp?.(e);
     const newChecked = (e.target as HTMLInputElement).checked;
     checkedProp = newChecked;

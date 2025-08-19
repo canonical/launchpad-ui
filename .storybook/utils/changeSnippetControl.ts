@@ -9,7 +9,10 @@ function isSnippetType(prop: ArgTypes) {
 export const changeSnippetControl: ArgTypesEnhancer = ({ argTypes }) => {
   for (const key in argTypes) {
     const prop = argTypes[key];
-    if (isSnippetType(prop)) {
+    if (
+      isSnippetType(prop) &&
+      !(prop.control as { disable?: boolean } | undefined)?.disable
+    ) {
       prop.control = { type: "text" };
     }
   }
