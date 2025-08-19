@@ -8,6 +8,7 @@
   --tmp-color-background-active-context: var(--tmp-color-fill-positive-active);
 
   --tmp-color-border-secondary-context: var(--tmp-color-border-positive);
+  --tmp-color-text-secondary-context: var(--tmp-color-text-default);
   --tmp-color-background-secondary-context: var(
     --tmp-color-background-positive-default
   );
@@ -29,6 +30,7 @@
   --tmp-color-background-active-context: var(--tmp-color-fill-negative-active);
 
   --tmp-color-border-secondary-context: var(--tmp-color-border-negative);
+  --tmp-color-text-secondary-context: var(--tmp-color-text-default);
   --tmp-color-background-secondary-context: var(
     --tmp-color-background-negative-default
   );
@@ -41,19 +43,16 @@
 }
 
 .caution {
-  --tmp-color-border-context: var(--tmp-color-background-caution-default);
-  --tmp-color-border-hover-context: var(--tmp-color-background-caution-hover);
-  --tmp-color-border-active-context: var(--tmp-color-background-caution-active);
-  --tmp-color-text-context: var(--tmp-color-text-default);
-  --tmp-color-background-context: var(--tmp-color-background-caution-default);
-  --tmp-color-background-hover-context: var(
-    --tmp-color-background-caution-hover
-  );
-  --tmp-color-background-active-context: var(
-    --tmp-color-background-caution-active
-  );
+  --tmp-color-border-context: var(--tmp-color-status-caution);
+  --tmp-color-border-hover-context: var(--tmp-color-status-caution);
+  --tmp-color-border-active-context: var(--tmp-color-status-caution);
+  --tmp-color-text-context: var(--tmp-color-text-white);
+  --tmp-color-background-context: var(--tmp-color-status-caution);
+  --tmp-color-background-hover-context: var(--tmp-color-status-caution);
+  --tmp-color-background-active-context: var(--tmp-color-status-caution);
 
   --tmp-color-border-secondary-context: var(--tmp-color-border-caution);
+  --tmp-color-text-secondary-context: var(--tmp-color-text-default);
   --tmp-color-background-secondary-context: var(
     --tmp-color-background-caution-default
   );
@@ -66,25 +65,16 @@
 }
 
 .information {
-  --tmp-color-border-context: var(--tmp-color-background-information-default);
-  --tmp-color-border-hover-context: var(
-    --tmp-color-background-information-hover
-  );
-  --tmp-color-border-active-context: var(
-    --tmp-color-background-information-active
-  );
-  --tmp-color-text-context: var(--tmp-color-text-default);
-  --tmp-color-background-context: var(
-    --tmp-color-background-information-default
-  );
-  --tmp-color-background-hover-context: var(
-    --tmp-color-background-information-hover
-  );
-  --tmp-color-background-active-context: var(
-    --tmp-color-background-information-active
-  );
+  --tmp-color-border-context: var(--tmp-color-status-information);
+  --tmp-color-border-hover-context: var(--tmp-color-status-information);
+  --tmp-color-border-active-context: var(--tmp-color-status-information);
+  --tmp-color-text-context: var(--tmp-color-text-white);
+  --tmp-color-background-context: var(--tmp-color-status-information);
+  --tmp-color-background-hover-context: var(--tmp-color-status-information);
+  --tmp-color-background-active-context: var(--tmp-color-status-information);
 
   --tmp-color-border-secondary-context: var(--tmp-color-border-information);
+  --tmp-color-text-secondary-context: var(--tmp-color-text-default);
   --tmp-color-background-secondary-context: var(
     --tmp-color-background-information-default
   );

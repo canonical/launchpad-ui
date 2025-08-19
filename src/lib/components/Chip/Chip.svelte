@@ -10,8 +10,7 @@
     lead,
     value,
     icon,
-    // TODO: implement badge component
-    // badge,
+    badge,
     ondismiss,
     onclick,
     ...rest
@@ -47,10 +46,11 @@
   <span class="value">
     {value}
   </span>
-  <!-- TODO: implement badge component -->
-  <!-- {#if badge}
-   ...
-  {/if} -->
+  {#if badge}
+    <span class="badge">
+      {@render badge()}
+    </span>
+  {/if}
   {#if dismissible}
     <button
       class="dismiss"
@@ -112,10 +112,15 @@
     --typography-letter-spacing-chip-leader: var(
       --tmp-typography-letter-spacing-l
     );
+    --color-text-chip: var(
+      --tmp-color-text-secondary-context,
+      var(--tmp-color-text-default)
+    );
 
     display: inline-flex;
     align-items: center;
     font: var(--typography-chip);
+    color: var(--color-text-chip);
     border-radius: var(--dimension-radius-chip);
     border: var(--dimension-border-width-chip) var(--border-style-chip)
       var(--color-border-chip);
