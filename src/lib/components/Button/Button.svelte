@@ -77,6 +77,14 @@
       --tmp-color-border-context,
       var(--tmp-color-border-high-contrast)
     );
+    --color-border-button-hover: var(
+      --tmp-color-border-hover-context,
+      var(--color-border-button)
+    );
+    --color-border-button-active: var(
+      --tmp-color-border-active-context,
+      var(--color-border-button)
+    );
     --color-text-button: var(
       --tmp-color-text-context,
       var(--tmp-color-text-default)
@@ -128,9 +136,11 @@
     &:not(:disabled) {
       &:hover {
         background-color: var(--color-background-button-hover);
+        border-color: var(--color-border-button-hover);
       }
       &:active {
         background-color: var(--color-background-button-active);
+        border-color: var(--color-border-button-active);
       }
     }
 

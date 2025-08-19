@@ -1,5 +1,7 @@
 .positive {
   --tmp-color-border-context: var(--tmp-color-fill-positive-default);
+  --tmp-color-border-hover-context: var(--tmp-color-fill-positive-hover);
+  --tmp-color-border-active-context: var(--tmp-color-fill-positive-active);
   --tmp-color-text-context: var(--tmp-color-text-white);
   --tmp-color-background-context: var(--tmp-color-fill-positive-default);
   --tmp-color-background-hover-context: var(--tmp-color-fill-positive-hover);
@@ -19,6 +21,8 @@
 
 .negative {
   --tmp-color-border-context: var(--tmp-color-fill-negative-default);
+  --tmp-color-border-hover-context: var(--tmp-color-fill-negative-hover);
+  --tmp-color-border-active-context: var(--tmp-color-fill-negative-active);
   --tmp-color-text-context: var(--tmp-color-text-white);
   --tmp-color-background-context: var(--tmp-color-fill-negative-default);
   --tmp-color-background-hover-context: var(--tmp-color-fill-negative-hover);
@@ -38,6 +42,8 @@
 
 .caution {
   --tmp-color-border-context: var(--tmp-color-background-caution-default);
+  --tmp-color-border-hover-context: var(--tmp-color-background-caution-hover);
+  --tmp-color-border-active-context: var(--tmp-color-background-caution-active);
   --tmp-color-text-context: var(--tmp-color-text-default);
   --tmp-color-background-context: var(--tmp-color-background-caution-default);
   --tmp-color-background-hover-context: var(
@@ -61,6 +67,12 @@
 
 .information {
   --tmp-color-border-context: var(--tmp-color-background-information-default);
+  --tmp-color-border-hover-context: var(
+    --tmp-color-background-information-hover
+  );
+  --tmp-color-border-active-context: var(
+    --tmp-color-background-information-active
+  );
   --tmp-color-text-context: var(--tmp-color-text-default);
   --tmp-color-background-context: var(
     --tmp-color-background-information-default
