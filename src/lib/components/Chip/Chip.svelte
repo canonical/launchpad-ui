@@ -91,7 +91,7 @@
     );
     --border-style-chip: solid;
     --color-border-chip: var(
-      --tmp-color-border-context,
+      --tmp-color-border-secondary-context,
       var(--tmp-color-border-default)
     );
     --dimension-size-chip-close-icon: 0.85rem;
@@ -180,7 +180,7 @@
     /* TODO: Consider splitting the chip component into two separate components */
     /* Where the read-only local modifier won't be needed anymore. */
     &.readonly {
-      --tmp-color-border-context: var(--tmp-color-background-default);
+      --tmp-color-border-secondary-context: var(--tmp-color-background-default);
     }
   }
 </style>
