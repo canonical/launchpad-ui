@@ -20,6 +20,14 @@
           },
         },
       },
+      value: {
+        table: { disable: true },
+      },
+      group: {
+        table: {
+          disable: true,
+        },
+      },
     },
     args: {
       text: "Text",
@@ -35,7 +43,7 @@
 
 <Story name="With icon">
   {#snippet template(args)}
-    <CheckboxItem {...args} checked={false}>
+    <CheckboxItem {...args}>
       {#snippet icon()}
         <Icon name="edit" />
       {/snippet}
@@ -51,7 +59,7 @@
   }}
 >
   {#snippet template(args)}
-    <CheckboxItem {...args} checked={false}>
+    <CheckboxItem {...args}>
       {#snippet icon()}
         <Icon name="edit" />
       {/snippet}
@@ -68,7 +76,7 @@
   }}
 >
   {#snippet template(args)}
-    <CheckboxItem {...args} checked={false}>
+    <CheckboxItem {...args}>
       {#snippet icon()}
         <Icon name="edit" />
       {/snippet}

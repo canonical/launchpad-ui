@@ -10,7 +10,7 @@
     argTypes: {
       checked: {
         control: { type: "boolean" },
-        description: "Whether the checkbox is checked",
+        description: "Whether the checkbox is checked\n\n**@bindable**",
         type: "boolean",
         defaultValue: false,
       },

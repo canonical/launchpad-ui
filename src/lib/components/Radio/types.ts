@@ -10,11 +10,13 @@ type BaseProps = Omit<
 interface CheckedControlledRadioProps<T> extends BaseProps {
   value?: T;
   group?: never;
+  checked?: boolean;
 }
 
-interface GroupControlledRadioProps<T> extends Omit<BaseProps, "checked"> {
+interface GroupControlledRadioProps<T> extends BaseProps {
   value: T;
   group: T;
+  checked?: never;
 }
 
 export type RadioProps<T = BaseProps["value"]> =
