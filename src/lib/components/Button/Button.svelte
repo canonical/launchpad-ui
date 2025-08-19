@@ -152,7 +152,7 @@
 
     /* Modifiers */
     &.brand {
-      --tmp-color-text-context: var(--tmp-color-text-reversed);
+      --tmp-color-text-context: var(--tmp-color-text-white);
       --tmp-color-border-context: var(--tmp-color-brand-default);
       --tmp-color-background-context: var(--tmp-color-brand-default);
       --tmp-color-background-hover-context: var(--tmp-color-brand-hover);
