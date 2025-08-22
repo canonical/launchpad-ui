@@ -65,7 +65,7 @@
           modifiers={[modifier, "positive", ...(args?.modifiers ?? [])]}
         >
           {#snippet iconLeft()}
-            <Icon name="success" />
+            <Icon name="success-filled" />
           {/snippet}
         </Button>
         <Button {...args} modifiers={[modifier, ...(args?.modifiers ?? [])]}>
@@ -77,7 +77,7 @@
         <Button {...args} modifiers={[modifier, ...(args?.modifiers ?? [])]}>
           {modifier || "default"} icon after
           {#snippet iconRight()}
-            <Icon name="success" />
+            <Icon name="success-filled" />
           {/snippet}
         </Button>
         <br />
