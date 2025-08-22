@@ -1,5 +1,6 @@
 <script module lang="ts">
   import { defineMeta } from "@storybook/addon-svelte-csf";
+  import type { Snippet } from "svelte";
   import type { ToggleEventHandler } from "svelte/elements";
   import { Button } from "$lib/components/Button/index.js";
   import { Icon } from "$lib/components/Icon/index.js";
@@ -11,12 +12,12 @@
     tags: ["autodocs"],
     component: Popover,
     argTypes: {
-      children: {
-        control: false,
-      },
       trigger: {
         control: false,
       },
+    },
+    args: {
+      children: "This is the content of the popover." as unknown as Snippet,
     },
   });
 
@@ -37,7 +38,7 @@
 </script>
 
 <Story name="Default">
-  {#snippet template({ children: _, trigger: __, ...args })}
+  {#snippet template({ trigger: _, ...args })}
     <Popover {...args}>
       {#snippet trigger(popovertarget, open)}
         <Button {popovertarget}>
@@ -47,13 +48,15 @@
           {/snippet}
         </Button>
       {/snippet}
-      This is content of the popover.
     </Popover>
   {/snippet}
 </Story>
 
 <Story
   name="Imperatively controlled"
+  argTypes={{
+    children: { control: false },
+  }}
   args={{
     popover: "manual",
   }}
@@ -97,6 +100,7 @@
   args={{ popover: "manual" }}
   argTypes={{
     position: { table: { disable: true } },
+    children: { control: false },
   }}
 >
   {#snippet template({ children: _, trigger: __, ...args })}
@@ -115,7 +119,11 @@
   {/snippet}
 </Story>
 
-<Story name="Fallback positioned" tags={["!autodocs"]}>
+<Story
+  name="Fallback positioned"
+  tags={["!autodocs"]}
+  argTypes={{ children: { control: false } }}
+>
   {#snippet template({ children: _, trigger: __, ...args })}
     <div style="display: flex; justify-content: flex-end;">
       <Popover {...args}>
