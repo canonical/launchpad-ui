@@ -1,7 +1,6 @@
 <!-- @canonical/generator-ds 0.10.0-experimental.0 -->
 
 <script lang="ts" generics="T">
-  import type { ChangeEventHandler } from "svelte/elements";
   import type { RadioProps } from "./types.js";
 
   const componentCssClassName = "ds radio";
@@ -14,7 +13,7 @@
     ...rest
   }: RadioProps<T> = $props();
 
-  const onchange: ChangeEventHandler<HTMLInputElement> = $derived((e) => {
+  const onchange: typeof onchangeProp = $derived((e) => {
     onchangeProp?.(e);
     if (value && (e.target as HTMLInputElement).checked) {
       group = value;

@@ -6,6 +6,7 @@ export * from "./Chip/index.js";
 export * from "./ContextualMenuContent/index.js";
 export * from "./Icon/index.js";
 export * from "./MulticolorIcon/index.js";
+export * from "./Popover/index.js";
 export * from "./Radio/index.js";
 export * from "./Spinner/index.js";
 export * from "./Switch/index.js";

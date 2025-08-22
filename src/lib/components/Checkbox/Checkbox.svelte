@@ -1,7 +1,6 @@
 <!-- @canonical/generator-ds 0.10.0-experimental.0 -->
 
 <script lang="ts" generics="T">
-  import type { ChangeEventHandler } from "svelte/elements";
   import type { CheckboxProps } from "./types.js";
 
   const componentCssClassName = "ds checkbox";
@@ -15,7 +14,7 @@
     ...rest
   }: CheckboxProps<T> = $props();
 
-  const onchange: ChangeEventHandler<HTMLInputElement> = $derived((e) => {
+  const onchange: typeof onchangeProp = $derived((e) => {
     onchangeProp?.(e);
     const newChecked = (e.target as HTMLInputElement).checked;
     checked = newChecked;
