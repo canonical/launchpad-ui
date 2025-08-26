@@ -56,7 +56,7 @@
   name="Group controlled"
   argTypes={{ checked: { table: { disable: true } } }}
 >
-  {#snippet template(args)}
+  {#snippet template({ checked: _, ...args })}
     <!--
     <script lang="ts">
       let group = $state<string>();

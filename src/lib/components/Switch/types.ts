@@ -2,7 +2,7 @@
 
 import type { HTMLInputAttributes } from "svelte/elements";
 
-export type SwitchProps = Omit<
+export type BaseProps = Omit<
   HTMLInputAttributes,
   | "type"
   | "children"
@@ -11,3 +11,19 @@ export type SwitchProps = Omit<
   | "aria-checked"
   | "aria-readonly"
 >;
+
+interface CheckedControlledSwitchProps<T> extends BaseProps {
+  value?: T;
+  group?: never;
+  checked?: boolean;
+}
+
+interface GroupControlledSwitchProps<T> extends BaseProps {
+  value: T;
+  group: T[];
+  checked?: never;
+}
+
+export type SwitchProps<T = BaseProps["value"]> =
+  | CheckedControlledSwitchProps<T>
+  | GroupControlledSwitchProps<T>;

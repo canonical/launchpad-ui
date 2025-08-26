@@ -20,6 +20,14 @@
           },
         },
       },
+      value: {
+        table: { disable: true },
+      },
+      group: {
+        table: {
+          disable: true,
+        },
+      },
     },
   });
 </script>

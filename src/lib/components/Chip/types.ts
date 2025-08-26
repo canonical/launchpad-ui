@@ -30,4 +30,7 @@ export interface ChipProps
    * @default no icon
    */
   icon?: Snippet | undefined | null;
+
+  /** The badge to be displayed on the Chip */
+  badge?: Snippet | undefined | null;
 }

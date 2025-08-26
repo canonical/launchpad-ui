@@ -1,6 +1,6 @@
 /* @canonical/generator-ds 0.10.0-experimental.0 */
 
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { render } from "vitest-browser-svelte";
 import Component from "./Switch.svelte";
 
@@ -82,6 +82,40 @@ describe("Switch component", () => {
       await expect
         .element(switchElement)
         .toHaveAttribute("aria-checked", "false");
+    });
+  });
+
+  describe("Group controlled", () => {
+    it("isn't checked if group and value are undefined", async () => {
+      const page = render(Component, {
+        props: { group: undefined, value: undefined },
+      });
+      await expect.element(page.getByRole("switch")).not.toBeChecked();
+    });
+
+    it("isn't checked if group doesn't include value", async () => {
+      const page = render(Component, {
+        props: { group: ["a", "b"], value: "c" },
+      });
+      await expect.element(page.getByRole("switch")).not.toBeChecked();
+    });
+
+    it("is checked if group includes value", async () => {
+      const page = render(Component, {
+        props: { group: ["a", "b", "c"], value: "c" },
+      });
+      await expect.element(page.getByRole("switch")).toBeChecked();
+    });
+  });
+
+  describe("Events", () => {
+    it("emits change event on click", async () => {
+      const onchange = vi.fn();
+
+      const page = render(Component, { props: { onchange } });
+      const switchElement = page.getByRole("switch");
+      await switchElement.click();
+      expect(onchange).toHaveBeenCalledOnce();
     });
   });
 
