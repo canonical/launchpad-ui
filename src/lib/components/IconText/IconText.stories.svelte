@@ -1,5 +1,3 @@
-<!-- @canonical/generator-ds 0.10.0-experimental.2 -->
-
 <script module lang="ts">
   import { defineMeta } from "@storybook/addon-svelte-csf";
   import { SEMANTIC_MODIFIERS } from "$lib/modifiers";
@@ -17,38 +15,33 @@
   const mpReviewIcons = {
     pending: "spinner",
     approve: "success",
-    "needs-fixing": "warning-grey",
-    disapprove: "error-grey",
+    "needs-fixing": "warning",
+    disapprove: "error",
   } satisfies Record<
     (typeof LAUNCHPAD_MODIFIERS.MERGE_PROPOSAL_REVIEW)[number],
     IconName
   >;
 </script>
 
-<!-- {#snippet render(args: IconTextProps)}
-  <IconText {...args} />
-{/snippet} -->
-
-<!-- More on writing stories with args: https://storybook.js.org/docs/writing-stories/args -->
 <Story name="Default">
   {#snippet template(args)}
     <IconText {...args}>
       {#snippet icon()}
         <Icon name="success" />
       {/snippet}
-      CI runs passed
+      CI runs passed (medium)
     </IconText>
   {/snippet}
 </Story>
 
 <Story name="Sizes">
   {#snippet template(args)}
-    {#each [...SEMANTIC_MODIFIERS.SIZE, undefined] as size (size)}
+    {#each SEMANTIC_MODIFIERS.SIZE as size (size)}
       <IconText {...args} modifiers={[size]}>
         {#snippet icon()}
           <MulticolorIcon name="success" />
         {/snippet}
-        CI runs passed ({size || "default"})
+        CI runs passed ({size})
       </IconText>
       <br />
     {/each}
@@ -79,7 +72,7 @@
     </IconText><br />
     <IconText {...args} modifiers={["job-failed"]}>
       {#snippet icon()}
-        <Icon name="error-grey" />
+        <Icon name="error" />
       {/snippet}
       Failed
     </IconText><br />

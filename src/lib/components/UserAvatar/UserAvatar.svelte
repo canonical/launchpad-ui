@@ -83,7 +83,7 @@ The avatar will display the user's image if available and able to be loaded, oth
     );
     --typography-font-size-user-avatar: var(
       --typography-font-size-context,
-      var(--tmp-typography-font-size-s)
+      var(--tmp-typography-font-size-m)
     );
 
     display: inline-grid;

@@ -8,7 +8,7 @@ import { iconTextModifiers } from "./modifiers";
 
 describe("IconText component", () => {
   const children = createRawSnippet(() => ({
-    render: () => `Text`,
+    render: () => `<Text>Text</Text>`,
   }));
 
   const icon = createRawSnippet(() => ({

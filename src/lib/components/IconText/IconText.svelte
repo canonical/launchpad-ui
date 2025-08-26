@@ -49,7 +49,7 @@
     );
     --dimension-gap-icon-text: var(
       --dimension-gap-context,
-      var(--tmp-dimension-spacing-inline-xs)
+      var(--tmp-dimension-spacing-inline-s)
     );
     --color-text-icon-text: var(
       --tmp-color-text-context,
