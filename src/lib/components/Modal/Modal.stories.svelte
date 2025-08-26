@@ -62,7 +62,7 @@
             // doSomething();
             close();
           }}
-          modifiers={["negative"]}
+          modifiers={{ severity: "negative" }}
         >
           Discard review
         </Button>

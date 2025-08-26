@@ -1,7 +1,8 @@
 <script module lang="ts">
   import { defineMeta } from "@storybook/addon-svelte-csf";
-  import { SEMANTIC_MODIFIERS } from "$lib/modifiers/constants.js";
+  import { SEMANTIC_MODIFIERS, modifiersControl } from "$lib/modifiers";
   import Badge from "./Badge.svelte";
+  import { badgeModifiers } from "./modifiers";
 
   const { Story } = defineMeta({
     title: "Components/Badge",
@@ -9,6 +10,7 @@
     component: Badge,
     argTypes: {
       value: { control: { type: "number", min: 0, step: 1 } },
+      ...modifiersControl(badgeModifiers),
     },
   });
 </script>
@@ -44,11 +46,11 @@
 </Story>
 
 <Story name="Severities" args={{ value: 42 }}>
-  {#snippet template({ modifiers = [], ...args })}
-    {#each [undefined, ...SEMANTIC_MODIFIERS.SEVERITY] as modifier (modifier)}
+  {#snippet template({ ...args })}
+    {#each [undefined, ...SEMANTIC_MODIFIERS.severity] as severity (severity)}
       <div class="row">
-        <Badge {...args} modifiers={[modifier, ...modifiers]} />
-        {modifier || "default"}
+        <Badge {...args} modifiers={{ severity }} />
+        {severity || "default"}
       </div>
       <br />
     {/each}

@@ -1,6 +1,7 @@
 <!-- @canonical/generator-ds 0.10.0-experimental.2 -->
 
 <script lang="ts">
+  import { modifiersValues } from "$lib/modifiers";
   import type { IconTextProps } from "./types.js";
 
   const componentCssClassName = "ds icon-text";
@@ -15,7 +16,7 @@
 </script>
 
 <span
-  class={[componentCssClassName, className, modifiers]}
+  class={[componentCssClassName, className, modifiersValues(modifiers)]}
   data-testid="icon-text"
   {...rest}
 >
@@ -47,6 +48,10 @@
       --typography-font-size-context,
       var(--tmp-typography-font-size-m)
     );
+    --typography-font-weight-icon-text: var(--tmp-typography-weight-regular);
+    --typography-font-family-icon-text: var(
+      --tmp-typography-font-family-default
+    );
     --dimension-gap-icon-text: var(
       --dimension-gap-context,
       var(--tmp-dimension-spacing-inline-s)
@@ -63,6 +68,8 @@
     align-items: center;
     gap: var(--dimension-gap-icon-text);
     font-size: var(--typography-font-size-icon-text);
+    font-weight: var(--typography-font-weight-icon-text);
+    font-family: var(--typography-font-family-icon-text);
 
     .icon {
       display: inline-flex;

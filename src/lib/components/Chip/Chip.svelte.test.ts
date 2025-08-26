@@ -39,7 +39,7 @@ describe("Chip", () => {
       render(Component, {
         value: "Styled Chip",
         class: "extra-class",
-        modifiers: ["dense", "caution"],
+        modifiers: { density: "dense", severity: "caution" },
       });
 
       const element = page.getByTestId("chip");
@@ -70,7 +70,7 @@ describe("Chip", () => {
     it("should not render a button when readonly is provided", async () => {
       render(Component, {
         value: "Readonly",
-        modifiers: ["readonly"],
+        modifiers: { readMode: "readonly" },
         onclick: () => {},
       });
 

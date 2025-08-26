@@ -1,7 +1,8 @@
 /* @canonical/generator-ds 0.9.0-experimental.22 */
 
 import type { HTMLAttributes } from "svelte/elements";
-import type { ModifiedBy, WithoutChildren } from "$lib/type-utils";
+import type { ModifiedBy } from "$lib/modifiers";
+import type { WithoutChildren } from "$lib/type-utils";
 import type { UserAvatarModifiers } from "./modifiers";
 
 export type UserAvatarProps = WithoutChildren<HTMLAttributes<HTMLElement>> &

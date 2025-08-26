@@ -1,26 +1,31 @@
 <script module lang="ts">
   import { defineMeta } from "@storybook/addon-svelte-csf";
-  import { SEMANTIC_MODIFIERS } from "$lib/modifiers";
-  import { LAUNCHPAD_MODIFIERS } from "$lib/modifiers-app";
+  import { SEMANTIC_MODIFIERS, modifiersControl } from "$lib/modifiers";
   import type { IconName } from "../Icon/iconNames";
   import { Icon, MulticolorIcon } from "../index.js";
   import IconText from "./IconText.svelte";
+  import { iconTextModifiers } from "./modifiers";
 
   const { Story } = defineMeta({
     title: "Components/IconText",
     tags: ["autodocs"],
     component: IconText,
+    argTypes: {
+      icon: {
+        control: {
+          disable: true,
+        },
+      },
+      ...modifiersControl(iconTextModifiers),
+    },
   });
 
   const mpReviewIcons = {
-    pending: "spinner",
-    approve: "success",
-    "needs-fixing": "warning",
-    disapprove: "error",
-  } satisfies Record<
-    (typeof LAUNCHPAD_MODIFIERS.MERGE_PROPOSAL_REVIEW)[number],
-    IconName
-  >;
+    approved: "success",
+    disapproved: "error",
+    "changes-requested": "warning",
+    reviewing: "spinner",
+  } satisfies Record<(typeof iconTextModifiers.approval)[number], IconName>;
 </script>
 
 <Story name="Default">
@@ -36,8 +41,8 @@
 
 <Story name="Sizes">
   {#snippet template(args)}
-    {#each SEMANTIC_MODIFIERS.SIZE as size (size)}
-      <IconText {...args} modifiers={[size]}>
+    {#each SEMANTIC_MODIFIERS.size as size (size)}
+      <IconText {...args} modifiers={{ size }}>
         {#snippet icon()}
           <MulticolorIcon name="success" />
         {/snippet}
@@ -50,12 +55,12 @@
 
 <Story name="Merge Proposal Review">
   {#snippet template(args)}
-    {#each LAUNCHPAD_MODIFIERS.MERGE_PROPOSAL_REVIEW as review (review)}
-      <IconText {...args} modifiers={[review]}>
+    {#each iconTextModifiers.approval as approval (approval)}
+      <IconText {...args} modifiers={{ approval }}>
         {#snippet icon()}
-          <Icon name={mpReviewIcons[review]} />
+          <Icon name={mpReviewIcons[approval]} />
         {/snippet}
-        {review}
+        {approval}
       </IconText>
       <br />
     {/each}
@@ -64,37 +69,37 @@
 
 <Story name="Merge Proposal Job Status">
   {#snippet template(args)}
-    <IconText {...args} modifiers={["job-success"]}>
+    <IconText {...args} modifiers={{ lifecycle: "completed" }}>
       {#snippet icon()}
         <Icon name="success" />
       {/snippet}
       Success
     </IconText><br />
-    <IconText {...args} modifiers={["job-failed"]}>
+    <IconText {...args} modifiers={{ lifecycle: "failed" }}>
       {#snippet icon()}
         <Icon name="error" />
       {/snippet}
       Failed
     </IconText><br />
-    <IconText {...args} modifiers={["job-skipped"]}>
+    <IconText {...args} modifiers={{ lifecycle: "pending" }}>
       {#snippet icon()}
         <Icon name="skip" />
       {/snippet}
       Skipped
     </IconText><br />
-    <IconText {...args} modifiers={["job-skipped"]}>
+    <IconText {...args} modifiers={{ lifecycle: "suspended" }}>
       {#snippet icon()}
         <Icon name="loading-steps" />
       {/snippet}
       Pending
     </IconText><br />
-    <IconText {...args} modifiers={["job-skipped"]}>
+    <IconText {...args} modifiers={{ lifecycle: "pending" }}>
       {#snippet icon()}
         <Icon name="unit-pending" />
       {/snippet}
       Queued
     </IconText><br />
-    <IconText {...args}>
+    <IconText {...args} modifiers={{ lifecycle: "pending" }}>
       {#snippet icon()}
         <Icon name="spinner" />
       {/snippet}

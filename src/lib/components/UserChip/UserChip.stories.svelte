@@ -1,6 +1,7 @@
 <script module lang="ts">
   import { defineMeta } from "@storybook/addon-svelte-csf";
-  import { SEMANTIC_MODIFIERS } from "$lib/modifiers";
+  import { modifiersControl } from "$lib/modifiers";
+  import { userAvatarModifiers } from "../UserAvatar";
   import UserChip from "./UserChip.svelte";
 
   const userAvatarUrl = "https://i.pravatar.cc/150?img=68";
@@ -13,6 +14,9 @@
       userName: "John Doe",
       userAvatarUrl,
     },
+    argTypes: {
+      ...modifiersControl(userAvatarModifiers),
+    },
   });
 </script>
 
@@ -20,8 +24,12 @@
 
 <Story name="Sizes">
   {#snippet template(args)}
-    {#each SEMANTIC_MODIFIERS.SIZE as size (size)}
-      <UserChip {...args} userName={`John Doe (${size})`} modifiers={[size]} />
+    {#each userAvatarModifiers.size as size (size)}
+      <UserChip
+        {...args}
+        userName={`John Doe (${size})`}
+        modifiers={{ size }}
+      />
       <br /><br />
     {/each}
   {/snippet}

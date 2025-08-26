@@ -1,15 +1,15 @@
-.pending {
+.reviewing {
   --tmp-color-text-context: var(--tmp-color-text-default);
 }
 
-.approve {
+.approved {
   --tmp-color-text-context: var(--tmp-color-positive);
 }
 
-.needs-fixing {
+.changes-requested {
   --tmp-color-text-context: var(--tmp-color-caution);
 }
 
-.disapprove {
+.disapproved {
   --tmp-color-text-context: var(--tmp-color-negative);
 }

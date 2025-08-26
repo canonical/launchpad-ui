@@ -1,5 +1,5 @@
-import type { Modifiers } from "$lib/modifiers";
+import type { ModifiersMap } from "$lib/modifiers";
 
 export const LOCAL_MODIFIERS = {
-  READ_MODE: ["readonly"],
-} as const satisfies Modifiers;
+  readMode: ["readonly"],
+} as const satisfies ModifiersMap;

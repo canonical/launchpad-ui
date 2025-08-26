@@ -1,6 +1,5 @@
-import { SEMANTIC_MODIFIERS } from "$lib/modifiers/constants.js";
-import { modifiers } from "$lib/modifiers/index.js";
+import { SEMANTIC_MODIFIERS, modifiers } from "$lib/modifiers";
 
-export const badgeModifiers = modifiers(SEMANTIC_MODIFIERS.SEVERITY);
+export const badgeModifiers = modifiers(SEMANTIC_MODIFIERS, "severity");
 
 export type BadgeModifiers = typeof badgeModifiers;

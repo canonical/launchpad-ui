@@ -8,6 +8,7 @@
 </script>
 
 <script lang="ts">
+  import { modifiersValues } from "$lib/modifiers";
   import type { BadgeProps } from "./types.js";
 
   const componentCssClassName = "ds badge";
@@ -32,7 +33,7 @@
 </script>
 
 <span
-  class={[componentCssClassName, className, modifiers]}
+  class={[componentCssClassName, className, modifiersValues(modifiers)]}
   data-testid="badge"
   {...rest}
 >

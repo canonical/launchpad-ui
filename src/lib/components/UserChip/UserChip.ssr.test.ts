@@ -68,7 +68,7 @@ describe("UserChip SSR", () => {
       const { body } = render(Component, {
         props: {
           userName: "John Doe",
-          modifiers: ["small"],
+          modifiers: { size: "small" },
         },
       });
       expect(body).toMatch(/class="[^"]*small[^"]*"/);

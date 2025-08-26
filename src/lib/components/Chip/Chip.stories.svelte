@@ -3,13 +3,17 @@
   import { fn } from "storybook/test";
   import { Badge } from "$lib/components/Badge/index.js";
   import { Icon } from "$lib/components/Icon/index.js";
-  import { SEMANTIC_MODIFIERS } from "$lib/modifiers";
+  import { SEMANTIC_MODIFIERS, modifiersControl } from "$lib/modifiers";
   import Chip from "./Chip.svelte";
+  import { chipModifiers } from "./modifiers";
 
   const { Story } = defineMeta({
     title: "Components/Chip",
     tags: ["autodocs"],
     component: Chip,
+    argTypes: {
+      ...modifiersControl(chipModifiers),
+    },
   });
 </script>
 
@@ -23,14 +27,14 @@
 
 <Story name="Severities" args={{}}>
   {#snippet template()}
-    {#each SEMANTIC_MODIFIERS.SEVERITY as modifier (modifier)}
+    {#each SEMANTIC_MODIFIERS.severity as severity (severity)}
       <Chip
         lead="Severity"
-        value={modifier.charAt(0).toUpperCase() + modifier.slice(1)}
-        modifiers={[modifier]}
+        value={severity}
+        modifiers={{ severity }}
         onclick={fn()}
       />
-      <Chip lead="Lead" value="Value" modifiers={[modifier]} onclick={fn()} />
+      <Chip lead="Lead" value="Value" modifiers={{ severity }} onclick={fn()} />
       <br />
       <br />
     {/each}
@@ -42,7 +46,7 @@
   args={{
     lead: "Lead",
     value: "Value",
-    modifiers: ["caution"],
+    modifiers: { severity: "caution" },
   }}
 >
   {#snippet template(args)}
@@ -79,59 +83,23 @@
   {/snippet}
 </Story>
 
-<Story
-  name="Dense chip"
-  args={{
-    lead: "Lead",
-    value: "Value",
-    modifiers: ["dense"],
-  }}
-/>
-
-<Story
-  name="Read-only"
-  args={{
-    value: "Value",
-    modifiers: ["readonly"],
-  }}
-/>
-
-<Story name="Read-only severities" args={{}}>
+<Story name="Read-only" args={{}}>
   {#snippet template()}
-    {#each SEMANTIC_MODIFIERS.SEVERITY as modifier (modifier)}
+    {#each [undefined, ...SEMANTIC_MODIFIERS.severity] as severity (severity)}
       <Chip
         lead="Severity"
-        value={modifier.charAt(0).toUpperCase() + modifier.slice(1)}
-        modifiers={["readonly", modifier]}
+        value={severity || "default"}
+        modifiers={{ readMode: "readonly", severity }}
       >
         {#snippet badge()}
           <Badge value={420} />
         {/snippet}
       </Chip>
-      <Chip lead="Lead" value="Value" modifiers={["readonly", modifier]} />
       <br />
       <br />
     {/each}
   {/snippet}
 </Story>
-
-<Story
-  name="Read-only positive dense chip"
-  args={{
-    lead: "Lead",
-    value: "Value",
-    modifiers: ["readonly", "dense", "positive"],
-  }}
-/>
-
-<Story
-  name="Read-only negative chip"
-  args={{
-    lead: "Lead",
-    value: "Value",
-    modifiers: ["readonly", "negative"],
-  }}
-/>
 
 <Story
   name="With all the elements"

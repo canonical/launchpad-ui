@@ -1,7 +1,9 @@
-import type { Modifiers } from "./types.js";
+import type { ModifiersMap } from "./types.js";
 
 export const SEMANTIC_MODIFIERS = {
-  DENSITY: ["dense", "compact"],
-  SEVERITY: ["negative", "information", "caution", "positive"],
-  SIZE: ["x-small", "small", "medium", "large"],
-} as const satisfies Modifiers;
+  density: ["dense", "compact"],
+  size: ["x-small", "small", "medium", "large"],
+  severity: ["negative", "information", "caution", "positive"],
+  lifecycle: ["completed", "failed", "pending", "suspended"],
+  approval: ["approved", "disapproved", "changes-requested", "reviewing"],
+} as const satisfies ModifiersMap;

@@ -52,7 +52,7 @@ describe("Chip SSR", () => {
 
     it("should be non-interactive when readonly", () => {
       const { body } = render(Component, {
-        props: { value: "Readonly Chip", modifiers: ["readonly"] },
+        props: { value: "Readonly Chip", modifiers: { readMode: "readonly" } },
       });
       expect(body).toContain('<span class="ds chip readonly');
       expect(body).not.toContain("<button");

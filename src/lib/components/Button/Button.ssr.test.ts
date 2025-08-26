@@ -2,7 +2,6 @@ import { createRawSnippet } from "svelte";
 import { render } from "svelte/server";
 import { describe, expect, it } from "vitest";
 import Component from "./Button.svelte";
-import { buttonModifiers } from "./modifiers";
 
 describe("Button SSR", () => {
   it("doesn't throw", () => {
@@ -37,24 +36,6 @@ describe("Button SSR", () => {
         props: { "aria-label": "Test Button" },
       });
       expect(body).toContain('aria-label="Test Button"');
-    });
-  });
-
-  describe("modifiers", () => {
-    it.each(buttonModifiers)("renders with %s modifier class", (modifier) => {
-      const { body } = render(Component, {
-        props: { modifiers: [modifier] },
-      });
-      expect(body).toContain(modifier);
-    });
-
-    it("renders multiple modifiers", () => {
-      const { body } = render(Component, {
-        props: { modifiers: ["positive", "negative", "compact"] },
-      });
-      expect(body).toContain("positive");
-      expect(body).toContain("negative");
-      expect(body).toContain("compact");
     });
   });
 

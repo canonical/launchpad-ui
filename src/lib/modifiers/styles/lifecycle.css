@@ -1,14 +1,14 @@
-.job-success {
+.completed {
   --tmp-color-icon-context: var(--tmp-color-positive);
   --tmp-color-text-context: var(--tmp-color-text-default);
 }
 
-.job-failed {
+.failed {
   --tmp-color-icon-context: var(--tmp-color-negative);
   --tmp-color-text-context: var(--tmp-color-text-default);
 }
 
-.job-skipped {
+.suspended {
   --tmp-color-icon-context: var(--tmp-color-text-muted);
   --tmp-color-text-context: var(--tmp-color-text-default);
 }

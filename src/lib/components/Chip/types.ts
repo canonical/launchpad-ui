@@ -1,7 +1,7 @@
 /* @canonical/generator-ds 0.9.1-experimental.0 */
 import type { Snippet } from "svelte";
 import type { HTMLAttributes } from "svelte/elements";
-import type { ModifiedBy } from "$lib/type-utils";
+import type { ModifiedBy } from "$lib/modifiers";
 import type { ChipModifiers } from "./modifiers";
 
 /** Either the chip can be clicked or the dismiss button can be clicked.

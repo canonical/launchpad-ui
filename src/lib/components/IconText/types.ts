@@ -2,7 +2,7 @@
 
 import type { Snippet } from "svelte";
 import type { SvelteHTMLElements } from "svelte/elements";
-import type { ModifiedBy } from "$lib/type-utils";
+import type { ModifiedBy } from "$lib/modifiers";
 import type { IconTextModifiers } from "./modifiers";
 
 type BaseProps = SvelteHTMLElements["span"];

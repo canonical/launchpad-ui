@@ -78,7 +78,7 @@ describe("UserChip component", () => {
     it.each(sizeModifiers)("applies %s modifier", (size) => {
       const { container } = render(Component, {
         userName: "John Doe",
-        modifiers: [size],
+        modifiers: { size },
       });
       const chip = container.querySelector(".ds.user-chip");
 

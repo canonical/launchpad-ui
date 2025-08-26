@@ -1,12 +1,23 @@
-/**
- * Creates a union type for a single modifier from the provided string literal arrays.
- * The final type represents one possible value and also includes `undefined` and `null`.
- *
- * @template T - A tuple of readonly string arrays, e.g., `[typeof SEVERITY, typeof DENSITY]`.
- */
-export type SemanticModifier<T extends readonly (readonly string[])[]> =
-  | T[number][number]
-  | undefined
-  | null;
+export type ModifiersMap = Record<string, readonly string[]>;
 
-export type Modifiers = Record<string, string[]>;
+export type MergeModifiers<M1 extends ModifiersMap, M2 extends ModifiersMap> = {
+  [K in keyof (M1 & M2) | keyof M1 | keyof M2]: K extends keyof M1
+    ? K extends keyof M2
+      ? ReadonlyArray<M1[K][number] | M2[K][number]>
+      : M1[K]
+    : K extends keyof M2
+      ? M2[K]
+      : never;
+};
+
+export type ModifiersInput<T extends ModifiersMap> = {
+  readonly [K in keyof T]?: T[K][number] | undefined | null;
+};
+
+export type ModifiedBy<T extends ModifiersMap> = {
+  modifiers?: ModifiersInput<T>;
+};
+
+export type ModifiersValues<I extends ModifiersInput<ModifiersMap>> = Array<
+  Exclude<I[keyof I], undefined | null>
+>;

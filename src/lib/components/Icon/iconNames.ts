@@ -159,7 +159,6 @@ export const iconNames = new Set([
   "statistics",
   "status",
   "stop",
-  "skip",
   "submit-bug",
   "success",
   "success-filled",
