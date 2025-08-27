@@ -14,7 +14,11 @@
   }: TitleRowProps = $props();
 </script>
 
-<div class={[componentCssClassName, className]} {...rest}>
+<div
+  class={[componentCssClassName, className]}
+  data-testid="title-row"
+  {...rest}
+>
   <span class="content">
     {#if leadingText}
       <span class="leading-text">{leadingText}</span>

@@ -13,12 +13,34 @@ describe("Timeline SSR", () => {
 
   it("renders", () => {
     const { body } = render(Component);
-    expect(body).toContain("<div");
-    expect(body).toContain("</div>");
+    expect(body).toContain("<ol");
+    expect(body).toContain("</ol>");
   });
 
-  it("applies class", () => {
-    const { body } = render(Component, { props: { class: "test-class" } });
-    expect(body).toContain('class="ds timeline test-class"');
+  describe("Basic attributes", () => {
+    it("applies id", () => {
+      const { body } = render(Component, {
+        props: { id: "test-id" },
+      });
+      expect(body).toContain('id="test-id"');
+    });
+
+    it("applies class", () => {
+      const { body } = render(Component, {
+        props: {
+          class: "test-class",
+        },
+      });
+      expect(body).toMatch(/class="[^"]*test-class[^"]*"/);
+    });
+
+    it("applies style", () => {
+      const { body } = render(Component, {
+        props: {
+          style: "color: red;",
+        },
+      });
+      expect(body).toContain('style="color: red;"');
+    });
   });
 });
