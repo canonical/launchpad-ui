@@ -71,9 +71,7 @@
 />
 
 {#snippet narrow(args: BreadcrumbsProps)}
-  <div
-    style="width: 400px; border: 1px dashed var(--border-color-default, #ccc);"
-  >
+  <div class="placeholder-box" style:width="400px;">
     <Breadcrumbs {...args} />
   </div>
 {/snippet}

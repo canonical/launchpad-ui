@@ -12,3 +12,12 @@
   align-items: center;
   gap: 0.5rem;
 }
+
+.placeholder-box {
+  border: 1px dashed var(--tmp-color-border-default, #ccc);
+
+  &.center {
+    display: grid;
+    place-content: center;
+  }
+}

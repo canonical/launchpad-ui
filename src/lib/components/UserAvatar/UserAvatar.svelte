@@ -90,7 +90,6 @@ The avatar will display the user's image if available and able to be loaded, oth
     place-content: center;
     overflow: hidden;
     line-height: 1;
-    aspect-ratio: 1 / 1;
     flex: none;
     user-select: none;
 
@@ -100,6 +99,7 @@ The avatar will display the user's image if available and able to be loaded, oth
     font-weight: var(--tmp-typography-weight-bold);
 
     width: var(--dimension-size-user-avatar);
+    height: var(--dimension-size-user-avatar);
     font-size: var(--typography-font-size-user-avatar);
 
     > abbr {
