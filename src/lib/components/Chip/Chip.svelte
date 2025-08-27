@@ -71,8 +71,12 @@
 ```svelte
 <Chip value="Value"/>
 <Chip lead="Lead" value="Value" />
-<Chip lead="Lead" value="Value" modifiers={["caution"]} />
-<Chip lead="Lead" value="Value" modifiers={["readonly", "dense", "caution"]} />
+<Chip lead="Lead" value="Value" modifiers={{ severity: "caution" }} />
+<Chip
+  lead="Lead"
+  value="Value"
+  modifiers={{ readMode: "readonly", density: "dense", severity: "caution" }}
+/>
 ```
 -->
 

@@ -53,8 +53,8 @@ export function modifiersValues<I extends ModifiersInput<ModifiersMap>>(
   const out: Array<string> = [];
 
   for (const value of Object.values(input) as I[keyof I][]) {
-    if (value != null) {
-      out.push(String(value));
+    if (value) {
+      out.push(value);
     }
   }
 

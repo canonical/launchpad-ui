@@ -45,7 +45,7 @@
 
 ## Example Usage
 ```svelte
-<Badge value={42} modifiers={["caution"]} />
+<Badge value={42} modifiers={{ severity: "caution" }} />
 <Badge value={2351} variant="rounded" />
 ```
 -->

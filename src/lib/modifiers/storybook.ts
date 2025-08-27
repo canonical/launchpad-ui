@@ -9,10 +9,13 @@ export function modifiersControl<M extends ModifiersMap>(
       table: { disable: true },
     },
   };
+
   for (const key of Object.keys(componentModifiers)) {
     argTypes[key] = {
-      control: { type: "inline-radio" },
-      options: componentModifiers[key],
+      control: {
+        type: "inline-radio",
+      },
+      options: ["default", ...componentModifiers[key]],
       table: { category: "modifiers" },
     };
   }

@@ -5,7 +5,7 @@ export const mergeModifiersArgs: Decorator = (storyFn, context) => {
   const { args, argTypes } = context;
 
   const merged: Record<string, unknown> = {
-    ...(args.modifiers as object | undefined),
+    ...(args.modifiers ?? {}),
   };
 
   const modifiersKeys = modifiersArgs(argTypes);
@@ -16,7 +16,11 @@ export const mergeModifiersArgs: Decorator = (storyFn, context) => {
       ? key.slice("modifiers.".length)
       : key;
     if (value !== undefined && value !== null && value !== "") {
-      merged[normalizedKey] = value;
+      if (value === "default") {
+        delete merged[normalizedKey];
+      } else {
+        merged[normalizedKey] = value;
+      }
     }
   }
 

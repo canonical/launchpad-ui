@@ -47,7 +47,7 @@
 
 ## Example Usage
 ```svelte
-<Button modifiers={["dense", "brand"]}>
+<Button modifiers={{ density: "dense", severity: "brand" }}>
   {#snippet iconLeft()}
     <Icon name="check" />
   {/snippet}

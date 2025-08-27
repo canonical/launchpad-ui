@@ -33,7 +33,7 @@
 
 ## Example Usage
 ```svelte
-<IconText modifiers={["small", "approve"]}>
+<IconText modifiers={{ size: "small", approval: "approved" }}>
   {#snippet icon()}
     <Icon name="success" />
   {/snippet}
