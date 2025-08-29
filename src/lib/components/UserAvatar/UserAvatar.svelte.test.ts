@@ -96,7 +96,7 @@ describe("UserAvatar component", () => {
     const sizeModifiers = ["small", "large"] as const;
 
     it.each(sizeModifiers)("applies %s modifier", (size) => {
-      const { container } = render(Component, { modifiers: [size] });
+      const { container } = render(Component, { modifiers: { size } });
       const icon = container.querySelector(".ds.user-avatar");
 
       assert(icon !== null);

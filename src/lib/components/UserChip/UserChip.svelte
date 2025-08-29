@@ -2,6 +2,7 @@
 
 <script lang="ts">
   import { UserAvatar } from "$lib/components/UserAvatar/index.js";
+  import { modifiersValues } from "$lib/modifiers/utils.js";
   import type { UserChipProps } from "./types.js";
 
   const componentCssClassName = "ds user-chip";
@@ -16,7 +17,10 @@
   }: UserChipProps = $props();
 </script>
 
-<div class={[componentCssClassName, className, modifiers]} {...rest}>
+<div
+  class={[componentCssClassName, className, modifiersValues(modifiers)]}
+  {...rest}
+>
   {#if showAvatar}
     <UserAvatar {userName} {userAvatarUrl} aria-hidden="true" />
   {/if}

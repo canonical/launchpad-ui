@@ -57,7 +57,7 @@
         {@render header?.()}
         {#if withCloseButton}
           <Button
-            modifiers={["base"]}
+            modifiers={{ severity: "base" }}
             class="close"
             popovertarget={asPopover ? id : undefined}
             popovertargetaction={asPopover ? "hide" : undefined}

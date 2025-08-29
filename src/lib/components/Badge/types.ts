@@ -1,7 +1,8 @@
 /* @canonical/generator-ds 0.10.0-experimental.0 */
 
 import type { SvelteHTMLElements } from "svelte/elements";
-import type { ModifiedBy, WithoutChildren } from "$lib/type-utils.js";
+import type { ModifiedBy } from "$lib/modifiers";
+import type { WithoutChildren } from "$lib/type-utils.js";
 import type { BadgeModifiers } from "./modifiers.js";
 
 type BaseProps = SvelteHTMLElements["span"];

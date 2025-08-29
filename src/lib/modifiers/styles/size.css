@@ -1,11 +1,23 @@
-.small {
+.x-small {
   --typography-font-size-context: var(--tmp-typography-font-size-xs);
+  --dimension-size-context: var(--tmp-dimension-size-xs);
+  --dimension-gap-context: var(--tmp-dimension-spacing-inline-xxxs);
+}
+
+.small {
+  --typography-font-size-context: var(--tmp-typography-font-size-s);
   --dimension-size-context: var(--tmp-dimension-size-s);
-  --dimension-gap-context: var(--tmp-dimension-spacing-inline-xxs);
+  --dimension-gap-context: var(--tmp-dimension-spacing-inline-xs);
+}
+
+.medium {
+  --typography-font-size-context: var(--tmp-typography-font-size-m);
+  --dimension-size-context: var(--tmp-dimension-size-m);
+  --dimension-gap-context: var(--tmp-dimension-spacing-inline-s);
 }
 
 .large {
-  --typography-font-size-context: var(--tmp-typography-font-size-m);
+  --typography-font-size-context: var(--tmp-typography-font-size-l);
   --dimension-size-context: var(--tmp-dimension-size-l);
-  --dimension-gap-context: var(--tmp-dimension-spacing-inline-xs);
+  --dimension-gap-context: var(--tmp-dimension-spacing-inline-s);
 }

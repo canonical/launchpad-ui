@@ -1,0 +1,15 @@
+.reviewing {
+  --tmp-color-text-context: var(--tmp-color-text-default);
+}
+
+.approved {
+  --tmp-color-text-context: var(--tmp-color-positive);
+}
+
+.changes-requested {
+  --tmp-color-text-context: var(--tmp-color-caution);
+}
+
+.disapproved {
+  --tmp-color-text-context: var(--tmp-color-negative);
+}

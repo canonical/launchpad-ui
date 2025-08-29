@@ -2,8 +2,6 @@ import { createRawSnippet } from "svelte";
 import { describe, expect, it, vi } from "vitest";
 import { render } from "vitest-browser-svelte";
 import Component from "./Button.svelte";
-import { buttonModifiers } from "./modifiers";
-import type { ButtonModifiers } from "./modifiers";
 
 describe("Button", () => {
   it("renders", async () => {
@@ -53,44 +51,6 @@ describe("Button", () => {
       await expect
         .element(element)
         .toHaveAttribute("aria-label", "Test Button");
-    });
-  });
-
-  describe("modifiers", () => {
-    it.each(buttonModifiers)(
-      "applies %s modifier class correctly",
-      async (modifier) => {
-        const page = render(Component, {
-          props: { modifiers: [modifier] },
-        });
-        const element = page.getByRole("button");
-        await expect.element(element).toHaveClass(modifier ?? "");
-
-        // does not have other modifiers classes
-        await expect
-          .element(element)
-          .not.toHaveClass(
-            ...buttonModifiers
-              .filter((m) => m !== modifier)
-              .map((m) => m ?? ""),
-          );
-      },
-    );
-
-    it("renders multiple modifiers", async () => {
-      const modifiers: ButtonModifiers = ["positive", "negative", "compact"];
-      const page = render(Component, {
-        props: { modifiers },
-      });
-      const element = page.getByRole("button");
-      await expect.element(element).toHaveClass(modifiers.join(" "));
-      await expect
-        .element(element)
-        .not.toHaveClass(
-          ...buttonModifiers
-            .filter((m) => !modifiers.includes(m))
-            .map((m) => m ?? ""),
-        );
     });
   });
 

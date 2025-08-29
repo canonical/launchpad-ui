@@ -1,6 +1,7 @@
 <!-- @canonical/generator-ds 0.10.0-experimental.2 -->
 
 <script lang="ts">
+  import { modifiersValues } from "$lib/modifiers";
   import { Spinner } from "../index.js";
   import { Content } from "./common";
   import type { ButtonProps } from "./types.js";
@@ -25,7 +26,7 @@
   class={[
     componentCssClassName,
     className,
-    modifiers,
+    modifiersValues(modifiers),
     { loading, "explicit-disabled": disabled },
   ]}
   disabled={isDisabled}
@@ -46,7 +47,7 @@
 
 ## Example Usage
 ```svelte
-<Button modifiers={["dense", "brand"]}>
+<Button modifiers={{ density: "dense", severity: "brand" }}>
   {#snippet iconLeft()}
     <Icon name="check" />
   {/snippet}

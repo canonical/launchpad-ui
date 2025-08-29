@@ -1,3 +1,3 @@
 export const LOCAL_MODIFIERS = {
-  SEVERITY: ["brand", "base"],
+  severity: ["brand", "base"],
 } as const;
