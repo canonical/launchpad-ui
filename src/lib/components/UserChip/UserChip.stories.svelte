@@ -28,7 +28,7 @@
       <UserChip
         {...args}
         userName={`John Doe (${size})`}
-        modifiers={{ size }}
+        modifiers={{ ...(args.modifiers || {}), size }}
       />
       <br /><br />
     {/each}

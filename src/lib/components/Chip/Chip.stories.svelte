@@ -25,16 +25,16 @@
   }}
 />
 
-<Story name="Severities" args={{}}>
-  {#snippet template()}
+<Story name="Severities">
+  {#snippet template(args)}
     {#each SEMANTIC_MODIFIERS.severity as severity (severity)}
       <Chip
+        {...args}
         lead="Severity"
         value={severity}
-        modifiers={{ severity }}
+        modifiers={{ ...(args.modifiers || {}), severity }}
         onclick={fn()}
       />
-      <Chip lead="Lead" value="Value" modifiers={{ severity }} onclick={fn()} />
       <br />
       <br />
     {/each}
@@ -83,13 +83,18 @@
   {/snippet}
 </Story>
 
-<Story name="Read-only" args={{}}>
-  {#snippet template()}
+<Story name="Read-only">
+  {#snippet template(args)}
     {#each [undefined, ...SEMANTIC_MODIFIERS.severity] as severity (severity)}
       <Chip
+        {...args}
         lead="Severity"
         value={severity || "default"}
-        modifiers={{ readMode: "readonly", severity }}
+        modifiers={{
+          ...(args.modifiers || {}),
+          readMode: "readonly",
+          severity,
+        }}
       >
         {#snippet badge()}
           <Badge value={420} />

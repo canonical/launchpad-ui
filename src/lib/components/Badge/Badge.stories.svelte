@@ -46,10 +46,10 @@
 </Story>
 
 <Story name="Severities" args={{ value: 42 }}>
-  {#snippet template({ ...args })}
+  {#snippet template(args)}
     {#each [undefined, ...SEMANTIC_MODIFIERS.severity] as severity (severity)}
       <div class="row">
-        <Badge {...args} modifiers={{ severity }} />
+        <Badge {...args} modifiers={{ ...(args.modifiers || {}), severity }} />
         {severity || "default"}
       </div>
       <br />

@@ -25,7 +25,7 @@
       {#each userAvatarModifiers.size as size (size)}
         <UserAvatar
           {...args}
-          modifiers={{ size }}
+          modifiers={{ ...(args.modifiers || {}), size }}
           userName={`John Doe (${size})`}
         />
       {/each}
@@ -33,7 +33,11 @@
     <br />
     <div class="row">
       {#each userAvatarModifiers.size as size (size)}
-        <UserAvatar {...args} modifiers={{ size }} userName={undefined} />
+        <UserAvatar
+          {...args}
+          modifiers={{ ...(args.modifiers || {}), size }}
+          userName={undefined}
+        />
       {/each}
     </div>
   {/snippet}
