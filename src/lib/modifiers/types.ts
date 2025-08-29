@@ -3,7 +3,7 @@ export type ModifiersMap = Record<string, readonly string[]>;
 export type MergeModifiers<M1 extends ModifiersMap, M2 extends ModifiersMap> = {
   [K in keyof (M1 & M2) | keyof M1 | keyof M2]: K extends keyof M1
     ? K extends keyof M2
-      ? ReadonlyArray<M1[K][number] | M2[K][number]>
+      ? Array<M1[K][number] | M2[K][number]>
       : M1[K]
     : K extends keyof M2
       ? M2[K]
@@ -19,5 +19,5 @@ export type ModifiedBy<T extends ModifiersMap> = {
 };
 
 export type ModifiersValues<I extends ModifiersInput<ModifiersMap>> = Array<
-  Exclude<I[keyof I], undefined | null>
+  NonNullable<I[keyof I]>
 >;

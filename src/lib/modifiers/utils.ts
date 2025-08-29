@@ -23,34 +23,34 @@ export function combineModifiers<
   M1 extends ModifiersMap,
   M2 extends ModifiersMap,
 >(mods1: M1, mods2: M2): MergeModifiers<M1, M2> {
-  const result: Record<string, readonly string[]> = {};
+  const result = {} as MergeModifiers<M1, M2>;
 
-  const keys = new Set<string>([
-    ...Object.keys(mods1 as Record<string, readonly string[]>),
-    ...Object.keys(mods2 as Record<string, readonly string[]>),
-  ]);
+  const keys = new Set([
+    ...Object.keys(mods1),
+    ...Object.keys(mods2),
+  ] as (keyof M1 & keyof M2)[]);
 
   for (const key of keys) {
-    const v1 = (mods1 as Record<string, readonly string[] | undefined>)[key];
-    const v2 = (mods2 as Record<string, readonly string[] | undefined>)[key];
+    const v1 = mods1[key];
+    const v2 = mods2[key];
 
     if (v1 && v2) {
-      const merged = [...v1, ...v2.filter((x) => !v1.includes(x))];
-      result[key] = Object.freeze(merged);
+      const merged = new Set([...v1, ...v2]);
+      result[key] = Array.from(merged) as MergeModifiers<M1, M2>[typeof key];
     } else {
-      result[key] = (v1 ?? v2)!;
+      result[key] = (v1 ?? v2) as MergeModifiers<M1, M2>[typeof key];
     }
   }
 
-  return result as MergeModifiers<M1, M2>;
+  return result;
 }
 
 export function modifiersValues<I extends ModifiersInput<ModifiersMap>>(
   input?: I,
 ): ModifiersValues<I> {
-  if (!input) return [] as ModifiersValues<I>;
+  if (!input) return [];
 
-  const out: Array<string> = [];
+  const out = [] as ModifiersValues<I>;
 
   for (const value of Object.values(input) as I[keyof I][]) {
     if (value) {
@@ -58,5 +58,5 @@ export function modifiersValues<I extends ModifiersInput<ModifiersMap>>(
     }
   }
 
-  return out as ModifiersValues<I>;
+  return out;
 }

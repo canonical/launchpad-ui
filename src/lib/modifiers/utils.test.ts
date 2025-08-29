@@ -68,7 +68,6 @@ describe("combineModifiers", () => {
       shape: ["round"],
       size: ["small"],
     });
-    expect(Object.isFrozen(combined.color)).toBe(true);
   });
 
   it("should handle one empty ModifiersMap", () => {
