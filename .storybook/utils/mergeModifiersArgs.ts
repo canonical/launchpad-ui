@@ -31,6 +31,10 @@ export const mergeModifiersArgs: Decorator = (storyFn, context) => {
     delete transformedArgs[key];
   }
 
+  if (Object.keys(merged).length === 0) {
+    delete transformedArgs.modifiers;
+  }
+
   return storyFn({ ...context, args: transformedArgs });
 };
 
