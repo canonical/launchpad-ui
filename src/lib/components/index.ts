@@ -7,6 +7,7 @@ export * from "./ContextualMenuContent/index.js";
 export * from "./Icon/index.js";
 export * from "./IconText/index.js";
 export * from "./Modal/index.js";
+export * from "./ModalContent/index.js";
 export * from "./MulticolorIcon/index.js";
 export * from "./Popover/index.js";
 export * from "./Radio/index.js";
