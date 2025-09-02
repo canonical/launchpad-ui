@@ -1,9 +1,10 @@
+<!-- `Modal` component provides a mechanism to display content in a dialog overlay. To see an example of how to compose it with `ModalContent` see [Modal pattern](https://main--689106f3797b06760a3c9414.chromatic.com/?path=/docs/patterns-modal--docs). -->
+
 <script module lang="ts">
   import { defineMeta } from "@storybook/addon-svelte-csf";
-  import type { Snippet } from "svelte";
   import { Button } from "$lib/components/Button/index.js";
-  import Modal from "./Modal.svelte";
   import type { ModalMethods } from "./types.js";
+  import { Modal } from "./index.js";
 
   const { Story } = defineMeta({
     title: "Components/Modal",
@@ -13,14 +14,8 @@
       trigger: {
         control: false,
       },
-      footer: {
-        control: false,
-      },
       children: {
-        description: "Main content of the modal.",
-        table: {
-          type: { summary: "Snippet<[]>" },
-        },
+        control: false,
       },
     },
   });
@@ -41,31 +36,17 @@
   };
 </script>
 
-<Story
-  name="Default"
-  args={{
-    header: "Discard pending review?" as unknown as Snippet,
-    children:
-      "You have added 4 comments. Discarding the pending review will permanently delete them. Are you sure you want to continue?" as unknown as Snippet,
-  }}
->
-  {#snippet template({ trigger: _, ...args })}
+<Story name="Default">
+  {#snippet template({ children: _, trigger: __, ...args })}
     <Modal {...args}>
       {#snippet trigger(popovertarget, showModal)}
         <Button {popovertarget} onclick={showModal}>Show Modal</Button>
       {/snippet}
-      {#snippet footer(popovertarget, close)}
-        <Button {popovertarget} onclick={close}>Keep review</Button>
-        <Button
-          {popovertarget}
-          onclick={() => {
-            // doSomething();
-            close();
-          }}
-          modifiers={{ severity: "negative" }}
-        >
-          Discard review
-        </Button>
+      {#snippet children(popovertarget, close)}
+        <div style="padding: 1rem;">
+          <p>This is the modal content.</p>
+          <Button {popovertarget} onclick={close}>Close</Button>
+        </div>
       {/snippet}
     </Modal>
   {/snippet}
@@ -73,8 +54,7 @@
 
 <Story
   name="Controlled via instance methods"
-  args={{ closeOnOutsideClick: false, withCloseButton: false }}
-  argTypes={{ children: { control: false } }}
+  args={{ closeOnOutsideClick: false }}
 >
   {#snippet template({ children: __, trigger: _, ...args })}
     <!-- 

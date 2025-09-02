@@ -19,27 +19,16 @@ describe("Modal SSR", () => {
       expect(body).toContain("</dialog>");
     });
 
-    it("renders with close button by default", () => {
-      const { body } = render(Component);
-      expect(body).toContain(`aria-label="Close"`);
+    it("renders children", () => {
+      const { body } = render(Component, {
+        props: {
+          children: createRawSnippet(() => ({
+            render: () => `<span>Child Content</span>`,
+          })),
+        },
+      });
+      expect(body).toContain("Child Content");
     });
-
-    it.each(["header", "children", "footer"])(
-      "renders with %s when provided",
-      (slot) => {
-        const slotContent = `<span>${slot} Content</span>`;
-
-        const { body } = render(Component, {
-          props: {
-            [slot]: createRawSnippet(() => ({
-              render: () => slotContent,
-            })),
-          },
-        });
-
-        expect(body).toContain(slotContent);
-      },
-    );
   });
 
   describe("basic attributes", () => {
@@ -84,10 +73,10 @@ describe("Modal SSR", () => {
       );
     });
 
-    it("properly links footer controls with modal", () => {
+    it("properly links children controls with modal", () => {
       const { body } = render(Component, {
         props: {
-          footer: createRawSnippet<[string | undefined, () => void]>(
+          children: createRawSnippet<[string | undefined, () => void]>(
             (popovertarget) => ({
               render: () =>
                 `<button popovertarget="${popovertarget()}">Close</button>`,

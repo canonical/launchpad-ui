@@ -11,7 +11,7 @@ import type {
  > Dialogs that are displayed using the open attribute are non-modal.
  > It is possible to toggle the display of the dialog by adding or removing the boolean `open` attribute, but it is not the recommended practice.
 */
-type BaseProps = Omit<HTMLDialogAttributes, "open">;
+type BaseProps = Omit<HTMLDialogAttributes, "open" | "children">;
 type PopoverTarget = Exclude<HTMLButtonAttributes["popovertarget"], null>;
 
 export interface ModalProps extends BaseProps {
@@ -30,23 +30,13 @@ export interface ModalProps extends BaseProps {
    */
   closeOnOutsideClick?: boolean;
   /**
-   * Whether to show a close button in the header.
-   *
-   * @default true
-   */
-  withCloseButton?: boolean;
-  /**
-   * Header of the modal.
-   */
-  header?: Snippet;
-  /**
-   * Footer of the modal. Usually contains action buttons.
+   * Content of the modal.
    *
    * Snippet arguments:
-   * - `popovertarget`: The id of the modal element. Set it as `popovertarget` attribute on the button elements you want use to close the modal in a no-JS fallback mode.
+   * - `popovertarget`: The id of the modal element. Set it as `popovertarget` attribute on the button elements you want use to close the modal in a no-JS fallback mode. If there is JS, this will be `undefined`.
    * - `close`: A function to close the modal.
    */
-  footer?: Snippet<[popovertarget: PopoverTarget, close: () => void]>;
+  children?: Snippet<[popovertarget: PopoverTarget, close: () => void]>;
 }
 
 export interface ModalMethods {
