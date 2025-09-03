@@ -1,8 +1,8 @@
 <!-- @canonical/generator-ds 0.10.0-experimental.2 -->
 
 <script lang="ts">
+  import { Spinner } from "$lib/components/Spinner/index.js";
   import { modifiersValues } from "$lib/modifiers";
-  import { Spinner } from "../index.js";
   import { Content } from "./common";
   import type { ButtonProps } from "./types.js";
 

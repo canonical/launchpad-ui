@@ -101,7 +101,7 @@
     style:--position-area-popover={position}
     {...rest}
   >
-    {@render children?.()}
+    {@render children?.(id)}
   </div>
 </div>
 

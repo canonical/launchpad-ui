@@ -2,8 +2,10 @@
 
 import type { Snippet } from "svelte";
 import type { HTMLButtonAttributes, SvelteHTMLElements } from "svelte/elements";
+import type { WithoutChildren } from "$lib/type-utils.js";
 
-type BaseProps = SvelteHTMLElements["div"];
+type BaseProps = WithoutChildren<SvelteHTMLElements["div"]>;
+type PopoverTarget = NonNullable<HTMLButtonAttributes["popovertarget"]>;
 
 export type BlockPosition = "block-start" | "block-end";
 export type InlinePosition =
@@ -26,16 +28,14 @@ export interface PopoverProps extends BaseProps {
    * - `popovertarget`: The id of the popover element. Set it as `popovertarget` attribute on the button element you want to use as the trigger.
    * - `open`: A boolean indicating whether the popover is open or closed.
    */
-  trigger: Snippet<
-    [
-      popovertarget: NonNullable<HTMLButtonAttributes["popovertarget"]>,
-      open: boolean,
-    ]
-  >;
+  trigger: Snippet<[popovertarget: PopoverTarget, open: boolean]>;
   /**
    * Content to be displayed inside the popover.
+   *
+   * Snippet arguments:
+   * - `popovertarget`: The id of the popover element. Set it as `popovertarget` attribute on the button element you want to use to control the popover.
    */
-  children: Snippet;
+  children: Snippet<[popovertarget: PopoverTarget]>;
   /**
    * Popover position. This is a subset of valid CSS [<position-area>](https://developer.mozilla.org/en-US/docs/Web/CSS/position-area) keyword combinations.
    *

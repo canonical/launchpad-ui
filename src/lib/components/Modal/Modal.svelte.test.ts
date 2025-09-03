@@ -29,36 +29,28 @@ const trigger = createRawSnippet<[string | undefined, () => void]>(
   }),
 );
 
-const header = createRawSnippet(() => ({
-  render: () => `<span>Header Content</span>`,
+const childrenWithSnippetProps = createRawSnippet<
+  [string | undefined, () => void]
+>((popovertarget, close) => ({
+  render: () => `<button>Button in children</button>`,
+  setup: (element) => {
+    const clickHandler = close();
+    element.addEventListener("click", clickHandler);
+
+    $effect(() => {
+      const popovertargetValue = popovertarget();
+      if (popovertargetValue) {
+        element.setAttribute("popovertarget", popovertargetValue);
+      } else {
+        element.removeAttribute("popovertarget");
+      }
+    });
+
+    return () => {
+      element.removeEventListener("click", clickHandler);
+    };
+  },
 }));
-
-const children = createRawSnippet(() => ({
-  render: () => `<div>Body Content</div>`,
-}));
-
-const footer = createRawSnippet<[string | undefined, () => void]>(
-  (popovertarget, close) => ({
-    render: () => `<button>Footer Action</button>`,
-    setup: (element) => {
-      const clickHandler = close();
-      element.addEventListener("click", clickHandler);
-
-      $effect(() => {
-        const popovertargetValue = popovertarget();
-        if (popovertargetValue) {
-          element.setAttribute("popovertarget", popovertargetValue);
-        } else {
-          element.removeAttribute("popovertarget");
-        }
-      });
-
-      return () => {
-        element.removeEventListener("click", clickHandler);
-      };
-    },
-  }),
-);
 
 describe("Modal component", () => {
   it("renders dialog element", async () => {
@@ -69,20 +61,59 @@ describe("Modal component", () => {
 
   describe("Opening the Modal", () => {
     it("is opened when `showModal` on the dialog element is called", async () => {
-      const page = render(Component, { props: { trigger } });
+      const page = render(Component, {
+        props: {
+          children: createRawSnippet(() => ({
+            render: () => `<div>Body Content</div>`,
+          })),
+        },
+      });
       (testIdLocator(page).element() as HTMLDialogElement).showModal();
       await expect.element(page.getByRole("dialog")).toHaveAttribute("open");
       await expect.element(page.getByRole("dialog")).toBeVisible();
     });
 
     it("is opened by open() supplied via trigger snippet", async () => {
-      const page = render(Component, { props: { trigger } });
+      const page = render(Component, {
+        props: {
+          trigger,
+          children: createRawSnippet(() => ({
+            render: () => `<div>Body Content</div>`,
+          })),
+        },
+      });
       await expect.element(testIdLocator(page)).not.toHaveAttribute("open");
 
       const triggerButton = page.getByRole("button", { name: "Open Modal" });
       await triggerButton.click();
       await expect.element(page.getByRole("dialog")).toHaveAttribute("open");
       await expect.element(page.getByRole("dialog")).toBeVisible();
+    });
+  });
+
+  describe("Closing the Modal", () => {
+    it("is closed when `close` on the dialog element is called", async () => {
+      const page = render(Component, { props: { trigger } });
+      await showModal(page);
+      (testIdLocator(page).element() as HTMLDialogElement).close();
+      await expect
+        .element(page.getByRole("dialog"))
+        .not.toHaveAttribute("open");
+    });
+
+    it("is closed by close() supplied via children snippet", async () => {
+      const page = render(Component, {
+        props: { children: childrenWithSnippetProps },
+      });
+      await showModal(page);
+
+      const closeButton = page.getByRole("button", {
+        name: "Button in children",
+      });
+      await closeButton.click();
+      await expect
+        .element(page.getByRole("dialog"))
+        .not.toHaveAttribute("open");
     });
   });
 
@@ -108,50 +139,19 @@ describe("Modal component", () => {
     });
   });
 
-  describe("Content", () => {
-    it("renders header, children, and footer when provided", async () => {
-      const page = render(Component, { props: { header, children, footer } });
-      await showModal(page);
-
-      await expect
-        .element(page.getByRole("dialog"))
-        .toHaveTextContent("Header Content");
-      await expect
-        .element(page.getByRole("dialog"))
-        .toHaveTextContent("Body Content");
-      await expect
-        .element(page.getByRole("dialog"))
-        .toHaveTextContent("Footer Action");
+  it("renders children", async () => {
+    const page = render(Component, {
+      props: {
+        children: createRawSnippet(() => ({
+          render: () => `<div>Body Content</div>`,
+        })),
+      },
     });
-  });
+    await showModal(page);
 
-  describe("Close button", () => {
-    it("shows close button by default", async () => {
-      const page = render(Component);
-      await showModal(page);
-      await expect
-        .element(page.getByRole("button", { name: "Close" }))
-        .toBeInTheDocument();
-    });
-
-    it("can hide close button", async () => {
-      const page = render(Component, { props: { withCloseButton: false } });
-      await showModal(page);
-      await expect.element(page.getByRole("dialog")).toBeVisible();
-      await expect
-        .element(page.getByRole("button", { name: "Close" }))
-        .not.toBeInTheDocument();
-    });
-
-    it("closes the modal when clicked", async () => {
-      const page = render(Component);
-      await showModal(page);
-      const closeButton = page.getByRole("button", { name: "Close" });
-      await closeButton.click();
-      await expect
-        .element(page.getByRole("dialog"))
-        .not.toHaveAttribute("open");
-    });
+    await expect
+      .element(page.getByRole("dialog"))
+      .toHaveTextContent("Body Content");
   });
 
   describe("Removal of the fallback when mounted", () => {
@@ -167,10 +167,14 @@ describe("Modal component", () => {
       await expect.element(triggerButton).not.toHaveAttribute("popovertarget");
     });
 
-    it("popovertarget passed to footer is undefined", async () => {
-      const page = render(Component, { props: { footer } });
+    it("popovertarget passed to children is undefined", async () => {
+      const page = render(Component, {
+        props: { children: childrenWithSnippetProps },
+      });
       await showModal(page);
-      const footerButton = page.getByRole("button", { name: "Footer Action" });
+      const footerButton = page.getByRole("button", {
+        name: "Button in children",
+      });
       await expect.element(footerButton).not.toHaveAttribute("popovertarget");
     });
   });
