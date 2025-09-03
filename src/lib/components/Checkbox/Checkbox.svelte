@@ -104,6 +104,7 @@ If `bind:group` is used, the `checked` prop must be omitted, and each checkbox i
     appearance: none;
     flex-grow: 0;
     flex-shrink: 0;
+    outline-offset: 1px;
 
     width: var(--dimension-size-checkbox);
     height: var(--dimension-size-checkbox);

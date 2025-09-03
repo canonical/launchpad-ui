@@ -15,3 +15,21 @@ html {
 body {
   font: var(--tmp-typography-paragraph-s);
 }
+
+*:focus-visible {
+  /* 
+  TODO: Should it be controlled on the level of modifiers (severity)? If so, how?
+  Outline colors, according to vanilla should:
+    - on `Chip` stay default no matter the modifier,
+      - OK, we just don't subscribe to the context at all;
+    - on `TextInput` follow the values of the secondary context,
+      - OK, we subscribe to the secondary context;
+    - on `Button` stay default for all severities but `positive`, where it should become a very dark green,
+      - not OK, we don't have the required value in the severity context.
+  */
+  outline-color: var(--tmp-color-border-focus);
+  outline-style: solid;
+  outline-width: var(--dimension-stroke-thickness-large);
+  /* Most elements have the outline on the inside of the element. Needs to be adjusted for specific cases (e.g. checkbox, radio) */
+  outline-offset: calc(var(--dimension-stroke-thickness-large) * -1);
+}
