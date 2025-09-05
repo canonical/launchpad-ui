@@ -18,6 +18,7 @@
           type: {
             summary: "boolean",
           },
+          category: "properties",
         },
       },
     },

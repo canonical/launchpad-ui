@@ -1,7 +1,7 @@
 <script module lang="ts">
   import { defineMeta } from "@storybook/addon-svelte-csf";
   import { Icon } from "$lib/components/Icon/index.js";
-  import Helper from "./Helper.svelte";
+  import { Helper } from "./index.js";
 
   const { Story } = defineMeta({
     title: "Components/ContextualMenuContent/Helper",

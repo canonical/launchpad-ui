@@ -1,0 +1,51 @@
+.ds.option {
+  --color-background-option: var(--tmp-color-background-default);
+  --color-background-option-hover: var(--tmp-color-background-hover);
+  --color-background-option-active: var(--tmp-color-background-active);
+  --opacity-option-disabled: var(--tmp-opacity-muted);
+  --dimension-padding-inline-option: var(--tmp-dimension-spacing-inline-m);
+  --dimension-padding-block-option: var(--tmp-dimension-spacing-block-xxs);
+  --typography-font-option: var(--tmp-typography-paragraph-default);
+  --typography-font-option-secondary: var(--tmp-typography-paragraph-xs);
+  --color-text-option: var(--tmp-color-text-default);
+  --color-text-option-secondary: var(--tmp-color-text-muted);
+  --dimension-margin-end-option-checkable: var(
+    --tmp-dimension-spacing-inline-m
+  );
+  --dimension-margin-end-option-icon: var(--tmp-dimension-spacing-inline-xs);
+  --dimension-margin-start-option-trailing-text: var(
+    --tmp-dimension-spacing-inline-xs
+  );
+  --dimension-margin-start-option-switch: var(
+    --tmp-dimension-spacing-inline-xs
+  );
+
+  text-align: left;
+  display: grid;
+  align-items: center;
+  grid-template:
+    "checkable icon text trailing-text switch" auto
+    ". . secondary-text . ." auto / auto auto 1fr auto auto;
+  cursor: pointer;
+
+  background-color: var(--color-background-option);
+  padding-inline: var(--dimension-padding-inline-option);
+  padding-block: var(--dimension-padding-block-option);
+  font: var(--typography-font-option);
+  color: var(--color-text-option);
+  transition: background-color var(--tmp-transition-duration-snap)
+    var(--tmp-transition-timing-ease-in);
+
+  &:hover:not(.disabled) {
+    background-color: var(--color-background-option-hover);
+  }
+
+  &:active:not(.disabled) {
+    background-color: var(--color-background-option-active);
+  }
+
+  &.disabled {
+    cursor: not-allowed;
+    opacity: var(--opacity-option-disabled);
+  }
+}
