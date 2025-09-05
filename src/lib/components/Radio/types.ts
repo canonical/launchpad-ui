@@ -7,13 +7,13 @@ type BaseProps = Omit<
   "type" | "children" | "indeterminate"
 >;
 
-interface CheckedControlledRadioProps<T> extends BaseProps {
+export interface CheckedControlledRadioProps<T> extends BaseProps {
   value?: T;
   group?: never;
   checked?: boolean;
 }
 
-interface GroupControlledRadioProps<T> extends BaseProps {
+export interface GroupControlledRadioProps<T> extends BaseProps {
   value: T;
   group: T;
   checked?: never;

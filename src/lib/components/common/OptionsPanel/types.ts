@@ -2,10 +2,11 @@
 
 import type { Snippet } from "svelte";
 import type { SvelteHTMLElements } from "svelte/elements";
+import type { WithRef } from "$lib/type-utils.js";
 
 type BaseProps = SvelteHTMLElements["div"];
 
-export interface OptionsPanelProps extends BaseProps {
+export interface OptionPanelContentProps {
   /**
    * Helper content providing additional context or information for the entire panel.
    */
@@ -15,3 +16,8 @@ export interface OptionsPanelProps extends BaseProps {
    */
   footer?: Snippet<[]>;
 }
+
+export interface OptionsPanelProps
+  extends BaseProps,
+    WithRef<HTMLDivElement>,
+    OptionPanelContentProps {}
