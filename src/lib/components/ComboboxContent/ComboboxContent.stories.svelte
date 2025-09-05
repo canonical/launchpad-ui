@@ -78,8 +78,14 @@
 </script>
 
 <Story name="Multi selection">
-  {#snippet template(args)}
+  {#snippet template({ search: _, ...args })}
     <ComboboxContent {...args}>
+      {#snippet search()}
+        <ComboboxContent.Search
+          label="Merge Proposal reviewers"
+          placeholder="Search users..."
+        />
+      {/snippet}
       <ComboboxContent.Group groupTitle="Most Recent">
         <ComboboxContent.Group>
           {#each users2 as user (user.id)}
@@ -138,8 +144,14 @@
 </Story>
 
 <Story name="Single selection">
-  {#snippet template(args)}
+  {#snippet template({ search: _, ...args })}
     <ComboboxContent {...args}>
+      {#snippet search()}
+        <ComboboxContent.Search
+          label="Project's owner"
+          placeholder="Search users..."
+        />
+      {/snippet}
       <ComboboxContent.Group groupTitle="Most Recent">
         <ComboboxContent.Group>
           {#each users2 as user (user.id)}
@@ -198,8 +210,15 @@
 </Story>
 
 <Story name="Empty">
-  {#snippet template(args)}
+  {#snippet template({ search: _, ...args })}
     <ComboboxContent {...args}>
+      {#snippet search()}
+        <ComboboxContent.Search
+          label="Favorite sport"
+          placeholder="Search sports..."
+          value="Soccer"
+        />
+      {/snippet}
       <ComboboxContent.NoResults />
     </ComboboxContent>
   {/snippet}

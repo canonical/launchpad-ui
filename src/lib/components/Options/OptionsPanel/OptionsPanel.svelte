@@ -10,6 +10,7 @@
     children,
     helper,
     footer,
+    ref = $bindable(),
     ...rest
   }: OptionsPanelProps = $props();
 
@@ -20,6 +21,7 @@
   class={[componentCssClassName, className]}
   aria-describedby={helper ? helperId : undefined}
   data-testid="options-panel"
+  bind:this={ref}
   {...rest}
 >
   {@render children?.()}

@@ -14,4 +14,10 @@ export interface OptionsPanelProps extends BaseProps {
    * Footer content, often used for actions related to the panel's content.
    */
   footer?: Snippet<[]>;
+  /**
+   * Reference to the underlying HTML element.
+   *
+   * *@bindable*
+   */
+  ref?: HTMLDivElement;
 }
