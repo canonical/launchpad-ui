@@ -2,6 +2,7 @@
   import { defineMeta } from "@storybook/addon-svelte-csf";
   import { Button } from "$lib/components/Button/index.js";
   import { Icon } from "$lib/components/Icon/index.js";
+  import { UserAvatar } from "../UserAvatar/index.js";
   import { ComboboxContent } from "./index.js";
 
   const { Story } = defineMeta({
@@ -19,39 +20,187 @@
   });
 </script>
 
-<Story name="Default" asChild>
-  <ComboboxContent>
-    <ComboboxContent.Group groupTitle="Most Recent"></ComboboxContent.Group>
-    <ComboboxContent.Group groupTitle="Contributors"></ComboboxContent.Group>
-    {#snippet helper(id)}
-      <ComboboxContent.Helper {id}>
-        {#snippet icon()}
-          <Icon name="information" />
-        {/snippet}
-        Helper Text
-      </ComboboxContent.Helper>
-    {/snippet}
-    {#snippet footer()}
-      <ComboboxContent.Footer>
-        <Button modifiers={{ severity: "base", density: "dense" }}>
-          Cancel
-        </Button>
-        <Button modifiers={{ density: "dense" }}>Save</Button>
-      </ComboboxContent.Footer>
-    {/snippet}
-  </ComboboxContent>
+<script lang="ts">
+  const users1 = [
+    {
+      id: 1,
+      userName: "Wade Cooper",
+      admin: true,
+      userAvatarUrl: "https://i.pravatar.cc/150?img=48",
+    },
+    {
+      id: 2,
+      userName: "Arlene Mccoy",
+      userAvatarUrl: "https://i.pravatar.cc/150?img=49",
+    },
+    {
+      id: 3,
+      userName: "Devon Webb",
+      userAvatarUrl: "https://i.pravatar.cc/150?img=50",
+    },
+    {
+      id: 4,
+      userName: "Tom Cook",
+      userAvatarUrl: "https://i.pravatar.cc/150?img=51",
+    },
+    {
+      id: 5,
+      userName: "Tanya Fox",
+      admin: true,
+      userAvatarUrl: "https://i.pravatar.cc/150?img=52",
+    },
+    {
+      id: 6,
+      userName: "Hellen Schmidt",
+      userAvatarUrl: "https://i.pravatar.cc/150?img=53",
+    },
+  ];
+
+  const users2 = [
+    {
+      id: 7,
+      userName: "Ralph Edwards",
+      admin: true,
+      userAvatarUrl: "https://i.pravatar.cc/150?img=60",
+    },
+    {
+      id: 8,
+      userName: "Esther Howard",
+      userAvatarUrl: "https://i.pravatar.cc/150?img=61",
+    },
+    {
+      id: 9,
+      userName: "Cameron Williamson",
+      admin: true,
+      userAvatarUrl: "https://i.pravatar.cc/150?img=56",
+    },
+  ];
+</script>
+
+<Story name="Multi selection">
+  {#snippet template(args)}
+    <ComboboxContent {...args}>
+      <ComboboxContent.Group groupTitle="Most Recent">
+        <ComboboxContent.Group>
+          {#each users2 as user (user.id)}
+            <ComboboxContent.Item
+              text={user.userName}
+              name="user"
+              value={user.id}
+              secondaryText={user.admin ? "administrator" : undefined}
+              >{#snippet icon()}
+                <UserAvatar
+                  userName={user.userName}
+                  userAvatarUrl={user.userAvatarUrl}
+                  aria-hidden="true"
+                />
+              {/snippet}</ComboboxContent.Item
+            >
+          {/each}
+        </ComboboxContent.Group>
+      </ComboboxContent.Group>
+      <ComboboxContent.Group groupTitle="Contributors">
+        {#each users1 as user (user.id)}
+          <ComboboxContent.Item
+            text={user.userName}
+            name="user"
+            value={user.id}
+            secondaryText={user.admin ? "administrator" : undefined}
+          >
+            {#snippet icon()}
+              <UserAvatar
+                userName={user.userName}
+                userAvatarUrl={user.userAvatarUrl}
+                aria-hidden="true"
+              />
+            {/snippet}
+          </ComboboxContent.Item>
+        {/each}
+      </ComboboxContent.Group>
+      {#snippet helper(id)}
+        <ComboboxContent.Helper {id}>
+          {#snippet icon()}
+            <Icon name="information" />
+          {/snippet}
+          Select reviewers for the project
+        </ComboboxContent.Helper>
+      {/snippet}
+      {#snippet footer()}
+        <ComboboxContent.Footer>
+          <Button modifiers={{ severity: "base", density: "dense" }}>
+            Cancel
+          </Button>
+          <Button modifiers={{ density: "dense" }}>Save</Button>
+        </ComboboxContent.Footer>
+      {/snippet}
+    </ComboboxContent>
+  {/snippet}
 </Story>
 
-<Story name="Empty" asChild>
-  <ComboboxContent>
-    <ComboboxContent.NoResults />
-    {#snippet helper(id)}
-      <ComboboxContent.Helper {id}>
-        {#snippet icon()}
-          <Icon name="information" />
-        {/snippet}
-        Helper Text
-      </ComboboxContent.Helper>
-    {/snippet}
-  </ComboboxContent>
+<Story name="Single selection">
+  {#snippet template(args)}
+    <ComboboxContent {...args}>
+      <ComboboxContent.Group groupTitle="Most Recent">
+        <ComboboxContent.Group>
+          {#each users2 as user (user.id)}
+            <ComboboxContent.Item
+              text={user.userName}
+              name="user"
+              value={user.id}
+              secondaryText={user.admin ? "administrator" : undefined}
+              >{#snippet icon()}
+                <UserAvatar
+                  userName={user.userName}
+                  userAvatarUrl={user.userAvatarUrl}
+                  aria-hidden="true"
+                />
+              {/snippet}</ComboboxContent.Item
+            >
+          {/each}
+        </ComboboxContent.Group>
+      </ComboboxContent.Group>
+      <ComboboxContent.Group groupTitle="Contributors">
+        {#each users1 as user (user.id)}
+          <ComboboxContent.Item
+            text={user.userName}
+            name="user"
+            value={user.id}
+            secondaryText={user.admin ? "administrator" : undefined}
+          >
+            {#snippet icon()}
+              <UserAvatar
+                userName={user.userName}
+                userAvatarUrl={user.userAvatarUrl}
+                aria-hidden="true"
+              />
+            {/snippet}
+          </ComboboxContent.Item>
+        {/each}
+      </ComboboxContent.Group>
+      {#snippet helper(id)}
+        <ComboboxContent.Helper {id}>
+          {#snippet icon()}
+            <Icon name="information" />
+          {/snippet}
+          Select the project's owner
+        </ComboboxContent.Helper>
+      {/snippet}
+      {#snippet footer()}
+        <ComboboxContent.Footer>
+          <Button modifiers={{ severity: "base", density: "dense" }}>
+            Cancel
+          </Button>
+          <Button modifiers={{ density: "dense" }}>Save</Button>
+        </ComboboxContent.Footer>
+      {/snippet}
+    </ComboboxContent>
+  {/snippet}
+</Story>
+
+<Story name="Empty">
+  {#snippet template(args)}
+    <ComboboxContent {...args}>
+      <ComboboxContent.NoResults />
+    </ComboboxContent>
+  {/snippet}
 </Story>

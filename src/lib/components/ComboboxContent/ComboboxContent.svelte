@@ -2,9 +2,16 @@
 
 <script lang="ts">
   import { OptionsPanel } from "../Options/index.js";
+  import { setComboboxContext } from "./context.js";
   import type { ComboboxContentProps } from "./types.js";
 
-  let { ...rest }: ComboboxContentProps = $props();
+  let { type = "multi", ...rest }: ComboboxContentProps = $props();
+
+  setComboboxContext({
+    get type() {
+      return type;
+    },
+  });
 </script>
 
 <OptionsPanel {...rest} />
