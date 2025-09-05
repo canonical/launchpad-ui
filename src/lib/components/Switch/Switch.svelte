@@ -107,6 +107,7 @@ The presence of a Switch's `value` in the `group` array determines (and is refle
     appearance: none;
     position: relative;
     cursor: pointer;
+    outline-offset: 0;
 
     width: var(--dimension-width-switch);
     height: var(--dimension-height-switch);

@@ -90,6 +90,7 @@ If `bind:group` is used, the `checked` prop must be omitted, and each radio in t
     appearance: none;
     flex-grow: 0;
     flex-shrink: 0;
+    outline-offset: 1px;
 
     width: var(--dimension-size-radio);
     height: var(--dimension-size-radio);
