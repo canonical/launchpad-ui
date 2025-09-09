@@ -20,6 +20,11 @@
           },
         },
       },
+      href: {
+        table: {
+          category: "properties",
+        },
+      },
     },
     args: {
       href: "#",

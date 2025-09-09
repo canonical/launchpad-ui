@@ -1,7 +1,8 @@
 <script module lang="ts">
   import { defineMeta } from "@storybook/addon-svelte-csf";
   import { Icon } from "$lib/components/Icon/index.js";
-  import Helper from "./Helper.svelte";
+  import { ContextualMenuContent } from "../../index.js";
+  import { Helper } from "./index.js";
 
   const { Story } = defineMeta({
     title: "Components/ContextualMenuContent/Helper",
@@ -23,11 +24,11 @@
 <Story name="With icon">
   <!-- eslint-disable-next-line @typescript-eslint/no-unused-vars -->
   {#snippet template({ children, ...args })}
-    <Helper {...args}>
+    <ContextualMenuContent.Helper {...args}>
       {#snippet icon()}
         <Icon name="information" />
       {/snippet}
       Helper text
-    </Helper>
+    </ContextualMenuContent.Helper>
   {/snippet}
 </Story>

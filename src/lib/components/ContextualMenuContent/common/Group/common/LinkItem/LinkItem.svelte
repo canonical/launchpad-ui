@@ -1,39 +1,17 @@
 <!-- @canonical/generator-ds 0.10.0-experimental.0 -->
 
 <script lang="ts">
+  import { LinkOption } from "$lib/components/common/index.js";
   import { getGroupContext } from "../../context.js";
-  import { ItemContent } from "../common/index.js";
   import type { LinkItemProps } from "./types.js";
-  import "../item.css";
 
-  const componentCssClassName =
-    "ds contextual-menu-content-link-item contextual-menu-content-item";
-
-  let {
-    class: className,
-    text,
-    icon,
-    secondaryText,
-    trailingText,
-    disabled: disabledProp,
-    href,
-    ...rest
-  }: LinkItemProps = $props();
+  let { disabled: disabledProp, ...rest }: LinkItemProps = $props();
 
   const groupContext = getGroupContext();
   const disabled = $derived(groupContext?.disabled || disabledProp);
 </script>
 
-<a
-  class={[componentCssClassName, className, { disabled }]}
-  href={disabled ? undefined : href}
-  role={disabled ? "link" : undefined}
-  aria-disabled={disabled}
-  tabindex={disabled ? -1 : 0}
-  {...rest}
->
-  <ItemContent {text} {icon} {secondaryText} {trailingText} />
-</a>
+<LinkOption {disabled} {...rest} />
 
 <!-- @component
 `ContextualMenuContent.LinkItem` renders an anchor menu item.
@@ -44,9 +22,3 @@
 <ContextualMenuContent.LinkItem href="https://launchpad.net" target="_blank" rel="noopener noreferrer" text="View in Launchpad Classic" />
 ```
 -->
-
-<style>
-  .ds.contextual-menu-content-link-item {
-    text-decoration: none;
-  }
-</style>
