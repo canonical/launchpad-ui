@@ -5,4 +5,7 @@ import type { CheckboxProps } from "$lib/components/index.js";
 import type { OptionContentProps } from "../common/index.js";
 
 export type CheckboxOptionProps<T = HTMLInputAttributes["value"]> =
-  CheckboxProps<T> & OptionContentProps;
+  CheckboxProps<T> &
+    OptionContentProps & {
+      labelRef?: HTMLLabelElement;
+    };

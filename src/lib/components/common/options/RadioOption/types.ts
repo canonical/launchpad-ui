@@ -5,4 +5,6 @@ import type { RadioProps } from "$lib/components/Radio/index.js";
 import type { OptionContentProps } from "../common/index.js";
 
 export type RadioOptionProps<T = HTMLInputAttributes["value"]> = RadioProps<T> &
-  OptionContentProps;
+  OptionContentProps & {
+    labelRef?: HTMLLabelElement;
+  };

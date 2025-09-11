@@ -3,6 +3,7 @@ export * from "./Breadcrumbs/index.js";
 export * from "./Button/index.js";
 export * from "./Checkbox/index.js";
 export * from "./Chip/index.js";
+export * from "./Combobox/index.js";
 export * from "./ContextualMenuContent/index.js";
 export * from "./Icon/index.js";
 export * from "./IconText/index.js";

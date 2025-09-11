@@ -4,13 +4,13 @@ import type { HTMLInputAttributes } from "svelte/elements";
 
 type BaseProps = Omit<HTMLInputAttributes, "type" | "children">;
 
-interface CheckedControlledCheckboxProps<T> extends BaseProps {
+export interface CheckedControlledCheckboxProps<T> extends BaseProps {
   value?: T;
   group?: never;
   checked?: boolean;
 }
 
-interface GroupControlledCheckboxProps<T> extends BaseProps {
+export interface GroupControlledCheckboxProps<T> extends BaseProps {
   value: T;
   group: T[];
   checked?: never;
