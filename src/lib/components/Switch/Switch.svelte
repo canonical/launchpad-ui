@@ -16,7 +16,7 @@
     ...rest
   }: SwitchProps<T> = $props();
 
-  const onchange: typeof onchangeProp = $derived((e) => {
+  const onchange: typeof onchangeProp = (e) => {
     onchangeProp?.(e);
     const newChecked = (e.target as HTMLInputElement).checked;
     checkedProp = newChecked;
@@ -29,7 +29,7 @@
         group = group.filter((v) => v !== value);
       }
     }
-  });
+  };
 
   const checked = $derived(
     value !== undefined && group?.includes(value) ? true : checkedProp,

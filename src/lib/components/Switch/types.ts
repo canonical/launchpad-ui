@@ -2,7 +2,7 @@
 
 import type { HTMLInputAttributes } from "svelte/elements";
 
-export type BaseProps = Omit<
+type BaseProps = Omit<
   HTMLInputAttributes,
   | "type"
   | "children"

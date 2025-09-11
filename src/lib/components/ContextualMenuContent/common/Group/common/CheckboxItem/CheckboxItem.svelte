@@ -24,12 +24,16 @@
 />
 
 <!-- @component
-`ContextualMenuContent.CheckboxItem` renders a checkbox control.
-
-Component supports group binding. See `Checkbox` for more details.
+`Combobox.RadioOption` represents a selectable option within a `Combobox` with `type="single-select"`.
 
 ## Example Usage
 ```svelte
-<ContextualMenuContent.CheckboxItem text="Show whitespace changes" bind:checked={showWhitespace} />
+<Combobox.RadioOption text="Option 1" checked />
+<Combobox.RadioOption text="Option 2" secondaryText="Additional info" onchange={handleChange} />
+<Combobox.RadioOption text="Option 3" >
+  {#snippet icon()}
+    <Icon name="check" />
+  {/snippet}
+</Combobox.RadioOption>
 ```
 -->

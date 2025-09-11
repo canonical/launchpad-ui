@@ -13,12 +13,12 @@
     ...rest
   }: RadioProps<T> = $props();
 
-  const onchange: typeof onchangeProp = $derived((e) => {
+  const onchange: typeof onchangeProp = (e) => {
     onchangeProp?.(e);
     if (value && (e.target as HTMLInputElement).checked) {
       group = value;
     }
-  });
+  };
 </script>
 
 <input

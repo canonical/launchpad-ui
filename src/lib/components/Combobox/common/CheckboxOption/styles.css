@@ -1,0 +1,4 @@
+.ds.combobox-option.active {
+  outline: var(--focus-outline);
+  outline-offset: var(--focus-outline-offset);
+}
