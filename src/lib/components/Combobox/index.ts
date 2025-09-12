@@ -4,6 +4,7 @@ import {
   Footer,
   Group,
   Helper,
+  Loading,
   NoResults,
   RadioOption,
   Search,
@@ -17,6 +18,7 @@ const Combobox = ComboboxRoot as typeof ComboboxRoot & {
   Search: typeof Search;
   CheckboxOption: typeof CheckboxOption;
   RadioOption: typeof RadioOption;
+  Loading: typeof Loading;
 };
 
 Combobox.Footer = Footer;
@@ -26,6 +28,7 @@ Combobox.NoResults = NoResults;
 Combobox.Search = Search;
 Combobox.CheckboxOption = CheckboxOption;
 Combobox.RadioOption = RadioOption;
+Combobox.Loading = Loading;
 
 export { Combobox };
 export type { ComboboxProps } from "./types.js";
@@ -35,6 +38,7 @@ export type {
   FooterProps as ComboboxFooterProps,
   GroupProps as ComboboxGroupProps,
   HelperProps as ComboboxHelperProps,
+  LoadingProps as ComboboxLoadingProps,
   NoResultsProps as ComboboxNoResultsProps,
   RadioOptionProps as ComboboxRadioOptionProps,
   SearchProps as ComboboxSearchProps,

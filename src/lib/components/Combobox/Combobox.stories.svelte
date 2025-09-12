@@ -30,6 +30,8 @@
 </script>
 
 <script lang="ts">
+  import { Popover } from "../Popover/index.js";
+
   type User = {
     id: number;
     userName: string;
@@ -130,37 +132,20 @@
     },
   ];
 
-  const users1MultiSelect = $state(users1);
-  const users2MultiSelect = $state(users2);
+  const users1Story1 = $state(users1);
+  const users2Story1 = $state(users2);
 
-  let queryMultiSelect = $state("");
+  let queryStory1 = $state("");
 
-  const users1MultiSelectFiltered = $derived(
-    users1MultiSelect.filter((user) =>
-      user.userName.toLowerCase().includes(queryMultiSelect.toLowerCase()),
-    ),
-  );
-  const users2MultiSelectFiltered = $derived(
-    users2MultiSelect.filter((user) =>
-      user.userName.toLowerCase().includes(queryMultiSelect.toLowerCase()),
-    ),
-  );
+  const users1Story2 = $state(users1);
+  const users2Story2 = $state(users2);
 
-  const users1SingleSelect = $state(users1);
-  const users2SingleSelect = $state(users2);
+  let queryStory2 = $state("");
 
-  let querySingleSelect = $state("");
+  const users1Story3 = $state(users1);
+  const users2Story3 = $state(users2);
 
-  const users1SingleSelectFiltered = $derived(
-    users1SingleSelect.filter((user) =>
-      user.userName.toLowerCase().includes(querySingleSelect.toLowerCase()),
-    ),
-  );
-  const users2SingleSelectFiltered = $derived(
-    users2SingleSelect.filter((user) =>
-      user.userName.toLowerCase().includes(querySingleSelect.toLowerCase()),
-    ),
-  );
+  let queryStory3 = $state("");
 </script>
 
 <Story name="Multi Select" args={{ type: "multi" }}>
@@ -176,19 +161,21 @@
         <Combobox.Search
           label="Merge Proposal reviewers"
           placeholder="Search users..."
-          bind:value={queryMultiSelect}
+          bind:value={queryStory1}
         />
       {/snippet}
       <div style="max-height: 350px; overflow: auto;">
         <Combobox.Group groupTitle="Most Recent">
-          {#each users1MultiSelectFiltered as user (user.id)}
+          {#each users1Story1.filter((user) => user.userName
+              .toLowerCase()
+              .includes(queryStory1.toLowerCase())) as user (user.id)}
             <Combobox.CheckboxOption
               text={user.userName}
               value={user.id}
               secondaryText={user.admin ? "administrator" : undefined}
               checked={user.selected}
               onchange={(e) =>
-                (users1MultiSelect.find((u) => u.id === user.id)!.selected = (
+                (users1Story1.find((u) => u.id === user.id)!.selected = (
                   e.target as HTMLInputElement
                 ).checked)}
               >{#snippet icon()}
@@ -204,14 +191,16 @@
           {/each}
         </Combobox.Group>
         <Combobox.Group groupTitle="Contributors">
-          {#each users2MultiSelectFiltered as user (user.id)}
+          {#each users2Story1.filter((user) => user.userName
+              .toLowerCase()
+              .includes(queryStory1.toLowerCase())) as user (user.id)}
             <Combobox.CheckboxOption
               text={user.userName}
               value={user.id}
               secondaryText={user.admin ? "administrator" : undefined}
               checked={user.selected}
               onchange={(e) =>
-                (users2MultiSelect.find((u) => u.id === user.id)!.selected = (
+                (users2Story1.find((u) => u.id === user.id)!.selected = (
                   e.target as HTMLInputElement
                 ).checked)}
             >
@@ -261,19 +250,21 @@
         <Combobox.Search
           label="Project owner"
           placeholder="Search users..."
-          bind:value={querySingleSelect}
+          bind:value={queryStory2}
         />
       {/snippet}
       <div style="max-height: 350px; overflow: auto;">
         <Combobox.Group groupTitle="Most Recent">
-          {#each users1SingleSelectFiltered as user (user.id)}
+          {#each users1Story2.filter((user) => user.userName
+              .toLowerCase()
+              .includes(queryStory2.toLowerCase())) as user (user.id)}
             <Combobox.RadioOption
               text={user.userName}
               value={user.id}
               secondaryText={user.admin ? "administrator" : undefined}
               checked={user.selected}
               onchange={() => {
-                [...users1SingleSelect, ...users2SingleSelect].forEach((u) => {
+                [...users1Story2, ...users2Story2].forEach((u) => {
                   u.selected = u.id === user.id;
                 });
               }}
@@ -290,14 +281,16 @@
           {/each}
         </Combobox.Group>
         <Combobox.Group groupTitle="Contributors">
-          {#each users2SingleSelectFiltered as user (user.id)}
+          {#each users2Story2.filter((user) => user.userName
+              .toLowerCase()
+              .includes(queryStory2.toLowerCase())) as user (user.id)}
             <Combobox.RadioOption
               text={user.userName}
               value={user.id}
               secondaryText={user.admin ? "administrator" : undefined}
               checked={user.selected}
               onchange={() => {
-                [...users1SingleSelect, ...users2SingleSelect].forEach((u) => {
+                [...users1Story2, ...users2Story2].forEach((u) => {
                   u.selected = u.id === user.id;
                 });
               }}
@@ -332,5 +325,111 @@
         </Combobox.Footer>
       {/snippet}
     </Combobox>
+  {/snippet}
+</Story>
+
+<Story name="In a Popover" args={{ type: "multi" }}>
+  {#snippet template({
+    search: _,
+    children: __,
+    footer: ___,
+    helper: ____,
+    ...args
+  })}
+    <div style="min-height: 500px;">
+      <Popover style="width: 320px;" position="block-end span-inline-end">
+        {#snippet trigger(popovertarget, open)}
+          <Button {popovertarget} style={open ? "border-bottom: none;" : ""}>
+            Open Combobox
+          </Button>
+        {/snippet}
+        {#snippet children(popovertarget)}
+          <Combobox {...args}>
+            {#snippet search()}
+              <Combobox.Search
+                autofocus
+                label="Merge Proposal reviewers"
+                placeholder="Search users..."
+                bind:value={queryStory3}
+              />
+            {/snippet}
+            <div style="max-height: 350px; overflow: auto;">
+              <Combobox.Group groupTitle="Most Recent">
+                {#each users1Story3.filter((user) => user.userName
+                    .toLowerCase()
+                    .includes(queryStory3.toLowerCase())) as user (user.id)}
+                  <Combobox.CheckboxOption
+                    text={user.userName}
+                    value={user.id}
+                    secondaryText={user.admin ? "administrator" : undefined}
+                    checked={user.selected}
+                    onchange={(e) =>
+                      (users1Story3.find((u) => u.id === user.id)!.selected = (
+                        e.target as HTMLInputElement
+                      ).checked)}
+                    >{#snippet icon()}
+                      <UserAvatar
+                        userName={user.userName}
+                        userAvatarUrl={user.userAvatarUrl}
+                        aria-hidden="true"
+                      />
+                    {/snippet}
+                  </Combobox.CheckboxOption>
+                {:else}
+                  <Combobox.NoResults />
+                {/each}
+              </Combobox.Group>
+              <Combobox.Group groupTitle="Contributors">
+                {#each users2Story3.filter((user) => user.userName
+                    .toLowerCase()
+                    .includes(queryStory3.toLowerCase())) as user (user.id)}
+                  <Combobox.CheckboxOption
+                    text={user.userName}
+                    value={user.id}
+                    secondaryText={user.admin ? "administrator" : undefined}
+                    checked={user.selected}
+                    onchange={(e) =>
+                      (users2Story3.find((u) => u.id === user.id)!.selected = (
+                        e.target as HTMLInputElement
+                      ).checked)}
+                  >
+                    {#snippet icon()}
+                      <UserAvatar
+                        userName={user.userName}
+                        userAvatarUrl={user.userAvatarUrl}
+                        aria-hidden="true"
+                      />
+                    {/snippet}
+                  </Combobox.CheckboxOption>
+                {:else}
+                  <Combobox.NoResults />
+                {/each}
+              </Combobox.Group>
+            </div>
+            {#snippet helper(id)}
+              <Combobox.Helper {id}>
+                {#snippet icon()}
+                  <Icon name="information" />
+                {/snippet}
+                Select reviewers for the project
+              </Combobox.Helper>
+            {/snippet}
+            {#snippet footer()}
+              <Combobox.Footer>
+                <Button
+                  {popovertarget}
+                  modifiers={{ severity: "base", density: "dense" }}
+                >
+                  Cancel
+                </Button>
+                <Button {popovertarget} modifiers={{ density: "dense" }}
+                  >Save</Button
+                >
+              </Combobox.Footer>
+            {/snippet}
+          </Combobox>
+        {/snippet}
+      </Popover>
+    </div>
   {/snippet}
 </Story>

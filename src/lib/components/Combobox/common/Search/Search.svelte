@@ -18,7 +18,7 @@
     if (currentId === null) return fallback;
 
     const currentIndex = options.findIndex((option) => option.id === currentId);
-    // Last selected option for some reason no longer exists
+    // Last selected option for any reason no longer exists
     if (currentIndex === -1) return fallback;
 
     const nextIndex =
@@ -35,10 +35,7 @@
 </script>
 
 <script lang="ts">
-  import type {
-    FocusEventHandler,
-    KeyboardEventHandler,
-  } from "svelte/elements";
+  import type { KeyboardEventHandler } from "svelte/elements";
   import { TextInput } from "$lib/components/TextInput/index.js";
   import { useIsMounted } from "$lib/useIsMounted.svelte.js";
   import { getComboboxContext } from "../../context.js";
@@ -76,9 +73,8 @@
     }
   };
 
-  const onblur: FocusEventHandler<HTMLInputElement> = (event) => {
+  const onblur: typeof onblurProp = (event) => {
     onblurProp?.(event);
-    // Clear active descendant on blur
     comboboxContext?.setActiveDescendant(null);
   };
 </script>

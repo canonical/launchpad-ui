@@ -17,8 +17,26 @@ describe("Footer SSR", () => {
     expect(body).toContain("</div>");
   });
 
-  it("applies class", () => {
-    const { body } = render(Component, { props: { class: "test-class" } });
-    expect(body).toContain('class="ds footer test-class"');
+  describe("basic attributes", () => {
+    it("applies id", () => {
+      const { body } = render(Component, {
+        props: { id: "test-id" },
+      });
+      expect(body).toContain('id="test-id"');
+    });
+
+    it("applies style", () => {
+      const { body } = render(Component, {
+        props: { style: "color: red;" },
+      });
+      expect(body).toMatch(/style="[^"]*color: red;[^"]*"/);
+    });
+
+    it("applies class", () => {
+      const { body } = render(Component, {
+        props: { class: "test-class" },
+      });
+      expect(body).toMatch(/class="[^"]*test-class[^"]*"/);
+    });
   });
 });

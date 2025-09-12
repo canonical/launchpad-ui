@@ -8,18 +8,25 @@
   let { class: className, children, ...rest }: FooterProps = $props();
 </script>
 
-<div class={[componentCssClassName, className]} {...rest}>
+<div
+  class={[componentCssClassName, className]}
+  data-testid="combobox-footer"
+  {...rest}
+>
   {@render children?.()}
 </div>
 
 <!-- @component
-`Footer` [FIXME] (placeholder) A reusable UI component that renders content in a div container.
+`Combobox.Footer` is a container meant to be used for displaying action buttons at the bottom of the Combobox.
 
 ## Example Usage
 ```svelte
-<Footer class="custom-class" id="unique-id">
-  <p>Content goes here</p>
-</Footer>
+<Combobox.Footer>
+  <Button modifiers={{ severity: "base", density: "dense" }}>
+    Cancel
+  </Button>
+  <Button modifiers={{ density: "dense" }}>Save</Button>
+</Combobox.Footer>
 ```
 -->
 
