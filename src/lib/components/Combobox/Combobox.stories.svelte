@@ -350,8 +350,8 @@
   })}
     <div style="min-height: 500px;">
       <Popover style="width: 320px;" position="block-end span-inline-end">
-        {#snippet trigger(popovertarget, open)}
-          <Button {popovertarget} style={open ? "border-bottom: none;" : ""}>
+        {#snippet trigger(triggerProps, open)}
+          <Button {...triggerProps} style={open ? "border-bottom: none;" : ""}>
             Open Combobox
           </Button>
         {/snippet}
