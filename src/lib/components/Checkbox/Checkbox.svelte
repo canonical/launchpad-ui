@@ -14,7 +14,7 @@
     ...rest
   }: CheckboxProps<T> = $props();
 
-  const onchange: typeof onchangeProp = $derived((e) => {
+  const onchange: typeof onchangeProp = (e) => {
     onchangeProp?.(e);
     const newChecked = (e.target as HTMLInputElement).checked;
     checked = newChecked;
@@ -27,7 +27,7 @@
         group = group.filter((v) => v !== value);
       }
     }
-  });
+  };
 </script>
 
 <input

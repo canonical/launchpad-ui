@@ -24,10 +24,10 @@
   let open = $state(false);
   let popoverRef = $state<HTMLDivElement>();
 
-  const ontoggle: typeof ontoggleProp = $derived((e) => {
+  const ontoggle: typeof ontoggleProp = (e) => {
     ontoggleProp?.(e);
     open = e.newState === "open";
-  });
+  };
 
   export const showPopover: PopoverMethods["showPopover"] = () => {
     popoverRef?.showPopover();

@@ -1,19 +1,8 @@
 /* @canonical/generator-ds 0.10.0-experimental.0 */
 
-import type { SvelteHTMLElements } from "svelte/elements";
+import type { OptionsGroupProps } from "$lib/components/common/index.js";
 
-type BaseProps = SvelteHTMLElements["fieldset"];
-
-export interface GroupProps extends BaseProps {
-  /**
-   * A title for the group, which can be used to provide context for the items within the group.
-   */
-  groupTitle?: string;
-  /**
-   * Setting this to `true` will disable all items within the group, no matter their individual `disabled` state. Similarly to how `disabled` on a `<fieldset>` works.
-   */
-  disabled?: boolean;
-}
+export type GroupProps = OptionsGroupProps;
 
 export interface GroupContext {
   disabled: boolean;

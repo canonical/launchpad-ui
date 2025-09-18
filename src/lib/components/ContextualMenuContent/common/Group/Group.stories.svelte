@@ -1,14 +1,8 @@
 <script module lang="ts">
   import { defineMeta } from "@storybook/addon-svelte-csf";
   import { Icon } from "$lib/components/Icon/index.js";
+  import { ContextualMenuContent } from "../../index.js";
   import Group from "./Group.svelte";
-  import {
-    ButtonItem,
-    CheckboxItem,
-    LinkItem,
-    RadioItem,
-    SwitchItem,
-  } from "./common/index.js";
 
   const { Story } = defineMeta({
     title: "Components/ContextualMenuContent/Group",
@@ -21,11 +15,15 @@
 </script>
 
 <Story name="Default">
-  <ButtonItem text="Button" />
-  <LinkItem text="Link (disabled)" disabled />
-  <CheckboxItem text="Checkbox" />
-  <RadioItem text="Radio (disabled)" disabled />
-  <SwitchItem text="Switch" />
+  {#snippet template(args)}
+    <ContextualMenuContent.Group {...args}>
+      <ContextualMenuContent.ButtonItem text="Button" />
+      <ContextualMenuContent.LinkItem text="Link (disabled)" disabled />
+      <ContextualMenuContent.CheckboxItem text="Checkbox" />
+      <ContextualMenuContent.RadioItem text="Radio (disabled)" disabled />
+      <ContextualMenuContent.SwitchItem text="Switch" />
+    </ContextualMenuContent.Group>
+  {/snippet}
 </Story>
 
 <Story
@@ -34,16 +32,20 @@
     groupTitle: "Preferences",
   }}
 >
-  <CheckboxItem
-    text="Show whitespace changes"
-    secondaryText="Whitespace changes are ignored by default"
-  />
-  <CheckboxItem text="Show file at a time" />
-  <CheckboxItem text="Wrap overflowing code lines"
-    >{#snippet icon()}
-      <Icon name="back-to-top" />
-    {/snippet}
-  </CheckboxItem>
+  {#snippet template(args)}
+    <ContextualMenuContent.Group {...args}>
+      <ContextualMenuContent.CheckboxItem
+        text="Show whitespace changes"
+        secondaryText="Whitespace changes are ignored by default"
+      />
+      <ContextualMenuContent.CheckboxItem text="Show file at a time" />
+      <ContextualMenuContent.CheckboxItem text="Wrap overflowing code lines"
+        >{#snippet icon()}
+          <Icon name="back-to-top" />
+        {/snippet}
+      </ContextualMenuContent.CheckboxItem>
+    </ContextualMenuContent.Group>
+  {/snippet}
 </Story>
 
 <Story
@@ -52,14 +54,23 @@
     groupTitle: "Theme",
   }}
 >
-  <RadioItem text="Light" name="theme" value="light" checked />
-  <RadioItem text="Dark" name="theme" value="dark" />
-  <RadioItem
-    text="System"
-    name="theme"
-    secondaryText="(recommended)"
-    value="system"
-  />
+  {#snippet template(args)}
+    <ContextualMenuContent.Group {...args}>
+      <ContextualMenuContent.RadioItem
+        text="Light"
+        name="theme"
+        value="light"
+        checked
+      />
+      <ContextualMenuContent.RadioItem text="Dark" name="theme" value="dark" />
+      <ContextualMenuContent.RadioItem
+        text="System"
+        name="theme"
+        secondaryText="(recommended)"
+        value="system"
+      />
+    </ContextualMenuContent.Group>
+  {/snippet}
 </Story>
 
 <Story
@@ -68,23 +79,33 @@
     groupTitle: "Settings",
   }}
 >
-  <SwitchItem text="Enable notifications" value="notifications">
-    {#snippet icon()}
-      <Icon name="notifications" />
-    {/snippet}
-  </SwitchItem>
-  <SwitchItem text="Auto-save changes" value="auto-save">
-    {#snippet icon()}
-      <Icon name="archive" />
-    {/snippet}
-  </SwitchItem>
-  <SwitchItem
-    text="Show advanced options"
-    trailingText="(beta)"
-    value="advanced-options"
-  >
-    {#snippet icon()}
-      <Icon name="settings" />
-    {/snippet}
-  </SwitchItem>
+  {#snippet template(args)}
+    <ContextualMenuContent.Group {...args}>
+      <ContextualMenuContent.SwitchItem
+        text="Enable notifications"
+        value="notifications"
+      >
+        {#snippet icon()}
+          <Icon name="notifications" />
+        {/snippet}
+      </ContextualMenuContent.SwitchItem>
+      <ContextualMenuContent.SwitchItem
+        text="Auto-save changes"
+        value="auto-save"
+      >
+        {#snippet icon()}
+          <Icon name="archive" />
+        {/snippet}
+      </ContextualMenuContent.SwitchItem>
+      <ContextualMenuContent.SwitchItem
+        text="Show advanced options"
+        trailingText="(beta)"
+        value="advanced-options"
+      >
+        {#snippet icon()}
+          <Icon name="settings" />
+        {/snippet}
+      </ContextualMenuContent.SwitchItem>
+    </ContextualMenuContent.Group>
+  {/snippet}
 </Story>

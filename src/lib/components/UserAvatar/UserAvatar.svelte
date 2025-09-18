@@ -24,12 +24,15 @@
   Testing shows that on both Chrome and Firefox, the PNG and JPEG images are displayed correctly, when the type is set to "image/png".
   SVGs are displayed correctly by Chrome, but Firefox immediately resorts to the fallback.
   -->
+  <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+  <!-- Add `tabindex="-1"` for firefox, where <object> can be keyboard-focused -->
   <object
     data={userAvatarUrl}
     title={userName}
     role="img"
     aria-label={!userName ? "User avatar" : undefined}
     type="image/png"
+    tabindex={-1}
     {...avatarProps}
   >
     {@render avatarFallback(true)}

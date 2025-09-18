@@ -7,6 +7,11 @@
     title: "Components/ContextualMenuContent",
     tags: ["autodocs"],
     component: ContextualMenuContent,
+    argTypes: {
+      helper: {
+        control: false,
+      },
+    },
   });
 </script>
 

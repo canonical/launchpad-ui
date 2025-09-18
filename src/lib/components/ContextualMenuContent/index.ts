@@ -33,11 +33,11 @@ ContextualMenuContent.SwitchItem = SwitchItem;
 export { ContextualMenuContent };
 export * from "./types.js";
 export type {
-  ButtonItemProps,
-  CheckboxItemProps,
-  GroupProps,
-  HelperProps,
-  LinkItemProps,
-  RadioItemProps,
-  SwitchItemProps,
+  ButtonItemProps as ContextualMenuContentButtonItemProps,
+  CheckboxItemProps as ContextualMenuContentCheckboxItemProps,
+  GroupProps as ContextualMenuContentGroupProps,
+  HelperProps as ContextualMenuContentHelperProps,
+  LinkItemProps as ContextualMenuContentLinkItemProps,
+  RadioItemProps as ContextualMenuContentRadioItemProps,
+  SwitchItemProps as ContextualMenuContentSwitchItemProps,
 } from "./common/index.js";
