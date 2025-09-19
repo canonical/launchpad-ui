@@ -16,7 +16,7 @@
 ></textarea>
 
 <!-- @component
-`Textarea` [FIXME] (placeholder) A reusable UI component that renders content in a div container.
+`Textarea` is a reusable UI component that renders a native `<textarea>` element, supporting all standard textarea attributes and two-way binding for its value.
 
 ## Example Usage
 ```svelte

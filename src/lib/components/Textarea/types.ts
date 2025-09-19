@@ -2,7 +2,7 @@
 
 import type { HTMLTextareaAttributes } from "svelte/elements";
 
-export interface TextareaProps extends Omit<HTMLTextareaAttributes, "value"> {
+export interface TextareaProps extends HTMLTextareaAttributes {
   /**
    * The value of the textarea.
    *
