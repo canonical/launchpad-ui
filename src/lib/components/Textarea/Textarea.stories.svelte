@@ -37,7 +37,7 @@
   {#snippet template(args)}
     <!-- 
       <script lang="ts">
-        let value = $state("Hello world");
+        let value = $state("");
       </script>
     -->
     <Textarea {...args} bind:value />
