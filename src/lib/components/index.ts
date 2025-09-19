@@ -21,3 +21,5 @@ export * from "./TextInput/index.js";
 export * from "./Timeline/index.js";
 export * from "./UserAvatar/index.js";
 export * from "./UserChip/index.js";
+
+export * from "./Tooltip/index.js";

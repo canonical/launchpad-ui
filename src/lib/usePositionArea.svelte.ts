@@ -7,7 +7,7 @@ import type {
 import type { Attachment } from "svelte/attachments";
 import { useIsMounted } from "./useIsMounted.svelte.js";
 
-const positionAreaFallbackMap = {
+export const positionAreaFallbackMap = {
   /*
   
   +---+---+---+
