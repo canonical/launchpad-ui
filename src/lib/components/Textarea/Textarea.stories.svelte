@@ -6,15 +6,42 @@
     title: "components/Textarea",
     tags: ["autodocs"],
     component: Textarea,
+    argTypes: {
+      disabled: {
+        control: { type: "boolean" },
+        description: "Disables the textarea, preventing user interaction.",
+        table: {
+          type: { summary: "boolean" },
+          category: "properties",
+        },
+      },
+      placeholder: {
+        control: { type: "text" },
+        description: "The placeholder text for the textarea.",
+        table: {
+          type: { summary: "string" },
+          category: "properties",
+        },
+      },
+    },
   });
   let value = $state("");
 </script>
 
-<Story name="Default">
+<Story name="Default" />
+
+<Story
+  name="With bound value"
+  argTypes={{ value: { table: { disable: true } } }}
+>
   {#snippet template(args)}
-    <Textarea {...args} bind:value placeholder="Enter text..." />
-    <br />
-    <span style="margin-inline-start: 0.5rem;">{value}</span>
+    <!-- 
+      <script lang="ts">
+        let value = $state("Hello world");
+      </script>
+    -->
+    <Textarea {...args} bind:value />
+    <span style="margin-inline-start: 0.5rem;">Current value: {value}</span>
   {/snippet}
 </Story>
 
