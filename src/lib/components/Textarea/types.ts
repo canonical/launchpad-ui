@@ -10,4 +10,10 @@ export interface TextareaProps extends WithoutChildren<HTMLTextareaAttributes> {
    * **@bindable**
    */
   value?: string;
+  /**
+   * The ref of the textarea.
+   *
+   * **@bindable**
+   */
+  ref?: HTMLTextAreaElement;
 }
