@@ -22,6 +22,7 @@ export const iconNames = new Set([
   "bot",
   "branch-merge",
   "branch-merged",
+  "bulleted-list",
   "bundle",
   "canvas",
   "certificate",
