@@ -81,7 +81,10 @@
   {/snippet}
 </Story>
 
-<Story name="With bound value">
+<Story
+  name="With bound value"
+  argTypes={{ value: { table: { disable: true } } }}
+>
   {#snippet template(args)}
     <!-- 
       <script lang="ts">

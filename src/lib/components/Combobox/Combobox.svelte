@@ -18,7 +18,10 @@
   const listBoxId = $props.id();
   let listBoxElement = $state<HTMLDivElement>();
   let activeDescendant = $state<string | null>(null);
+  // Neither of the below are used in reactive contexts
+  // eslint-disable-next-line svelte/prefer-svelte-reactivity
   const selectionListeners = new Map<string, () => void>();
+  // eslint-disable-next-line svelte/prefer-svelte-reactivity
   const radioCheckListeners = new Set<(id: string) => void>();
   let loadingCount = $state(0);
 
