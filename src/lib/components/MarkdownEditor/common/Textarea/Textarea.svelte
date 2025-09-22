@@ -1,9 +1,10 @@
 <!-- @canonical/generator-ds 0.10.0-experimental.3 -->
 
 <script lang="ts">
-  import { Textarea } from "../../../index.js";
+  import { Textarea } from "$lib/components/index.js";
   import { getMarkdownEditorContext } from "../../context.js";
   import type { MarkdownEditorContext } from "./types.js";
+  import "./styles.css";
 
   const componentCssClassName = "ds markdown-editor-textarea";
 
@@ -29,14 +30,3 @@
   bind:value
   {...rest}
 />
-
-<!-- @component
-*
-```
--->
-
-<style>
-  :global(.ds.markdown-editor-textarea) {
-    resize: vertical;
-  }
-</style>
