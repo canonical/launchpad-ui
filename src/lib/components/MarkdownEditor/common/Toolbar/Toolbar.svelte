@@ -2,6 +2,7 @@
 
 <script lang="ts">
   import { Button, Icon } from "$lib/components/index.js";
+  import { modifiersValues } from "$lib/modifiers/utils.js";
   import { getMarkdownEditorContext } from "../../context.js";
   import { Group, Separator } from "./common/index.js";
   import type { ToolbarProps } from "./types.js";
@@ -75,89 +76,91 @@
   });
 </script>
 
-<div class="ds toolbar-container">
-  <div
-    class={[componentCssClassName, className]}
-    role="toolbar"
-    aria-orientation="horizontal"
-    {onkeydown}
-    bind:this={toolbarElement}
-    {...rest}
-  >
-    <Group>
-      <Button
-        modifiers={{ density: "dense", severity: "base" }}
-        onclick={() => {
-          // TODO: temporary placeholder, to be replaced with an action management system
-          if (markdownEditorContext?.textareaElement) {
-            markdownEditorContext.textareaElement.focus();
-            document.execCommand("insertText", false, "# ");
-          }
-        }}
-      >
-        {#snippet iconLeft()}
-          <Icon name="heading" />
-        {/snippet}
-      </Button>
-      <Button modifiers={{ density: "dense", severity: "base" }}>
-        {#snippet iconLeft()}
-          <Icon name="bold" />
-        {/snippet}
-      </Button>
-      <Button modifiers={{ density: "dense", severity: "base" }}>
-        {#snippet iconLeft()}
-          <Icon name="italic" />
-        {/snippet}
-      </Button>
-    </Group>
-    <Separator />
-    <Group>
-      <Button modifiers={{ density: "dense", severity: "base" }}>
-        {#snippet iconLeft()}
-          <Icon name="quote" />
-        {/snippet}
-      </Button>
-      <Button modifiers={{ density: "dense", severity: "base" }}>
-        {#snippet iconLeft()}
-          <Icon name="code" />
-        {/snippet}
-      </Button>
-      <Button modifiers={{ density: "dense", severity: "base" }}>
-        {#snippet iconLeft()}
-          <Icon name="get-link" />
-        {/snippet}
-      </Button>
-      <Button modifiers={{ density: "dense", severity: "base" }}>
-        {#snippet iconLeft()}
-          <Icon name="bulleted-list" />
-        {/snippet}
-      </Button>
-      <Button modifiers={{ density: "dense", severity: "base" }}>
-        {#snippet iconLeft()}
-          <Icon name="numbered-list" />
-        {/snippet}
-      </Button>
-    </Group>
-    {@render actions?.()}
-  </div>
-  {@render children?.()}
+<div
+  class={[
+    componentCssClassName,
+    className,
+    modifiersValues({ density: "dense", severity: "base" }),
+  ]}
+  role="toolbar"
+  aria-orientation="horizontal"
+  {onkeydown}
+  bind:this={toolbarElement}
+  {...rest}
+>
+  <Group>
+    <Button
+      onclick={() => {
+        // TODO: temporary placeholder, to be replaced with an action management system
+        if (markdownEditorContext?.textareaElement) {
+          markdownEditorContext.textareaElement.focus();
+          document.execCommand("insertText", false, "# ");
+        }
+      }}
+    >
+      {#snippet iconLeft()}
+        <Icon name="heading" />
+      {/snippet}
+    </Button>
+    <Button>
+      {#snippet iconLeft()}
+        <Icon name="bold" />
+      {/snippet}
+    </Button>
+    <Button>
+      {#snippet iconLeft()}
+        <Icon name="italic" />
+      {/snippet}
+    </Button>
+  </Group>
+  <Separator />
+  <Group>
+    <Button>
+      {#snippet iconLeft()}
+        <Icon name="quote" />
+      {/snippet}
+    </Button>
+    <Button>
+      {#snippet iconLeft()}
+        <Icon name="code" />
+      {/snippet}
+    </Button>
+    <Button>
+      {#snippet iconLeft()}
+        <Icon name="get-link" />
+      {/snippet}
+    </Button>
+    <Button>
+      {#snippet iconLeft()}
+        <Icon name="bulleted-list" />
+      {/snippet}
+    </Button>
+    <Button>
+      {#snippet iconLeft()}
+        <Icon name="numbered-list" />
+      {/snippet}
+    </Button>
+  </Group>
+  {@render actions?.()}
+  {#if children}
+    <div class="controls">
+      {@render children()}
+    </div>
+  {/if}
 </div>
 
 <style>
-  .ds.toolbar-container {
+  .ds.toolbar {
     --dimension-gap-markdown-editor-toolbar: var(
       --tmp-dimension-spacing-inline-xxs
     );
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: space-between;
+    gap: var(--dimension-gap-markdown-editor-toolbar);
 
-    > .ds.toolbar {
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      gap: var(--dimension-gap-markdown-editor-toolbar);
+    > .controls {
+      margin-inline-start: auto;
     }
   }
 </style>
