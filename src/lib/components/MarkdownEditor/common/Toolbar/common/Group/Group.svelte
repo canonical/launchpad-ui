@@ -36,7 +36,7 @@
         )
         solid var(--color-border-markdown-editor-toolbar-group);
       height: var(--dimension-size-markdown-editor-toolbar-group-separator);
-      padding-inline-start: var(--dimension-gap-markdown-editor-toolbar);
+      margin-inline: calc(var(--dimension-gap-markdown-editor-toolbar) / 2);
       width: 0;
     }
   }

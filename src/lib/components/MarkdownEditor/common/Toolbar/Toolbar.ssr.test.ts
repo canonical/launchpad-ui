@@ -6,7 +6,7 @@ import { describe, expect, it } from "vitest";
 import Component from "./Toolbar.svelte";
 import type { ToolbarProps } from "./types.js";
 
-describe("Toolbar SSR", () => {
+describe("Markdown > Toolbar SSR", () => {
   const baseProps = {
     children: createRawSnippet(() => ({
       render: () => `<span>Toolbar</span>`,
@@ -20,40 +20,11 @@ describe("Toolbar SSR", () => {
       }).not.toThrow();
     });
 
-    it("renders", () => {
-      const { window, container } = render(Component, {
+    it("doesn't renders (client side)", () => {
+      const { container } = render(Component, {
         props: { ...baseProps },
       });
-      expect(container.firstElementChild).toBeInstanceOf(window.HTMLDivElement);
-    });
-  });
-
-  describe("attributes", () => {
-    it.each([
-      ["id", "test-id"],
-      ["style", "color: orange;"],
-      ["aria-label", "test-aria-label"],
-    ])("applies %s", (attribute, expected) => {
-      const { container } = render(Component, {
-        props: { [attribute]: expected, ...baseProps },
-      });
-      expect(
-        container.firstElementChild?.firstElementChild?.getAttribute(attribute),
-      ).toBe(expected);
-    });
-
-    it("applies classes", () => {
-      const { container } = render(Component, {
-        props: { class: "test-class", ...baseProps },
-      });
-      const classes = ["test-class"];
-      classes.push("ds", "toolbar");
-
-      for (const className of classes) {
-        expect(
-          container.firstElementChild?.firstElementChild?.classList,
-        ).toContain(className);
-      }
+      expect(container.children.length).toBe(0);
     });
   });
 });

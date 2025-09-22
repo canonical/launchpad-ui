@@ -10,8 +10,10 @@
 
   let {
     class: className,
+    ref = $bindable(),
     modifiers,
     children,
+    icon,
     iconLeft,
     iconRight,
     loading,
@@ -23,6 +25,7 @@
 </script>
 
 <button
+  bind:this={ref}
   class={[
     componentCssClassName,
     className,
@@ -32,9 +35,13 @@
   disabled={isDisabled}
   {...rest}
 >
-  <Content {iconLeft} {iconRight}>
-    {@render children?.()}
-  </Content>
+  {#if icon}
+    <Content iconLeft={icon} />
+  {:else}
+    <Content {iconLeft} {iconRight}>
+      {@render children?.()}
+    </Content>
+  {/if}
   {#if loading}
     <span class="loader">
       <Spinner />

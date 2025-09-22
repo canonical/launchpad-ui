@@ -1,15 +1,15 @@
 <!-- @canonical/generator-ds 0.10.0-experimental.3 -->
 
 <script lang="ts">
-  import { Button, Icon } from "$lib/components/index.js";
+  import { Icon } from "$lib/components/index.js";
   import { modifiersValues } from "$lib/modifiers/utils.js";
+  import { useIsMounted } from "$lib/useIsMounted.svelte.js";
   import { getMarkdownEditorContext } from "../../context.js";
-  import { Group } from "./common/index.js";
+  import { ActionButton, Group } from "./common/index.js";
+  import { setMarkdownEditorToolbarContext } from "./context.js";
   import type { ToolbarProps } from "./types.js";
-  import { getSiblingActionElement } from "./utils/index.js";
-  import "./styles.css";
 
-  const componentCssClassName = "ds toolbar";
+  const componentCssClassName = "ds markdown-editor-toolbar";
 
   let {
     class: className,
@@ -20,7 +20,41 @@
   }: ToolbarProps = $props();
 
   let toolbarElement = $state<HTMLDivElement>();
+  let selectedActionIndex = $state<number>(0);
+  let actionButtons = $state<HTMLButtonElement[]>([]);
+
   const markdownEditorContext = getMarkdownEditorContext();
+
+  setMarkdownEditorToolbarContext({
+    set selectedAction(action: HTMLButtonElement) {
+      const index = actionButtons.indexOf(action);
+      selectedActionIndex = index === -1 ? 0 : index;
+    },
+
+    get actions() {
+      return actionButtons;
+    },
+
+    addAction(action: HTMLButtonElement) {
+      if (actionButtons.includes(action)) return;
+      actionButtons.push(action);
+    },
+
+    removeAction(action: HTMLButtonElement) {
+      actionButtons = actionButtons.filter((a) => a !== action);
+    },
+  });
+
+  $effect(() => {
+    selectedActionIndex =
+      selectedActionIndex > actionButtons.length - 1 ? 0 : selectedActionIndex;
+
+    actionButtons.forEach((action, index) => {
+      action.tabIndex = index === selectedActionIndex ? 0 : -1;
+    });
+  });
+
+  const isMounted = useIsMounted();
 
   /**
    * maintain the tab index property, where all actions have a
@@ -32,119 +66,129 @@
   const onkeydown: typeof onkeydownProp = (event) => {
     onkeydownProp?.(event);
     if (!toolbarElement) return;
-    if (event.target instanceof HTMLButtonElement) {
-      if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
-        const siblingActionElement = getSiblingActionElement(
-          toolbarElement,
-          event,
-        );
-        if (siblingActionElement) {
-          siblingActionElement.focus();
-          event.target.tabIndex = -1;
-          siblingActionElement.tabIndex = 0;
+
+    if (
+      !(event.target as HTMLElement).classList.contains(
+        "markdown-editor-toolbar-action-button",
+      )
+    )
+      return;
+
+    if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
+      let nextFocusableAction: HTMLButtonElement | null = null;
+      const direction = event.key === "ArrowLeft" ? -1 : 1;
+      for (let i = 1; i < actionButtons.length; i++) {
+        const index =
+          (selectedActionIndex + i * direction) % actionButtons.length;
+        const action = actionButtons.at(index);
+        if (action && !action.disabled) {
+          nextFocusableAction = action;
+          break;
         }
+      }
+      if (nextFocusableAction) {
+        selectedActionIndex = actionButtons.indexOf(nextFocusableAction);
+        nextFocusableAction.focus();
       }
     }
   };
-
-  /**
-   * on action button click we to set all other action buttons
-   * to have a tab index of -1 and the target button to have a tab index of 0.
-   *
-   * this ensures that the last used action button is the default focusable element.
-   */
-  const onactionbuttonclick = (target: HTMLButtonElement) => {
-    const actions =
-      toolbarElement?.querySelectorAll<HTMLButtonElement>("button");
-    actions?.forEach((action) => {
-      action.tabIndex = action === target ? 0 : -1;
-    });
-    target.focus();
-  };
-
-  $effect(() => {
-    // init tab indexes to -1, except for the first action
-    // which is the default first focusable element to have a tab index 0
-    if (toolbarElement) {
-      const actions = toolbarElement.querySelectorAll("button");
-      actions.forEach((action, index) => {
-        action.tabIndex = index === 0 ? 0 : -1;
-
-        // attack an event listener to the action button to set the tab index
-        action.addEventListener("focus", () => onactionbuttonclick(action));
-      });
-    }
-  });
 </script>
 
-<div
-  class={[
-    componentCssClassName,
-    className,
-    modifiersValues({ density: "dense", severity: "base" }),
-  ]}
-  role="toolbar"
-  aria-orientation="horizontal"
-  {onkeydown}
-  bind:this={toolbarElement}
-  {...rest}
->
-  <Group>
-    <Button
-      onclick={() => {
-        // TODO: temporary placeholder, to be replaced with an action management system
-        if (markdownEditorContext?.textareaElement) {
-          markdownEditorContext.textareaElement.focus();
-          document.execCommand("insertText", false, "# ");
-        }
-      }}
-    >
-      {#snippet iconLeft()}
-        <Icon name="heading" />
-      {/snippet}
-    </Button>
-    <Button>
-      {#snippet iconLeft()}
-        <Icon name="bold" />
-      {/snippet}
-    </Button>
-    <Button>
-      {#snippet iconLeft()}
-        <Icon name="italic" />
-      {/snippet}
-    </Button>
-  </Group>
-  <Group>
-    <Button>
-      {#snippet iconLeft()}
-        <Icon name="quote" />
-      {/snippet}
-    </Button>
-    <Button>
-      {#snippet iconLeft()}
-        <Icon name="code" />
-      {/snippet}
-    </Button>
-    <Button>
-      {#snippet iconLeft()}
-        <Icon name="get-link" />
-      {/snippet}
-    </Button>
-    <Button>
-      {#snippet iconLeft()}
-        <Icon name="bulleted-list" />
-      {/snippet}
-    </Button>
-    <Button>
-      {#snippet iconLeft()}
-        <Icon name="numbered-list" />
-      {/snippet}
-    </Button>
-  </Group>
-  {@render actions?.()}
-  {#if children}
-    <div class="controls">
-      {@render children()}
-    </div>
-  {/if}
-</div>
+<!-- A client side only component as it requires JavaScript in order to work -->
+{#if isMounted.value}
+  <div
+    class={[
+      componentCssClassName,
+      className,
+      modifiersValues({ density: "dense", severity: "base" }),
+    ]}
+    role="toolbar"
+    aria-orientation="horizontal"
+    {onkeydown}
+    bind:this={toolbarElement}
+    {...rest}
+  >
+    <Group>
+      <ActionButton
+        onclick={() => {
+          // TODO: temporary placeholder, to be replaced with an action management system
+          if (markdownEditorContext?.textareaElement) {
+            markdownEditorContext.textareaElement.focus();
+            document.execCommand("insertText", false, "# ");
+          }
+        }}
+      >
+        {#snippet icon()}
+          <Icon name="heading" />
+        {/snippet}
+      </ActionButton>
+      <ActionButton>
+        {#snippet icon()}
+          <Icon name="bold" />
+        {/snippet}
+      </ActionButton>
+      <ActionButton>
+        {#snippet icon()}
+          <Icon name="italic" />
+        {/snippet}
+      </ActionButton>
+    </Group>
+    <Group>
+      <ActionButton>
+        {#snippet icon()}
+          <Icon name="quote" />
+        {/snippet}
+      </ActionButton>
+      <ActionButton>
+        {#snippet icon()}
+          <Icon name="code" />
+        {/snippet}
+      </ActionButton>
+      <ActionButton>
+        {#snippet icon()}
+          <Icon name="get-link" />
+        {/snippet}
+      </ActionButton>
+      <ActionButton>
+        {#snippet icon()}
+          <Icon name="bulleted-list" />
+        {/snippet}
+      </ActionButton>
+      <ActionButton>
+        {#snippet icon()}
+          <Icon name="numbered-list" />
+        {/snippet}
+      </ActionButton>
+    </Group>
+
+    {@render actions?.()}
+
+    {#if children}
+      <div class="controls">
+        {@render children()}
+      </div>
+    {/if}
+  </div>
+{/if}
+
+<style>
+  .ds.markdown-editor-toolbar {
+    --dimension-gap-markdown-editor-toolbar: var(
+      --tmp-dimension-spacing-inline-xxs
+    );
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--dimension-gap-markdown-editor-toolbar);
+
+    > .controls {
+      margin-inline-start: auto;
+    }
+  }
+
+  @container (max-width: 410px) {
+    .ds.markdown-editor-toolbar {
+      display: none;
+    }
+  }
+</style>

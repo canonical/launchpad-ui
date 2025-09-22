@@ -142,7 +142,7 @@
       {...args}
       modifiers={{ ...(args.modifiers || {}), severity: "positive" }}
     >
-      {#snippet iconLeft()}
+      {#snippet icon()}
         <Icon name="fork" />
       {/snippet}
     </Button>

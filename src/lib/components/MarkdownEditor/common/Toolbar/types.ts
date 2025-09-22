@@ -3,6 +3,13 @@
 import type { Snippet } from "svelte";
 import type { SvelteHTMLElements } from "svelte/elements";
 
+export type MarkdownEditorToolbarContext = {
+  selectedAction: HTMLButtonElement | undefined;
+  get actions(): HTMLButtonElement[];
+  addAction: (action: HTMLButtonElement) => void;
+  removeAction: (action: HTMLButtonElement) => void;
+};
+
 type BaseProps = SvelteHTMLElements["div"];
 
 export interface ToolbarProps extends BaseProps {

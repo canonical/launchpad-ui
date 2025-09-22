@@ -5,7 +5,7 @@ import { describe, expect, it } from "vitest";
 import { render } from "vitest-browser-svelte";
 import Component from "./Group.svelte";
 
-describe("ToolbarGroup component", () => {
+describe("Markdown > Toolbar > Group component", () => {
   it("renders", async () => {
     const children = createRawSnippet(() => ({
       render: () => `Group`,

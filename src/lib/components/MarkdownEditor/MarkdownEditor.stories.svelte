@@ -9,10 +9,32 @@
     component: MarkdownEditor,
   });
 
+  let textarea = $state<HTMLTextAreaElement>();
+  // with preview
   let value = $state("");
   let preview = $state(false);
 
-  let textarea = $state<HTMLTextAreaElement>();
+  // with additional actions
+  const insertText = (text: string) => {
+    if (textarea) {
+      textarea.focus();
+      document.execCommand("insertText", false, text);
+    }
+  };
+
+  // dynamic toolbar actions injection
+  let hideExistingActions = $state(false);
+  let showNewActions = $state(false);
+
+  const sleep = (ms: number) =>
+    new Promise((resolve) => setTimeout(resolve, ms));
+
+  const startCountdown = async () => {
+    await sleep(1000);
+    hideExistingActions = true;
+    await sleep(1000);
+    showNewActions = true;
+  };
 </script>
 
 <Story name="Default">
@@ -56,50 +78,52 @@
 
 <Story name="With additional actions">
   {#snippet template(args)}
-    <!-- 
+    <!--
       <script lang="ts">
         let textarea = $state<HTMLTextAreaElement>();
+        const insertText = (text: string) => {
+          if (textarea) {
+            textarea.focus();
+            document.execCommand("insertText", false, text);
+          }
+        };
       </script>
     -->
     <MarkdownEditor {...args}>
       <MarkdownEditor.Toolbar>
         {#snippet actions()}
           <MarkdownEditor.Toolbar.Group aria-label="Magic actions">
-            <Button
-              modifiers={{ density: "dense", severity: "base" }}
-              onclick={() => {
-                if (textarea) {
-                  textarea.focus();
-                  document.execCommand(
-                    "insertText",
-                    false,
-                    "wow what happened?!",
-                  );
-                }
-              }}
+            <MarkdownEditor.Toolbar.ActionButton
+              onclick={() => insertText("wow what happened?!")}
             >
-              {#snippet iconLeft()}
+              {#snippet icon()}
                 <Icon name="unstarred" />
               {/snippet}
-            </Button>
+            </MarkdownEditor.Toolbar.ActionButton>
           </MarkdownEditor.Toolbar.Group>
 
           <MarkdownEditor.Toolbar.Group aria-label="Git actions">
-            <Button modifiers={{ density: "dense", severity: "base" }}>
-              {#snippet iconLeft()}
+            <MarkdownEditor.Toolbar.ActionButton
+              onclick={() => insertText("merge branch")}
+            >
+              {#snippet icon()}
                 <Icon name="branch-merge" />
               {/snippet}
-            </Button>
-            <Button modifiers={{ density: "dense", severity: "base" }}>
-              {#snippet iconLeft()}
+            </MarkdownEditor.Toolbar.ActionButton>
+            <MarkdownEditor.Toolbar.ActionButton
+              onclick={() => insertText("branch merged")}
+            >
+              {#snippet icon()}
                 <Icon name="branch-merged" />
               {/snippet}
-            </Button>
-            <Button modifiers={{ density: "dense", severity: "base" }}>
-              {#snippet iconLeft()}
+            </MarkdownEditor.Toolbar.ActionButton>
+            <MarkdownEditor.Toolbar.ActionButton
+              onclick={() => insertText("fork repository")}
+            >
+              {#snippet icon()}
                 <Icon name="fork" />
               {/snippet}
-            </Button>
+            </MarkdownEditor.Toolbar.ActionButton>
           </MarkdownEditor.Toolbar.Group>
         {/snippet}
       </MarkdownEditor.Toolbar>
@@ -107,6 +131,48 @@
         bind:ref={textarea}
         placeholder="Start typing…"
       />
+    </MarkdownEditor>
+  {/snippet}
+</Story>
+
+<Story name="Dynamic toolbar actions injection" tags={["!autodocs"]}>
+  {#snippet template(args)}
+    <MarkdownEditor {...args}>
+      <MarkdownEditor.Toolbar>
+        {#snippet actions()}
+          {#if !hideExistingActions}
+            <MarkdownEditor.Toolbar.Group aria-label="Dynamic actions">
+              <MarkdownEditor.Toolbar.ActionButton>
+                {#snippet icon()}
+                  <Icon name="revisions" />
+                {/snippet}
+              </MarkdownEditor.Toolbar.ActionButton>
+            </MarkdownEditor.Toolbar.Group>
+          {/if}
+          {#if showNewActions}
+            <MarkdownEditor.Toolbar.Group aria-label="Dynamic actions">
+              <MarkdownEditor.Toolbar.ActionButton>
+                {#snippet icon()}
+                  <Icon name="select-add" />
+                {/snippet}
+              </MarkdownEditor.Toolbar.ActionButton>
+            </MarkdownEditor.Toolbar.Group>
+          {/if}
+        {/snippet}
+        <Button
+          onclick={startCountdown}
+          loading={hideExistingActions !== showNewActions}
+        >
+          {#if !hideExistingActions && !showNewActions}
+            Start countdown
+          {:else if hideExistingActions !== showNewActions}
+            In progress...
+          {:else}
+            Done
+          {/if}
+        </Button>
+      </MarkdownEditor.Toolbar>
+      <MarkdownEditor.Textarea placeholder="Start typing…" />
     </MarkdownEditor>
   {/snippet}
 </Story>
