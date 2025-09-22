@@ -64,7 +64,6 @@
     <MarkdownEditor {...args}>
       <MarkdownEditor.Toolbar>
         {#snippet actions()}
-          <MarkdownEditor.Toolbar.Separator />
           <MarkdownEditor.Toolbar.Group aria-label="Magic actions">
             <Button
               modifiers={{ density: "dense", severity: "base" }}
@@ -85,7 +84,6 @@
             </Button>
           </MarkdownEditor.Toolbar.Group>
 
-          <MarkdownEditor.Toolbar.Separator />
           <MarkdownEditor.Toolbar.Group aria-label="Git actions">
             <Button modifiers={{ density: "dense", severity: "base" }}>
               {#snippet iconLeft()}

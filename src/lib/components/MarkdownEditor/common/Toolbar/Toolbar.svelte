@@ -4,7 +4,7 @@
   import { Button, Icon } from "$lib/components/index.js";
   import { modifiersValues } from "$lib/modifiers/utils.js";
   import { getMarkdownEditorContext } from "../../context.js";
-  import { Group, Separator } from "./common/index.js";
+  import { Group } from "./common/index.js";
   import type { ToolbarProps } from "./types.js";
   import { getSiblingActionElement } from "./utils/index.js";
 
@@ -113,7 +113,6 @@
       {/snippet}
     </Button>
   </Group>
-  <Separator />
   <Group>
     <Button>
       {#snippet iconLeft()}
