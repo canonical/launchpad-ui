@@ -7,6 +7,7 @@
   import { Group } from "./common/index.js";
   import type { ToolbarProps } from "./types.js";
   import { getSiblingActionElement } from "./utils/index.js";
+  import "./styles.css";
 
   const componentCssClassName = "ds toolbar";
 
@@ -147,19 +148,3 @@
     </div>
   {/if}
 </div>
-
-<style>
-  .ds.toolbar {
-    --dimension-gap-markdown-editor-toolbar: var(
-      --tmp-dimension-spacing-inline-xxs
-    );
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: var(--dimension-gap-markdown-editor-toolbar);
-
-    > .controls {
-      margin-inline-start: auto;
-    }
-  }
-</style>
