@@ -44,4 +44,12 @@ describe("Markdown Editor > Textarea component", () => {
       element.element(),
     );
   });
+
+  it("clears textareaElement in context when the component is unmounted", async () => {
+    const page = render(Component);
+    const element = page.getByRole("textbox");
+    await expect.element(element).toBeInTheDocument();
+    page.unmount();
+    expect(setTextareaElement).toHaveBeenCalledWith(undefined);
+  });
 });

@@ -21,6 +21,12 @@
     if (markdownEditorContext) {
       markdownEditorContext.textareaElement = ref;
     }
+
+    return () => {
+      if (markdownEditorContext) {
+        markdownEditorContext.textareaElement = undefined;
+      }
+    };
   });
 </script>
 
