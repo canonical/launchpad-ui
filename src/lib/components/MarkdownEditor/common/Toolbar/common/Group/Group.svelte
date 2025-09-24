@@ -21,30 +21,37 @@
 
 <style>
   .ds.markdown-editor-toolbar-group {
-    --color-border-markdown-editor-toolbar-group: var(
+    --color-background-markdown-editor-toolbar-group-separator: var(
       --tmp-color-border-default
     );
-    --dimension-size-markdown-editor-toolbar-group-separator: var(
+    --dimension-height-markdown-editor-toolbar-group-separator: var(
       --tmp-dimension-size-s
     );
-    --dimension-stroke-thickness-markdown-editor-toolbar-group-separator: var(
+    --dimension-width-markdown-editor-toolbar-group-separator: var(
       --dimension-stroke-thickness-default
     );
 
     display: flex;
     align-items: center;
     flex-direction: row;
-
-    :global(&:has(~ .ds.markdown-editor-toolbar-group))::after {
+    position: relative;
+    :global(&:has(+ .ds.markdown-editor-toolbar-group))::after {
       content: "";
-      display: inline-block;
-      border-inline-end: var(
-          --dimension-stroke-thickness-markdown-editor-toolbar-group-separator
-        )
-        solid var(--color-border-markdown-editor-toolbar-group);
-      height: var(--dimension-size-markdown-editor-toolbar-group-separator);
-      margin-inline: calc(var(--dimension-gap-markdown-editor-toolbar) / 2);
-      width: 0;
+      position: absolute;
+      right: calc(
+        (
+            var(--dimension-gap-markdown-editor-toolbar) +
+              var(--dimension-width-markdown-editor-toolbar-group-separator)
+          ) /
+          -2
+      );
+      top: 50%;
+      transform: translateY(-50%);
+      width: var(--dimension-width-markdown-editor-toolbar-group-separator);
+      height: var(--dimension-height-markdown-editor-toolbar-group-separator);
+      background-color: var(
+        --color-background-markdown-editor-toolbar-group-separator
+      );
     }
   }
 </style>
