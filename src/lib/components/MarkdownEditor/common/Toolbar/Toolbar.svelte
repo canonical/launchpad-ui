@@ -112,44 +112,44 @@
         }
       }}
     >
-      {#snippet icon()}
+      {#snippet iconLeft()}
         <Icon name="heading" />
       {/snippet}
     </ActionButton>
     <ActionButton>
-      {#snippet icon()}
+      {#snippet iconLeft()}
         <Icon name="bold" />
       {/snippet}
     </ActionButton>
     <ActionButton>
-      {#snippet icon()}
+      {#snippet iconLeft()}
         <Icon name="italic" />
       {/snippet}
     </ActionButton>
   </Group>
   <Group>
     <ActionButton>
-      {#snippet icon()}
+      {#snippet iconLeft()}
         <Icon name="quote" />
       {/snippet}
     </ActionButton>
     <ActionButton>
-      {#snippet icon()}
+      {#snippet iconLeft()}
         <Icon name="code" />
       {/snippet}
     </ActionButton>
     <ActionButton>
-      {#snippet icon()}
+      {#snippet iconLeft()}
         <Icon name="get-link" />
       {/snippet}
     </ActionButton>
     <ActionButton>
-      {#snippet icon()}
+      {#snippet iconLeft()}
         <Icon name="bulleted-list" />
       {/snippet}
     </ActionButton>
     <ActionButton>
-      {#snippet icon()}
+      {#snippet iconLeft()}
         <Icon name="numbered-list" />
       {/snippet}
     </ActionButton>

@@ -13,7 +13,6 @@
     ref = $bindable(),
     modifiers,
     children,
-    icon,
     iconLeft,
     iconRight,
     loading,
@@ -35,13 +34,9 @@
   disabled={isDisabled}
   {...rest}
 >
-  {#if icon}
-    <Content iconLeft={icon} />
-  {:else}
-    <Content {iconLeft} {iconRight}>
-      {@render children?.()}
-    </Content>
-  {/if}
+  <Content {iconLeft} {iconRight}>
+    {@render children?.()}
+  </Content>
   {#if loading}
     <span class="loader">
       <Spinner />

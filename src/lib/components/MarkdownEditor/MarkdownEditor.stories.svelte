@@ -101,7 +101,7 @@
             <MarkdownEditor.Toolbar.ActionButton
               onclick={() => insertText("wow what happened?!")}
             >
-              {#snippet icon()}
+              {#snippet iconLeft()}
                 <Icon name="unstarred" />
               {/snippet}
             </MarkdownEditor.Toolbar.ActionButton>
@@ -111,21 +111,21 @@
             <MarkdownEditor.Toolbar.ActionButton
               onclick={() => insertText("merge branch")}
             >
-              {#snippet icon()}
+              {#snippet iconLeft()}
                 <Icon name="branch-merge" />
               {/snippet}
             </MarkdownEditor.Toolbar.ActionButton>
             <MarkdownEditor.Toolbar.ActionButton
               onclick={() => insertText("branch merged")}
             >
-              {#snippet icon()}
+              {#snippet iconLeft()}
                 <Icon name="branch-merged" />
               {/snippet}
             </MarkdownEditor.Toolbar.ActionButton>
             <MarkdownEditor.Toolbar.ActionButton
               onclick={() => insertText("fork repository")}
             >
-              {#snippet icon()}
+              {#snippet iconLeft()}
                 <Icon name="fork" />
               {/snippet}
             </MarkdownEditor.Toolbar.ActionButton>
@@ -148,7 +148,7 @@
           {#if !hideExistingActions}
             <MarkdownEditor.Toolbar.Group aria-label="Dynamic actions">
               <MarkdownEditor.Toolbar.ActionButton>
-                {#snippet icon()}
+                {#snippet iconLeft()}
                   <Icon name="revisions" />
                 {/snippet}
               </MarkdownEditor.Toolbar.ActionButton>
@@ -157,7 +157,7 @@
           {#if showNewActions}
             <MarkdownEditor.Toolbar.Group aria-label="Dynamic actions">
               <MarkdownEditor.Toolbar.ActionButton>
-                {#snippet icon()}
+                {#snippet iconLeft()}
                   <Icon name="select-add" />
                 {/snippet}
               </MarkdownEditor.Toolbar.ActionButton>
