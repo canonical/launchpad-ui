@@ -1,11 +1,42 @@
 /* @canonical/generator-ds 0.10.0-experimental.3 */
 
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { render } from "vitest-browser-svelte";
 import Component from "./Tooltip.svelte";
 import { children, trigger } from "./fixtures.svelte";
+import { ChainingManager } from "./utils/ChainingManager.js";
+
+vi.mock("./utils/ChainingManager.js", async (importActual) => {
+  const { ChainingManager: OriginalChainingManager } = await importActual<{
+    ChainingManager: typeof ChainingManager;
+  }>();
+
+  class Mock extends OriginalChainingManager {
+    static lastInstance: Mock | null = null;
+    constructor() {
+      super(350);
+      Mock.lastInstance = this;
+    }
+
+    static resetChaining() {
+      if (Mock.lastInstance) {
+        Mock.lastInstance.chaining = false;
+      }
+    }
+  }
+
+  return {
+    ChainingManager: Mock,
+  };
+});
 
 describe("Tooltip component", () => {
+  beforeEach(() => {
+    (
+      ChainingManager as unknown as { resetChaining: () => void }
+    ).resetChaining();
+  });
+
   const baseProps = {
     trigger,
     children,
@@ -132,6 +163,26 @@ describe("Tooltip component", () => {
         .element(page.getByRole("tooltip", { includeHidden: true }))
         .not.toBeVisible();
       vi.advanceTimersByTime(250);
+      await expect.element(page.getByRole("tooltip")).toBeVisible();
+      vi.useRealTimers();
+    });
+
+    it("immediately if in chaining", async () => {
+      vi.useFakeTimers();
+      const page = render(Component, { ...baseProps, delay: 350 });
+      const button = page.getByRole("button", { name: "Tooltip trigger" });
+      await expect
+        .element(page.getByRole("tooltip", { includeHidden: true }))
+        .not.toBeVisible();
+      await button.hover();
+      vi.advanceTimersByTime(350);
+      await expect.element(page.getByRole("tooltip")).toBeVisible();
+      await button.unhover();
+      await expect
+        .element(page.getByRole("tooltip", { includeHidden: true }))
+        .not.toBeVisible();
+      vi.advanceTimersByTime(100);
+      await button.hover();
       await expect.element(page.getByRole("tooltip")).toBeVisible();
       vi.useRealTimers();
     });

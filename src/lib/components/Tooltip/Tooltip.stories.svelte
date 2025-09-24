@@ -34,7 +34,7 @@
 <Story
   name="With different positions"
   argTypes={{ position: { control: false } }}
-  args={{ autoAdjust: false, delay: 0 }}
+  args={{ autoAdjust: false }}
 >
   {#snippet template({ trigger: _, position: __, ...args })}
     <div

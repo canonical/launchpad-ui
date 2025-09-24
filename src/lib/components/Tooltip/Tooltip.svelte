@@ -1,6 +1,8 @@
 <!-- @canonical/generator-ds 0.10.0-experimental.3 -->
 
 <script lang="ts" module>
+  import { ChainingManager } from "./utils/ChainingManager.js";
+
   function isEventTargetIn(
     eventTarget: EventTarget | null,
     element: HTMLElement | undefined,
@@ -12,6 +14,8 @@
       (eventTarget === element || element.contains(eventTarget))
     );
   }
+
+  const chainingManager = new ChainingManager(350);
 </script>
 
 <script lang="ts">
@@ -98,11 +102,15 @@
     };
   };
 
-  // Changes to delayOpen are handled in the effect below, so we only want to capture the initial `open` value here
-  // svelte-ignore state_referenced_locally
-  let delayedOpen = $state(open);
+  let delayedOpen = $state(false);
   $effect(() => {
     if (open) {
+      if (chainingManager.chaining) {
+        // If chaining, open immediately without delay
+        delayedOpen = true;
+        return;
+      }
+
       const delayTimeout = setTimeout(
         () => {
           delayedOpen = true;
@@ -115,6 +123,16 @@
     }
 
     delayedOpen = false;
+  });
+
+  let firstRun = true;
+  $effect(() => {
+    // Skip first run. Be sure to read `delayedOpen` first to ensure the effect runs again when it changes
+    if (!delayedOpen && !firstRun) {
+      // Each time the tooltip closes, enable chaining for a short period
+      chainingManager.chaining = true;
+    }
+    firstRun = false;
   });
 
   const onmouseenter: typeof onmouseenterProp = (e) => {
@@ -174,6 +192,7 @@
 Tooltip requires JavaScript to function correctly. If JavaScript is disabled, the tooltip content will not be accessible.
 TODO(no-js): Investigate how to handle tooltips without JavaScript.
 
+The tooltip enables a short "chaining" window (~350ms) after it closes. If any tooltip's trigger is hovered or focused within this window, the tooltip bypasses `delay` and opens immediately.
 
 ## Example Usage
 ```svelte
