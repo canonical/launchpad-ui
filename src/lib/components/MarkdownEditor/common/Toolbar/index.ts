@@ -42,5 +42,9 @@ const Toolbar = ToolbarRoot as typeof ToolbarRoot & {
 Toolbar.Group = Group;
 Toolbar.ActionButton = ActionButton;
 
+export type {
+  MarkdownEditorToolbarActionButtonProps,
+  MarkdownEditorToolbarGroupProps,
+} from "./common/index.js";
 export * from "./types.js";
 export { Toolbar };

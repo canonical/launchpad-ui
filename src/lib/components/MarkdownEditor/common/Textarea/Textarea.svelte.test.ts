@@ -19,7 +19,7 @@ vi.mock("../../context.js", () => {
   };
 });
 
-describe("Textarea component", () => {
+describe("Markdown Editor > Textarea component", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });

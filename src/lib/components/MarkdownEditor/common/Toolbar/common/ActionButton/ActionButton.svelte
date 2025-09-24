@@ -4,18 +4,26 @@
   import { onDestroy, onMount } from "svelte";
   import type { Attachment } from "svelte/attachments";
   import { Button } from "$lib/components/index.js";
+  import { useIsMounted } from "$lib/useIsMounted.svelte.js";
   import { getMarkdownEditorToolbarContext } from "../../context.js";
-  import type { ActionButtonProps } from "./types.js";
+  import type { MarkdownEditorToolbarActionButtonProps } from "./types.js";
 
-  const componentCssClassName = "ds markdown-editor-toolbar-action-button";
+  const componentCssClassName =
+    "ds markdown-editor-header-toolbar-action-button";
 
   let {
     class: className,
     onfocus: onfocusProp,
+    disabled: disabledProp,
     ...rest
-  }: ActionButtonProps = $props();
+  }: MarkdownEditorToolbarActionButtonProps = $props();
+
   let actionElement = $state<HTMLButtonElement>();
   const markdownEditorToolbarContext = getMarkdownEditorToolbarContext();
+  const mounted = useIsMounted();
+
+  // disabled by default until JS is loaded
+  const disabled = $derived(disabledProp ?? !mounted.value);
 
   const attachAction: Attachment<HTMLButtonElement> = (actionElement) => {
     markdownEditorToolbarContext?.addAction(actionElement);
@@ -43,5 +51,6 @@
   class={[componentCssClassName, className]}
   {onfocus}
   {@attach attachAction}
+  {disabled}
   {...rest}
 />

@@ -3,26 +3,26 @@
 import { createRawSnippet } from "svelte";
 import { describe, expect, it } from "vitest";
 import { render } from "vitest-browser-svelte";
-import Component from "./Group.svelte";
+import Component from "./Header.svelte";
 
-describe("Markdown Editor > Toolbar > Group component", () => {
+describe("Markdown Editor > Header component", () => {
   it("renders", async () => {
     const children = createRawSnippet(() => ({
-      render: () => `<span>Group</span>`,
+      render: () => `Header`,
     }));
 
     const page = render(Component, { children });
-    const element = page.getByText("Group");
+    const element = page.getByText("Header");
     await expect.element(element).toBeInTheDocument();
   });
 
   it("applies class", async () => {
     const children = createRawSnippet(() => ({
-      render: () => `<span>Group</span>`,
+      render: () => `Header`,
     }));
 
     const page = render(Component, { children, class: "test-class" });
-    const element = page.getByText("Group");
+    const element = page.getByText("Header");
     await expect.element(element).toHaveClass("test-class");
   });
 });

@@ -3,15 +3,15 @@
 import { render } from "@canonical/svelte-ssr-test";
 import { createRawSnippet } from "svelte";
 import { describe, expect, it } from "vitest";
-import Component from "./Toolbar.svelte";
-import type { MarkdownEditorToolbarProps } from "./types.js";
+import Component from "./ActionButton.svelte";
+import type { MarkdownEditorToolbarActionButtonProps } from "./types.js";
 
-describe("Markdown Editor > Toolbar SSR", () => {
+describe("Markdown Editor > Toolbar > ActionButton SSR", () => {
   const baseProps = {
     children: createRawSnippet(() => ({
-      render: () => `<span>Toolbar</span>`,
+      render: () => `<span>ActionButton</span>`,
     })),
-  } satisfies MarkdownEditorToolbarProps;
+  } satisfies MarkdownEditorToolbarActionButtonProps;
 
   describe("basics", () => {
     it("doesn't throw", () => {
@@ -24,7 +24,9 @@ describe("Markdown Editor > Toolbar SSR", () => {
       const { window, container } = render(Component, {
         props: { ...baseProps },
       });
-      expect(container.firstElementChild).toBeInstanceOf(window.HTMLDivElement);
+      expect(container.firstElementChild).toBeInstanceOf(
+        window.HTMLButtonElement,
+      );
     });
   });
 
@@ -47,11 +49,20 @@ describe("Markdown Editor > Toolbar SSR", () => {
         props: { class: "test-class", ...baseProps },
       });
       const classes = ["test-class"];
-      classes.push("ds", "markdown-editor-toolbar");
+      classes.push("ds", "markdown-editor-toolbar-action-button");
 
       for (const className of classes) {
         expect(container.firstElementChild?.classList).toContain(className);
       }
+    });
+
+    it("disabled by default", () => {
+      const { container } = render(Component, {
+        props: { ...baseProps },
+      });
+      expect(
+        container.firstElementChild?.getAttribute("disabled"),
+      ).toBeDefined();
     });
   });
 });

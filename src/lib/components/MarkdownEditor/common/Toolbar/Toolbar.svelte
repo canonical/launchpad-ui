@@ -3,21 +3,19 @@
 <script lang="ts">
   import { Icon } from "$lib/components/index.js";
   import { modifiersValues } from "$lib/modifiers/utils.js";
-  import { useIsMounted } from "$lib/useIsMounted.svelte.js";
   import { getMarkdownEditorContext } from "../../context.js";
   import { ActionButton, Group } from "./common/index.js";
   import { setMarkdownEditorToolbarContext } from "./context.js";
-  import type { ToolbarProps } from "./types.js";
+  import type { MarkdownEditorToolbarProps } from "./types.js";
 
   const componentCssClassName = "ds markdown-editor-toolbar";
 
   let {
     class: className,
     children,
-    actions,
     onkeydown: onkeydownProp,
     ...rest
-  }: ToolbarProps = $props();
+  }: MarkdownEditorToolbarProps = $props();
 
   let toolbarElement = $state<HTMLDivElement>();
   let selectedActionIndex = $state<number>(0);
@@ -53,8 +51,6 @@
       action.tabIndex = index === selectedActionIndex ? 0 : -1;
     });
   });
-
-  const isMounted = useIsMounted();
 
   /**
    * maintain the tab index property, where all actions have a
@@ -94,82 +90,73 @@
   };
 </script>
 
-<!-- A client side only component as it requires JavaScript in order to work -->
-{#if isMounted.value}
-  <div
-    class={[
-      componentCssClassName,
-      className,
-      modifiersValues({ density: "dense", severity: "base" }),
-    ]}
-    role="toolbar"
-    aria-orientation="horizontal"
-    {onkeydown}
-    bind:this={toolbarElement}
-    {...rest}
-  >
-    <Group>
-      <ActionButton
-        onclick={() => {
-          // TODO: temporary placeholder, to be replaced with an action management system
-          if (markdownEditorContext?.textareaElement) {
-            markdownEditorContext.textareaElement.focus();
-            document.execCommand("insertText", false, "# ");
-          }
-        }}
-      >
-        {#snippet icon()}
-          <Icon name="heading" />
-        {/snippet}
-      </ActionButton>
-      <ActionButton>
-        {#snippet icon()}
-          <Icon name="bold" />
-        {/snippet}
-      </ActionButton>
-      <ActionButton>
-        {#snippet icon()}
-          <Icon name="italic" />
-        {/snippet}
-      </ActionButton>
-    </Group>
-    <Group>
-      <ActionButton>
-        {#snippet icon()}
-          <Icon name="quote" />
-        {/snippet}
-      </ActionButton>
-      <ActionButton>
-        {#snippet icon()}
-          <Icon name="code" />
-        {/snippet}
-      </ActionButton>
-      <ActionButton>
-        {#snippet icon()}
-          <Icon name="get-link" />
-        {/snippet}
-      </ActionButton>
-      <ActionButton>
-        {#snippet icon()}
-          <Icon name="bulleted-list" />
-        {/snippet}
-      </ActionButton>
-      <ActionButton>
-        {#snippet icon()}
-          <Icon name="numbered-list" />
-        {/snippet}
-      </ActionButton>
-    </Group>
+<div
+  class={[
+    componentCssClassName,
+    className,
+    modifiersValues({ density: "dense", severity: "base" }),
+  ]}
+  role="toolbar"
+  aria-orientation="horizontal"
+  {onkeydown}
+  bind:this={toolbarElement}
+  {...rest}
+>
+  <Group>
+    <ActionButton
+      onclick={() => {
+        // TODO: temporary placeholder, to be replaced with an action management system
+        if (markdownEditorContext?.textareaElement) {
+          markdownEditorContext.textareaElement.focus();
+          document.execCommand("insertText", false, "# ");
+        }
+      }}
+    >
+      {#snippet icon()}
+        <Icon name="heading" />
+      {/snippet}
+    </ActionButton>
+    <ActionButton>
+      {#snippet icon()}
+        <Icon name="bold" />
+      {/snippet}
+    </ActionButton>
+    <ActionButton>
+      {#snippet icon()}
+        <Icon name="italic" />
+      {/snippet}
+    </ActionButton>
+  </Group>
+  <Group>
+    <ActionButton>
+      {#snippet icon()}
+        <Icon name="quote" />
+      {/snippet}
+    </ActionButton>
+    <ActionButton>
+      {#snippet icon()}
+        <Icon name="code" />
+      {/snippet}
+    </ActionButton>
+    <ActionButton>
+      {#snippet icon()}
+        <Icon name="get-link" />
+      {/snippet}
+    </ActionButton>
+    <ActionButton>
+      {#snippet icon()}
+        <Icon name="bulleted-list" />
+      {/snippet}
+    </ActionButton>
+    <ActionButton>
+      {#snippet icon()}
+        <Icon name="numbered-list" />
+      {/snippet}
+    </ActionButton>
+  </Group>
 
-    {@render actions?.()}
-
-    {#if children}
-      <div class="controls">
-        {@render children()}
-      </div>
-    {/if}
-  </div>
-{/if}
+  {@render children?.()}
+</div>
 
 <style>
   .ds.markdown-editor-toolbar {
@@ -180,10 +167,6 @@
     flex-direction: row;
     align-items: center;
     gap: var(--dimension-gap-markdown-editor-toolbar);
-
-    > .controls {
-      margin-inline-start: auto;
-    }
   }
 
   @container (max-width: 410px) {

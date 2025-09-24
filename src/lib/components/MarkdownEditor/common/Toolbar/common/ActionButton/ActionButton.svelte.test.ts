@@ -24,14 +24,14 @@ vi.mock("../../context.js", () => {
   };
 });
 
-describe("Markdown > Toolbar > Action button component", () => {
+describe("Markdown Editor > Toolbar > Action button component", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
   it("renders", async () => {
     const children = createRawSnippet(() => ({
-      render: () => `<span>ActionGroup</span>`,
+      render: () => `<span>ActionButton</span>`,
     }));
 
     const page = render(Component, { children });
@@ -41,7 +41,7 @@ describe("Markdown > Toolbar > Action button component", () => {
 
   it("applies class", async () => {
     const children = createRawSnippet(() => ({
-      render: () => `<span>ActionGroup</span>`,
+      render: () => `<span>ActionButton</span>`,
     }));
 
     const page = render(Component, { children, class: "test-class" });
@@ -56,7 +56,7 @@ describe("Markdown > Toolbar > Action button component", () => {
 
   it("sets selectedAction on focus", () => {
     const children = createRawSnippet(() => ({
-      render: () => `<span>ActionGroup</span>`,
+      render: () => `<span>ActionButton</span>`,
     }));
 
     const page = render(Component, { children });

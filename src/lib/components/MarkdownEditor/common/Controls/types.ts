@@ -2,4 +2,6 @@
 
 import type { SvelteHTMLElements } from "svelte/elements";
 
-export type MarkdownEditorToolbarGroupProps = SvelteHTMLElements["div"];
+type BaseProps = SvelteHTMLElements["div"];
+
+export type MarkdownEditorControlsProps = BaseProps;

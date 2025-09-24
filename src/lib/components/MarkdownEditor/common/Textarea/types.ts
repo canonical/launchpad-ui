@@ -2,4 +2,4 @@
 
 import type { TextareaProps } from "$lib/components/index.js";
 
-export type MarkdownEditorContext = TextareaProps;
+export type MarkdownEditorTextareaProps = TextareaProps;

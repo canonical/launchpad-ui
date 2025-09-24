@@ -40,7 +40,9 @@
 <Story name="Default">
   {#snippet template(args)}
     <MarkdownEditor {...args}>
-      <MarkdownEditor.Toolbar />
+      <MarkdownEditor.Header>
+        <MarkdownEditor.Toolbar />
+      </MarkdownEditor.Header>
       <MarkdownEditor.Textarea placeholder="Start typing…" autofocus />
     </MarkdownEditor>
   {/snippet}
@@ -55,12 +57,15 @@
     </script>
     -->
     <MarkdownEditor {...args}>
-      <MarkdownEditor.Toolbar>
-        <label style="display: flex; align-items: center; gap: 8px;">
-          <Checkbox bind:checked={preview} />
-          Preview
-        </label>
-      </MarkdownEditor.Toolbar>
+      <MarkdownEditor.Header>
+        <MarkdownEditor.Toolbar />
+        <MarkdownEditor.Controls>
+          <label style="display: flex; align-items: center; gap: 8px;">
+            <Checkbox bind:checked={preview} />
+            Preview
+          </label>
+        </MarkdownEditor.Controls>
+      </MarkdownEditor.Header>
       {#if preview}
         <div>
           {#if value}
@@ -90,8 +95,8 @@
       </script>
     -->
     <MarkdownEditor {...args}>
-      <MarkdownEditor.Toolbar>
-        {#snippet actions()}
+      <MarkdownEditor.Header>
+        <MarkdownEditor.Toolbar>
           <MarkdownEditor.Toolbar.Group aria-label="Magic actions">
             <MarkdownEditor.Toolbar.ActionButton
               onclick={() => insertText("wow what happened?!")}
@@ -125,8 +130,8 @@
               {/snippet}
             </MarkdownEditor.Toolbar.ActionButton>
           </MarkdownEditor.Toolbar.Group>
-        {/snippet}
-      </MarkdownEditor.Toolbar>
+        </MarkdownEditor.Toolbar>
+      </MarkdownEditor.Header>
       <MarkdownEditor.Textarea
         bind:ref={textarea}
         placeholder="Start typing…"
@@ -138,8 +143,8 @@
 <Story name="Dynamic toolbar actions injection" tags={["!autodocs"]}>
   {#snippet template(args)}
     <MarkdownEditor {...args}>
-      <MarkdownEditor.Toolbar>
-        {#snippet actions()}
+      <MarkdownEditor.Header>
+        <MarkdownEditor.Toolbar>
           {#if !hideExistingActions}
             <MarkdownEditor.Toolbar.Group aria-label="Dynamic actions">
               <MarkdownEditor.Toolbar.ActionButton>
@@ -158,20 +163,22 @@
               </MarkdownEditor.Toolbar.ActionButton>
             </MarkdownEditor.Toolbar.Group>
           {/if}
-        {/snippet}
-        <Button
-          onclick={startCountdown}
-          loading={hideExistingActions !== showNewActions}
-        >
-          {#if !hideExistingActions && !showNewActions}
-            Start countdown
-          {:else if hideExistingActions !== showNewActions}
-            In progress...
-          {:else}
-            Done
-          {/if}
-        </Button>
-      </MarkdownEditor.Toolbar>
+        </MarkdownEditor.Toolbar>
+        <MarkdownEditor.Controls>
+          <Button
+            onclick={startCountdown}
+            loading={hideExistingActions !== showNewActions}
+          >
+            {#if !hideExistingActions && !showNewActions}
+              Start countdown
+            {:else if hideExistingActions !== showNewActions}
+              In progress...
+            {:else}
+              Done
+            {/if}
+          </Button>
+        </MarkdownEditor.Controls>
+      </MarkdownEditor.Header>
       <MarkdownEditor.Textarea placeholder="Start typing…" />
     </MarkdownEditor>
   {/snippet}

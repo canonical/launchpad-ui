@@ -3,12 +3,12 @@
 import { render } from "@canonical/svelte-ssr-test";
 import { describe, expect, it } from "vitest";
 import Component from "./Textarea.svelte";
-import type { MarkdownEditorContext } from "./types.js";
+import type { MarkdownEditorTextareaProps } from "./types.js";
 
-describe("Textarea SSR", () => {
+describe("Markdown Editor > Textarea SSR", () => {
   const baseProps = {
     value: "Textarea",
-  } satisfies MarkdownEditorContext;
+  } satisfies MarkdownEditorTextareaProps;
 
   describe("basics", () => {
     it("doesn't throw", () => {
@@ -48,7 +48,7 @@ describe("Textarea SSR", () => {
         props: { class: "test-class", ...baseProps },
       });
       const classes = ["test-class"];
-      classes.push("ds", "textarea");
+      classes.push("ds", "markdown-editor-textarea");
 
       for (const className of classes) {
         expect(container.firstElementChild?.classList).toContain(className);

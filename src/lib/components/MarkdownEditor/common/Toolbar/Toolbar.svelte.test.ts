@@ -5,7 +5,7 @@ import { describe, expect, it } from "vitest";
 import { render } from "vitest-browser-svelte";
 import Component from "./Toolbar.svelte";
 
-describe("Markdown > Toolbar component", () => {
+describe("Markdown Editor > Toolbar component", () => {
   it("renders", async () => {
     const page = render(Component);
     const element = page.getByRole("toolbar");

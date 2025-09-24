@@ -3,15 +3,15 @@
 import { render } from "@canonical/svelte-ssr-test";
 import { createRawSnippet } from "svelte";
 import { describe, expect, it } from "vitest";
-import Component from "./Toolbar.svelte";
-import type { MarkdownEditorToolbarProps } from "./types.js";
+import Component from "./Header.svelte";
+import type { MarkdownEditorHeaderProps } from "./types.js";
 
-describe("Markdown Editor > Toolbar SSR", () => {
+describe("Markdown Editor > Header SSR", () => {
   const baseProps = {
     children: createRawSnippet(() => ({
-      render: () => `<span>Toolbar</span>`,
+      render: () => `<span>Header</span>`,
     })),
-  } satisfies MarkdownEditorToolbarProps;
+  } satisfies MarkdownEditorHeaderProps;
 
   describe("basics", () => {
     it("doesn't throw", () => {
@@ -47,7 +47,7 @@ describe("Markdown Editor > Toolbar SSR", () => {
         props: { class: "test-class", ...baseProps },
       });
       const classes = ["test-class"];
-      classes.push("ds", "markdown-editor-toolbar");
+      classes.push("ds", "markdown-editor-header");
 
       for (const className of classes) {
         expect(container.firstElementChild?.classList).toContain(className);
