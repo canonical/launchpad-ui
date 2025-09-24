@@ -36,6 +36,19 @@ export type PositionTryFallback =
   | "flip-block"
   | "flip-inline, flip-block";
 
+/**
+ * Allows to position a floating target relative to a trigger using CSS `position-area` when available, and automatically falls back to Floating UI when unsupported.
+ *
+ * Usage:
+ * - Attach `triggerAttachment` to the trigger element and `targetAttachment` to the target element you wish to position.
+ * - Provide the style returned by `targetStyle()` to the target element.
+ * - Control activation via `getActive()`, the desired placement via `getPosition()` and optionally position fallback behavior via `getTryFallback()`.
+ *
+ * @param getPosition - Returns the desired position-area value.
+ * @param getActive - Returns whether positioning should be active.
+ * @param getTryFallback - Optionally returns a position-try-fallbacks value.
+ * @returns Attachments to be applied to the trigger and target elements and the target style getter.
+ */
 export function usePositionArea(
   getPosition: () => PositionArea,
   getActive: () => boolean,
@@ -46,7 +59,7 @@ export function usePositionArea(
     const position = getPosition();
     return (
       isMounted.value &&
-      (!CSS.supports("position-area", getPosition()) ||
+      (!CSS.supports("position-area", position) ||
         // Chrome (as of 129) reports support for `inline-start` and `inline-end`, but it is partial and unstable.
         // See: https://issues.chromium.org/issues/438334710
         // TODO: Remove when this is resolved.
@@ -112,6 +125,20 @@ export function usePositionArea(
   };
 }
 
+/**
+ * Helper around Floating UI to compute and update the position of a floating target relative to a trigger element.
+ *
+ * It wires up `autoUpdate`, calls `computePosition` on updates, and forwards the result to the provided callback.
+ *
+ * Usage:
+ * - Attach `triggerAttachment` to the trigger element and `targetAttachment` to the target element you wish to position.
+ * - Control activation via `getActive()` and supply options via `getOptions()`.
+ *
+ * @param getActive - Returns whether positioning should be active.
+ * @param getOptions - Supplies options for `computePosition`. If `undefined`, defaults will be used.
+ * @param callback - Invoked with the latest computed position.
+ * @returns Attachments to be applied to the trigger and target elements.
+ */
 export function useFloatingUI(
   getActive: () => boolean,
   getOptions: () => Partial<ComputePositionConfig> | undefined,
