@@ -24,7 +24,7 @@
     "build-storybook": "storybook build"
   },
   "devDependencies": {
-    "@canonical/launchpad-design-tokens": "^1.0.18",
+    "@canonical/launchpad-design-tokens": "^1.0.20",
     "@canonical/svelte-ssr-test": "^0.10.0-experimental.3",
     "@chromatic-com/storybook": "^4.1.1",
     "@eslint/js": "^9.35.0",

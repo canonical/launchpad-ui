@@ -190,8 +190,7 @@ TODO(no-js): Investigate how to handle tooltips without JavaScript.
   .ds.tooltip {
     /* TODO(z-index-tokens): Should we tokenize z-indexes? What would they be used for except the tooltip? */
     --z-index-tooltip: 10;
-    /* TODO(@Enzo): Add missing token */
-    --color-background-tooltip: #202020;
+    --color-background-tooltip: var(--tmp-color-background-alt-reversed);
     --color-text-tooltip: var(--tmp-color-text-reversed);
     --dimension-padding-inline-tooltip: var(--tmp-dimension-spacing-inline-m);
     --dimension-padding-block-tooltip: var(--tmp-dimension-spacing-block-xs);
