@@ -165,15 +165,19 @@
   }
 
   /* Local modifiers */
-  :global(.brand .ds.button) {
-    --tmp-color-text-context: var(--tmp-color-text-white);
-    --tmp-color-border-context: var(--tmp-color-brand-default);
-    --tmp-color-background-context: var(--tmp-color-brand-default);
-    --tmp-color-background-hover-context: var(--tmp-color-brand-hover);
-    --tmp-color-background-active-context: var(--tmp-color-brand-active);
-  }
+  :global {
+    .brand .ds.button,
+    .brand.ds.button {
+      --tmp-color-text-context: var(--tmp-color-text-white);
+      --tmp-color-border-context: var(--tmp-color-brand-default);
+      --tmp-color-background-context: var(--tmp-color-brand-default);
+      --tmp-color-background-hover-context: var(--tmp-color-brand-hover);
+      --tmp-color-background-active-context: var(--tmp-color-brand-active);
+    }
 
-  :global(.base .ds.button) {
-    --tmp-color-border-context: transparent;
+    .base .ds.button,
+    .base.ds.button {
+      --tmp-color-border-context: transparent;
+    }
   }
 </style>

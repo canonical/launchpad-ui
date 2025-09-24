@@ -2,7 +2,6 @@
 
 <script lang="ts">
   import { Icon } from "$lib/components/index.js";
-  import { modifiersValues } from "$lib/modifiers/utils.js";
   import { getMarkdownEditorContext } from "../../context.js";
   import { ActionButton, Group } from "./common/index.js";
   import { setMarkdownEditorToolbarContext } from "./context.js";
@@ -91,11 +90,7 @@
 </script>
 
 <div
-  class={[
-    componentCssClassName,
-    className,
-    modifiersValues({ density: "dense", severity: "base" }),
-  ]}
+  class={[componentCssClassName, className]}
   role="toolbar"
   aria-orientation="horizontal"
   {onkeydown}

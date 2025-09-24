@@ -49,6 +49,7 @@
 <Button
   bind:ref={actionElement}
   class={[componentCssClassName, className]}
+  modifiers={{ density: "dense", severity: "base", ...(rest.modifiers || {}) }}
   {onfocus}
   {@attach attachAction}
   {disabled}
