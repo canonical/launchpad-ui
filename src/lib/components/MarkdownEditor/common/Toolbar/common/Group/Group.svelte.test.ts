@@ -12,7 +12,7 @@ describe("Markdown Editor > Toolbar > Group component", () => {
     }));
 
     const page = render(Component, { children });
-    const element = page.getByText("Group");
+    const element = page.getByRole("group");
     await expect.element(element).toBeInTheDocument();
   });
 
@@ -22,7 +22,7 @@ describe("Markdown Editor > Toolbar > Group component", () => {
     }));
 
     const page = render(Component, { children, class: "test-class" });
-    const element = page.getByText("Group");
+    const element = page.getByRole("group");
     await expect.element(element).toHaveClass("test-class");
   });
 });

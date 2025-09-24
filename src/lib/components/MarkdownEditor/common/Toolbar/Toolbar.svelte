@@ -10,45 +10,46 @@
   const componentCssClassName = "ds markdown-editor-toolbar";
 
   let {
+    noDefaultActions = false,
     class: className,
+    ref = $bindable(),
     children,
     onkeydown: onkeydownProp,
     ...rest
   }: MarkdownEditorToolbarProps = $props();
 
-  let toolbarElement = $state<HTMLDivElement>();
-  let selectedActionIndex = $state<number>(0);
   let actionButtons = $state<HTMLButtonElement[]>([]);
+  let selectedAction = $derived.by(() => {
+    return actionButtons.find((action) => !action.disabled);
+  });
 
   const markdownEditorContext = getMarkdownEditorContext();
 
   setMarkdownEditorToolbarContext({
-    set selectedAction(action: HTMLButtonElement) {
-      const index = actionButtons.indexOf(action);
-      selectedActionIndex = index === -1 ? 0 : index;
+    set selectedAction(action) {
+      if (action === undefined) {
+        selectedAction = actionButtons.find((action) => !action.disabled);
+      } else {
+        selectedAction = action;
+      }
+    },
+
+    get selectedAction() {
+      return selectedAction;
     },
 
     get actions() {
       return actionButtons;
     },
 
-    addAction(action: HTMLButtonElement) {
+    addAction(action) {
       if (actionButtons.includes(action)) return;
       actionButtons.push(action);
     },
 
-    removeAction(action: HTMLButtonElement) {
+    removeAction(action) {
       actionButtons = actionButtons.filter((a) => a !== action);
     },
-  });
-
-  $effect(() => {
-    selectedActionIndex =
-      selectedActionIndex > actionButtons.length - 1 ? 0 : selectedActionIndex;
-
-    actionButtons.forEach((action, index) => {
-      action.tabIndex = index === selectedActionIndex ? 0 : -1;
-    });
   });
 
   /**
@@ -60,8 +61,6 @@
    */
   const onkeydown: typeof onkeydownProp = (event) => {
     onkeydownProp?.(event);
-    if (!toolbarElement) return;
-
     if (
       !(event.target as HTMLElement).classList.contains(
         "markdown-editor-toolbar-action-button",
@@ -70,20 +69,23 @@
       return;
 
     if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
-      let nextFocusableAction: HTMLButtonElement | null = null;
       const direction = event.key === "ArrowLeft" ? -1 : 1;
+      let selectedActionIndex = 0;
+      if (selectedAction) {
+        const index = actionButtons.indexOf(selectedAction);
+        if (index !== -1) {
+          selectedActionIndex = index;
+        }
+      }
       for (let i = 1; i < actionButtons.length; i++) {
         const index =
           (selectedActionIndex + i * direction) % actionButtons.length;
         const action = actionButtons.at(index);
         if (action && !action.disabled) {
-          nextFocusableAction = action;
+          selectedActionIndex = actionButtons.indexOf(action);
+          action.focus();
           break;
         }
-      }
-      if (nextFocusableAction) {
-        selectedActionIndex = actionButtons.indexOf(nextFocusableAction);
-        nextFocusableAction.focus();
       }
     }
   };
@@ -94,61 +96,63 @@
   role="toolbar"
   aria-orientation="horizontal"
   {onkeydown}
-  bind:this={toolbarElement}
+  bind:this={ref}
   {...rest}
 >
-  <Group>
-    <ActionButton
-      onclick={() => {
-        // TODO: temporary placeholder, to be replaced with an action management system
-        if (markdownEditorContext?.textareaElement) {
-          markdownEditorContext.textareaElement.focus();
-          document.execCommand("insertText", false, "# ");
-        }
-      }}
-    >
-      {#snippet iconLeft()}
-        <Icon name="heading" />
-      {/snippet}
-    </ActionButton>
-    <ActionButton>
-      {#snippet iconLeft()}
-        <Icon name="bold" />
-      {/snippet}
-    </ActionButton>
-    <ActionButton>
-      {#snippet iconLeft()}
-        <Icon name="italic" />
-      {/snippet}
-    </ActionButton>
-  </Group>
-  <Group>
-    <ActionButton>
-      {#snippet iconLeft()}
-        <Icon name="quote" />
-      {/snippet}
-    </ActionButton>
-    <ActionButton>
-      {#snippet iconLeft()}
-        <Icon name="code" />
-      {/snippet}
-    </ActionButton>
-    <ActionButton>
-      {#snippet iconLeft()}
-        <Icon name="get-link" />
-      {/snippet}
-    </ActionButton>
-    <ActionButton>
-      {#snippet iconLeft()}
-        <Icon name="bulleted-list" />
-      {/snippet}
-    </ActionButton>
-    <ActionButton>
-      {#snippet iconLeft()}
-        <Icon name="numbered-list" />
-      {/snippet}
-    </ActionButton>
-  </Group>
+  {#if !noDefaultActions}
+    <Group>
+      <ActionButton
+        onclick={() => {
+          // TODO: temporary placeholder, to be replaced with an action management system
+          if (markdownEditorContext?.textareaElement) {
+            markdownEditorContext.textareaElement.focus();
+            document.execCommand("insertText", false, "# ");
+          }
+        }}
+      >
+        {#snippet iconLeft()}
+          <Icon name="heading" />
+        {/snippet}
+      </ActionButton>
+      <ActionButton>
+        {#snippet iconLeft()}
+          <Icon name="bold" />
+        {/snippet}
+      </ActionButton>
+      <ActionButton>
+        {#snippet iconLeft()}
+          <Icon name="italic" />
+        {/snippet}
+      </ActionButton>
+    </Group>
+    <Group>
+      <ActionButton>
+        {#snippet iconLeft()}
+          <Icon name="quote" />
+        {/snippet}
+      </ActionButton>
+      <ActionButton>
+        {#snippet iconLeft()}
+          <Icon name="code" />
+        {/snippet}
+      </ActionButton>
+      <ActionButton>
+        {#snippet iconLeft()}
+          <Icon name="get-link" />
+        {/snippet}
+      </ActionButton>
+      <ActionButton>
+        {#snippet iconLeft()}
+          <Icon name="bulleted-list" />
+        {/snippet}
+      </ActionButton>
+      <ActionButton>
+        {#snippet iconLeft()}
+          <Icon name="numbered-list" />
+        {/snippet}
+      </ActionButton>
+    </Group>
+  {/if}
 
   {@render children?.()}
 </div>

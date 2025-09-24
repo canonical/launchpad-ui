@@ -5,22 +5,28 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import { render } from "vitest-browser-svelte";
 import Component from "./ActionButton.svelte";
 
-const { addAction, setSelectedAction, removeAction } = vi.hoisted(() => {
+const { ctx, addAction, setSelectedAction, removeAction } = vi.hoisted(() => {
   const addAction = vi.fn();
   const setSelectedAction = vi.fn();
   const removeAction = vi.fn();
-  return { addAction, setSelectedAction, removeAction };
+  let _selected: HTMLButtonElement | undefined;
+  const ctx = {
+    addAction,
+    get selectedAction() {
+      return _selected;
+    },
+    set selectedAction(el: HTMLButtonElement | undefined) {
+      _selected = el;
+      setSelectedAction(el);
+    },
+    removeAction,
+  };
+  return { ctx, addAction, setSelectedAction, removeAction };
 });
 
 vi.mock("../../context.js", () => {
   return {
-    getMarkdownEditorToolbarContext: () => ({
-      addAction,
-      set selectedAction(el: HTMLButtonElement | undefined) {
-        setSelectedAction(el);
-      },
-      removeAction,
-    }),
+    getMarkdownEditorToolbarContext: () => ctx,
   };
 });
 
@@ -49,9 +55,9 @@ describe("Markdown Editor > Toolbar > Action button component", () => {
     await expect.element(element).toHaveClass("test-class");
   });
 
-  it("calls addAction on attach and mount", () => {
+  it("calls addAction on mount", () => {
     render(Component);
-    expect(addAction).toHaveBeenCalledTimes(2);
+    expect(addAction).toHaveBeenCalledTimes(1);
   });
 
   it("sets selectedAction on focus", () => {
@@ -65,5 +71,12 @@ describe("Markdown Editor > Toolbar > Action button component", () => {
     buttonEl.focus();
     expect(setSelectedAction).toHaveBeenCalledTimes(1);
     expect(setSelectedAction).toHaveBeenCalledWith(buttonEl);
+  });
+
+  it("calls removeAction on unmount", async () => {
+    const page = render(Component);
+    await expect.element(page.getByRole("button")).toBeInTheDocument();
+    page.unmount();
+    expect(removeAction).toHaveBeenCalledTimes(1);
   });
 });

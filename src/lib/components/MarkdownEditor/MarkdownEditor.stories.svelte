@@ -35,6 +35,9 @@
     await sleep(1000);
     showNewActions = true;
   };
+
+  // dynamic toolbar actions disabled
+  let disableDynamicActions = $state(false);
 </script>
 
 <Story name="Default">
@@ -181,5 +184,47 @@
       </MarkdownEditor.Header>
       <MarkdownEditor.Textarea placeholder="Start typing…" />
     </MarkdownEditor>
+  {/snippet}
+</Story>
+
+<Story name="Dynamic toolbar actions disabled" tags={["!autodocs"]}>
+  {#snippet template(args)}
+    <MarkdownEditor {...args}>
+      <MarkdownEditor.Header>
+        <MarkdownEditor.Toolbar class="dynamic-disabled">
+          <MarkdownEditor.Toolbar.Group aria-label="Dynamic actions">
+            <MarkdownEditor.Toolbar.ActionButton
+              disabled={disableDynamicActions}
+            >
+              {#snippet iconLeft()}
+                <Icon name="revisions" />
+              {/snippet}
+            </MarkdownEditor.Toolbar.ActionButton>
+          </MarkdownEditor.Toolbar.Group>
+        </MarkdownEditor.Toolbar>
+        <MarkdownEditor.Controls>
+          <Button
+            onclick={() => {
+              disableDynamicActions = true;
+            }}
+            disabled={disableDynamicActions}
+          >
+            {#if disableDynamicActions}
+              Done
+            {:else}
+              Disabled last action
+            {/if}
+          </Button>
+        </MarkdownEditor.Controls>
+      </MarkdownEditor.Header>
+      <MarkdownEditor.Textarea placeholder="Start typing…" />
+    </MarkdownEditor>
+    <style>
+      .dynamic-disabled
+        .ds.markdown-editor-toolbar-action-button[tabindex="0"]:not(:disabled) {
+        outline: 2px solid red;
+        outline-offset: -2px;
+      }
+    </style>
   {/snippet}
 </Story>
