@@ -19,7 +19,7 @@ export default mergeConfig(
               provider: "playwright",
               instances: [{ browser: "chromium" }],
             },
-            include: ["src/**/*.svelte.test.{js,ts}"],
+            include: ["src/**/*.svelte.test.{js,ts}", "src/**/*.test.ts"],
             exclude: ["src/lib/server/**"],
             setupFiles: ["./vitest-setup-client.ts"],
           },

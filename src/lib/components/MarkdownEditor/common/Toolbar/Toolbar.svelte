@@ -2,6 +2,7 @@
 
 <script lang="ts">
   import { Icon } from "$lib/components/index.js";
+  import { getFirstElement, getSiblingElement } from "$lib/utils";
   import { getMarkdownEditorContext } from "../../context.js";
   import { ActionButton, Group } from "./common/index.js";
   import { setMarkdownEditorToolbarContext } from "./context.js";
@@ -17,47 +18,35 @@
     onkeydown: onkeydownProp,
     ...rest
   }: ToolbarProps = $props();
-  let actionButtons = $state<HTMLButtonElement[]>([]);
+  const actionButtons = $state<HTMLButtonElement[]>([]);
   let selectedAction = $derived(
     actionButtons.find((action) => !action.disabled),
   );
 
   const markdownEditorContext = getMarkdownEditorContext();
 
+  const selectDefaultAction = () => {
+    if (!ref) return;
+    selectedAction = getFirstElement({
+      containerElement: ref,
+      preferredChild: selectedAction as HTMLElement,
+      selector: "button.markdown-editor-toolbar-action-button:first-child",
+    }) as HTMLButtonElement;
+  };
+
   setMarkdownEditorToolbarContext({
     set selectedAction(action) {
-      if (action === undefined) {
-        selectedAction = actionButtons.find((action) => !action.disabled);
-      } else {
-        selectedAction = action;
-      }
+      selectedAction = action
+        ? action
+        : actionButtons.find((action) => !action.disabled);
     },
 
     get selectedAction() {
       return selectedAction;
     },
 
-    get actions() {
-      return actionButtons;
-    },
-
-    addAction(action) {
-      if (actionButtons.includes(action)) return;
-      actionButtons.push(action);
-      actionButtons.sort((a, b) => {
-        const position = a.compareDocumentPosition(b);
-        if (position === Node.DOCUMENT_POSITION_FOLLOWING) {
-          return -1;
-        } else if (position === Node.DOCUMENT_POSITION_PRECEDING) {
-          return 1;
-        } else {
-          return 0;
-        }
-      });
-    },
-
-    removeAction(action) {
-      actionButtons = actionButtons.filter((a) => a !== action);
+    setDefaultAction() {
+      selectDefaultAction();
     },
   });
 
@@ -77,27 +66,26 @@
     )
       return;
 
-    if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
-      const direction = event.key === "ArrowLeft" ? -1 : 1;
-      let selectedActionIndex = 0;
-      if (selectedAction) {
-        const index = actionButtons.indexOf(selectedAction);
-        if (index !== -1) {
-          selectedActionIndex = index;
-        }
-      }
-      for (let i = 1; i < actionButtons.length; i++) {
-        const index =
-          (selectedActionIndex + i * direction) % actionButtons.length;
-        const action = actionButtons.at(index);
-        if (action && !action.disabled) {
-          selectedActionIndex = actionButtons.indexOf(action);
-          action.focus();
-          break;
-        }
+    if (
+      selectedAction &&
+      ref &&
+      (event.key === "ArrowLeft" || event.key === "ArrowRight")
+    ) {
+      const nextAction = getSiblingElement({
+        containerElement: ref,
+        currentElement: selectedAction,
+        direction: event.key === "ArrowLeft" ? "previous" : "next",
+        wrap: true,
+      });
+      if (nextAction) {
+        nextAction.focus();
       }
     }
   };
+
+  $effect(() => {
+    selectDefaultAction();
+  });
 </script>
 
 <div
@@ -160,6 +148,11 @@
           <Icon name="numbered-list" />
         {/snippet}
       </ActionButton>
+      <ActionButton>
+        {#snippet iconLeft()}
+          <Icon name="task-list" />
+        {/snippet}
+      </ActionButton>
     </Group>
   {/if}
 
@@ -169,7 +162,7 @@
 <style>
   .ds.markdown-editor-toolbar {
     --dimension-gap-markdown-editor-toolbar: var(
-      --tmp-dimension-spacing-inline-xxs
+      --tmp-dimension-spacing-inline-minimum
     );
     display: flex;
     flex-direction: row;
@@ -177,8 +170,7 @@
     gap: var(--dimension-gap-markdown-editor-toolbar);
   }
 
-  /* defined in .ds.markdown-editor */
-  @container (max-width: 410px) {
+  @media (scripting: none) {
     .ds.markdown-editor-toolbar {
       display: none;
     }

@@ -62,12 +62,12 @@
     <MarkdownEditor {...args}>
       <MarkdownEditor.Header>
         <MarkdownEditor.Toolbar />
-        <MarkdownEditor.Controls>
+        {#snippet controls()}
           <label style="display: flex; align-items: center; gap: 8px;">
             <Checkbox bind:checked={preview} />
             Preview
           </label>
-        </MarkdownEditor.Controls>
+        {/snippet}
       </MarkdownEditor.Header>
       {#if preview}
         <div>
@@ -147,7 +147,7 @@
   {#snippet template(args)}
     <MarkdownEditor {...args}>
       <MarkdownEditor.Header>
-        <MarkdownEditor.Toolbar>
+        <MarkdownEditor.Toolbar noDefaultActions>
           {#if !hideExistingActions}
             <MarkdownEditor.Toolbar.Group aria-label="Dynamic actions">
               <MarkdownEditor.Toolbar.ActionButton>
@@ -167,7 +167,7 @@
             </MarkdownEditor.Toolbar.Group>
           {/if}
         </MarkdownEditor.Toolbar>
-        <MarkdownEditor.Controls>
+        {#snippet controls()}
           <Button
             onclick={startCountdown}
             loading={hideExistingActions !== showNewActions}
@@ -180,7 +180,7 @@
               Done
             {/if}
           </Button>
-        </MarkdownEditor.Controls>
+        {/snippet}
       </MarkdownEditor.Header>
       <MarkdownEditor.Textarea placeholder="Start typing…" />
     </MarkdownEditor>
@@ -202,7 +202,7 @@
             </MarkdownEditor.Toolbar.ActionButton>
           </MarkdownEditor.Toolbar.Group>
         </MarkdownEditor.Toolbar>
-        <MarkdownEditor.Controls>
+        {#snippet controls()}
           <Button
             onclick={() => {
               disableDynamicActions = true;
@@ -215,7 +215,7 @@
               Disabled last action
             {/if}
           </Button>
-        </MarkdownEditor.Controls>
+        {/snippet}
       </MarkdownEditor.Header>
       <MarkdownEditor.Textarea placeholder="Start typing…" />
     </MarkdownEditor>

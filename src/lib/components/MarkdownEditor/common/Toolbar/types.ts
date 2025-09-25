@@ -3,10 +3,14 @@
 import type { SvelteHTMLElements } from "svelte/elements";
 
 export type MarkdownEditorToolbarContext = {
+  /**
+   * The currently selected action button.
+   */
   selectedAction: HTMLButtonElement | undefined;
-  get actions(): HTMLButtonElement[];
-  addAction: (action: HTMLButtonElement) => void;
-  removeAction: (action: HTMLButtonElement) => void;
+  /**
+   * To be called when action buttons are mounted, to select the first action button.
+   */
+  setDefaultAction(): void;
 };
 
 type BaseProps = SvelteHTMLElements["div"];

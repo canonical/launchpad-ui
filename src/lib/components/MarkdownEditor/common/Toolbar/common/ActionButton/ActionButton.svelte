@@ -21,22 +21,6 @@
   const markdownEditorToolbarContext = getMarkdownEditorToolbarContext();
   const mounted = useIsMounted();
 
-  // disabled by default until JS is loaded
-  const disabled = $derived(disabledProp ?? !mounted.value);
-
-  onMount(() => {
-    if (!actionElement) return;
-    setTimeout(() => {
-      if (!actionElement) return;
-      markdownEditorToolbarContext?.addAction(actionElement);
-    }, Math.random() * 1000);
-
-    return () => {
-      if (!actionElement) return;
-      markdownEditorToolbarContext?.removeAction(actionElement);
-    };
-  });
-
   const onfocus: typeof onfocusProp = (event) => {
     onfocusProp?.(event);
     if (!markdownEditorToolbarContext || !actionElement) return;
@@ -47,6 +31,8 @@
     actionElement &&
       markdownEditorToolbarContext?.selectedAction === actionElement,
   );
+  // disabled by default until JS is loaded
+  const disabled = $derived(disabledProp ?? !mounted.value);
 
   // Unselect the action button if it becomes disabled and is in tab order
   $effect(() => {
@@ -57,6 +43,17 @@
     ) {
       markdownEditorToolbarContext.selectedAction = undefined;
     }
+  });
+
+  onMount(() => {
+    if (markdownEditorToolbarContext) {
+      markdownEditorToolbarContext.setDefaultAction();
+    }
+    return () => {
+      if (markdownEditorToolbarContext) {
+        markdownEditorToolbarContext.setDefaultAction();
+      }
+    };
   });
 </script>
 

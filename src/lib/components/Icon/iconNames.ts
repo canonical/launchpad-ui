@@ -168,6 +168,7 @@ export const iconNames = new Set([
   "switcher-environments",
   "switcher",
   "tag",
+  "task-list",
   "task-outstanding",
   "terminal",
   "text",

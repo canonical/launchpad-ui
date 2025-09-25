@@ -1,7 +1,7 @@
 /* @canonical/generator-ds 0.10.0-experimental.3 */
 
 import { default as MarkdownEditorRoot } from "./MarkdownEditor.svelte";
-import { Controls, Header, Textarea, Toolbar } from "./common/index.js";
+import { Header, Textarea, Toolbar } from "./common/index.js";
 
 /**
  * `MarkdownEditor` simple and minimalistic markdown editor with a toolbar. This is based on `textarea` and uses JavaScript for interactions via the toolbar and shortcuts.
@@ -78,32 +78,14 @@ const MarkdownEditor = MarkdownEditorRoot as typeof MarkdownEditorRoot & {
    * ```
    */
   Toolbar: typeof Toolbar;
-
-  /**
-   * `Controls` is a container for adding custom controls to the `MarkdownEditor` component.
-   *
-   * @example
-   * ```svelte
-   * <MarkdownEditor>
-   *   <MarkdownEditor.Header>
-   *     <MarkdownEditor.Controls>
-   *       <Button>Preview</Button>
-   *     </MarkdownEditor.Controls>
-   *   </MarkdownEditor.Header>
-   * </MarkdownEditor>
-   * ```
-   */
-  Controls: typeof Controls;
 };
 
-MarkdownEditor.Controls = Controls;
 MarkdownEditor.Header = Header;
 MarkdownEditor.Textarea = Textarea;
 MarkdownEditor.Toolbar = Toolbar;
 
 export type {
   ActionButtonProps as MarkdownEditorToolbarActionButtonProps,
-  ControlsProps as MarkdownEditorControlsProps,
   GroupProps as MarkdownEditorToolbarGroupProps,
   HeaderProps as MarkdownEditorHeaderProps,
   TextareaProps as MarkdownEditorTextareaProps,

@@ -5,11 +5,12 @@
 
   const componentCssClassName = "ds markdown-editor-header";
 
-  let { class: className, children, ...rest }: HeaderProps = $props();
+  let { class: className, children, controls, ...rest }: HeaderProps = $props();
 </script>
 
 <div class={[componentCssClassName, className]} {...rest}>
   {@render children?.()}
+  {@render controls?.()}
 </div>
 
 <style>

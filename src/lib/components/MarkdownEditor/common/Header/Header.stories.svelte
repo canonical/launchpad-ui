@@ -15,9 +15,9 @@
     <MarkdownEditor>
       <MarkdownEditor.Header {...args}>
         <MarkdownEditor.Toolbar />
-        <MarkdownEditor.Controls>
+        {#snippet controls()}
           <Button>Preview</Button>
-        </MarkdownEditor.Controls>
+        {/snippet}
       </MarkdownEditor.Header>
     </MarkdownEditor>
   {/snippet}
