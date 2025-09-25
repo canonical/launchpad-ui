@@ -34,16 +34,16 @@ const MarkdownEditor = MarkdownEditorRoot as typeof MarkdownEditorRoot & {
    * ```svelte
    * <MarkdownEditor>
    *  <MarkdownEditor.Header>
-   *    <MarkdownEditor.Header.Toolbar>
-   *      {#snippet actions()}
-   *      <Button modifiers={{ density: "dense", severity: "base" }}>
+   *    <MarkdownEditor.Toolbar>
+   *      <MarkdownEditor.Toolbar.ActionButton>
+   *        {#snippet iconLeft()}
    *          <Icon name="bold" />
-   *      </Button>
-   *      {/snippet}
-   *    </MarkdownEditor.Header.Toolbar>
-   *    <MarkdownEditor.Header.Controls>
+   *        {/snippet}
+   *      </MarkdownEditor.Toolbar.ActionButton>
+   *    </MarkdownEditor.Toolbar>
+   *    <MarkdownEditor.Controls>
    *      <Button>Preview</Button>
-   *    </MarkdownEditor.Header.Controls>
+   *    </MarkdownEditor.Controls>
    *  </MarkdownEditor.Header>
    * </MarkdownEditor>
    * ```
@@ -61,16 +61,18 @@ const MarkdownEditor = MarkdownEditorRoot as typeof MarkdownEditorRoot & {
    * ```svelte
    * <MarkdownEditor>
    *  <MarkdownEditor.Header>
-   *    <MarkdownEditor.Header.Toolbar>
-   *      {#snippet actions()}
-   *      <Button modifiers={{ density: "dense", severity: "base" }}>
+   *    <MarkdownEditor.Toolbar>
+   *      <MarkdownEditor.Toolbar.ActionButton>
+   *        {#snippet iconLeft()}
    *          <Icon name="bold" />
-   *      </Button>
-   *      {/snippet}
+   *        {/snippet}
+   *      </MarkdownEditor.Toolbar.ActionButton>
+   *    </MarkdownEditor.Toolbar>
+   *    <MarkdownEditor.Controls>
    *      <label>
    *        <Checkbox /> Preview
    *      </label>
-   *    </MarkdownEditor.Header.Toolbar>
+   *    </MarkdownEditor.Controls>
    *  </MarkdownEditor.Header>
    * </MarkdownEditor>
    * ```
@@ -84,9 +86,9 @@ const MarkdownEditor = MarkdownEditorRoot as typeof MarkdownEditorRoot & {
    * ```svelte
    * <MarkdownEditor>
    *   <MarkdownEditor.Header>
-   *     <MarkdownEditor.Header.Controls>
+   *     <MarkdownEditor.Controls>
    *       <Button>Preview</Button>
-   *     </MarkdownEditor.Header.Controls>
+   *     </MarkdownEditor.Controls>
    *   </MarkdownEditor.Header>
    * </MarkdownEditor>
    * ```
@@ -100,12 +102,12 @@ MarkdownEditor.Textarea = Textarea;
 MarkdownEditor.Toolbar = Toolbar;
 
 export type {
-  MarkdownEditorControlsProps,
-  MarkdownEditorHeaderProps,
-  MarkdownEditorTextareaProps,
-  MarkdownEditorToolbarActionButtonProps,
-  MarkdownEditorToolbarGroupProps,
-  MarkdownEditorToolbarProps,
+  ActionButtonProps as MarkdownEditorToolbarActionButtonProps,
+  ControlsProps as MarkdownEditorControlsProps,
+  GroupProps as MarkdownEditorToolbarGroupProps,
+  HeaderProps as MarkdownEditorHeaderProps,
+  TextareaProps as MarkdownEditorTextareaProps,
+  ToolbarProps as MarkdownEditorToolbarProps,
 } from "./common/index.js";
 export * from "./types.js";
 export { MarkdownEditor };

@@ -4,14 +4,14 @@ import { render } from "@canonical/svelte-ssr-test";
 import { createRawSnippet } from "svelte";
 import { describe, expect, it } from "vitest";
 import Component from "./ActionButton.svelte";
-import type { MarkdownEditorToolbarActionButtonProps } from "./types.js";
+import type { ActionButtonProps } from "./types.js";
 
 describe("Markdown Editor > Toolbar > ActionButton SSR", () => {
   const baseProps = {
     children: createRawSnippet(() => ({
       render: () => `<span>ActionButton</span>`,
     })),
-  } satisfies MarkdownEditorToolbarActionButtonProps;
+  } satisfies ActionButtonProps;
 
   describe("basics", () => {
     it("doesn't throw", () => {

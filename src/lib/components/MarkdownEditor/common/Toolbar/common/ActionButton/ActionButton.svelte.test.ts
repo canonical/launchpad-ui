@@ -1,6 +1,6 @@
 /* @canonical/generator-ds 0.10.0-experimental.3 */
 
-import { createRawSnippet } from "svelte";
+import { createRawSnippet, flushSync } from "svelte";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { render } from "vitest-browser-svelte";
 import Component from "./ActionButton.svelte";
@@ -78,5 +78,21 @@ describe("Markdown Editor > Toolbar > Action button component", () => {
     await expect.element(page.getByRole("button")).toBeInTheDocument();
     page.unmount();
     expect(removeAction).toHaveBeenCalledTimes(1);
+  });
+
+  it("unselects the action button if it becomes disabled and is in tab order", async () => {
+    let disabled = $state(false);
+    const children = createRawSnippet(() => ({
+      render: () => `<span>ActionButton</span>`,
+    }));
+    const page = render(Component, { props: { disabled, children } });
+    const button = page.getByRole("button");
+    const buttonEl = button.element() as HTMLButtonElement;
+    buttonEl.focus();
+    disabled = true;
+    flushSync();
+    await expect.element(button).toBeDisabled();
+    expect(setSelectedAction).toHaveBeenCalledTimes(2);
+    expect(setSelectedAction).toHaveBeenLastCalledWith(undefined);
   });
 });

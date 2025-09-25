@@ -5,7 +5,7 @@
   import { getMarkdownEditorContext } from "../../context.js";
   import { ActionButton, Group } from "./common/index.js";
   import { setMarkdownEditorToolbarContext } from "./context.js";
-  import type { MarkdownEditorToolbarProps } from "./types.js";
+  import type { ToolbarProps } from "./types.js";
 
   const componentCssClassName = "ds markdown-editor-toolbar";
 
@@ -16,12 +16,11 @@
     children,
     onkeydown: onkeydownProp,
     ...rest
-  }: MarkdownEditorToolbarProps = $props();
-
+  }: ToolbarProps = $props();
   let actionButtons = $state<HTMLButtonElement[]>([]);
-  let selectedAction = $derived.by(() => {
-    return actionButtons.find((action) => !action.disabled);
-  });
+  let selectedAction = $derived(
+    actionButtons.find((action) => !action.disabled),
+  );
 
   const markdownEditorContext = getMarkdownEditorContext();
 
@@ -45,6 +44,16 @@
     addAction(action) {
       if (actionButtons.includes(action)) return;
       actionButtons.push(action);
+      actionButtons.sort((a, b) => {
+        const position = a.compareDocumentPosition(b);
+        if (position === Node.DOCUMENT_POSITION_FOLLOWING) {
+          return -1;
+        } else if (position === Node.DOCUMENT_POSITION_PRECEDING) {
+          return 1;
+        } else {
+          return 0;
+        }
+      });
     },
 
     removeAction(action) {
@@ -168,6 +177,7 @@
     gap: var(--dimension-gap-markdown-editor-toolbar);
   }
 
+  /* defined in .ds.markdown-editor */
   @container (max-width: 410px) {
     .ds.markdown-editor-toolbar {
       display: none;

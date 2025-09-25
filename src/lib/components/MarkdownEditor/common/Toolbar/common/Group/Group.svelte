@@ -1,21 +1,14 @@
 <!-- @canonical/generator-ds 0.10.0-experimental.3 -->
 
 <script lang="ts">
-  import type { MarkdownEditorToolbarGroupProps } from "./types.js";
+  import type { GroupProps } from "./types.js";
 
   const componentCssClassName = "ds markdown-editor-toolbar-group";
 
-  let {
-    class: className,
-    role: roleProp,
-    children,
-    ...rest
-  }: MarkdownEditorToolbarGroupProps = $props();
-
-  const role = $derived(roleProp ?? "group");
+  let { class: className, children, ...rest }: GroupProps = $props();
 </script>
 
-<div class={[componentCssClassName, className]} {role} {...rest}>
+<div class={[componentCssClassName, className]} role="group" {...rest}>
   {@render children?.()}
 </div>
 

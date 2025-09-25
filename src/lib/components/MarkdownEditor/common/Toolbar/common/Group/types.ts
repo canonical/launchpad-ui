@@ -2,4 +2,4 @@
 
 import type { SvelteHTMLElements } from "svelte/elements";
 
-export type MarkdownEditorToolbarGroupProps = SvelteHTMLElements["div"];
+export type GroupProps = SvelteHTMLElements["div"];

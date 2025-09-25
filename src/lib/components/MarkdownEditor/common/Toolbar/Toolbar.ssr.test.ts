@@ -4,14 +4,14 @@ import { render } from "@canonical/svelte-ssr-test";
 import { createRawSnippet } from "svelte";
 import { describe, expect, it } from "vitest";
 import Component from "./Toolbar.svelte";
-import type { MarkdownEditorToolbarProps } from "./types.js";
+import type { ToolbarProps } from "./types.js";
 
 describe("Markdown Editor > Toolbar SSR", () => {
   const baseProps = {
     children: createRawSnippet(() => ({
       render: () => `<span>Toolbar</span>`,
     })),
-  } satisfies MarkdownEditorToolbarProps;
+  } satisfies ToolbarProps;
 
   describe("basics", () => {
     it("doesn't throw", () => {

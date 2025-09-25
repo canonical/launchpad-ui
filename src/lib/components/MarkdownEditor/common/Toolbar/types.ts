@@ -10,7 +10,7 @@ export type MarkdownEditorToolbarContext = {
 };
 
 type BaseProps = SvelteHTMLElements["div"];
-export interface MarkdownEditorToolbarProps extends BaseProps {
+export interface ToolbarProps extends BaseProps {
   /**
    * The ref of the toolbar.
    *

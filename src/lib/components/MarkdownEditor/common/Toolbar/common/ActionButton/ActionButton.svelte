@@ -1,11 +1,11 @@
 <!-- @canonical/generator-ds 0.10.0-experimental.3 -->
 
 <script lang="ts">
-  import { onMount } from "svelte";
+  import { onMount, untrack } from "svelte";
   import { Button } from "$lib/components/index.js";
   import { useIsMounted } from "$lib/useIsMounted.svelte.js";
   import { getMarkdownEditorToolbarContext } from "../../context.js";
-  import type { MarkdownEditorToolbarActionButtonProps } from "./types.js";
+  import type { ActionButtonProps } from "./types.js";
 
   const componentCssClassName = "ds markdown-editor-toolbar-action-button";
 
@@ -13,8 +13,9 @@
     class: className,
     onfocus: onfocusProp,
     disabled: disabledProp,
+    modifiers,
     ...rest
-  }: MarkdownEditorToolbarActionButtonProps = $props();
+  }: ActionButtonProps = $props();
 
   let actionElement = $state<HTMLButtonElement>();
   const markdownEditorToolbarContext = getMarkdownEditorToolbarContext();
@@ -25,7 +26,10 @@
 
   onMount(() => {
     if (!actionElement) return;
-    markdownEditorToolbarContext?.addAction(actionElement);
+    setTimeout(() => {
+      if (!actionElement) return;
+      markdownEditorToolbarContext?.addAction(actionElement);
+    }, Math.random() * 1000);
 
     return () => {
       if (!actionElement) return;
@@ -39,13 +43,18 @@
     markdownEditorToolbarContext.selectedAction = actionElement;
   };
 
-  const isButtonTabIndexed = $derived(
+  const isInTabOrder = $derived(
     actionElement &&
       markdownEditorToolbarContext?.selectedAction === actionElement,
   );
 
+  // Unselect the action button if it becomes disabled and is in tab order
   $effect(() => {
-    if (isButtonTabIndexed && disabled && markdownEditorToolbarContext) {
+    if (
+      disabled &&
+      untrack(() => isInTabOrder) &&
+      markdownEditorToolbarContext
+    ) {
       markdownEditorToolbarContext.selectedAction = undefined;
     }
   });
@@ -54,8 +63,9 @@
 <Button
   bind:ref={actionElement}
   class={[componentCssClassName, className]}
-  tabindex={isButtonTabIndexed ? 0 : -1}
-  modifiers={{ density: "dense", severity: "base", ...(rest.modifiers || {}) }}
+  tabindex={isInTabOrder ? 0 : -1}
+  modifiers={{ density: "dense", severity: "base", ...(modifiers || {}) }}
+  data-disabled={disabledProp}
   {onfocus}
   {disabled}
   {...rest}

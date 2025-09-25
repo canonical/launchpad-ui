@@ -4,7 +4,6 @@ import { default as ToolbarRoot } from "./Toolbar.svelte";
 import { ActionButton, Group } from "./common/index.js";
 
 const Toolbar = ToolbarRoot as typeof ToolbarRoot & {
-  Toolbar: typeof ToolbarRoot;
   /**
    * `Toolbar.Group` groups related toolbar items together.
    *
@@ -13,9 +12,21 @@ const Toolbar = ToolbarRoot as typeof ToolbarRoot & {
    * <MarkdownEditor>
    *  <MarkdownEditor.Toolbar>
    *    <MarkdownEditor.Toolbar.Group>
-   *      <button>Bold</button>
-   *      <button>Italic</button>
-   *      <button>Heading</button>
+   *      <MarkdownEditor.Toolbar.ActionButton>
+   *        {#snippet iconLeft()}
+   *          <Icon name="bold" />
+   *        {/snippet}
+   *      </MarkdownEditor.Toolbar.ActionButton>
+   *      <MarkdownEditor.Toolbar.ActionButton>
+   *        {#snippet iconLeft()}
+   *          <Icon name="italic" />
+   *        {/snippet}
+   *      </MarkdownEditor.Toolbar.ActionButton>
+   *      <MarkdownEditor.Toolbar.ActionButton>
+   *        {#snippet iconLeft()}
+   *          <Icon name="heading" />
+   *        {/snippet}
+   *      </MarkdownEditor.Toolbar.ActionButton>
    *    </MarkdownEditor.Toolbar.Group>
    *  </MarkdownEditor.Toolbar>
    * </MarkdownEditor>
@@ -30,7 +41,9 @@ const Toolbar = ToolbarRoot as typeof ToolbarRoot & {
    * <MarkdownEditor>
    *  <MarkdownEditor.Toolbar>
    *   <MarkdownEditor.Toolbar.ActionButton>
-   *     <Icon name="bold" />
+   *     {#snippet iconLeft()}
+   *       <Icon name="bold" />
+   *     {/snippet}
    *   </MarkdownEditor.Toolbar.ActionButton>
    *  </MarkdownEditor.Toolbar>
    * </MarkdownEditor>
@@ -42,9 +55,6 @@ const Toolbar = ToolbarRoot as typeof ToolbarRoot & {
 Toolbar.Group = Group;
 Toolbar.ActionButton = ActionButton;
 
-export type {
-  MarkdownEditorToolbarActionButtonProps,
-  MarkdownEditorToolbarGroupProps,
-} from "./common/index.js";
+export type * from "./common/index.js";
 export * from "./types.js";
 export { Toolbar };

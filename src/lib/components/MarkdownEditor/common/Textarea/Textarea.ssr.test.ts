@@ -3,12 +3,12 @@
 import { render } from "@canonical/svelte-ssr-test";
 import { describe, expect, it } from "vitest";
 import Component from "./Textarea.svelte";
-import type { MarkdownEditorTextareaProps } from "./types.js";
+import type { TextareaProps } from "./types.js";
 
 describe("Markdown Editor > Textarea SSR", () => {
   const baseProps = {
     value: "Textarea",
-  } satisfies MarkdownEditorTextareaProps;
+  } satisfies TextareaProps;
 
   describe("basics", () => {
     it("doesn't throw", () => {

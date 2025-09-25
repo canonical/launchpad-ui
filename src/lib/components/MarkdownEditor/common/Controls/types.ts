@@ -4,4 +4,4 @@ import type { SvelteHTMLElements } from "svelte/elements";
 
 type BaseProps = SvelteHTMLElements["div"];
 
-export type MarkdownEditorControlsProps = BaseProps;
+export type ControlsProps = BaseProps;

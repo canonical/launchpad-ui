@@ -4,14 +4,14 @@ import { render } from "@canonical/svelte-ssr-test";
 import { createRawSnippet } from "svelte";
 import { describe, expect, it } from "vitest";
 import Component from "./Header.svelte";
-import type { MarkdownEditorHeaderProps } from "./types.js";
+import type { HeaderProps } from "./types.js";
 
 describe("Markdown Editor > Header SSR", () => {
   const baseProps = {
     children: createRawSnippet(() => ({
       render: () => `<span>Header</span>`,
     })),
-  } satisfies MarkdownEditorHeaderProps;
+  } satisfies HeaderProps;
 
   describe("basics", () => {
     it("doesn't throw", () => {

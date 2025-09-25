@@ -1,15 +1,11 @@
 <!-- @canonical/generator-ds 0.10.0-experimental.3 -->
 
 <script lang="ts">
-  import type { MarkdownEditorHeaderProps } from "./types.js";
+  import type { HeaderProps } from "./types.js";
 
   const componentCssClassName = "ds markdown-editor-header";
 
-  let {
-    class: className,
-    children,
-    ...rest
-  }: MarkdownEditorHeaderProps = $props();
+  let { class: className, children, ...rest }: HeaderProps = $props();
 </script>
 
 <div class={[componentCssClassName, className]} {...rest}>

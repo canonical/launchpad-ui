@@ -4,7 +4,7 @@
   import { Textarea } from "$lib/components/index.js";
   import { getMarkdownEditorContext } from "../../context.js";
   import "./styles.css";
-  import type { MarkdownEditorTextareaProps } from "./types.js";
+  import type { TextareaProps } from "./types.js";
 
   const componentCssClassName = "ds markdown-editor-textarea";
 
@@ -13,7 +13,7 @@
     value = $bindable(),
     ref = $bindable(),
     ...rest
-  }: MarkdownEditorTextareaProps = $props();
+  }: TextareaProps = $props();
 
   const markdownEditorContext = getMarkdownEditorContext();
 

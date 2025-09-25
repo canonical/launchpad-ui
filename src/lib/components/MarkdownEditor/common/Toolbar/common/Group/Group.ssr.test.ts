@@ -4,14 +4,14 @@ import { render } from "@canonical/svelte-ssr-test";
 import { createRawSnippet } from "svelte";
 import { describe, expect, it } from "vitest";
 import Component from "./Group.svelte";
-import type { MarkdownEditorToolbarGroupProps } from "./types.js";
+import type { GroupProps } from "./types.js";
 
 describe("Markdown Editor > Toolbar > Group SSR", () => {
   const baseProps = {
     children: createRawSnippet(() => ({
       render: () => `<span>Group</span>`,
     })),
-  } satisfies MarkdownEditorToolbarGroupProps;
+  } satisfies GroupProps;
 
   describe("basics", () => {
     it("doesn't throw", () => {

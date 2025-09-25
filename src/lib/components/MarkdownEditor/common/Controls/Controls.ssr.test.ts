@@ -4,14 +4,14 @@ import { render } from "@canonical/svelte-ssr-test";
 import { createRawSnippet } from "svelte";
 import { describe, expect, it } from "vitest";
 import Component from "./Controls.svelte";
-import type { MarkdownEditorControlsProps } from "./types.js";
+import type { ControlsProps } from "./types.js";
 
 describe("Markdown Editor > Controls SSR", () => {
   const baseProps = {
     children: createRawSnippet(() => ({
       render: () => `<span>Controls</span>`,
     })),
-  } satisfies MarkdownEditorControlsProps;
+  } satisfies ControlsProps;
 
   describe("basics", () => {
     it("doesn't throw", () => {
