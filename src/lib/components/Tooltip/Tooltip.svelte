@@ -7,20 +7,15 @@
 </script>
 
 <script lang="ts">
-  import { flip, offset } from "@floating-ui/dom";
-  import type { ComputePositionConfig, Placement } from "@floating-ui/dom";
-  import { untrack } from "svelte";
   import { createAttachmentKey } from "svelte/attachments";
   import type { Attachment } from "svelte/attachments";
-  import {
-    positionAreaFallbackMap,
-    useFloatingUI,
-  } from "$lib/usePositionArea.svelte.js";
   import type { TooltipProps } from "./types.js";
   import { isEventTargetInElement } from "./utils/isEventTargetInElement.js";
+  import { useDelayedOpen } from "./utils/useDelayedOpen.svelte.js";
+  import { useTooltipPosition } from "./utils/useTooltipPosition.svelte.js";
 
   const componentCssClassName = "ds tooltip";
-  const distanceToTrigger = 12;
+  const distanceToTrigger = 12; // px
 
   let {
     id: idProp,
@@ -44,31 +39,6 @@
   let triggerHovered = $state(false);
   let tooltipHovered = $state(false);
   const open = $derived(triggerFocused || triggerHovered || tooltipHovered);
-
-  const tooltipPosition = $state({ top: "auto", left: "auto" });
-  let tooltipPlacement = $derived<Placement>(positionAreaFallbackMap[position]);
-
-  const floatingUiConfig = $derived<Partial<ComputePositionConfig>>({
-    placement: positionAreaFallbackMap[position],
-    middleware: [
-      offset(distanceToTrigger),
-      autoAdjust &&
-        flip({
-          fallbackAxisSideDirection: "start",
-        }),
-    ],
-  });
-  const { triggerAttachment: floatingUiTriggerAttachment, targetAttachment } =
-    useFloatingUI(
-      // Start positioning even before the tooltip is actually shown (`delayedOpen`)
-      () => open,
-      () => floatingUiConfig,
-      ({ x, y, placement }) => {
-        tooltipPosition.top = `${y}px`;
-        tooltipPosition.left = `${x}px`;
-        tooltipPlacement = placement;
-      },
-    );
 
   const listenersTriggerAttachment: Attachment<HTMLElement> = (element) => {
     triggerRef = element;
@@ -98,39 +68,6 @@
     };
   };
 
-  let delayedOpen = $state(false);
-  $effect(() => {
-    if (open) {
-      if (chainingManager.chaining) {
-        // If chaining, open immediately without delay
-        delayedOpen = true;
-        return;
-      }
-
-      const delayTimeout = setTimeout(
-        () => {
-          delayedOpen = true;
-          // Do not rerun if delay changes, apply the new delay only to the next open change
-        },
-        untrack(() => delay),
-      );
-
-      return () => clearTimeout(delayTimeout);
-    }
-
-    delayedOpen = false;
-  });
-
-  let firstRun = true;
-  $effect(() => {
-    // Skip first run. Be sure to read `delayedOpen` first to ensure the effect runs again when it changes
-    if (!delayedOpen && !firstRun) {
-      // Each time the tooltip closes, enable chaining for a short period
-      chainingManager.chaining = true;
-    }
-    firstRun = false;
-  });
-
   const onmouseenter: typeof onmouseenterProp = (e) => {
     onmouseenterProp?.(e);
     tooltipHovered = true;
@@ -143,6 +80,25 @@
       triggerHovered = true;
     tooltipHovered = false;
   };
+
+  const {
+    triggerAttachment: tooltipPositionTriggerAttachment,
+    targetAttachment,
+    tooltipPosition,
+    getTooltipPlacement,
+  } = useTooltipPosition(
+    // Start positioning even before the tooltip is actually shown (`delayedOpen`)
+    () => open,
+    () => position,
+    () => autoAdjust,
+    distanceToTrigger,
+  );
+
+  const getDelayedOpen = useDelayedOpen(
+    () => open,
+    () => delay,
+    chainingManager,
+  );
 </script>
 
 <svelte:window
@@ -158,7 +114,7 @@
 
 {@render trigger({
   "aria-describedby": id,
-  [createAttachmentKey()]: floatingUiTriggerAttachment,
+  [createAttachmentKey()]: tooltipPositionTriggerAttachment,
   [createAttachmentKey()]: listenersTriggerAttachment,
 })}
 
@@ -170,12 +126,12 @@
   style:display={open /* Flip to block immediately, so it can be positioned even before shown */
     ? "block"
     : "none"}
-  style:visibility={delayedOpen ? "visible" : "hidden"}
+  style:visibility={getDelayedOpen() ? "visible" : "hidden"}
   {@attach targetAttachment}
   style:top={tooltipPosition.top}
   style:left={tooltipPosition.left}
   style:--distance-to-trigger={`${distanceToTrigger}px`}
-  data-placement={tooltipPlacement}
+  data-placement={getTooltipPlacement()}
   {onmouseenter}
   {onmouseleave}
   {...rest}
