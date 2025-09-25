@@ -3,18 +3,6 @@
 <script lang="ts" module>
   import { ChainingManager } from "./utils/ChainingManager.js";
 
-  function isEventTargetIn(
-    eventTarget: EventTarget | null,
-    element: HTMLElement | undefined,
-  ) {
-    return (
-      element &&
-      eventTarget &&
-      eventTarget instanceof Node &&
-      (eventTarget === element || element.contains(eventTarget))
-    );
-  }
-
   const chainingManager = new ChainingManager(350);
 </script>
 
@@ -29,6 +17,7 @@
     useFloatingUI,
   } from "$lib/usePositionArea.svelte.js";
   import type { TooltipProps } from "./types.js";
+  import { isEventTargetInElement } from "./utils/isEventTargetInElement.js";
 
   const componentCssClassName = "ds tooltip";
   const distanceToTrigger = 12;
@@ -86,7 +75,8 @@
     const onMouseEnter = () => (triggerHovered = true);
     const onMouseLeave = (e: MouseEvent) => {
       // Check if hover moved to the tooltip, to avoid any flicker before `mouseenter` on the tooltip is fired and handled
-      if (isEventTargetIn(e.relatedTarget, tooltipRef)) tooltipHovered = true;
+      if (isEventTargetInElement(e.relatedTarget, tooltipRef))
+        tooltipHovered = true;
       triggerHovered = false;
     };
     const onFocus = () => (triggerFocused = true);
@@ -149,7 +139,8 @@
   const onmouseleave: typeof onmouseleaveProp = (e) => {
     onmouseleaveProp?.(e);
     // Check if hover moved to the trigger, to avoid any flicker before `mouseenter` on the trigger is fired and handled
-    if (isEventTargetIn(e.relatedTarget, triggerRef)) triggerHovered = true;
+    if (isEventTargetInElement(e.relatedTarget, triggerRef))
+      triggerHovered = true;
     tooltipHovered = false;
   };
 </script>

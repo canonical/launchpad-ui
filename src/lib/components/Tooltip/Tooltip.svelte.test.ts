@@ -3,7 +3,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { render } from "vitest-browser-svelte";
 import Component from "./Tooltip.svelte";
-import { children, trigger } from "./fixtures.svelte";
+import { children, trigger } from "./test.fixtures.svelte";
 import { ChainingManager } from "./utils/ChainingManager.js";
 
 vi.mock("./utils/ChainingManager.js", async (importActual) => {

@@ -3,7 +3,7 @@
 import { render } from "@canonical/svelte-ssr-test";
 import { describe, expect, it } from "vitest";
 import Component from "./Tooltip.svelte";
-import { children, trigger } from "./fixtures.svelte";
+import { children, trigger } from "./test.fixtures.svelte";
 import type { TooltipProps } from "./types.js";
 
 describe("Tooltip SSR", () => {
