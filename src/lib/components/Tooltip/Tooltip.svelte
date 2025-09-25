@@ -61,7 +61,13 @@
 
   const floatingUiConfig = $derived<Partial<ComputePositionConfig>>({
     placement: positionAreaFallbackMap[position],
-    middleware: [offset(distanceToTrigger), autoAdjust && flip()],
+    middleware: [
+      offset(distanceToTrigger),
+      autoAdjust &&
+        flip({
+          fallbackAxisSideDirection: "start",
+        }),
+    ],
   });
   const { triggerAttachment: floatingUiTriggerAttachment, targetAttachment } =
     useFloatingUI(
@@ -248,9 +254,6 @@ The tooltip enables a short "chaining" window (~350ms) after it closes. If any t
     &[data-placement^="top"] {
       /* top, top-start, top-end */
       &::before {
-        width: 100%;
-        left: 0;
-        height: var(--distance-to-trigger);
         bottom: calc(-1 * var(--distance-to-trigger));
       }
 
@@ -263,9 +266,6 @@ The tooltip enables a short "chaining" window (~350ms) after it closes. If any t
     &[data-placement^="bottom"] {
       /* bottom, bottom-start, bottom-end */
       &::before {
-        width: 100%;
-        left: 0;
-        height: var(--distance-to-trigger);
         top: calc(-1 * var(--distance-to-trigger));
       }
 
@@ -275,14 +275,21 @@ The tooltip enables a short "chaining" window (~350ms) after it closes. If any t
       }
     }
 
-    &[data-placement$="start"]::after {
-      /* top-start, bottom-start */
-      left: var(--dimension-offset-tooltip-arrow);
-    }
+    &[data-placement^="top"],
+    &[data-placement^="bottom"] {
+      &::before {
+        width: 100%;
+        left: 0;
+        height: var(--distance-to-trigger);
+      }
 
-    &[data-placement$="end"]::after {
-      /* top-end, bottom-end */
-      right: var(--dimension-offset-tooltip-arrow);
+      &[data-placement$="start"]::after {
+        left: var(--dimension-offset-tooltip-arrow);
+      }
+
+      &[data-placement$="end"]::after {
+        right: var(--dimension-offset-tooltip-arrow);
+      }
     }
 
     &[data-placement="top"]::after,
@@ -291,7 +298,7 @@ The tooltip enables a short "chaining" window (~350ms) after it closes. If any t
       transform: translateX(-50%);
     }
 
-    &[data-placement="left"] {
+    &[data-placement^="left"] {
       &::before {
         width: var(--distance-to-trigger);
         right: calc(-1 * var(--distance-to-trigger));
@@ -307,7 +314,7 @@ The tooltip enables a short "chaining" window (~350ms) after it closes. If any t
       }
     }
 
-    &[data-placement="right"] {
+    &[data-placement^="right"] {
       &::before {
         width: var(--distance-to-trigger);
         left: calc(-1 * var(--distance-to-trigger));
