@@ -19,14 +19,17 @@
   });
 </script>
 
-<div class={[componentCssClassName, className]} {...rest}>
+<div
+  class={[componentCssClassName, className]}
+  {...rest}
+  data-testid="markdown-editor"
+>
   {@render children?.()}
 </div>
 
 <style>
   .ds.markdown-editor {
     --dimension-gap-markdown-editor: var(--tmp-dimension-spacing-block-xxs);
-    container-type: inline-size;
     display: grid;
     grid-template-rows: auto 1fr;
     gap: var(--dimension-gap-markdown-editor);

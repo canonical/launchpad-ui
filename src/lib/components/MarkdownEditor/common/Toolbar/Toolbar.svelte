@@ -27,10 +27,12 @@
 
   const selectDefaultAction = () => {
     if (!ref) return;
+    if (selectedAction && ref.contains(selectedAction)) return;
+
     selectedAction = getFirstElement({
       containerElement: ref,
-      preferredChild: selectedAction as HTMLElement,
       selector: "button.markdown-editor-toolbar-action-button:first-child",
+      predicate: (action) => !action.disabled,
     }) as HTMLButtonElement;
   };
 
@@ -76,6 +78,7 @@
         currentElement: selectedAction,
         selector: "button.markdown-editor-toolbar-action-button",
         direction: event.key === "ArrowLeft" ? "previous" : "next",
+        predicate: (action) => !action.disabled,
         wrap: true,
       });
       if (nextAction) {

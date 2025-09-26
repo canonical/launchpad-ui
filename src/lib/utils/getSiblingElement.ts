@@ -72,7 +72,6 @@ export function getSiblingElement<T extends HTMLElement, U extends HTMLElement>(
     const index = (currentIndex + i * directionModifier) % items.length;
     const action = items.at(index);
     if (!action) continue;
-    if ("disabled" in action && action.disabled) continue;
     if (predicate && !predicate(action)) continue;
 
     return action;

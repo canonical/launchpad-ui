@@ -113,6 +113,7 @@ describe("getSiblingElement", () => {
       selector: "button",
       direction: "next",
       wrap: true,
+      predicate: (el) => !el.disabled,
     });
 
     expect(result).toBe(c);

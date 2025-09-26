@@ -3,12 +3,13 @@
 import { createRawSnippet } from "svelte";
 import { describe, expect, it } from "vitest";
 import { render } from "vitest-browser-svelte";
+import type { RenderResult } from "vitest-browser-svelte";
 import Component from "./MarkdownEditor.svelte";
 
 describe("MarkdownEditor component", () => {
   it("renders", async () => {
     const children = createRawSnippet(() => ({
-      render: () => `MarkdownEditor`,
+      render: () => `<span>MarkdownEditor</span>`,
     }));
 
     const page = render(Component, { children });
@@ -18,11 +19,16 @@ describe("MarkdownEditor component", () => {
 
   it("applies class", async () => {
     const children = createRawSnippet(() => ({
-      render: () => `MarkdownEditor`,
+      render: () => `<span>MarkdownEditor</span>`,
     }));
 
     const page = render(Component, { children, class: "test-class" });
-    const element = page.getByText("MarkdownEditor");
+    const element = testIdLocator(page);
     await expect.element(element).toHaveClass("test-class");
   });
 });
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function testIdLocator(page: RenderResult<any>) {
+  return page.getByTestId("markdown-editor");
+}
