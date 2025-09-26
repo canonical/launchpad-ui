@@ -1,10 +1,10 @@
-type GetFirstElementOptions<T extends HTMLElement, U extends HTMLElement> = {
+type GetFirstElementOptions<T, U extends HTMLElement> = {
   /** The container element to search within */
-  containerElement: T;
+  containerElement: U;
   /** CSS selector string to find matching elements */
   selector: string;
   /** Optional predicate function to filter elements */
-  predicate?: (element: U) => boolean;
+  predicate?: (element: T) => boolean;
 };
 
 /**
@@ -23,11 +23,11 @@ type GetFirstElementOptions<T extends HTMLElement, U extends HTMLElement> = {
  * });
  * ```
  */
-export function getFirstElement<T extends HTMLElement, U extends HTMLElement>(
+export function getFirstElement<T, U extends HTMLElement = HTMLElement>(
   options: GetFirstElementOptions<T, U>,
-): U | null {
+): T | null {
   const { containerElement, selector, predicate } = options;
-  const items = Array.from(containerElement.querySelectorAll<U>(selector));
+  const items = Array.from(containerElement.querySelectorAll(selector)) as T[];
   if (items.length === 0) return null;
 
   for (const item of items) {

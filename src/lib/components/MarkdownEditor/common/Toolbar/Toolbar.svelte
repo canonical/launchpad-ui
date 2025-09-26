@@ -4,7 +4,11 @@
   import { Icon } from "$lib/components/index.js";
   import { getFirstElement, getSiblingElement } from "$lib/utils";
   import { getMarkdownEditorContext } from "../../context.js";
-  import { ActionButton, Group } from "./common/index.js";
+  import {
+    ACTION_BUTTON_CSS_CLASS_NAME,
+    ActionButton,
+    Group,
+  } from "./common/index.js";
   import { setMarkdownEditorToolbarContext } from "./context.js";
   import type { ToolbarProps } from "./types.js";
 
@@ -26,11 +30,12 @@
     if (!ref) return;
     if (selectedAction && ref.contains(selectedAction)) return;
 
-    selectedAction = getFirstElement({
-      containerElement: ref,
-      selector: "button.markdown-editor-toolbar-action-button:first-child",
-      predicate: (action) => !action.disabled,
-    }) as HTMLButtonElement;
+    selectedAction =
+      getFirstElement<HTMLButtonElement>({
+        containerElement: ref,
+        selector: ACTION_BUTTON_CSS_CLASS_NAME,
+        predicate: (action) => !action.disabled,
+      }) ?? undefined;
   };
 
   setMarkdownEditorToolbarContext({
@@ -71,7 +76,7 @@
       const nextAction = getSiblingElement({
         containerElement: ref,
         currentElement: selectedAction,
-        selector: "button.markdown-editor-toolbar-action-button",
+        selector: ACTION_BUTTON_CSS_CLASS_NAME,
         direction: event.key === "ArrowLeft" ? "previous" : "next",
         predicate: (action) => !action.disabled,
         wrap: true,
