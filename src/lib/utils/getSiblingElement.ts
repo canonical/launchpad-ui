@@ -12,14 +12,8 @@ export type GetSiblingElementOptions<
   currentElement: U;
   /**
    * A CSS selector used to collect the navigable items within `containerElement`.
-   *
-   * If omitted, the selector is derived from the `currentElement`'s classList.
-   * If the resulting selector is empty, no navigation is possible and the
-   * function returns `null`.
-   *
-   * @default Derived from `currentElement.classList`
    */
-  selector?: string;
+  selector: string;
   /**
    * The direction to navigate ('next' or 'previous').
    */
@@ -58,18 +52,12 @@ export function getSiblingElement<T extends HTMLElement, U extends HTMLElement>(
   const {
     containerElement,
     currentElement,
-    selector: selectorOption,
+    selector,
     direction,
     wrap,
     predicate,
   } = options;
-  const elementClasses = Array.from(currentElement.classList);
-  const selector =
-    selectorOption ??
-    (elementClasses.length > 0 ? `.${elementClasses.join(".")}` : null);
-  if (!selector) {
-    return null;
-  }
+
   const items = Array.from(containerElement.querySelectorAll<U>(selector));
   if (items.length === 0) return null;
 

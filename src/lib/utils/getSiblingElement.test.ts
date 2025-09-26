@@ -68,22 +68,6 @@ describe("getSiblingElement", () => {
     expect(result).toBeNull();
   });
 
-  it("returns null when selector derived from classes is empty", () => {
-    const a = createButton("a", "");
-    const b = createButton("b", "item");
-    container.append(a, b);
-
-    const result = getSiblingElement({
-      containerElement: container,
-      currentElement: a,
-      // selector omitted so it would derive from a.classList -> empty
-      direction: "next",
-      wrap: false,
-    });
-
-    expect(result).toBeNull();
-  });
-
   it("returns null when explicit selector matches no items", () => {
     const a = createButton("a");
     const b = createButton("b");

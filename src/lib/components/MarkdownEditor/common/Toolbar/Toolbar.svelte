@@ -74,6 +74,7 @@
       const nextAction = getSiblingElement({
         containerElement: ref,
         currentElement: selectedAction,
+        selector: "button.markdown-editor-toolbar-action-button",
         direction: event.key === "ArrowLeft" ? "previous" : "next",
         wrap: true,
       });
