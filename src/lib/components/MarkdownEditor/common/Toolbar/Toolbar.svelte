@@ -18,10 +18,7 @@
     onkeydown: onkeydownProp,
     ...rest
   }: ToolbarProps = $props();
-  const actionButtons = $state<HTMLButtonElement[]>([]);
-  let selectedAction = $derived(
-    actionButtons.find((action) => !action.disabled),
-  );
+  let selectedAction = $state<HTMLButtonElement>();
 
   const markdownEditorContext = getMarkdownEditorContext();
 
@@ -38,9 +35,7 @@
 
   setMarkdownEditorToolbarContext({
     set selectedAction(action) {
-      selectedAction = action
-        ? action
-        : actionButtons.find((action) => !action.disabled);
+      selectedAction = action;
     },
 
     get selectedAction() {
