@@ -9,8 +9,8 @@
 <script lang="ts">
   import { createAttachmentKey } from "svelte/attachments";
   import type { Attachment } from "svelte/attachments";
+  import { isEventTargetInElement } from "$lib/utils/index.js";
   import type { TooltipProps } from "./types.js";
-  import { isEventTargetInElement } from "./utils/isEventTargetInElement.js";
   import { useDelayedOpen } from "./utils/useDelayedOpen.svelte.js";
   import { useTooltipPosition } from "./utils/useTooltipPosition.svelte.js";
 
