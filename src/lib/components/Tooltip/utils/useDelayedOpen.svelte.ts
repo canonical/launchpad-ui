@@ -1,6 +1,19 @@
 import { untrack } from "svelte";
 import type { ChainingManager } from "./ChainingManager.js";
 
+/**
+ * Manage a tooltip's delayed open state, supporting a short-lived "chaining" mode
+ * where successive tooltips open without delay.
+ *
+ * The returned getter reflects whether the tooltip should currently be considered open
+ * (after any applied delay). When `getOpen()` becomes false the delayed state resets and
+ * briefly enables chaining for the next open.
+ *
+ * @param getOpen - Reactive getter indicating the raw (immediate) open intent.
+ * @param getDelay - Reactive getter providing the delay in milliseconds before showing.
+ * @param chainingManager - Shared manager tracking whether chaining is active.
+ * @returns A function that returns the (possibly delayed) open boolean.
+ */
 export function useDelayedOpen(
   getOpen: () => boolean,
   getDelay: () => number,
