@@ -67,7 +67,7 @@ export function usePositionArea(
     );
   });
 
-  const active = $derived(needsFallback && getActive());
+  const isFloatingUiActive = $derived(needsFallback && getActive());
   const floatingUIConfig = $derived.by(() => {
     const position = getPosition();
     const tryFallback = getTryFallback?.();
@@ -103,7 +103,7 @@ export function usePositionArea(
   let fallbackStyle = $state<string>("");
 
   const { triggerAttachment, targetAttachment } = useFloatingUI(
-    () => active,
+    () => isFloatingUiActive,
     () => floatingUIConfig,
     ({ x, y }) => {
       fallbackStyle = `position: absolute; left: ${x}px; top: ${y}px;`;

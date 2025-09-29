@@ -25,8 +25,8 @@
     position = "block-start",
     autoAdjust = true,
     delay = 350,
-    onmouseleave: onmouseleaveProp,
-    onmouseenter: onmouseenterProp,
+    onmouseleave,
+    onmouseenter,
     ...rest
   }: TooltipProps = $props();
 
@@ -35,22 +35,25 @@
   let tooltipRef = $state<HTMLElement>();
   let triggerRef = $state<HTMLElement>();
 
-  let triggerFocused = $state(false);
-  let triggerHovered = $state(false);
-  let tooltipHovered = $state(false);
-  const open = $derived(triggerFocused || triggerHovered || tooltipHovered);
+  let isTriggerFocused = $state(false);
+  let isTriggerHovered = $state(false);
+  let isTooltipHovered = $state(false);
+  const open = $derived(
+    isTriggerFocused || isTriggerHovered || isTooltipHovered,
+  );
 
   const listenersTriggerAttachment: Attachment<HTMLElement> = (element) => {
     triggerRef = element;
-    const onMouseEnter = () => (triggerHovered = true);
+    const onMouseEnter = () => (isTriggerHovered = true);
     const onMouseLeave = (e: MouseEvent) => {
       // Check if hover moved to the tooltip, to avoid any flicker before `mouseenter` on the tooltip is fired and handled
-      if (isEventTargetInElement(e.relatedTarget, tooltipRef))
-        tooltipHovered = true;
-      triggerHovered = false;
+      if (isEventTargetInElement(e.relatedTarget, tooltipRef)) {
+        isTooltipHovered = true;
+      }
+      isTriggerHovered = false;
     };
-    const onFocus = () => (triggerFocused = true);
-    const onBlur = () => (triggerFocused = false);
+    const onFocus = () => (isTriggerFocused = true);
+    const onBlur = () => (isTriggerFocused = false);
 
     element.addEventListener("mouseenter", onMouseEnter);
     element.addEventListener("mouseleave", onMouseLeave);
@@ -63,22 +66,22 @@
       element.removeEventListener("mouseleave", onMouseLeave);
       element.removeEventListener("focus", onFocus);
       element.removeEventListener("blur", onBlur);
-      triggerHovered = false;
-      triggerFocused = false;
+      isTriggerHovered = false;
+      isTriggerFocused = false;
     };
   };
 
-  const onmouseenter: typeof onmouseenterProp = (e) => {
-    onmouseenterProp?.(e);
-    tooltipHovered = true;
+  const tooltipOnmouseenter: typeof onmouseenter = (e) => {
+    onmouseenter?.(e);
+    isTooltipHovered = true;
   };
 
-  const onmouseleave: typeof onmouseleaveProp = (e) => {
-    onmouseleaveProp?.(e);
+  const tooltipOnmouseleave: typeof onmouseleave = (e) => {
+    onmouseleave?.(e);
     // Check if hover moved to the trigger, to avoid any flicker before `mouseenter` on the trigger is fired and handled
     if (isEventTargetInElement(e.relatedTarget, triggerRef))
-      triggerHovered = true;
-    tooltipHovered = false;
+      isTriggerHovered = true;
+    isTooltipHovered = false;
   };
 
   const {
@@ -105,9 +108,9 @@
   onkeydown={(event) => {
     if (event.key === "Escape") {
       // If escape is pressed, close the tooltip no matter what caused it to open
-      triggerFocused = false;
-      triggerHovered = false;
-      tooltipHovered = false;
+      isTriggerFocused = false;
+      isTriggerHovered = false;
+      isTooltipHovered = false;
     }
   }}
 />
@@ -132,8 +135,8 @@
   style:left={tooltipPosition.left}
   style:--distance-to-trigger={`${distanceToTrigger}px`}
   data-placement={getTooltipPlacement()}
-  {onmouseenter}
-  {onmouseleave}
+  onmouseenter={tooltipOnmouseenter}
+  onmouseleave={tooltipOnmouseleave}
   {...rest}
 >
   {@render children()}
