@@ -144,27 +144,27 @@ export function useFloatingUI(
   getOptions: () => Partial<ComputePositionConfig> | undefined,
   callback: (value: ComputePositionReturn) => void,
 ) {
-  let trigger = $state<HTMLElement>();
-  let target = $state<HTMLElement>();
+  let triggerRef = $state<HTMLElement>();
+  let targetRef = $state<HTMLElement>();
 
   const triggerAttachment: Attachment<HTMLElement> = (node) => {
-    trigger = node;
-    return () => (trigger = undefined);
+    triggerRef = node;
+    return () => (triggerRef = undefined);
   };
 
   const targetAttachment: Attachment<HTMLElement> = (node) => {
-    target = node;
-    return () => (target = undefined);
+    targetRef = node;
+    return () => (targetRef = undefined);
   };
 
   $effect(() => {
     if (!getActive()) return;
-    if (!trigger || !target) return;
+    if (!triggerRef || !targetRef) return;
     const options = getOptions();
 
-    const cleanup = autoUpdate(trigger, target, () => {
-      if (!trigger || !target) return;
-      computePosition(trigger, target, options).then(callback);
+    const cleanup = autoUpdate(triggerRef, targetRef, () => {
+      if (!triggerRef || !targetRef) return;
+      computePosition(triggerRef, targetRef, options).then(callback);
     });
 
     return () => {
