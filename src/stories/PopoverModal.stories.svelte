@@ -20,8 +20,8 @@ The following Popover Modal example can be assembled using:
 
 <Story name="PopoverModal" asChild>
   <Popover>
-    {#snippet trigger(popovertarget)}
-      <Button {popovertarget}>Checkout</Button>
+    {#snippet trigger(triggerProps)}
+      <Button {...triggerProps}>Checkout</Button>
     {/snippet}
     {#snippet children(popovertarget)}
       <ModalContent style="max-width: 560px; margin-block-start: 2px;">

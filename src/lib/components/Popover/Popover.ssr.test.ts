@@ -4,11 +4,14 @@ import { createRawSnippet } from "svelte";
 import { render } from "svelte/server";
 import { assert, describe, expect, it } from "vitest";
 import Component from "./Popover.svelte";
+import type { TriggerProps } from "./types.js";
 
-const trigger = createRawSnippet<[string, boolean]>((popovertarget, open) => ({
-  render: () =>
-    `<button popovertarget="${popovertarget()}">${open() ? "Close Popover" : "Open Popover"}</button>`,
-}));
+const trigger = createRawSnippet<[TriggerProps, boolean]>(
+  (triggerProps, open) => ({
+    render: () =>
+      `<button popovertarget="${triggerProps().popovertarget}">${open() ? "Close Popover" : "Open Popover"}</button>`,
+  }),
+);
 
 const children = createRawSnippet(() => ({
   render: () => `<div>This is content of the popover.</div>`,

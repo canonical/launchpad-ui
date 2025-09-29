@@ -16,7 +16,7 @@
   }: ComboboxProps = $props();
 
   const listBoxId = $props.id();
-  let listBoxElement = $state<HTMLDivElement>();
+  let listBoxRef = $state<HTMLDivElement>();
   let activeDescendant = $state<string | null>(null);
   // Neither of the below are used in reactive contexts
   // eslint-disable-next-line svelte/prefer-svelte-reactivity
@@ -27,7 +27,7 @@
 
   setComboboxContext({
     get listBoxElement() {
-      return listBoxElement;
+      return listBoxRef;
     },
     get activeDescendant() {
       return activeDescendant;
@@ -73,7 +73,7 @@
 <OptionsPanel data-testid="combobox" {...rest}>
   {@render search()}
   <div
-    bind:this={listBoxElement}
+    bind:this={listBoxRef}
     id={listBoxId}
     {...isMounted.value
       ? {
