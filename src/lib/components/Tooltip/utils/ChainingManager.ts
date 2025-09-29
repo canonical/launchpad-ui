@@ -1,3 +1,6 @@
+/**
+ * Manages the chaining state for tooltips, allowing for a grace period during which tooltips can be shown without delay.
+ */
 export class ChainingManager {
   private _chaining: boolean = false;
   private chainingTimeout: ReturnType<typeof setTimeout> | null = null;
@@ -10,7 +13,6 @@ export class ChainingManager {
   ) {}
 
   set chaining(value: boolean) {
-    if (typeof window === "undefined") return;
     this._chaining = value;
     if (this.chainingTimeout !== null) clearTimeout(this.chainingTimeout);
 

@@ -6,7 +6,7 @@ export function useDelayedOpen(
   getDelay: () => number,
   chainingManager: ChainingManager,
 ) {
-  let delayedOpen = $state(false);
+  let delayedOpen = $state(getOpen());
 
   $effect(() => {
     if (getOpen()) {
