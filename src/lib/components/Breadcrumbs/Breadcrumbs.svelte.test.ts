@@ -1,5 +1,6 @@
 /* @canonical/generator-ds 0.9.1-experimental.0 */
 
+import { userEvent } from "@vitest/browser/context";
 import { describe, expect, it } from "vitest";
 import { render } from "vitest-browser-svelte";
 import type { RenderResult } from "vitest-browser-svelte";
@@ -231,25 +232,62 @@ describe("Breadcrumbs component", () => {
       });
     });
 
-    // `userEvent` functions doesn't seem to have an effect.
-    // TODO: Find other way to implement focus management tests
+    describe("focus management", () => {
+      it("allows focusing links with tab key", async () => {
+        const page = render(Component, { segments });
 
-    // describe("focus management", () => {
-    //   it("allows focusing links with tab key", async () => {
-    //     const page = render(Component, { segments });
+        const firstLink = page.getByRole("link", { name: "Home" });
+        await expect.element(firstLink).toBeVisible();
+        await userEvent.click(page.baseElement);
 
-    //     await userEvent.tab();
-    //     const firstLink = page.getByRole("link", { name: "Home" });
-    //     await expect.element(firstLink).toHaveFocus();
+        await userEvent.tab();
+        await expect.element(firstLink).toHaveFocus();
+        await userEvent.tab();
+        await expect
+          .element(
+            page.getByRole("link", {
+              name: "Category",
+              exact: true,
+            }),
+          )
+          .toHaveFocus();
+      });
 
-    //     await userEvent.tab();
-    //     const secondLink = page.getByRole("link", {
-    //       name: "Category",
-    //       exact: true,
-    //     });
-    //     await expect.element(secondLink).toHaveFocus();
-    //   });
-    // });
+      it("allows focusing links with tab key when segments are collapsed", async () => {
+        const page = render(Component, {
+          segments,
+          minNumExpanded: 2,
+        });
+
+        page.container.style.width = "100px";
+
+        await expectAreCollapsed(page);
+
+        const firstLink = page.getByRole("link", { name: "Home" });
+        await expect.element(firstLink).toBeInTheDocument();
+        await userEvent.click(page.baseElement);
+
+        await userEvent.tab();
+        await expect.element(firstLink).toHaveFocus();
+        await userEvent.tab();
+        await expect
+          .element(
+            page.getByRole("link", {
+              name: "Category",
+              exact: true,
+            }),
+          )
+          .toHaveFocus();
+        await userEvent.tab();
+        await expect
+          .element(
+            page.getByRole("link", {
+              name: "Subcategory",
+            }),
+          )
+          .toHaveFocus();
+      });
+    });
   });
 });
 
