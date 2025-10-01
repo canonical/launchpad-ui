@@ -115,29 +115,36 @@ If JavaScript is disabled, Modal can be controlled as a popover with declarative
 
     width: min(100vw, var(--dimension-width-modal));
 
-    opacity: 0;
-    transition-behavior: allow-discrete;
-    transition-property: display, opacity, overlay;
-    transition-duration: var(--tmp-transition-duration-fast);
-
     &::backdrop {
-      opacity: inherit;
-      transition: inherit;
-
       background-color: var(--color-background-modal-backdrop);
     }
 
     &:open,
     &:popover-open {
       opacity: 1;
+      &::backdrop {
+        opacity: 1;
+      }
     }
   }
 
+  .ds.modal,
+  .ds.modal::backdrop {
+    opacity: 0;
+    transition-behavior: allow-discrete;
+    transition-property: display, opacity, overlay;
+    transition-duration: var(--tmp-transition-duration-fast);
+  }
+
   @starting-style {
-    .ds.modal {
+    .ds.modal,
+    .ds.modal::backdrop {
       &:open,
       &:popover-open {
         opacity: 0;
+        &::backdrop {
+          opacity: 0;
+        }
       }
     }
   }
