@@ -5,7 +5,7 @@ import { assert, describe, expect, it, vi } from "vitest";
 import { render } from "vitest-browser-svelte";
 import type { RenderResult } from "vitest-browser-svelte";
 import Component from "./Popover.svelte";
-import type { TriggerProps } from "./types.js";
+import type { PopoverMethods, TriggerProps } from "./types.js";
 
 const trigger = createRawSnippet<[TriggerProps, boolean]>(
   (triggerProps, open) => ({
@@ -106,9 +106,40 @@ describe("Popover component", () => {
     });
   });
 
-  // describe("Imperative controls", () => {
-  // TODO: Is there a way to test component methods?
-  // });
+  describe("Imperative controls", () => {
+    it("showPopover shows the popover", async () => {
+      const page = render(Component, { trigger, children });
+      const component = page.component as unknown as PopoverMethods;
+      await expect.element(testIdLocator(page)).not.toBeVisible();
+      component.showPopover();
+      await expect.element(testIdLocator(page)).toBeVisible();
+      // Calling showPopover again does nothing
+      component.showPopover();
+      await expect.element(testIdLocator(page)).toBeVisible();
+    });
+
+    it("hidePopover hides the popover", async () => {
+      const page = render(Component, { trigger, children });
+      const component = page.component as unknown as PopoverMethods;
+      component.showPopover();
+      await expect.element(testIdLocator(page)).toBeVisible();
+      component.hidePopover();
+      await expect.element(testIdLocator(page)).not.toBeVisible();
+      // Calling hidePopover again does nothing
+      component.hidePopover();
+      await expect.element(testIdLocator(page)).not.toBeVisible();
+    });
+
+    it("togglePopover toggles the popover", async () => {
+      const page = render(Component, { trigger, children });
+      const component = page.component as unknown as PopoverMethods;
+      await expect.element(testIdLocator(page)).not.toBeVisible();
+      component.togglePopover();
+      await expect.element(testIdLocator(page)).toBeVisible();
+      component.togglePopover();
+      await expect.element(testIdLocator(page)).not.toBeVisible();
+    });
+  });
 });
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
