@@ -20,16 +20,22 @@
 <Timeline>
   <Timeline.Event marker={{userName: "Alvarez Daniella"}} markerSize="large">
     {#snippet titleRow()}
-      <Timeline.TitleRow leadingText="Alvarez Daniella" date={new Date("2023-03-15")}>
+      <Timeline.TitleRow leadingText="Alvarez Daniella">
         did some cool stuff
+        {#snippet date()}
+          <DateTime date="2023-03-15" />
+        {/snippet}
       </Timeline.TitleRow>
     {/snippet}
     Description of the stuff that was done.
   </Timeline.Event>
   <Timeline.Event marker="text">
     {#snippet titleRow()}
-      <Timeline.TitleRow leadingText="Alvarez Daniella" date={new Date("2023-03-15")}>
+      <Timeline.TitleRow leadingText="Alvarez Daniella">
         did other amazing things
+        {#snippet date()}
+          <DateTime date="2023-03-15" />
+        {/snippet}
       </Timeline.TitleRow>
     {/snippet}
   </Timeline.Event>

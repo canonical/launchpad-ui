@@ -63,10 +63,12 @@ The marker and the first line of the optional `titleRow` are meant to be aligned
 <Timeline.Event marker="flag" markerSize="small">
   {#snippet titleRow()}
     <Timeline.Event.TitleRow
-      date={new Date("2023-03-15")}
       leadingText="Alvarez Daniella"
     >
       did something
+      {#snippet date()}
+        <DateTime date="2023-03-15" />
+      {/snippet}
     </Timeline.Event.TitleRow>
   {/snippet}
   and here is some additional content.
