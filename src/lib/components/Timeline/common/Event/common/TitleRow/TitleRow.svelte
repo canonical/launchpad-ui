@@ -27,8 +27,7 @@
       {@render children()}
     </span>
   </span>
-  <!-- TODO: Replace with <RelativeTime> -->
-  <span class="date">{date.toLocaleDateString()}</span>
+  <span class="date">{@render date()}</span>
 </div>
 
 <!-- @component
@@ -36,8 +35,11 @@
 
 ## Example Usage
 ```svelte
-<Timeline.Event.TitleRow leadingText="Alvarez Daniella" date={new Date("2023-03-15")}>
+<Timeline.Event.TitleRow leadingText="Alvarez Daniella">
   added labels: Don't merge, Maintenance, Review: QA needed
+  {#snippet date()}
+    <DateTime date="2023-03-15" />
+  {/snippet}
 </Timeline.Event.TitleRow>
 ```
 -->

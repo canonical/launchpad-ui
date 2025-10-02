@@ -5,6 +5,7 @@ import { describe, expect, it } from "vitest";
 import { render } from "vitest-browser-svelte";
 import type { RenderResult } from "vitest-browser-svelte";
 import Component from "./Modal.svelte";
+import type { ModalMethods } from "./types.js";
 
 const trigger = createRawSnippet<[string | undefined, () => void]>(
   (popovertarget, open) => ({
@@ -89,6 +90,28 @@ describe("Modal component", () => {
       await expect.element(page.getByRole("dialog")).toHaveAttribute("open");
       await expect.element(page.getByRole("dialog")).toBeVisible();
     });
+
+    it("is opened by showModal() on the component instance", async () => {
+      const page = render(Component, {
+        props: {
+          trigger,
+          children: createRawSnippet(() => ({
+            render: () => `<div>Body Content</div>`,
+          })),
+        },
+      });
+      await expect.element(testIdLocator(page)).not.toHaveAttribute("open");
+
+      const component = page.component as unknown as ModalMethods;
+
+      component.showModal();
+      await expect.element(page.getByRole("dialog")).toHaveAttribute("open");
+      await expect.element(page.getByRole("dialog")).toBeVisible();
+      // Calling showModal again does nothing
+      component.showModal();
+      await expect.element(page.getByRole("dialog")).toHaveAttribute("open");
+      await expect.element(page.getByRole("dialog")).toBeVisible();
+    });
   });
 
   describe("Closing the Modal", () => {
@@ -111,6 +134,23 @@ describe("Modal component", () => {
         name: "Button in children",
       });
       await closeButton.click();
+      await expect
+        .element(page.getByRole("dialog"))
+        .not.toHaveAttribute("open");
+    });
+
+    it("is closed by close() on the component instance", async () => {
+      const page = render(Component, { props: { trigger } });
+      await showModal(page);
+
+      const component = page.component as unknown as ModalMethods;
+
+      component.close();
+      await expect
+        .element(page.getByRole("dialog"))
+        .not.toHaveAttribute("open");
+      // Calling close again does nothing
+      component.close();
       await expect
         .element(page.getByRole("dialog"))
         .not.toHaveAttribute("open");

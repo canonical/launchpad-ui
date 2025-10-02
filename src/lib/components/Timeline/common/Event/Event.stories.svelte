@@ -1,5 +1,6 @@
 <script module lang="ts">
   import { defineMeta } from "@storybook/addon-svelte-csf";
+  import { DateTime } from "$lib/components/DateTime/index.js";
   import { Timeline } from "../../index.js";
   import Event from "./Event.svelte";
 
@@ -22,15 +23,16 @@
   });
 </script>
 
+{#snippet date()}
+  <DateTime date={new Date("2023-03-15")} />
+{/snippet}
+
 <Story name="Default">
   {#snippet template({ children: _, titleRow: __, ...args })}
     <Timeline>
       <Timeline.Event {...args}>
         {#snippet titleRow()}
-          <Timeline.Event.TitleRow
-            date={new Date("2023-03-15")}
-            leadingText="Alvarez Daniella"
-          >
+          <Timeline.Event.TitleRow leadingText="Alvarez Daniella" {date}>
             did something very special, that will be remembered forever
           </Timeline.Event.TitleRow>
         {/snippet}
@@ -53,20 +55,14 @@
     <Timeline>
       <Timeline.Event {...args} markerSize="small">
         {#snippet titleRow()}
-          <Timeline.Event.TitleRow
-            date={new Date("2023-03-15")}
-            leadingText="Alvarez Daniella"
-          >
+          <Timeline.Event.TitleRow leadingText="Alvarez Daniella" {date}>
             next to a small icon marker
           </Timeline.Event.TitleRow>
         {/snippet}
       </Timeline.Event>
       <Timeline.Event {...args} markerSize="large">
         {#snippet titleRow()}
-          <Timeline.Event.TitleRow
-            date={new Date("2023-03-15")}
-            leadingText="Alvarez Daniella"
-          >
+          <Timeline.Event.TitleRow leadingText="Alvarez Daniella" {date}>
             next to a large icon marker
           </Timeline.Event.TitleRow>
         {/snippet}
@@ -93,20 +89,14 @@
     <Timeline>
       <Timeline.Event {...args} markerSize="small">
         {#snippet titleRow()}
-          <Timeline.Event.TitleRow
-            date={new Date("2023-03-15")}
-            leadingText="Alvarez Daniella"
-          >
+          <Timeline.Event.TitleRow leadingText="Alvarez Daniella" {date}>
             next to a small user avatar
           </Timeline.Event.TitleRow>
         {/snippet}
       </Timeline.Event>
       <Timeline.Event {...args} markerSize="large">
         {#snippet titleRow()}
-          <Timeline.Event.TitleRow
-            date={new Date("2023-03-15")}
-            leadingText="Alvarez Daniella"
-          >
+          <Timeline.Event.TitleRow leadingText="Alvarez Daniella" {date}>
             next to a large user avatar
           </Timeline.Event.TitleRow>
         {/snippet}
