@@ -70,11 +70,11 @@ export function getSiblingElement<T extends HTMLElement, U extends HTMLElement>(
     : Math.abs(currentIndex - (direction === "next" ? items.length : -1));
   for (let i = 1; i < maxRange; i++) {
     const index = (currentIndex + i * directionModifier) % items.length;
-    const action = items.at(index);
-    if (!action) continue;
-    if (predicate && !predicate(action)) continue;
+    const item = items.at(index);
+    if (!item) continue;
+    if (predicate && !predicate(item)) continue;
 
-    return action;
+    return item;
   }
 
   return null;

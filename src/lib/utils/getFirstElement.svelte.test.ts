@@ -50,7 +50,7 @@ describe("getFirstElement", () => {
     a.classList.add("hidden");
     container.append(a, b, c);
 
-    const result = getFirstElement({
+    const result = getFirstElement<HTMLButtonElement>({
       containerElement: container,
       selector: "button",
       predicate: (btn) => !btn.classList.contains("hidden"),
@@ -66,7 +66,7 @@ describe("getFirstElement", () => {
     b.classList.add("hidden");
     container.append(a, b);
 
-    const result = getFirstElement({
+    const result = getFirstElement<HTMLButtonElement>({
       containerElement: container,
       selector: "button",
       predicate: (btn) => !btn.classList.contains("hidden"),

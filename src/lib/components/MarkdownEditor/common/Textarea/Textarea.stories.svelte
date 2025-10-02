@@ -6,6 +6,13 @@
     title: "components/MarkdownEditor/Textarea",
     tags: ["autodocs"],
     component: MarkdownEditor.Textarea,
+    argTypes: {
+      ref: {
+        table: {
+          disable: true,
+        },
+      },
+    },
   });
 </script>
 

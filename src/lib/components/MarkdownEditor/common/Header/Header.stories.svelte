@@ -7,6 +7,11 @@
     title: "components/MarkdownEditor/Header",
     tags: ["autodocs"],
     component: MarkdownEditor.Header,
+    argTypes: {
+      controls: {
+        control: false,
+      },
+    },
   });
 </script>
 

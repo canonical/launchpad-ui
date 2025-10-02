@@ -8,9 +8,21 @@
   let { class: className, children, controls, ...rest }: HeaderProps = $props();
 </script>
 
-<div class={[componentCssClassName, className]} {...rest}>
-  {@render children?.()}
-  {@render controls?.()}
+<div
+  class={[componentCssClassName, className]}
+  data-testid="markdown-editor-header"
+  {...rest}
+>
+  {#if children}
+    <div class="actions">
+      {@render children()}
+    </div>
+  {/if}
+  {#if controls}
+    <div class="controls">
+      {@render controls()}
+    </div>
+  {/if}
 </div>
 
 <style>

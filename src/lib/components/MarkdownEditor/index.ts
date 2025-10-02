@@ -28,7 +28,7 @@ const MarkdownEditor = MarkdownEditorRoot as typeof MarkdownEditorRoot & {
   Textarea: typeof Textarea;
 
   /**
-   * `MarkdownEditor.Header` is a header for the `MarkdownEditor` component, it contains a toolbar and controls.
+   * `MarkdownEditor.Header` is a header for the `MarkdownEditor` component, it consists of an actions area which can be a toolbar and controls.
    *
    * @example
    * ```svelte
@@ -41,9 +41,9 @@ const MarkdownEditor = MarkdownEditorRoot as typeof MarkdownEditorRoot & {
    *        {/snippet}
    *      </MarkdownEditor.Toolbar.ActionButton>
    *    </MarkdownEditor.Toolbar>
-   *    <MarkdownEditor.Controls>
+   *    {#snippet controls()}
    *      <Button>Preview</Button>
-   *    </MarkdownEditor.Controls>
+   *    {/snippet}
    *  </MarkdownEditor.Header>
    * </MarkdownEditor>
    * ```
@@ -53,9 +53,7 @@ const MarkdownEditor = MarkdownEditorRoot as typeof MarkdownEditorRoot & {
   /**
    * `Toolbar` is a toolbar for the `MarkdownEditor` component, it adds Markdown formatting options and the ability to include custom controls and additional actions.
    *
-   * @docs
-   * WAI ARIA guidelines for horizontal toolbars:
-   * https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Roles/toolbar_role#horizontal_toolbar
+   * {@link https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Reference/Roles/toolbar_role#horizontal_toolbar | MDN WAI ARIA guidelines for horizontal toolbars}
    *
    * @example
    * ```svelte

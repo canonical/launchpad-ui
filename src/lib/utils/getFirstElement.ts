@@ -28,7 +28,6 @@ export function getFirstElement<T, U extends HTMLElement = HTMLElement>(
 ): T | null {
   const { containerElement, selector, predicate } = options;
   const items = Array.from(containerElement.querySelectorAll(selector)) as T[];
-  if (items.length === 0) return null;
 
   for (const item of items) {
     if (predicate && !predicate(item)) continue;

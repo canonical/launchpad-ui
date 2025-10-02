@@ -3,6 +3,7 @@
 import { createRawSnippet } from "svelte";
 import { describe, expect, it } from "vitest";
 import { render } from "vitest-browser-svelte";
+import type { RenderResult } from "vitest-browser-svelte";
 import Component from "./Header.svelte";
 
 describe("Markdown Editor > Header component", () => {
@@ -22,7 +23,12 @@ describe("Markdown Editor > Header component", () => {
     }));
 
     const page = render(Component, { children, class: "test-class" });
-    const element = page.getByText("Header");
+    const element = testIdLocator(page);
     await expect.element(element).toHaveClass("test-class");
   });
 });
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function testIdLocator(page: RenderResult<any>) {
+  return page.getByTestId("markdown-editor-header");
+}

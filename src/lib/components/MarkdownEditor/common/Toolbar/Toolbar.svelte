@@ -26,14 +26,24 @@
 
   const markdownEditorContext = getMarkdownEditorContext();
 
+  /**
+   * Select the default action when the toolbar is mounted
+   * This can be called as many times as needed
+   * where it will only change if the current action is not valid
+   */
   const selectDefaultAction = () => {
     if (!ref) return;
-    if (selectedAction && ref.contains(selectedAction)) return;
+    const isCurrentActionValid =
+      selectedAction &&
+      ref.contains(selectedAction) &&
+      !selectedAction.disabled;
+    // If the current action is valid, don't change it
+    if (isCurrentActionValid) return;
 
     selectedAction =
       getFirstElement<HTMLButtonElement>({
         containerElement: ref,
-        selector: ACTION_BUTTON_CSS_CLASS_NAME,
+        selector: `.${ACTION_BUTTON_CSS_CLASS_NAME}`,
         predicate: (action) => !action.disabled,
       }) ?? undefined;
   };
@@ -46,10 +56,7 @@
     get selectedAction() {
       return selectedAction;
     },
-
-    setDefaultAction() {
-      selectDefaultAction();
-    },
+    notifyActionButtonChange: selectDefaultAction,
   });
 
   /**
@@ -62,8 +69,8 @@
   const onkeydown: typeof onkeydownProp = (event) => {
     onkeydownProp?.(event);
     if (
-      !(event.target as HTMLElement).classList.contains(
-        "markdown-editor-toolbar-action-button",
+      !(event.target as HTMLElement)?.classList?.contains(
+        ACTION_BUTTON_CSS_CLASS_NAME,
       )
     )
       return;
@@ -76,7 +83,7 @@
       const nextAction = getSiblingElement({
         containerElement: ref,
         currentElement: selectedAction,
-        selector: ACTION_BUTTON_CSS_CLASS_NAME,
+        selector: `.${ACTION_BUTTON_CSS_CLASS_NAME}`,
         direction: event.key === "ArrowLeft" ? "previous" : "next",
         predicate: (action) => !action.disabled,
         wrap: true,
@@ -87,6 +94,7 @@
     }
   };
 
+  // select the default action when the toolbar is mounted
   $effect(() => {
     selectDefaultAction();
   });

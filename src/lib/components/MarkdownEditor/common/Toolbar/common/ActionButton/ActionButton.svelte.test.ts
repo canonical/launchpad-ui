@@ -3,11 +3,12 @@
 import { createRawSnippet } from "svelte";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { render } from "vitest-browser-svelte";
+import type { MarkdownEditorToolbarContext } from "../../types";
 import Component from "./ActionButton.svelte";
 
-const { ctx, setSelectedAction, setDefaultAction } = vi.hoisted(() => {
+const { ctx, setSelectedAction, notifyActionButtonChange } = vi.hoisted(() => {
   const setSelectedAction = vi.fn();
-  const setDefaultAction = vi.fn();
+  const notifyActionButtonChange = vi.fn();
   let _selected: HTMLButtonElement | undefined;
   const ctx = {
     get selectedAction() {
@@ -17,9 +18,9 @@ const { ctx, setSelectedAction, setDefaultAction } = vi.hoisted(() => {
       _selected = el;
       setSelectedAction(el);
     },
-    setDefaultAction,
-  };
-  return { ctx, setSelectedAction, setDefaultAction };
+    notifyActionButtonChange,
+  } satisfies MarkdownEditorToolbarContext;
+  return { ctx, setSelectedAction, notifyActionButtonChange };
 });
 
 vi.mock("../../context.js", () => {
@@ -53,16 +54,16 @@ describe("Markdown Editor > Toolbar > Action button component", () => {
     await expect.element(element).toHaveClass("test-class");
   });
 
-  it("calls addAction on mount", () => {
+  it("calls notifyActionButtonChange on mount", () => {
     render(Component);
-    expect(setDefaultAction).toHaveBeenCalledTimes(1);
+    expect(notifyActionButtonChange).toHaveBeenCalledTimes(1);
   });
 
-  it("calls removeAction on unmount", async () => {
+  it("calls notifyActionButtonChange on unmount", async () => {
     const page = render(Component);
     await expect.element(page.getByRole("button")).toBeInTheDocument();
     page.unmount();
-    expect(setDefaultAction).toHaveBeenCalledTimes(2);
+    expect(notifyActionButtonChange).toHaveBeenCalledTimes(2);
   });
 
   it("sets selectedAction on focus", () => {
@@ -78,8 +79,7 @@ describe("Markdown Editor > Toolbar > Action button component", () => {
     expect(setSelectedAction).toHaveBeenCalledWith(buttonEl);
   });
 
-  // TODO: requires context values to be reactive
-  // it("unselects the action button if it becomes disabled and is in tab order", async () => {
+  // it("tab index is -1 if the action button is disabled and is in tab order", async () => {
   //   const children = createRawSnippet(() => ({
   //     render: () => `<span>ActionButton</span>`,
   //   }));
@@ -88,10 +88,8 @@ describe("Markdown Editor > Toolbar > Action button component", () => {
   //   const button = page.getByRole("button");
   //   const buttonEl = button.element() as HTMLButtonElement;
   //   buttonEl.focus();
-  //   expect(setSelectedAction).toHaveBeenCalledTimes(1);
-  //   expect(setSelectedAction).toHaveBeenCalledWith(buttonEl);
-  //   props.disabled = true;
-  //   await expect.element(button).toBeDisabled();
-  //   expect(setSelectedAction).toHaveBeenLastCalledWith(undefined);
+  //   await expect.element(button).toHaveAttribute("tabindex", "0");
+  //   // props.disabled = true;
+  //   await expect.element(button).toHaveAttribute("tabindex", "-1");
   // });
 });

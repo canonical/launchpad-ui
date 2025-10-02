@@ -6,6 +6,13 @@
     title: "components/MarkdownEditor/Toolbar",
     tags: ["autodocs"],
     component: MarkdownEditor.Toolbar,
+    argTypes: {
+      ref: {
+        table: {
+          disable: true,
+        },
+      },
+    },
   });
 </script>
 

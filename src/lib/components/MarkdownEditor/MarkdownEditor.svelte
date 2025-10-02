@@ -21,8 +21,8 @@
 
 <div
   class={[componentCssClassName, className]}
-  {...rest}
   data-testid="markdown-editor"
+  {...rest}
 >
   {@render children?.()}
 </div>

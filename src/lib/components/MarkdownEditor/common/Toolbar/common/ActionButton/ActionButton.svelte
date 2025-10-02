@@ -13,7 +13,6 @@
   let {
     class: className,
     onfocus: onfocusProp,
-    disabled: disabledProp,
     modifiers,
     ...rest
   }: ActionButtonProps = $props();
@@ -33,27 +32,19 @@
       markdownEditorToolbarContext?.selectedAction === actionElement,
   );
   // disabled by default until JS is loaded
-  const disabled = $derived(disabledProp ?? !mounted.value);
+  const disabled = $derived(!mounted.value);
 
   // Unselect the action button if it becomes disabled and is in tab order
   $effect(() => {
-    if (
-      disabled &&
-      untrack(() => isInTabOrder) &&
-      markdownEditorToolbarContext
-    ) {
-      markdownEditorToolbarContext.selectedAction = undefined;
+    if (disabled && untrack(() => isInTabOrder)) {
+      markdownEditorToolbarContext?.notifyActionButtonChange();
     }
   });
 
   onMount(() => {
-    if (markdownEditorToolbarContext) {
-      markdownEditorToolbarContext.setDefaultAction();
-    }
+    markdownEditorToolbarContext?.notifyActionButtonChange();
     return () => {
-      if (markdownEditorToolbarContext) {
-        markdownEditorToolbarContext.setDefaultAction();
-      }
+      markdownEditorToolbarContext?.notifyActionButtonChange();
     };
   });
 </script>
@@ -63,7 +54,6 @@
   class={[componentCssClassName, className]}
   tabindex={isInTabOrder ? 0 : -1}
   modifiers={{ density: "dense", severity: "base", ...(modifiers || {}) }}
-  data-disabled={disabledProp}
   {onfocus}
   {disabled}
   {...rest}
