@@ -38,9 +38,11 @@
     align-items: center;
 
     gap: var(--dimension-gap-inline-icon);
-    padding-block: var(--dimension-padding-block-button);
-    padding-inline: var(--dimension-padding-inline-button);
-    --icon-padding-subtract: calc(var(--dimension-padding-inline-button) / 2);
+    padding-block: var(--dimension-padding-block-button-content);
+    padding-inline: var(--dimension-padding-inline-button-content);
+    --icon-padding-subtract: calc(
+      var(--dimension-padding-inline-button-content) / 2
+    );
 
     > .icon {
       display: inline-flex;
