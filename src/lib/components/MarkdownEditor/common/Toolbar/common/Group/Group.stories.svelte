@@ -7,6 +7,13 @@
     title: "components/MarkdownEditor/Toolbar/Group",
     tags: ["autodocs"],
     component: MarkdownEditor.Toolbar.Group,
+    argTypes: {
+      containerWidth: {
+        table: {
+          disable: true,
+        },
+      },
+    },
   });
 </script>
 
@@ -15,10 +22,8 @@
     <MarkdownEditor>
       <MarkdownEditor.Toolbar>
         <MarkdownEditor.Toolbar.Group {...args}>
-          <MarkdownEditor.Toolbar.ActionButton>
-            {#snippet iconLeft()}
-              <Icon name="bold" />
-            {/snippet}
+          <MarkdownEditor.Toolbar.ActionButton label="Bold">
+            <Icon name="bold" />
           </MarkdownEditor.Toolbar.ActionButton>
         </MarkdownEditor.Toolbar.Group>
       </MarkdownEditor.Toolbar>

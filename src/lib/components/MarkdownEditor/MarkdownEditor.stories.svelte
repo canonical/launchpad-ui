@@ -102,35 +102,31 @@
         <MarkdownEditor.Toolbar>
           <MarkdownEditor.Toolbar.Group aria-label="Magic actions">
             <MarkdownEditor.Toolbar.ActionButton
+              label="Magic"
               onclick={() => insertText("wow what happened?!")}
             >
-              {#snippet iconLeft()}
-                <Icon name="unstarred" />
-              {/snippet}
+              <Icon name="unstarred" />
             </MarkdownEditor.Toolbar.ActionButton>
           </MarkdownEditor.Toolbar.Group>
 
           <MarkdownEditor.Toolbar.Group aria-label="Git actions">
             <MarkdownEditor.Toolbar.ActionButton
               onclick={() => insertText("merge branch")}
+              label="Merge"
             >
-              {#snippet iconLeft()}
-                <Icon name="branch-merge" />
-              {/snippet}
+              <Icon name="branch-merge" />
             </MarkdownEditor.Toolbar.ActionButton>
             <MarkdownEditor.Toolbar.ActionButton
               onclick={() => insertText("branch merged")}
+              label="Merged"
             >
-              {#snippet iconLeft()}
-                <Icon name="branch-merged" />
-              {/snippet}
+              <Icon name="branch-merged" />
             </MarkdownEditor.Toolbar.ActionButton>
             <MarkdownEditor.Toolbar.ActionButton
               onclick={() => insertText("fork repository")}
+              label="Fork"
             >
-              {#snippet iconLeft()}
-                <Icon name="fork" />
-              {/snippet}
+              <Icon name="fork" />
             </MarkdownEditor.Toolbar.ActionButton>
           </MarkdownEditor.Toolbar.Group>
         </MarkdownEditor.Toolbar>
@@ -150,19 +146,15 @@
         <MarkdownEditor.Toolbar noDefaultActions>
           {#if !hideExistingActions}
             <MarkdownEditor.Toolbar.Group aria-label="Dynamic actions">
-              <MarkdownEditor.Toolbar.ActionButton>
-                {#snippet iconLeft()}
-                  <Icon name="revisions" />
-                {/snippet}
+              <MarkdownEditor.Toolbar.ActionButton label="Revisions">
+                <Icon name="revisions" />
               </MarkdownEditor.Toolbar.ActionButton>
             </MarkdownEditor.Toolbar.Group>
           {/if}
           {#if showNewActions}
             <MarkdownEditor.Toolbar.Group aria-label="Dynamic actions">
-              <MarkdownEditor.Toolbar.ActionButton>
-                {#snippet iconLeft()}
-                  <Icon name="select-add" />
-                {/snippet}
+              <MarkdownEditor.Toolbar.ActionButton label="Select Add">
+                <Icon name="select-add" />
               </MarkdownEditor.Toolbar.ActionButton>
             </MarkdownEditor.Toolbar.Group>
           {/if}
@@ -195,10 +187,9 @@
           <MarkdownEditor.Toolbar.Group aria-label="Dynamic actions">
             <MarkdownEditor.Toolbar.ActionButton
               disabled={disableDynamicActions}
+              label="Revisions"
             >
-              {#snippet iconLeft()}
-                <Icon name="revisions" />
-              {/snippet}
+              <Icon name="revisions" />
             </MarkdownEditor.Toolbar.ActionButton>
           </MarkdownEditor.Toolbar.Group>
         </MarkdownEditor.Toolbar>

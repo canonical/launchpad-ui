@@ -5,10 +5,20 @@
 
   const componentCssClassName = "ds markdown-editor-toolbar-group";
 
-  let { class: className, children, ...rest }: GroupProps = $props();
+  let {
+    class: className,
+    children,
+    containerWidth = $bindable(),
+    ...rest
+  }: GroupProps = $props();
 </script>
 
-<div class={[componentCssClassName, className]} role="group" {...rest}>
+<div
+  class={[componentCssClassName, className]}
+  role="group"
+  bind:clientWidth={containerWidth}
+  {...rest}
+>
   {@render children?.()}
 </div>
 

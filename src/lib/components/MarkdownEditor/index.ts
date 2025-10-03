@@ -35,10 +35,8 @@ const MarkdownEditor = MarkdownEditorRoot as typeof MarkdownEditorRoot & {
    * <MarkdownEditor>
    *  <MarkdownEditor.Header>
    *    <MarkdownEditor.Toolbar>
-   *      <MarkdownEditor.Toolbar.ActionButton>
-   *        {#snippet iconLeft()}
-   *          <Icon name="bold" />
-   *        {/snippet}
+   *      <MarkdownEditor.Toolbar.ActionButton label="Bold">
+   *         <Icon name="bold" />
    *      </MarkdownEditor.Toolbar.ActionButton>
    *    </MarkdownEditor.Toolbar>
    *    {#snippet controls()}
@@ -60,10 +58,8 @@ const MarkdownEditor = MarkdownEditorRoot as typeof MarkdownEditorRoot & {
    * <MarkdownEditor>
    *  <MarkdownEditor.Header>
    *    <MarkdownEditor.Toolbar>
-   *      <MarkdownEditor.Toolbar.ActionButton>
-   *        {#snippet iconLeft()}
-   *          <Icon name="bold" />
-   *        {/snippet}
+   *      <MarkdownEditor.Toolbar.ActionButton label="Bold">
+   *        <Icon name="bold" />
    *      </MarkdownEditor.Toolbar.ActionButton>
    *    </MarkdownEditor.Toolbar>
    *    <MarkdownEditor.Controls>

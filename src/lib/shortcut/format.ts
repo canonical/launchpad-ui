@@ -12,7 +12,6 @@ export function format(shortcut: Shortcut): [...(Modifier | "cmd")[], Key] {
     if (p === "ctrl") return isMac() ? "cmd" : "ctrl";
     return p;
   });
-  console.log(shortcut, isMac());
 
   const key = parts.find((p) => !MODIFIERS.includes(p as Modifier)) as Key;
   assert(Boolean(key), `Invalid shortcut, missing key ${shortcut}`);

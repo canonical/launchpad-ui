@@ -1,5 +1,6 @@
 <script module lang="ts">
   import { defineMeta } from "@storybook/addon-svelte-csf";
+  import { fn } from "storybook/internal/test";
   import { buttonModifiers } from "$lib/components/Button/modifiers/index.js";
   import { Icon } from "$lib/components/index.js";
   import { modifiersControl } from "$lib/modifiers/storybook.js";
@@ -24,19 +25,28 @@
           },
         },
       },
+      shortcut: {
+        control: "text",
+      },
       ...modifiersControl(buttonModifiers),
     },
   });
 </script>
 
 <Story name="Default">
-  {#snippet template(args)}
+  {#snippet template({ label, children, ...args })}
     <MarkdownEditor>
       <MarkdownEditor.Toolbar>
-        <MarkdownEditor.Toolbar.ActionButton {...args}>
-          {#snippet iconLeft()}
+        <MarkdownEditor.Toolbar.ActionButton
+          label={label || "Bold"}
+          callback={() => fn()}
+          {...args}
+        >
+          {#if children}
+            {@render children()}
+          {:else}
             <Icon name="bold" />
-          {/snippet}
+          {/if}
         </MarkdownEditor.Toolbar.ActionButton>
       </MarkdownEditor.Toolbar>
     </MarkdownEditor>

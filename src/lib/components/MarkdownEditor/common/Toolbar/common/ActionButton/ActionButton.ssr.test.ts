@@ -11,6 +11,7 @@ describe("Markdown Editor > Toolbar > ActionButton SSR", () => {
     children: createRawSnippet(() => ({
       render: () => `<span>ActionButton</span>`,
     })),
+    label: "ActionButton",
   } satisfies ActionButtonProps;
 
   describe("basics", () => {

@@ -3,7 +3,6 @@
 <script lang="ts">
   import { Icon } from "$lib/components/index.js";
   import { getFirstElement, getSiblingElement } from "$lib/utils";
-  import { getMarkdownEditorContext } from "../../context.js";
   import {
     ACTION_BUTTON_CSS_CLASS_NAME,
     ActionButton,
@@ -22,9 +21,8 @@
     onkeydown: onkeydownProp,
     ...rest
   }: ToolbarProps = $props();
+  let containerWidth = $state<number>();
   let selectedAction = $state<HTMLButtonElement>();
-
-  const markdownEditorContext = getMarkdownEditorContext();
 
   /**
    * Select the default action when the toolbar is mounted
@@ -106,61 +104,107 @@
   {...rest}
 >
   {#if !noDefaultActions}
-    <Group>
+    <Group bind:containerWidth>
       <ActionButton
-        onclick={() => {
+        label="Heading"
+        shortcut="ctrl+shift+1"
+        callback={(textarea) => {
           // TODO: temporary placeholder, to be replaced with an action management system
-          if (markdownEditorContext?.textareaElement) {
-            markdownEditorContext.textareaElement.focus();
-            document.execCommand("insertText", false, "# ");
-          }
+          textarea.focus();
+          document.execCommand("insertText", false, "# ");
         }}
       >
-        {#snippet iconLeft()}
-          <Icon name="heading" />
-        {/snippet}
+        <Icon name="heading" />
       </ActionButton>
-      <ActionButton>
-        {#snippet iconLeft()}
-          <Icon name="bold" />
-        {/snippet}
+      <ActionButton
+        label="Bold"
+        shortcut="ctrl+b"
+        callback={(textarea) => {
+          // TODO: temporary placeholder, to be replaced with an action management system
+          textarea.focus();
+          document.execCommand("insertText", false, "**");
+        }}
+      >
+        <Icon name="bold" />
       </ActionButton>
-      <ActionButton>
-        {#snippet iconLeft()}
-          <Icon name="italic" />
-        {/snippet}
+      <ActionButton
+        label="Italic"
+        shortcut="ctrl+i"
+        callback={(textarea) => {
+          // TODO: temporary placeholder, to be replaced with an action management system
+          textarea.focus();
+          document.execCommand("insertText", false, "*");
+        }}
+      >
+        <Icon name="italic" />
       </ActionButton>
     </Group>
     <Group>
-      <ActionButton>
-        {#snippet iconLeft()}
-          <Icon name="quote" />
-        {/snippet}
+      <ActionButton
+        label="Quote"
+        shortcut="ctrl+shift+0"
+        callback={(textarea) => {
+          // TODO: temporary placeholder, to be replaced with an action management system
+          textarea.focus();
+          document.execCommand("insertText", false, "> ");
+        }}
+      >
+        <Icon name="quote" />
       </ActionButton>
-      <ActionButton>
-        {#snippet iconLeft()}
-          <Icon name="code" />
-        {/snippet}
+      <ActionButton
+        label="Code"
+        shortcut="ctrl+e"
+        callback={(textarea) => {
+          // TODO: temporary placeholder, to be replaced with an action management system
+          textarea.focus();
+          document.execCommand("insertText", false, "`");
+        }}
+      >
+        <Icon name="code" />
       </ActionButton>
-      <ActionButton>
-        {#snippet iconLeft()}
-          <Icon name="get-link" />
-        {/snippet}
+      <ActionButton
+        label="Insert Link"
+        shortcut="ctrl+k"
+        callback={(textarea) => {
+          // TODO: temporary placeholder, to be replaced with an action management system
+          textarea.focus();
+          document.execCommand("insertText", false, "[");
+        }}
+      >
+        <Icon name="get-link" />
       </ActionButton>
-      <ActionButton>
-        {#snippet iconLeft()}
-          <Icon name="bulleted-list" />
-        {/snippet}
+      <ActionButton
+        label="Unordered List"
+        shortcut="ctrl+shift+8"
+        callback={(textarea) => {
+          // TODO: temporary placeholder, to be replaced with an action management system
+          textarea.focus();
+          document.execCommand("insertText", false, "- ");
+        }}
+      >
+        <Icon name="bulleted-list" />
       </ActionButton>
-      <ActionButton>
-        {#snippet iconLeft()}
-          <Icon name="numbered-list" />
-        {/snippet}
+      <ActionButton
+        label="Numbered List"
+        shortcut="ctrl+shift+7"
+        callback={(textarea) => {
+          // TODO: temporary placeholder, to be replaced with an action management system
+          textarea.focus();
+          document.execCommand("insertText", false, "1. ");
+        }}
+      >
+        <Icon name="numbered-list" />
       </ActionButton>
-      <ActionButton>
-        {#snippet iconLeft()}
-          <Icon name="task-list" />
-        {/snippet}
+      <ActionButton
+        label="Task List"
+        shortcut="ctrl+shift+9"
+        callback={(textarea) => {
+          // TODO: temporary placeholder, to be replaced with an action management system
+          textarea.focus();
+          document.execCommand("insertText", false, "- [ ] ");
+        }}
+      >
+        <Icon name="task-list" />
       </ActionButton>
     </Group>
   {/if}
