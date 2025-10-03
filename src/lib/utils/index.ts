@@ -1,3 +1,3 @@
-export * from "./extractAria";
-export * from "./getFirstElement";
-export * from "./getSiblingElement";
+export * from "./extractAria.js";
+export * from "./getFirstElement.js";
+export * from "./getSiblingElement.js";

@@ -79,17 +79,5 @@ describe("Markdown Editor > Toolbar > Action button component", () => {
     expect(setSelectedAction).toHaveBeenCalledWith(buttonEl);
   });
 
-  // it("tab index is -1 if the action button is disabled and is in tab order", async () => {
-  //   const children = createRawSnippet(() => ({
-  //     render: () => `<span>ActionButton</span>`,
-  //   }));
-  //   const props = $state({ disabled: false, children });
-  //   const page = render(Component, { props });
-  //   const button = page.getByRole("button");
-  //   const buttonEl = button.element() as HTMLButtonElement;
-  //   buttonEl.focus();
-  //   await expect.element(button).toHaveAttribute("tabindex", "0");
-  //   // props.disabled = true;
-  //   await expect.element(button).toHaveAttribute("tabindex", "-1");
-  // });
+  // TODO: it("tab index is -1 if the action button is disabled and is in tab order")
 });

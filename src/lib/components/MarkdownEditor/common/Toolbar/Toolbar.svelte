@@ -60,11 +60,8 @@
   });
 
   /**
-   * maintain the tab index property, where all actions have a
-   * tab index of -1, except for the selected action
-   *
-   * this order is maintained even if the focus is moved to
-   * another element and then back to the toolbar
+   * Adds additional event handling for the toolbar, to navigate between action buttons.
+   * It is used to navigate between action buttons using the arrow keys.
    */
   const onkeydown: typeof onkeydownProp = (event) => {
     onkeydownProp?.(event);
