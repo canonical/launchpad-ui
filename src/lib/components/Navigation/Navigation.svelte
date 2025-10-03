@@ -67,9 +67,23 @@
     --dimension-padding-navigation-desktop: var(
       --tmp-dimension-spacing-inline-s
     );
+    /* 
+    TODO: This "hardcoded" width could be get rid of when support for either:
+     - `interpolate-size: allow-keywords` (https://developer.mozilla.org/en-US/docs/Web/CSS/interpolate-size), or
+     - `calc-size()` (https://developer.mozilla.org/en-US/docs/Web/CSS/calc-size) is there.
+     Then the we could either transition the width of the whole grid container to e.g. `min-content` (with expanded grid track width being 0), or calculate its required collapsed width based on the intrinsic width of the logo column.
+    */
     --dimension-width-navigation-logo-column-desktop: 21px;
+    /* TODO(@Enzo): Missing token */
     --dimension-width-navigation-expanded-desktop: 240px;
+    /* TODO(@Enzo): Missing token */
     --dimension-padding-block-start-navigation-nav-desktop: 40px;
+    --dimension-padding-block-end-navigation-footer-desktop: var(
+      --tmp-dimension-spacing-block-xs
+    );
+    --dimension-padding-block-end-navigation-nav-desktop: var(
+      --tmp-dimension-spacing-block-xxl
+    );
 
     :global(> .desktop) {
       display: none;

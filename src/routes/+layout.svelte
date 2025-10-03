@@ -20,7 +20,7 @@
   <Icon name="menu" />
 {/snippet}
 
-<Navigation desktopThreshold={621}>
+<Navigation desktopThreshold={621} expanded={false}>
   {#snippet logoExpanded()}
     <a href="/" aria-label="Launchpad Home">
       <!-- TODO: Replace with a universal product logo solution -->

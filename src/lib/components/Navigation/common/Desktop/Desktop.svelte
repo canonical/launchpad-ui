@@ -99,19 +99,21 @@
     transition: width var(--transition-duration-navigation)
       var(--transition-easing-navigation);
 
-    .logo {
+    > .logo {
       grid-column: logo-start / span 2;
+      grid-row: header;
 
       &.logo-expanded {
         min-width: max-content;
-      }
-
-      &.logo-collapsed {
-        display: none;
+        /* display: none; */
       }
     }
 
-    nav {
+    > .logo-collapsed {
+      /* display: none; */
+    }
+
+    > nav {
       grid-row: nav;
       grid-column: 1 / -1;
       overflow-y: auto;
@@ -121,28 +123,57 @@
       margin-block-start: var(
         --dimension-padding-block-start-navigation-nav-desktop
       );
+      padding-block-end: var(
+        --dimension-padding-block-end-navigation-nav-desktop
+      );
+      mask-image: linear-gradient(
+        to top,
+        transparent,
+        black var(--dimension-padding-block-end-navigation-nav-desktop)
+      );
     }
 
-    &.expanded-changed nav {
+    &.expanded-changed {
       /* Do not fade on first render */
-      animation: fadeIn var(--transition-duration-navigation)
-        var(--transition-easing-navigation) forwards;
+      > .logo-expanded {
+        animation: appear var(--transition-duration-navigation) linear forwards;
+      }
+
+      > .logo-collapsed {
+        animation: disappear-logo var(--transition-duration-navigation) linear
+          forwards;
+      }
+
+      nav {
+        animation: appear var(--transition-duration-navigation)
+          var(--transition-easing-navigation) forwards;
+      }
     }
 
-    .footer {
+    > .footer {
       grid-row: footer;
       grid-column: 1 / -1;
       display: grid;
       grid-template-columns: subgrid;
+
+      padding-block-end: var(
+        --dimension-padding-block-end-navigation-footer-desktop
+      );
     }
 
-    :global(.menu-toggle) {
-      display: grid;
-      place-items: center;
-      grid-row: header;
-      grid-column: 4;
-      --border-style-button: none;
-      --color-background-button: transparent;
+    :global {
+      > .menu-toggle {
+        display: grid;
+        place-items: center;
+        grid-row: header;
+        grid-column: 4;
+        --border-style-button: none;
+        --color-background-button: transparent;
+
+        .ds.icon {
+          transform: rotate(180deg);
+        }
+      }
     }
   }
 
@@ -153,13 +184,30 @@
           var(--dimension-padding-navigation-desktop) * 2
       );
 
-      nav {
-        animation: disappear var(--transition-duration-navigation)
-          var(--transition-easing-navigation) forwards;
+      /* Do not fade on first render */
+      &:not(.expanded-changed) {
+        > .logo-expanded {
+          display: none;
+        }
+        > nav {
+          display: none;
+        }
+      }
+
+      &.expanded-changed {
+        > .logo-collapsed {
+          animation-name: appear-logo;
+        }
+        > .logo-expanded {
+          animation-name: disappear;
+        }
+        > nav {
+          animation-name: disappear;
+        }
       }
 
       :global {
-        .menu-toggle {
+        > .menu-toggle {
           grid-row: nav;
           grid-column: 1 / -1;
 
@@ -171,6 +219,7 @@
 
           .ds.icon {
             grid-column: logo;
+            transform: rotate(0deg);
           }
         }
 
@@ -197,12 +246,34 @@
     }
   }
 
-  @keyframes fadeIn {
+  @keyframes appear {
     from {
       opacity: 0;
     }
     to {
       opacity: 1;
+    }
+  }
+
+  /* Special keyframes for collapsed logo as it is display: none by default */
+  @keyframes appear-logo {
+    from {
+      opacity: 0;
+      display: block;
+    }
+    to {
+      opacity: 1;
+      display: block;
+    }
+  }
+
+  @keyframes disappear-logo {
+    from {
+      opacity: 1;
+      display: block;
+    }
+    to {
+      opacity: 0;
     }
   }
 </style>
