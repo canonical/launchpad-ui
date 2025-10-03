@@ -8,7 +8,7 @@ type BaseProps = SvelteHTMLElements["div"];
 export interface NavigationProps extends BaseProps {
   desktopThreshold?: number;
   logo: Snippet<[]>;
-  logoExpanded?: Snippet<[]>;
+  logoExpanded: Snippet<[]>;
   navigation: Snippet<[]>;
   footer?: Snippet<[]>;
   children: Snippet<[]>;

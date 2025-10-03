@@ -2,8 +2,10 @@
 
 import type { Snippet } from "svelte";
 import type { HTMLButtonAttributes } from "svelte/elements";
+import type { WithoutChildren } from "$lib/type-utils.js";
 
-export interface ButtonItemProps extends HTMLButtonAttributes {
+export interface ButtonItemProps extends WithoutChildren<HTMLButtonAttributes> {
   selected?: boolean;
   icon?: Snippet<[]>;
+  label: string;
 }

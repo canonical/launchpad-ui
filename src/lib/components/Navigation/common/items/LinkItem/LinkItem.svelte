@@ -9,20 +9,26 @@
 
   let {
     class: className,
-    children,
+    label,
     icon,
     selected,
     ...rest
   }: LinkItemProps = $props();
+
+  const labelId = $props.id();
 </script>
 
 <ButtonPrimitive
   as="a"
   class={[componentCssClassName, className, { selected }]}
+  aria-labelledby={labelId}
   {...rest}
 >
   {@render icon?.()}
-  {@render children?.()}
+  <!-- using labeled-by exposes the contents to a11y tree even if the label is visually hidden -->
+  <div id={labelId} class="label">
+    {label}
+  </div>
 </ButtonPrimitive>
 
 <!-- @component

@@ -1,3 +1,26 @@
 .ds.navigation-item {
-  /* Styles for navigation items can be added here */
+  display: grid;
+  grid-column: 1 / -1;
+
+  --border-style-button: none;
+  --color-background-button: transparent;
+  --dimension-padding-inline-button: 0;
+  --dimension-padding-block-button: var(--tmp-dimension-spacing-block-xxs);
+  --dimension-gap-button: var(--tmp-dimension-spacing-inline-xs);
+
+  grid-template-columns: subgrid;
+  gap: var(--dimension-gap-button);
+
+  > .ds.icon {
+    grid-column: logo;
+    place-self: center;
+  }
+
+  > .label {
+    grid-column: expanded-start / content-end;
+    text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
 }

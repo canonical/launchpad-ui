@@ -7,7 +7,7 @@ type BaseProps = SvelteHTMLElements["header"];
 
 export interface DesktopProps extends BaseProps {
   logo: Snippet<[]>;
-  logoExpanded?: Snippet<[]>;
+  logoExpanded: Snippet<[]>;
   footer?: Snippet<[]>;
   expanded?: boolean;
 }

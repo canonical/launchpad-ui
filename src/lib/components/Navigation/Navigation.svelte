@@ -14,7 +14,7 @@
     navigation,
     footer,
     children,
-    expanded = $bindable(),
+    expanded = $bindable(true),
     ...rest
   }: NavigationProps = $props();
 </script>
@@ -39,7 +39,7 @@
       }
 
       > .ds.desktop {
-        display: block;
+        display: var(--display-navigation-desktop);
       }
     }
   </style>
@@ -58,6 +58,19 @@
 
 <style>
   .ds.navigation {
+    /* Common */
+    --color-background-navigation: var(--tmp-color-background-alt);
+    --transition-duration-navigation: var(--tmp-transition-duration-brisk);
+    --transition-easing-navigation: var(--tmp-transition-timing-ease-out);
+
+    /* Desktop */
+    --dimension-padding-navigation-desktop: var(
+      --tmp-dimension-spacing-inline-s
+    );
+    --dimension-width-navigation-logo-column-desktop: 21px;
+    --dimension-width-navigation-expanded-desktop: 240px;
+    --dimension-padding-block-start-navigation-nav-desktop: 40px;
+
     :global(> .desktop) {
       display: none;
     }

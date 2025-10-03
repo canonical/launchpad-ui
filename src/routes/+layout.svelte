@@ -16,15 +16,6 @@
 
 <ThemeSetter {theme} />
 
-<!-- <form method="POST" action="/?/changeTheme" use:enhance>
-  <select name="theme" value={theme}>
-    {#each themes as theme (theme)}
-      <option value={theme}>{theme}</option>
-    {/each}
-  </select>
-  <button>Change</button>
-</form> -->
-
 {#snippet icon()}
   <Icon name="menu" />
 {/snippet}
@@ -45,36 +36,50 @@
   {#snippet navigation()}
     {#each { length: 20 }, i (i)}
       {@const iconned = i % 2 === 0 ? icon : undefined}
-      <Navigation.LinkItem href="/" selected={i === 0} icon={iconned}
-        >Home</Navigation.LinkItem
-      >
-      <Navigation.LinkItem href="/about" icon={iconned}
-        >About</Navigation.LinkItem
-      >
-      <Navigation.ButtonItem onclick={() => alert("Clicked!")} icon={iconned}>
-        Click Me
-      </Navigation.ButtonItem>
+      <Navigation.LinkItem
+        href="/"
+        selected={i === 0}
+        icon={iconned}
+        label="Home"
+      />
+      <Navigation.LinkItem
+        href="/about"
+        icon={iconned}
+        label="About some kind of thing with a very long name"
+      />
+      <Navigation.ButtonItem
+        onclick={() => alert("Clicked!")}
+        icon={iconned}
+        label="Click Me"
+      />
     {/each}
   {/snippet}
   {#snippet footer()}
-    <Navigation.ButtonItem>
+    <Navigation.ButtonItem label="Theme">
       {#snippet icon()}
         <Icon name="color-palette" />
       {/snippet}
-      Theme
     </Navigation.ButtonItem>
-    <Navigation.LinkItem href="/profile">
+    <Navigation.LinkItem href="/profile" label="$username">
       {#snippet icon()}
         <Icon name="user" />
       {/snippet}
-      $username
     </Navigation.LinkItem>
-    <Navigation.ButtonItem>
+    <Navigation.ButtonItem label="Logout">
       {#snippet icon()}
         <Icon name="log-out" />
       {/snippet}
-      Logout
     </Navigation.ButtonItem>
   {/snippet}
-  {@render children()}
+  <div>
+    <form method="POST" action="/?/changeTheme" use:enhance>
+      <select name="theme" value={theme}>
+        {#each themes as theme (theme)}
+          <option value={theme}>{theme}</option>
+        {/each}
+      </select>
+      <button>Change</button>
+    </form>
+    {@render children()}
+  </div>
 </Navigation>
