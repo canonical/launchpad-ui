@@ -39,6 +39,7 @@ export const iconNames = new Set([
   "cluster-host",
   "code",
   "collapse",
+  "color-palette",
   "comments",
   "conflict",
   "conflict-resolution",
