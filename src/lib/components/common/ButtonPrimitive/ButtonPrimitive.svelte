@@ -2,18 +2,22 @@
 
 <script lang="ts" generics="T extends 'button' | 'a'">
   import type {
-    ButtonPrimitiveAnchorAttributes,
-    ButtonPrimitiveButtonAttributes,
-    ButtonPrimitiveProps,
-  } from "./types.js";
+    HTMLAnchorAttributes,
+    HTMLButtonAttributes,
+  } from "svelte/elements";
+  import type { ButtonPrimitiveProps } from "./types.js";
 
-  // Keeping the props in an object let us use the discriminated union in the template without causing `expression produces a union type that is too complex to represent` TS errors.
-  let { ref = $bindable(), as, ...rest }: ButtonPrimitiveProps<T> = $props();
+  let {
+    ref = $bindable(),
+    children,
+    as,
+    disabled,
+    ...rest
+  }: ButtonPrimitiveProps<T> = $props();
 </script>
 
 {#if as === "a"}
-  {@const { href, disabled, children, ...restAnchor } =
-    rest as unknown as ButtonPrimitiveAnchorAttributes}
+  {@const { href, ...restAnchor } = rest as HTMLAnchorAttributes}
   <!--
   Disabled anchor state implementation is inspired by: https://github.com/huntabyte/bits-ui/blob/main/packages/bits-ui/src/lib/bits/button/components/button.svelte
 -->
@@ -26,9 +30,9 @@
     {...restAnchor}>{@render children?.()}</a
   >
 {:else if as === "button"}
-  {@const { children, ...restButton } =
-    rest as unknown as ButtonPrimitiveButtonAttributes}
-  <button bind:this={ref} {...restButton}>
+  <!-- This in-template @ts directive uses trick from: https://github.com/sveltejs/language-tools/issues/1026 -->
+  {/* @ts-expect-error union to complex to represent */ null}
+  <button bind:this={ref} {disabled} {...rest as HTMLButtonAttributes}>
     {@render children?.()}
   </button>
 {/if}
