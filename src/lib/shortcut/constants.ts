@@ -1,10 +1,10 @@
-/**
- * Possible modifiers for a shortcut.
- *
- * Note, the order of the modifiers matter for normalizing and formatting purposes.
- */
-export const MODIFIERS = ["ctrl", "shift", "alt"] as const;
+export const STANDARD_MODIFIERS = ["ctrl", "alt", "shift"] as const;
+export type StandardModifier = (typeof STANDARD_MODIFIERS)[number];
 
+export const MAC_MODIFIERS = ["cmd", "option", "shift"] as const;
+export type MacModifier = (typeof MAC_MODIFIERS)[number];
+
+export const MODIFIERS = [...STANDARD_MODIFIERS, ...MAC_MODIFIERS] as const;
 export type Modifier = (typeof MODIFIERS)[number];
 
 export const NAMED_KEYS = [
@@ -89,6 +89,14 @@ export const PUNCTUATIONS = [
   "_",
   "*",
   "\\",
+  "{",
+  "}",
+  "[",
+  "]",
+  "(",
+  ")",
+  "<",
+  ">",
 ] as const;
 
 export type Punctuation = (typeof PUNCTUATIONS)[number];

@@ -1,24 +1,63 @@
 import { assert } from "../utils/index.js";
-import type { Key, Modifier } from "./constants.js";
-import { MODIFIERS } from "./constants.js";
-import type { ParsedShortcut, Shortcut, ShortcutPart } from "./type.js";
+import type {
+  Key,
+  MacModifier,
+  Modifier,
+  StandardModifier,
+} from "./constants.js";
+import { MAC_MODIFIERS, STANDARD_MODIFIERS } from "./constants.js";
+import { isMac } from "./platform.js";
+import type {
+  MacShortcut,
+  MacShortcutPart,
+  Shortcut,
+  StandardShortcut,
+  StandardShortcutPart,
+} from "./type.js";
 
-export function parse(shortcut: Shortcut): ParsedShortcut {
-  const parts = shortcut.split("+").filter(Boolean) as ShortcutPart[];
+/**
+ * Parse a shortcut into a flat list of modifiers and key to be formatted as wished.
+ */
+export function parse(shortcut: Shortcut): [...Modifier[], Key] {
+  const shortcuts = shortcut.split("|");
+  const [standard, mac] = shortcuts as [
+    StandardShortcut,
+    MacShortcut | undefined,
+  ];
+  const standardParts = standard
+    .split("+")
+    .filter(Boolean) as StandardShortcutPart[];
+  const standardMods = standardParts.filter((p) =>
+    STANDARD_MODIFIERS.includes(p as StandardModifier),
+  ) as StandardModifier[];
 
-  const mods = new Set(parts.filter((p) => MODIFIERS.includes(p as Modifier)));
-  const key = parts.find((p) => !MODIFIERS.includes(p as Modifier)) as Key;
-
+  const key = standardParts.find(
+    (p) => !STANDARD_MODIFIERS.includes(p as StandardModifier),
+  ) as Key;
   assert(Boolean(key), `Invalid shortcut, missing key ${shortcut}`);
 
-  const wants: ParsedShortcut["wants"] = {
-    ctrl: mods.has("ctrl"),
-    alt: mods.has("alt"),
-    shift: mods.has("shift"),
-  };
+  if (!isMac()) return [...standardMods, key];
 
-  return {
-    wants,
-    key,
-  };
+  const macParts = mac && (mac.split("+").filter(Boolean) as MacShortcutPart[]);
+  const macMods = macParts
+    ? (macParts.filter((p) =>
+        MAC_MODIFIERS.includes(p as MacModifier),
+      ) as MacModifier[])
+    : standardMods.map((m) => {
+        switch (m) {
+          case "ctrl":
+            return "cmd";
+          case "alt":
+            return "option";
+          case "shift":
+            return "shift";
+        }
+      });
+  const macKey = macParts
+    ? (macParts.find((p) => !MAC_MODIFIERS.includes(p as MacModifier)) as Key)
+    : key;
+
+  assert(Boolean(macKey), `Invalid shortcut, missing mac key ${shortcut}`);
+
+  return [...macMods, macKey];
 }

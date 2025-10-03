@@ -3,7 +3,7 @@
 <script lang="ts">
   import { onMount, untrack } from "svelte";
   import { Button, Tooltip } from "$lib/components/index.js";
-  import { format, match } from "$lib/shortcut";
+  import { match, parse } from "$lib/shortcut";
   import { useIsMounted } from "$lib/useIsMounted.svelte.js";
   import { getMarkdownEditorContext } from "../../../../context.js";
   import { getMarkdownEditorToolbarContext } from "../../context.js";
@@ -105,7 +105,7 @@
   {/snippet}
   {`${label}${
     shortcut
-      ? ` (${format(shortcut)
+      ? ` (${parse(shortcut)
           .map((m) => m.charAt(0).toUpperCase() + m.slice(1))
           .join(" + ")})`
       : ""

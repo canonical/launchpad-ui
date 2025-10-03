@@ -1,16 +1,16 @@
 import { describe, expect, it } from "vitest";
 
-describe("shortcut utils > normalizeEventKey", () => {
-  it("normalizes letter/digit/punctuation as-is and lowercases", async () => {
+describe("shortcut utils > normalizeEventKey (event.code-based)", () => {
+  it("maps letter/digit/punctuation codes to normalized keys", async () => {
     const { normalizeEventKey } = await import("./normalize.js");
-    expect(normalizeEventKey("A")).toBe("a");
-    expect(normalizeEventKey("9")).toBe("9");
-    expect(normalizeEventKey(",")).toBe(",");
+    expect(normalizeEventKey("KeyA")).toBe("a");
+    expect(normalizeEventKey("Digit9")).toBe("9");
+    expect(normalizeEventKey("Comma")).toBe(",");
   });
 
-  it("maps 'Esc' to 'escape' and space to 'space'", async () => {
+  it("maps Escape and Space codes to normalized keys", async () => {
     const { normalizeEventKey } = await import("./normalize.js");
-    expect(normalizeEventKey("Esc")).toBe("escape");
-    expect(normalizeEventKey(" ")).toBe("space");
+    expect(normalizeEventKey("Escape")).toBe("escape");
+    expect(normalizeEventKey("Space")).toBe("space");
   });
 });

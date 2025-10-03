@@ -1,11 +1,29 @@
-import type { Key, Modifier } from "./constants";
+import type { Key, MacModifier, StandardModifier } from "./constants";
 
-type OneModShortcut = `${Modifier}+${Key}`;
-type TwoModShortcut = `${Modifier}+${Modifier}+${Key}`;
-type ThreeModShortcut = `${Modifier}+${Modifier}+${Modifier}+${Key}`;
+type OneModShortcut<M extends string> = `${M}+${Key}`;
+type TwoModShortcut<
+  M1 extends string,
+  M2 extends string,
+> = `${M1}+${M2}+${Key}`;
 
-export type Shortcut = OneModShortcut | TwoModShortcut | ThreeModShortcut;
-export type ShortcutPart = Key | Modifier;
+export type ShortcutExpression<M1 extends string, M2 extends string> =
+  | OneModShortcut<M1>
+  | TwoModShortcut<M1, M2>;
+
+export type StandardShortcut = ShortcutExpression<
+  "ctrl",
+  Exclude<StandardModifier, "ctrl">
+>;
+export type MacShortcut = ShortcutExpression<
+  "cmd",
+  Exclude<MacModifier, "cmd">
+>;
+export type ShortcutWithMac = `${StandardShortcut}|${MacShortcut}`;
+
+export type Shortcut = StandardShortcut | MacShortcut | ShortcutWithMac;
+
+export type StandardShortcutPart = Key | StandardModifier;
+export type MacShortcutPart = Key | MacModifier;
 
 export type MatchOptions = {
   /**

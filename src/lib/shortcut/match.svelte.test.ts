@@ -15,7 +15,7 @@ vi.mock("./platform.js", () => {
 describe("shortcut utils > match", () => {
   it("matches exact by default and rejects extra modifiers", async () => {
     const ev = new KeyboardEvent("keydown", {
-      key: "a",
+      code: "KeyA",
       ctrlKey: true,
       shiftKey: true,
     });
@@ -25,7 +25,7 @@ describe("shortcut utils > match", () => {
 
   it("allows extra modifiers when exact=false", async () => {
     const ev = new KeyboardEvent("keydown", {
-      key: "a",
+      code: "KeyA",
       ctrlKey: true,
       altKey: true,
       shiftKey: true,
@@ -36,20 +36,30 @@ describe("shortcut utils > match", () => {
 
   it("normalizes event key (Esc→escape) for matching", async () => {
     const ev = new KeyboardEvent("keydown", {
-      key: "Esc",
+      code: "Escape",
       ctrlKey: true,
     });
 
     expect(match(ev, "ctrl+escape")).toBe(true);
   });
 
-  it("treats meta as ctrl on mac", async () => {
+  it("treats ctrl as cmd on mac", async () => {
     isMac = true;
     const ev = new KeyboardEvent("keydown", {
-      key: "k",
+      code: "KeyK",
       metaKey: true,
     });
 
     expect(match(ev, "ctrl+k")).toBe(true);
+  });
+
+  it("doesn't treat ctrl as cmd when a mac specific shortcut is used", async () => {
+    isMac = true;
+    const ev = new KeyboardEvent("keydown", {
+      code: "KeyK",
+      ctrlKey: true,
+    });
+
+    expect(match(ev, "ctrl+k|cmd+l")).toBe(false);
   });
 });

@@ -122,7 +122,7 @@ describe("Markdown Editor > Toolbar > Action button component", () => {
 
       markdownCtx.textareaElement.dispatchEvent(
         new KeyboardEvent("keydown", {
-          key: "b",
+          code: "KeyB",
         }),
       );
       // no callback should be called as the shortcut does not match
@@ -130,7 +130,7 @@ describe("Markdown Editor > Toolbar > Action button component", () => {
 
       markdownCtx.textareaElement.dispatchEvent(
         new KeyboardEvent("keydown", {
-          key: "b",
+          code: "KeyB",
           shiftKey: true,
           ctrlKey: true,
         }),

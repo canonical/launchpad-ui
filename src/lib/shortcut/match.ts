@@ -15,18 +15,33 @@ export function match(
   const exact = opts.exact ?? true;
 
   const parsed = parse(shortcut);
+  const wants = {
+    ctrl: parsed.includes("ctrl"),
+    alt: parsed.includes("alt"),
+    shift: parsed.includes("shift"),
+    cmd: parsed.includes("cmd"),
+    option: parsed.includes("option"),
+  };
+
+  // We consider ctrl as cmd on mac
+  // which means two keys can trigger the cmd key.
+  // Mac ctrl key is not a common in shortcuts.
   const event = {
-    ctrl: e.ctrlKey || (isMac() && e.metaKey),
+    ctrl: !isMac() && e.ctrlKey,
+    cmd: isMac() && (e.metaKey || e.ctrlKey),
     alt: e.altKey,
     shift: e.shiftKey,
-    key: normalizeEventKey(e.key),
+    option: e.altKey,
+    key: normalizeEventKey(e.code),
   };
 
   const mismatch = [
-    parsed.wants.ctrl && !event.ctrl,
-    parsed.wants.alt && !event.alt,
-    parsed.wants.shift && !event.shift,
-    parsed.key !== event.key,
+    wants.ctrl && !event.ctrl,
+    wants.alt && !event.alt,
+    wants.shift && !event.shift,
+    wants.cmd && !event.cmd,
+    wants.option && !event.option,
+    parsed.at(-1) !== event.key,
   ].some(Boolean);
 
   if (mismatch) return false;
@@ -36,9 +51,11 @@ export function match(
   // When exact is true, disqualify if there are extra modifiers beyond what is required.
   // Example: shortcut wants only ctrl, but event has ctrl+shift → should not match.
   const hasExtraMods = [
-    event.ctrl && !parsed.wants.ctrl,
-    event.alt && !parsed.wants.alt,
-    event.shift && !parsed.wants.shift,
+    event.ctrl && !wants.ctrl,
+    event.alt && !wants.alt,
+    event.shift && !wants.shift,
+    event.cmd && !wants.cmd,
+    event.option && !wants.option,
   ].some(Boolean);
 
   return !hasExtraMods;
