@@ -17,5 +17,5 @@ export interface TitleRowProps extends BaseProps {
   /**
    * The date to display at the end of the title row.
    */
-  date: Date;
+  date: Snippet<[]>;
 }

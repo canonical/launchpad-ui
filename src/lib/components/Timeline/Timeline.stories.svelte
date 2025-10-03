@@ -1,5 +1,6 @@
 <script module lang="ts">
   import { defineMeta } from "@storybook/addon-svelte-csf";
+  import { DateTime } from "$lib/components/DateTime/index.js";
   import { Timeline } from "./index.js";
 
   const { Story } = defineMeta({
@@ -13,24 +14,31 @@
     userAvatarUrl: "https://i.pravatar.cc/150?img=48",
   };
 
-  const date = new Date("2023-03-15");
+  const today = new Date();
+  const day = 24 * 60 * 60 * 1000;
 </script>
 
 <Story name="Default" asChild>
   <Timeline>
     <Timeline.Event marker={user} markerSize="large">
       {#snippet titleRow()}
-        <Timeline.Event.TitleRow leadingText={user.userName} {date}>
+        <Timeline.Event.TitleRow leadingText={user.userName}>
           added 1 commit and filed 2 issues
+          {#snippet date()}
+            <DateTime date={new Date(today.getTime() - 5 * day)} absolute />
+          {/snippet}
         </Timeline.Event.TitleRow>
       {/snippet}
       Implementation of a new feature for Launchpad bug templates
     </Timeline.Event>
     <Timeline.Event marker="text">
       {#snippet titleRow()}
-        <Timeline.Event.TitleRow leadingText={user.userName} {date}>
+        <Timeline.Event.TitleRow leadingText={user.userName}>
           did things that are really complex and will probably take a while to
           explain
+          {#snippet date()}
+            <DateTime date={new Date(today.getTime() - 4 * day)} />
+          {/snippet}
         </Timeline.Event.TitleRow>
       {/snippet}
       <div class="placeholder-box center" style:height="50px">
@@ -39,23 +47,32 @@
     </Timeline.Event>
     <Timeline.Event>
       {#snippet titleRow()}
-        <Timeline.Event.TitleRow leadingText={user.userName} {date}>
+        <Timeline.Event.TitleRow leadingText={user.userName}>
           did some amazing things
+          {#snippet date()}
+            <DateTime date={new Date(today.getTime() - 3 * day)} />
+          {/snippet}
         </Timeline.Event.TitleRow>
       {/snippet}
     </Timeline.Event>
     <Timeline.Event>
       {#snippet titleRow()}
-        <Timeline.Event.TitleRow leadingText={user.userName} {date}>
+        <Timeline.Event.TitleRow leadingText={user.userName}>
           did so many things that it could be a blog post, but let's keep it
           short for now and just say that it was a lot
+          {#snippet date()}
+            <DateTime date={new Date(today.getTime() - 2 * day)} />
+          {/snippet}
         </Timeline.Event.TitleRow>
       {/snippet}
     </Timeline.Event>
     <Timeline.Event marker="flag" markerSize="small">
       {#snippet titleRow()}
-        <Timeline.Event.TitleRow leadingText={user.userName} {date}>
+        <Timeline.Event.TitleRow leadingText={user.userName}>
           raised a flag
+          {#snippet date()}
+            <DateTime date={new Date(today.getTime() - day)} />
+          {/snippet}
         </Timeline.Event.TitleRow>
       {/snippet}
       The flag was raised
@@ -63,10 +80,13 @@
     <Timeline.HiddenEvents numHidden={3} showAllHref="?show-all" />
     <Timeline.Event marker="settings" markerSize="large">
       {#snippet titleRow()}
-        <Timeline.Event.TitleRow {date}>
+        <Timeline.Event.TitleRow>
           The MP was <span style="color: var(--tmp-color-text-default)"
             >Merged</span
           >
+          {#snippet date()}
+            <DateTime date={today} />
+          {/snippet}
         </Timeline.Event.TitleRow>
       {/snippet}
     </Timeline.Event>

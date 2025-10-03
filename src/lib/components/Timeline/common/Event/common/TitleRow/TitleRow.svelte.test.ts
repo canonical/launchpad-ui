@@ -7,10 +7,12 @@ import type { RenderResult } from "vitest-browser-svelte";
 import Component from "./TitleRow.svelte";
 
 const children = createRawSnippet(() => ({
-  render: () => "Title Row Content",
+  render: () => "<span>Title Row Content</span>",
 }));
 
-const date = new Date("2023-03-15");
+const date = createRawSnippet(() => ({
+  render: () => "<span>2023-03-15</span>",
+}));
 
 describe("TitleRow component", () => {
   it("renders", async () => {

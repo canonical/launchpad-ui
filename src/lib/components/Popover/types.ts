@@ -1,18 +1,21 @@
 /* @canonical/generator-ds 0.10.0-experimental.0 */
 
 import type { Snippet } from "svelte";
+import type { Attachment } from "svelte/attachments";
 import type { HTMLButtonAttributes, SvelteHTMLElements } from "svelte/elements";
 import type { WithoutChildren } from "$lib/type-utils.js";
+import type {
+  PositionArea,
+  PositionTryFallback,
+} from "$lib/usePositionArea.svelte.js";
 
 type BaseProps = WithoutChildren<SvelteHTMLElements["div"]>;
 type PopoverTarget = NonNullable<HTMLButtonAttributes["popovertarget"]>;
 
-export type BlockPosition = "block-start" | "block-end";
-export type InlinePosition =
-  | "span-inline-start"
-  | "span-inline-end"
-  | "span-all";
-export type PositionArea = `${BlockPosition} ${InlinePosition}`;
+export type TriggerProps = {
+  popovertarget: PopoverTarget;
+  [key: symbol]: Attachment<HTMLElement>;
+};
 
 export interface PopoverProps extends BaseProps {
   /**
@@ -25,10 +28,12 @@ export interface PopoverProps extends BaseProps {
    * A snippet containing a button element that triggers the popover.
    *
    * Snippet arguments:
-   * - `popovertarget`: The id of the popover element. Set it as `popovertarget` attribute on the button element you want to use as the trigger.
+   * - `triggerProps`: Props that should be spread on the button element to make it control the popover:
+   *   - `popovertarget`: The id of the popover element. Setting this attribute on the enables declarative control of the popover;
+   *   - attachment enabling JS-based positioning fallback for unsupported browsers (see `position` prop);
    * - `open`: A boolean indicating whether the popover is open or closed.
    */
-  trigger: Snippet<[popovertarget: PopoverTarget, open: boolean]>;
+  trigger: Snippet<[triggerProps: TriggerProps, open: boolean]>;
   /**
    * Content to be displayed inside the popover.
    *
@@ -44,6 +49,13 @@ export interface PopoverProps extends BaseProps {
    * @default "block-end span-inline-end"
    */
   position?: PositionArea; //TODO(position-area): To be removed when `position-area` has acceptable support (see: https://developer.mozilla.org/en-US/docs/Web/CSS/position-area#browser_compatibility).
+  /**
+   * If specified, defines how the popover should try to fallback to a different position when the preferred position (set via `position` prop) is not possible due to lack of space in the viewport.
+   *
+   * See: https://developer.mozilla.org/en-US/docs/Web/CSS/position-try-fallbacks#try-tactic
+   *
+   */
+  positionTryFallback?: PositionTryFallback;
 }
 
 export interface PopoverMethods {

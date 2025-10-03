@@ -23,8 +23,8 @@ The following Contextual Menu example can be assembled using:
 <Story name="ContextualMenu" asChild>
   <div style="min-height: 350px;">
     <Popover>
-      {#snippet trigger(popovertarget, open)}
-        <Button {popovertarget} style={open ? "border-bottom: 0;" : ""}>
+      {#snippet trigger(triggerProps, open)}
+        <Button {...triggerProps} style={open ? "border-bottom: 0;" : ""}>
           Options
           {#snippet iconRight()}
             <!-- TODO: Replace with <Chevron /> -->

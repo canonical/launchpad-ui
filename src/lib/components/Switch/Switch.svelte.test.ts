@@ -1,5 +1,6 @@
 /* @canonical/generator-ds 0.10.0-experimental.0 */
 
+import { userEvent } from "@vitest/browser/context";
 import { describe, expect, it, vi } from "vitest";
 import { render } from "vitest-browser-svelte";
 import Component from "./Switch.svelte";
@@ -127,6 +128,16 @@ describe("Switch component", () => {
       await expect.element(switchElement).toHaveFocus();
     });
 
-    // TODO: Keyboard interaction tests
+    it("can be toggled with space key", async () => {
+      const page = render(Component);
+      const switchElement = page.getByRole("switch");
+      await expect.element(switchElement).not.toBeChecked();
+      (switchElement.element() as HTMLElement).focus();
+      await expect.element(switchElement).toHaveFocus();
+      await userEvent.keyboard("{Space}");
+      await expect.element(switchElement).toBeChecked();
+      await userEvent.keyboard("{Space}");
+      await expect.element(switchElement).not.toBeChecked();
+    });
   });
 });
