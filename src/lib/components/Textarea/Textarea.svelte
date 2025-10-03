@@ -8,11 +8,16 @@
   let {
     class: className,
     value = $bindable(),
+    ref = $bindable(),
     ...rest
   }: TextareaProps = $props();
 </script>
 
-<textarea class={[componentCssClassName, className]} bind:value {...rest}
+<textarea
+  bind:this={ref}
+  bind:value
+  class={[componentCssClassName, className]}
+  {...rest}
 ></textarea>
 
 <!-- @component

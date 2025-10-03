@@ -135,7 +135,7 @@ describe("Modal component", () => {
       });
       await closeButton.click();
       await expect
-        .element(page.getByRole("dialog"))
+        .element(page.getByRole("dialog", { includeHidden: true }))
         .not.toHaveAttribute("open");
     });
 

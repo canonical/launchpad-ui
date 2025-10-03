@@ -12,6 +12,7 @@
 
   let {
     class: className,
+    ref = $bindable(),
     modifiers,
     children,
     iconLeft,
@@ -26,6 +27,7 @@
 
 <ButtonPrimitive
   as="button"
+  bind:ref
   class={[
     componentCssClassName,
     className,

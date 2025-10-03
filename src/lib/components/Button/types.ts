@@ -7,7 +7,13 @@ import type { ButtonModifiers } from "./modifiers";
 
 type BaseProps = SvelteHTMLElements["button"];
 
-export interface ButtonProps extends BaseProps, ModifiedBy<ButtonModifiers> {
+export interface ButtonProps extends ModifiedBy<ButtonModifiers>, BaseProps {
+  /**
+   * The ref of the button.
+   *
+   * **@bindable**
+   */
+  ref?: HTMLButtonElement;
   iconLeft?: Snippet;
   iconRight?: Snippet;
   loading?: boolean;
