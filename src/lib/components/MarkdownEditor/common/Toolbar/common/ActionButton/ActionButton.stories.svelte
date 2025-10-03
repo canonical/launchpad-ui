@@ -24,7 +24,6 @@
           },
         },
       },
-      // TODO: remove this when this is integrated with `ButtonBase` primitive
       ...modifiersControl(buttonModifiers),
     },
   });

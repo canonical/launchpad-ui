@@ -2,40 +2,33 @@
 
 <script lang="ts" generics="T extends 'button' | 'a'">
   import type {
-    AnchorAttributes,
-    ButtonAttributes,
+    ButtonPrimitiveAnchorAttributes,
+    ButtonPrimitiveButtonAttributes,
     ButtonPrimitiveProps,
   } from "./types.js";
 
   // Keeping the props in an object let us use the discriminated union in the template without causing `expression produces a union type that is too complex to represent` TS errors.
-  const props: ButtonPrimitiveProps<T> = $props();
+  let { ref = $bindable(), as, ...rest }: ButtonPrimitiveProps<T> = $props();
 </script>
 
-{#if props.as === "a"}
-  {@const {
-    as: _,
-    href,
-    disabled,
-    children,
-    ...restAnchor
-  }: AnchorAttributes = props}
+{#if as === "a"}
+  {@const { href, disabled, children, ...restAnchor } =
+    rest as unknown as ButtonPrimitiveAnchorAttributes}
   <!--
   Disabled anchor state implementation is inspired by: https://github.com/huntabyte/bits-ui/blob/main/packages/bits-ui/src/lib/bits/button/components/button.svelte
 -->
   <a
+    bind:this={ref}
     role={disabled && href ? "link" : undefined}
     href={disabled ? undefined : href}
     aria-disabled={disabled}
     tabindex={disabled ? -1 : 0}
     {...restAnchor}>{@render children?.()}</a
   >
-{:else if props.as === "button"}
-  {@const {
-    as: _,
-    children,
-    ...restButton
-  }: ButtonAttributes = props}
-  <button {...restButton}>
+{:else if as === "button"}
+  {@const { children, ...restButton } =
+    rest as unknown as ButtonPrimitiveButtonAttributes}
+  <button bind:this={ref} {...restButton}>
     {@render children?.()}
   </button>
 {/if}

@@ -10,6 +10,9 @@
       type: {
         table: { disable: true },
       },
+      ref: {
+        table: { disable: true },
+      },
     },
   });
 </script>

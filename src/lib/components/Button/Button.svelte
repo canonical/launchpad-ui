@@ -27,6 +27,7 @@
 
 <ButtonPrimitive
   as="button"
+  bind:ref
   class={[
     componentCssClassName,
     className,

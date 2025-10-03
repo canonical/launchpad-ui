@@ -5,15 +5,34 @@ import type {
   HTMLButtonAttributes,
 } from "svelte/elements";
 
-export interface ButtonAttributes extends HTMLButtonAttributes {
+export type ButtonPrimitiveButtonAttributes = HTMLButtonAttributes;
+
+export interface ButtonPrimitiveButtonProps
+  extends ButtonPrimitiveButtonAttributes {
   as: "button";
+  /**
+   * The ref of the button.
+   *
+   * **@bindable**
+   */
+  ref?: HTMLButtonElement;
 }
 
-export interface AnchorAttributes extends HTMLAnchorAttributes {
-  as: "a";
+export interface ButtonPrimitiveAnchorAttributes extends HTMLAnchorAttributes {
   disabled?: HTMLButtonAttributes["disabled"];
 }
 
+export interface ButtonPrimitiveAnchorProps
+  extends ButtonPrimitiveAnchorAttributes {
+  as: "a";
+  /**
+   * The ref of the anchor.
+   *
+   * **@bindable**
+   */
+  ref?: HTMLAnchorElement;
+}
+
 export type ButtonPrimitiveProps<T extends "button" | "a"> = T extends "button"
-  ? ButtonAttributes
-  : AnchorAttributes;
+  ? ButtonPrimitiveButtonProps
+  : ButtonPrimitiveAnchorProps;
