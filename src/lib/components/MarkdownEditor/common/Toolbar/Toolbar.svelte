@@ -3,6 +3,7 @@
 <script lang="ts">
   import { Icon } from "$lib/components/index.js";
   import { getFirstElement, getSiblingElement } from "$lib/utils";
+  import { DEFAULT_SHORTCUTS } from "../DefaultActions/shortcuts.js";
   import {
     ACTION_BUTTON_CSS_CLASS_NAME,
     ActionButton,
@@ -21,7 +22,6 @@
     onkeydown: onkeydownProp,
     ...rest
   }: ToolbarProps = $props();
-  let containerWidth = $state<number>();
   let selectedAction = $state<HTMLButtonElement>();
 
   /**
@@ -104,106 +104,37 @@
   {...rest}
 >
   {#if !noDefaultActions}
-    <Group bind:containerWidth>
-      <ActionButton
-        label="Heading"
-        shortcut="ctrl+alt+1"
-        callback={(textarea) => {
-          // TODO: temporary placeholder, to be replaced with an action management system
-          textarea.focus();
-          document.execCommand("insertText", false, "# ");
-        }}
-      >
+    <Group>
+      <ActionButton shortcut={DEFAULT_SHORTCUTS.h1}>
         <Icon name="heading" />
       </ActionButton>
-      <ActionButton
-        label="Bold"
-        shortcut="ctrl+b"
-        callback={(textarea) => {
-          // TODO: temporary placeholder, to be replaced with an action management system
-          textarea.focus();
-          document.execCommand("insertText", false, "**");
-        }}
-      >
+      <ActionButton shortcut={DEFAULT_SHORTCUTS.bold}>
         <Icon name="bold" />
       </ActionButton>
-      <ActionButton
-        label="Italic"
-        shortcut="ctrl+i"
-        callback={(textarea) => {
-          // TODO: temporary placeholder, to be replaced with an action management system
-          textarea.focus();
-          document.execCommand("insertText", false, "*");
-        }}
-      >
+      <ActionButton shortcut={DEFAULT_SHORTCUTS.italic}>
         <Icon name="italic" />
       </ActionButton>
     </Group>
     <Group>
-      <ActionButton
-        label="Quote"
-        shortcut="ctrl+shift+0"
-        callback={(textarea) => {
-          // TODO: temporary placeholder, to be replaced with an action management system
-          textarea.focus();
-          document.execCommand("insertText", false, "> ");
-        }}
-      >
+      <ActionButton shortcut={DEFAULT_SHORTCUTS.quote}>
         <Icon name="quote" />
       </ActionButton>
-      <ActionButton
-        label="Code"
-        shortcut="ctrl+e"
-        callback={(textarea) => {
-          // TODO: temporary placeholder, to be replaced with an action management system
-          textarea.focus();
-          document.execCommand("insertText", false, "`");
-        }}
-      >
+      <ActionButton shortcut={DEFAULT_SHORTCUTS.code}>
         <Icon name="code" />
       </ActionButton>
-      <ActionButton
-        label="Insert Link"
-        shortcut="ctrl+k"
-        callback={(textarea) => {
-          // TODO: temporary placeholder, to be replaced with an action management system
-          textarea.focus();
-          document.execCommand("insertText", false, "[");
-        }}
-      >
+      <ActionButton shortcut={DEFAULT_SHORTCUTS.insertLink}>
         <Icon name="get-link" />
       </ActionButton>
-      <ActionButton
-        label="Unordered List"
-        shortcut="ctrl+shift+8"
-        callback={(textarea) => {
-          // TODO: temporary placeholder, to be replaced with an action management system
-          textarea.focus();
-          document.execCommand("insertText", false, "- ");
-        }}
-      >
+      <ActionButton shortcut={DEFAULT_SHORTCUTS.unorderedList}>
         <Icon name="bulleted-list" />
       </ActionButton>
-      <ActionButton
-        label="Numbered List"
-        shortcut="ctrl+shift+7"
-        callback={(textarea) => {
-          // TODO: temporary placeholder, to be replaced with an action management system
-          textarea.focus();
-          document.execCommand("insertText", false, "1. ");
-        }}
-      >
+      <ActionButton shortcut={DEFAULT_SHORTCUTS.numberedList}>
         <Icon name="numbered-list" />
       </ActionButton>
-      <ActionButton
-        label="Task List"
-        shortcut="ctrl+shift+9"
-        callback={(textarea) => {
-          // TODO: temporary placeholder, to be replaced with an action management system
-          textarea.focus();
-          document.execCommand("insertText", false, "- [ ] ");
-        }}
-      >
+      <ActionButton shortcut={DEFAULT_SHORTCUTS.numberedList}>
+        <Icon name="numbered-list" />
+      </ActionButton>
+      <ActionButton shortcut={DEFAULT_SHORTCUTS.taskList}>
         <Icon name="task-list" />
       </ActionButton>
     </Group>

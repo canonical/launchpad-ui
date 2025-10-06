@@ -1,6 +1,7 @@
 /* @canonical/generator-ds 0.10.0-experimental.3 */
 
 import type { SvelteHTMLElements } from "svelte/elements";
+import type { Shortcut } from "$lib/shortcut";
 
 export type MarkdownEditorToolbarContext = {
   /**
@@ -30,3 +31,9 @@ export interface ToolbarProps extends BaseProps {
    */
   noDefaultActions?: boolean;
 }
+
+export type ActionShortcut = {
+  label: string;
+  shortcut: Shortcut;
+  callback: (textarea: HTMLTextAreaElement) => void;
+};

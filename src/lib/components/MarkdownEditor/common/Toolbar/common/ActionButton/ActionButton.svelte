@@ -2,10 +2,9 @@
 
 <script lang="ts">
   import { onMount, untrack } from "svelte";
+  import { getMarkdownEditorContext } from "$lib/components/MarkdownEditor/context.js";
   import { Button, Spinner, Tooltip } from "$lib/components/index.js";
-  import { match, parse } from "$lib/shortcut";
   import { useIsMounted } from "$lib/useIsMounted.svelte.js";
-  import { getMarkdownEditorContext } from "../../../../context.js";
   import { getMarkdownEditorToolbarContext } from "../../context.js";
   import { ACTION_BUTTON_CSS_CLASS_NAME } from "./constant.js";
   import type { ActionButtonProps } from "./types.js";
@@ -15,24 +14,39 @@
   let {
     class: className,
     onfocus: onfocusProp,
-    label,
+    onclick: onclickProp,
     children,
     shortcut,
-    callback,
     modifiers,
     loading,
-    ...rest
+    ...unionProps
   }: ActionButtonProps = $props();
 
+  // extract the label from the props or the shortcut
+  const actionLabel = $derived(
+    "label" in unionProps
+      ? unionProps.label
+      : shortcut?.label
+        ? shortcut.label
+        : "",
+  );
+  const rest = $derived({ ...unionProps, label: undefined });
+
   let actionElement = $state<HTMLButtonElement>();
-  const markdownEditorContext = getMarkdownEditorContext();
   const markdownEditorToolbarContext = getMarkdownEditorToolbarContext();
+  const markdownEditorContext = getMarkdownEditorContext();
   const mounted = useIsMounted();
 
   const onfocus: typeof onfocusProp = (event) => {
     onfocusProp?.(event);
     if (!markdownEditorToolbarContext || !actionElement) return;
     markdownEditorToolbarContext.selectedAction = actionElement;
+  };
+
+  const onclick: typeof onclickProp = (event) => {
+    onclickProp?.(event);
+    if (!markdownEditorContext?.textareaElement || !actionElement) return;
+    shortcut?.callback(markdownEditorContext.textareaElement);
   };
 
   const isInTabOrder = $derived(
@@ -55,34 +69,6 @@
       markdownEditorToolbarContext?.notifyActionButtonChange();
     };
   });
-
-  const handleTextareaKeyDown = (event: KeyboardEvent) => {
-    if (shortcut && match(event, shortcut)) {
-      event.preventDefault();
-      event.stopPropagation();
-      handleCallback();
-    }
-  };
-  // listen to the textarea keydown event
-  $effect(() => {
-    if (shortcut && markdownEditorContext?.textareaElement) {
-      markdownEditorContext.textareaElement.addEventListener(
-        "keydown",
-        handleTextareaKeyDown,
-      );
-    }
-    return () => {
-      markdownEditorContext?.textareaElement?.removeEventListener(
-        "keydown",
-        handleTextareaKeyDown,
-      );
-    };
-  });
-
-  const handleCallback = () => {
-    if (!markdownEditorContext?.textareaElement) return;
-    callback?.(markdownEditorContext.textareaElement);
-  };
 </script>
 
 <Tooltip>
@@ -92,10 +78,10 @@
       class={[componentCssClassName, className]}
       tabindex={isInTabOrder ? 0 : -1}
       modifiers={{ density: "dense", severity: "base", ...(modifiers || {}) }}
+      {onclick}
       {onfocus}
       {disabled}
-      onclick={handleCallback}
-      aria-label={label}
+      aria-label={actionLabel}
       {loading}
       {...triggerProps}
       {...rest}
@@ -109,11 +95,6 @@
       {/snippet}
     </Button>
   {/snippet}
-  {`${label}${
-    shortcut
-      ? ` (${parse(shortcut)
-          .map((m) => m.charAt(0).toUpperCase() + m.slice(1))
-          .join(" + ")})`
-      : ""
-  }`}
+  <!-- TODO:  extract the shortcut label into a separate component (waiting for Enzo's design) -->
+  {`${actionLabel}${shortcut ? ` (${shortcut.toHumanReadable()})` : ""}`}
 </Tooltip>

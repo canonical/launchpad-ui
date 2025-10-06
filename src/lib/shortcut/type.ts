@@ -1,4 +1,4 @@
-import type { Key, MacModifier, StandardModifier } from "./constants";
+import type { Key, MacModifier, Modifier, StandardModifier } from "./constants";
 
 type OneModShortcut<M extends string> = `${M}+${Key}`;
 type TwoModShortcut<
@@ -7,6 +7,7 @@ type TwoModShortcut<
 > = `${M1}+${M2}+${Key}`;
 
 export type ShortcutExpression<M1 extends string, M2 extends string> =
+  | Key
   | OneModShortcut<M1>
   | TwoModShortcut<M1, M2>;
 
@@ -19,11 +20,6 @@ export type MacShortcut = ShortcutExpression<
   Exclude<MacModifier, "cmd">
 >;
 
-export type Shortcut =
-  | StandardShortcut
-  | MacShortcut
-  | [StandardShortcut, MacShortcut];
-
 export type StandardShortcutPart = Key | StandardModifier;
 export type MacShortcutPart = Key | MacModifier;
 
@@ -35,11 +31,6 @@ export type MatchOptions = {
   exact?: boolean;
 };
 
-export type ParsedShortcut = {
-  wants: {
-    ctrl: boolean;
-    alt: boolean;
-    shift: boolean;
-  };
-  key: Key;
-};
+export type ParsedShortcut = [...Modifier[], Key];
+
+export type ShortcutCallback<T extends HTMLElement> = (element: T) => void;

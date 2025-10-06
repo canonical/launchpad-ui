@@ -2,11 +2,4 @@
 
 import type { SvelteHTMLElements } from "svelte/elements";
 
-export type GroupProps = SvelteHTMLElements["div"] & {
-  /**
-   * The width of the container.
-   *
-   * **@bindable**
-   */
-  containerWidth?: number;
-};
+export type GroupProps = SvelteHTMLElements["div"];
