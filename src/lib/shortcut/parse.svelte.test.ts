@@ -26,7 +26,11 @@ describe("shortcut utils > parse", () => {
 
   it("uses explicit mac override when provided (mac)", async () => {
     isMac = true;
-    expect(parse("ctrl+alt+z|cmd+option+x")).toEqual(["cmd", "option", "x"]);
+    expect(parse(["ctrl+alt+z", "cmd+option+x"])).toEqual([
+      "cmd",
+      "option",
+      "x",
+    ]);
   });
 
   it("falls back to standard mapping when mac override is absent (mac)", async () => {
@@ -36,7 +40,7 @@ describe("shortcut utils > parse", () => {
 
   it("ignores mac override on non-mac", async () => {
     isMac = false;
-    expect(parse("ctrl+alt+z|cmd+option+x")).toEqual(["ctrl", "alt", "z"]);
+    expect(parse(["ctrl+alt+z", "cmd+option+x"])).toEqual(["ctrl", "alt", "z"]);
   });
 
   it("throws when key is missing", async () => {
@@ -47,7 +51,7 @@ describe("shortcut utils > parse", () => {
 
   it("throws when mac override is missing key on mac", async () => {
     isMac = true;
-    expect(() => parse("ctrl+k|cmd+" as unknown as Shortcut)).toThrowError(
+    expect(() => parse(["ctrl+k", "cmd+"] as unknown as Shortcut)).toThrowError(
       /Invalid shortcut, missing mac key/i,
     );
   });

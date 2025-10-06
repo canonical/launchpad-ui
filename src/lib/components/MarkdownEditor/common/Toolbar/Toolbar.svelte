@@ -107,7 +107,7 @@
     <Group bind:containerWidth>
       <ActionButton
         label="Heading"
-        shortcut="ctrl+shift+1|cmd+option+1"
+        shortcut="ctrl+alt+1"
         callback={(textarea) => {
           // TODO: temporary placeholder, to be replaced with an action management system
           textarea.focus();

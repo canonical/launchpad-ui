@@ -16,32 +16,27 @@ export function match(
 
   const parsed = parse(shortcut);
   const wants = {
-    ctrl: parsed.includes("ctrl"),
-    alt: parsed.includes("alt"),
+    ctrl: parsed.includes("ctrl") || (isMac() && parsed.includes("cmd")),
+    alt: parsed.includes("alt") || (isMac() && parsed.includes("option")),
     shift: parsed.includes("shift"),
-    cmd: parsed.includes("cmd"),
-    option: parsed.includes("option"),
   };
 
   // We consider ctrl as cmd on mac
   // which means two keys can trigger the cmd key.
   // Mac ctrl key is not a common in shortcuts.
   const event = {
-    ctrl: !isMac() && e.ctrlKey,
-    cmd: isMac() && (e.metaKey || e.ctrlKey),
+    ctrl: isMac() ? e.metaKey || e.ctrlKey : e.ctrlKey,
     alt: e.altKey,
     shift: e.shiftKey,
-    option: e.altKey,
-    key: normalizeEventKey(e.code),
   };
+
+  const key = normalizeEventKey(e.code);
 
   const mismatch = [
     wants.ctrl && !event.ctrl,
     wants.alt && !event.alt,
     wants.shift && !event.shift,
-    wants.cmd && !event.cmd,
-    wants.option && !event.option,
-    parsed.at(-1) !== event.key,
+    parsed.at(-1) !== key,
   ].some(Boolean);
 
   if (mismatch) return false;
@@ -54,8 +49,6 @@ export function match(
     event.ctrl && !wants.ctrl,
     event.alt && !wants.alt,
     event.shift && !wants.shift,
-    event.cmd && !wants.cmd,
-    event.option && !wants.option,
   ].some(Boolean);
 
   return !hasExtraMods;

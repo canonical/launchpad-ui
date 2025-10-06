@@ -60,6 +60,36 @@ describe("shortcut utils > match", () => {
       ctrlKey: true,
     });
 
-    expect(match(ev, "ctrl+k|cmd+l")).toBe(false);
+    expect(match(ev, ["ctrl+k", "cmd+l"])).toBe(false);
+  });
+
+  it("cmd matches ctrl shortcuts on mac", async () => {
+    isMac = true;
+    const ev = new KeyboardEvent("keydown", {
+      code: "KeyA",
+      ctrlKey: true,
+    });
+
+    expect(match(ev, "ctrl+a")).toBe(true);
+  });
+
+  it("option matches alt shortcuts on mac", async () => {
+    isMac = true;
+    const ev = new KeyboardEvent("keydown", {
+      altKey: true,
+      ctrlKey: true,
+      code: "KeyA",
+    });
+    expect(match(ev, "ctrl+alt+a")).toBe(true);
+  });
+
+  it("shift matches shift shortcuts on mac", async () => {
+    isMac = true;
+    const ev = new KeyboardEvent("keydown", {
+      code: "KeyA",
+      shiftKey: true,
+      ctrlKey: true,
+    });
+    expect(match(ev, "ctrl+shift+a")).toBe(true);
   });
 });

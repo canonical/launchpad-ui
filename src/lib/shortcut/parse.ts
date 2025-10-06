@@ -19,11 +19,9 @@ import type {
  * Parse a shortcut into a flat list of modifiers and key to be formatted as wished.
  */
 export function parse(shortcut: Shortcut): [...Modifier[], Key] {
-  const shortcuts = shortcut.split("|");
-  const [standard, mac] = shortcuts as [
-    StandardShortcut,
-    MacShortcut | undefined,
-  ];
+  const [standard, mac] = Array.isArray(shortcut)
+    ? shortcut
+    : ([shortcut, undefined] as [StandardShortcut, MacShortcut | undefined]);
   const standardParts = standard
     .split("+")
     .filter(Boolean) as StandardShortcutPart[];

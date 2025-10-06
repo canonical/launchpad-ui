@@ -18,9 +18,11 @@ export type MacShortcut = ShortcutExpression<
   "cmd",
   Exclude<MacModifier, "cmd">
 >;
-export type ShortcutWithMac = `${StandardShortcut}|${MacShortcut}`;
 
-export type Shortcut = StandardShortcut | MacShortcut | ShortcutWithMac;
+export type Shortcut =
+  | StandardShortcut
+  | MacShortcut
+  | [StandardShortcut, MacShortcut];
 
 export type StandardShortcutPart = Key | StandardModifier;
 export type MacShortcutPart = Key | MacModifier;
