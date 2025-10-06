@@ -27,6 +27,11 @@
       },
       shortcut: {
         control: "text",
+        table: {
+          type: {
+            summary: "string",
+          },
+        },
       },
       ...modifiersControl(buttonModifiers),
     },
