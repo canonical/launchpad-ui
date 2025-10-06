@@ -2,7 +2,7 @@
 
 <script lang="ts">
   import { onMount, untrack } from "svelte";
-  import { Button, Tooltip } from "$lib/components/index.js";
+  import { Button, Spinner, Tooltip } from "$lib/components/index.js";
   import { match, parse } from "$lib/shortcut";
   import { useIsMounted } from "$lib/useIsMounted.svelte.js";
   import { getMarkdownEditorContext } from "../../../../context.js";
@@ -20,6 +20,7 @@
     shortcut,
     callback,
     modifiers,
+    loading,
     ...rest
   }: ActionButtonProps = $props();
 
@@ -95,11 +96,16 @@
       {disabled}
       onclick={handleCallback}
       aria-label={label}
+      {loading}
       {...triggerProps}
       {...rest}
     >
       {#snippet iconLeft()}
-        {@render children()}
+        {#if loading}
+          <Spinner />
+        {:else}
+          {@render children()}
+        {/if}
       {/snippet}
     </Button>
   {/snippet}
