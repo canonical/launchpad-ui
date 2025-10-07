@@ -5,6 +5,7 @@
   import { getMarkdownEditorContext } from "$lib/components/MarkdownEditor/context.js";
   import { Button, Spinner, Tooltip } from "$lib/components/index.js";
   import { useIsMounted } from "$lib/useIsMounted.svelte.js";
+  import { assertDefined } from "$lib/utils/assert.js";
   import { getMarkdownEditorToolbarContext } from "../../context.js";
   import { ACTION_BUTTON_CSS_CLASS_NAME } from "./constant.js";
   import type { ActionButtonProps } from "./types.js";
@@ -19,18 +20,15 @@
     shortcut,
     modifiers,
     loading,
-    ...unionProps
+    label,
+    ...rest
   }: ActionButtonProps = $props();
 
-  // extract the label from the props or the shortcut
-  const actionLabel = $derived(
-    "label" in unionProps
-      ? unionProps.label
-      : shortcut?.label
-        ? shortcut.label
-        : "",
-  );
-  const rest = $derived({ ...unionProps, label: undefined });
+  const actionLabel = $derived.by(() => {
+    const actionLabel = label ? label : shortcut?.label;
+    assertDefined(actionLabel, "Action label is required");
+    return actionLabel;
+  });
 
   let actionElement = $state<HTMLButtonElement>();
   const markdownEditorToolbarContext = getMarkdownEditorToolbarContext();
@@ -81,6 +79,7 @@
       {onclick}
       {onfocus}
       {disabled}
+      aria-keyshortcuts={shortcut?.toAriaLabel()}
       aria-label={actionLabel}
       {loading}
       {...triggerProps}

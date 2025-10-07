@@ -7,13 +7,6 @@
     title: "components/MarkdownEditor/Toolbar/Group",
     tags: ["autodocs"],
     component: MarkdownEditor.Toolbar.Group,
-    argTypes: {
-      containerWidth: {
-        table: {
-          disable: true,
-        },
-      },
-    },
   });
 </script>
 

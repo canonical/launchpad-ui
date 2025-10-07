@@ -18,7 +18,6 @@
   const markdownEditorContext = getMarkdownEditorContext();
 
   const shortcutsManager = $derived(markdownEditorContext?.shortcutsManager);
-  $inspect(shortcutsManager);
   const { targetAttachment } = $derived(
     shortcutsManager
       ? useShortcutsManager(() => shortcutsManager)
