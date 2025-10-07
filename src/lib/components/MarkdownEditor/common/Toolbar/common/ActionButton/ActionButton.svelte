@@ -79,9 +79,9 @@
       {onclick}
       {onfocus}
       {disabled}
+      {loading}
       aria-keyshortcuts={shortcut?.toAriaLabel()}
       aria-label={actionLabel}
-      {loading}
       {...triggerProps}
       {...rest}
     >

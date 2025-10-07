@@ -25,12 +25,7 @@
         },
       },
       shortcut: {
-        control: "text",
-        table: {
-          type: {
-            summary: "string",
-          },
-        },
+        control: false,
       },
       ...modifiersControl(buttonModifiers),
     },
