@@ -30,14 +30,3 @@
     {@render children()}
   </div>
 </ButtonPrimitive>
-
-<!-- @component
-`ButtonItem` [FIXME] (placeholder) A reusable UI component that renders content in a div container.
-
-## Example Usage
-```svelte
-<ButtonItem class="custom-class" id="unique-id">
-  <p>Content goes here</p>
-</ButtonItem>
-```
--->

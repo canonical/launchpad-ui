@@ -38,7 +38,7 @@
   {@render expandToggle?.({
     "aria-expanded": expanded,
     "aria-controls": navId,
-    "aria-label": expanded ? "Collapse menu" : "Expand menu",
+    "aria-label": expanded ? "Collapse navigation" : "Expand navigation",
   })}
   {#if expanded}
     <nav
@@ -59,13 +59,63 @@
 </header>
 
 <!-- @component
-`Desktop` [FIXME] (placeholder) A reusable UI component that renders content in a div container.
+`SideNavigation` is the primary navigation component containing links to navigate between different sections of an application. The component can be expanded or collapsed (depending on the `expanded` prop).
+
+The component has two sections:
+- main navigation area (children) - it is hidden when component is collapsed;
+- footer area (footer) - if component is collapsed, only icons are shown.
 
 ## Example Usage
 ```svelte
-<Desktop class="custom-class" id="unique-id">
-  <p>Content goes here</p>
-</Desktop>
+<script lang="ts">
+  let expanded = $state(true);
+</script>
+
+<SideNavigation {expanded}>
+  {#snippet logo()}
+    <a href="/" aria-label="Home">
+      <Logo />
+    </a>
+  {/snippet}
+  {#snippet expandToggle(toggleProps)}
+    <SideNavigation.ExpandToggle
+      {...toggleProps}
+      onclick={() => (expanded = !expanded)}
+    />
+  {/snippet}
+  <SideNavigation.LinkItem href="/dashboard">
+    {#snippet icon()}
+      <Icon name="dashboard" />
+    {/snippet}
+    Dashboard
+  </SideNavigation.LinkItem>
+  <SideNavigation.LinkItem href="/projects">
+    {#snippet icon()}
+      <Icon name="folder" />
+    {/snippet}
+    Projects
+  </SideNavigation.LinkItem>
+  {#snippet footer()}
+    <SideNavigation.ButtonItem onclick={doSomething}>
+      {#snippet icon()}
+        <Icon name="color-palette" />
+      {/snippet}
+      Theme
+    </SideNavigation.ButtonItem>
+    <SideNavigation.LinkItem href="/profile">
+      {#snippet icon()}
+        <Icon name="user" />
+      {/snippet}
+      John Doe
+    </SideNavigation.LinkItem>
+    <SideNavigation.ButtonItem onclick={doSomethingElse}>
+      {#snippet icon()}
+        <Icon name="log-out" />
+      {/snippet}
+      Logout
+    </SideNavigation.ButtonItem>
+  {/snippet}
+</SideNavigation>
 ```
 -->
 

@@ -18,14 +18,3 @@
 >
   <Icon name="expand-right" class="expand-icon" />
 </ButtonPrimitive>
-
-<!-- @component
-`ExpandToggle` [FIXME] (placeholder) A reusable UI component that renders content in a div container.
-
-## Example Usage
-```svelte
-<ExpandToggle class="custom-class" id="unique-id">
-  <p>Content goes here</p>
-</ExpandToggle>
-```
--->
