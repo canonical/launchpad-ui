@@ -1,5 +1,6 @@
 .ds.navigation-item {
   display: grid;
+  position: relative;
   grid-column: 1 / -1;
 
   --border-style-button: none;
@@ -8,6 +9,15 @@
   --dimension-padding-block-button: var(--tmp-dimension-spacing-block-xxs);
   --dimension-padding-inline-start-button-label: var(
     --tmp-dimension-spacing-inline-xs
+  );
+  --color-background-button-selected: var(
+    --tmp-color-background-neutral-active
+  );
+  --dimension-width-button-selected-indicator: var(
+    --dimension-stroke-thickness-large
+  );
+  --color-background-button-selected-indicator: var(
+    --tmp-color-border-highlight
   );
 
   grid-template-columns: subgrid;
@@ -24,5 +34,20 @@
     overflow: hidden;
     text-overflow: ellipsis;
     padding-inline-start: var(--dimension-padding-inline-start-button-label);
+  }
+
+  &.selected {
+    --color-background-button: var(--color-background-button-selected);
+    --color-background-button-hover: var(--color-background-button-selected);
+    --color-background-button-active: var(--color-background-button-selected);
+
+    &::before {
+      content: "";
+      position: absolute;
+      height: 100%;
+      width: var(--dimension-width-button-selected-indicator);
+      inset-inline-start: 0;
+      background-color: var(--color-background-button-selected-indicator);
+    }
   }
 }

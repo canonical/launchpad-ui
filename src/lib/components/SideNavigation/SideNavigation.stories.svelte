@@ -65,7 +65,7 @@
       {/snippet}
       {#each { length: 60 }, i (i)}
         {#if i % 2}
-          <SideNavigation.LinkItem href={`/item${i}`}>
+          <SideNavigation.LinkItem href={`/item${i}`} selected={i === 1}>
             Link Item {i}
             {#snippet icon()}
               <Icon name={icons[i % icons.length]} />
