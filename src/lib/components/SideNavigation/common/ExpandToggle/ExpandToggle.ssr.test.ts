@@ -1,28 +1,22 @@
 /* @canonical/generator-ds 0.10.0-experimental.3 */
 
 import { render } from "@canonical/svelte-ssr-test";
-import { createRawSnippet } from "svelte";
 import { describe, expect, it } from "vitest";
 import Component from "./ExpandToggle.svelte";
-import type { ExpandToggleProps } from "./types.js";
 
 describe("ExpandToggle SSR", () => {
-  const baseProps = {
-    children: createRawSnippet(() => ({
-      render: () => `<span>ExpandToggle</span>`,
-    })),
-  } satisfies ExpandToggleProps;
-
   describe("basics", () => {
     it("doesn't throw", () => {
       expect(() => {
-        render(Component, { props: { ...baseProps} });
+        render(Component);
       }).not.toThrow();
     });
 
     it("renders", () => {
-      const { window, container } = render(Component, { props: { ...baseProps } });
-      expect(container.firstElementChild).toBeInstanceOf(window.HTMLDivElement);
+      const { window, container } = render(Component);
+      expect(container.firstElementChild).toBeInstanceOf(
+        window.HTMLButtonElement,
+      );
     });
   });
 
@@ -33,7 +27,7 @@ describe("ExpandToggle SSR", () => {
       ["aria-label", "test-aria-label"],
     ])("applies %s", (attribute, expected) => {
       const { container } = render(Component, {
-        props: { [attribute]: expected, ...baseProps},
+        props: { [attribute]: expected },
       });
       expect(container.firstElementChild?.getAttribute(attribute)).toBe(
         expected,
@@ -42,10 +36,10 @@ describe("ExpandToggle SSR", () => {
 
     it("applies classes", () => {
       const { container } = render(Component, {
-        props: { class: "test-class", ...baseProps },
+        props: { class: "test-class" },
       });
       const classes = ["test-class"];
-      classes.push("ds", "expand-toggle");
+      classes.push("ds", "side-navigation-expand-toggle");
 
       for (const className of classes) {
         expect(container.firstElementChild?.classList).toContain(className);

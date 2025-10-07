@@ -6,23 +6,40 @@ import { render } from "vitest-browser-svelte";
 import Component from "./ButtonItem.svelte";
 
 describe("ButtonItem component", () => {
-  it("renders", async () => {
-    const children = createRawSnippet(() => ({
-      render: () => `ButtonItem`,
-    }));
+  const children = createRawSnippet(() => ({
+    render: () => `<span>ButtonItem</span>`,
+  }));
 
+  it("renders", async () => {
     const page = render(Component, { children });
-    const element = page.getByText("ButtonItem");
-    await expect.element(element).toBeInTheDocument();
+    await expect.element(page.getByRole("button")).toBeInTheDocument();
   });
 
-  it("applies class", async () => {
-    const children = createRawSnippet(() => ({
-      render: () => `ButtonItem`,
-    }));
+  describe("Basic attributes", () => {
+    it("applies id", async () => {
+      const page = render(Component, {
+        id: "test-id",
+        children,
+      });
+      await expect
+        .element(page.getByRole("button"))
+        .toHaveAttribute("id", "test-id");
+    });
 
-    const page = render(Component, { children, class: "test-class" });
-    const element = page.getByText("ButtonItem");
-    await expect.element(element).toHaveClass("test-class");
+    it("applies style", async () => {
+      const page = render(Component, {
+        style: "color: red;",
+        children,
+      });
+      await expect.element(page.getByRole("button")).toHaveStyle("color: red;");
+    });
+
+    it("applies class", async () => {
+      const page = render(Component, {
+        class: "test-class",
+        children,
+      });
+      await expect.element(page.getByRole("button")).toHaveClass("test-class");
+    });
   });
 });

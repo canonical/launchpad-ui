@@ -6,23 +6,43 @@ import { render } from "vitest-browser-svelte";
 import Component from "./LinkItem.svelte";
 
 describe("LinkItem component", () => {
-  it("renders", async () => {
-    const children = createRawSnippet(() => ({
-      render: () => `LinkItem`,
-    }));
+  const baseProps = {
+    href: "#",
+    children: createRawSnippet(() => ({
+      render: () => `<span>LinkItem</span>`,
+    })),
+  };
 
-    const page = render(Component, { children });
-    const element = page.getByText("LinkItem");
-    await expect.element(element).toBeInTheDocument();
+  it("renders", async () => {
+    const page = render(Component, baseProps);
+    await expect.element(page.getByRole("link")).toBeInTheDocument();
   });
 
-  it("applies class", async () => {
-    const children = createRawSnippet(() => ({
-      render: () => `LinkItem`,
-    }));
+  describe("Basic attributes", () => {
+    it("applies id", async () => {
+      const page = render(Component, {
+        id: "test-id",
+        ...baseProps,
+      });
+      await expect
+        .element(page.getByRole("link"))
+        .toHaveAttribute("id", "test-id");
+    });
 
-    const page = render(Component, { children, class: "test-class" });
-    const element = page.getByText("LinkItem");
-    await expect.element(element).toHaveClass("test-class");
+    it("applies style", async () => {
+      const page = render(Component, {
+        style: "color: red;",
+        ...baseProps,
+      });
+      await expect.element(page.getByRole("link")).toHaveStyle("color: red;");
+    });
+
+    it("applies class", async () => {
+      const page = render(Component, {
+        class: "test-class",
+        ...baseProps,
+      });
+      await expect.element(page.getByRole("link")).toHaveClass("test-class");
+    });
   });
 });

@@ -16,13 +16,17 @@ describe("ButtonItem SSR", () => {
   describe("basics", () => {
     it("doesn't throw", () => {
       expect(() => {
-        render(Component, { props: { ...baseProps} });
+        render(Component, { props: { ...baseProps } });
       }).not.toThrow();
     });
 
     it("renders", () => {
-      const { window, container } = render(Component, { props: { ...baseProps } });
-      expect(container.firstElementChild).toBeInstanceOf(window.HTMLDivElement);
+      const { window, container } = render(Component, {
+        props: { ...baseProps },
+      });
+      expect(container.firstElementChild).toBeInstanceOf(
+        window.HTMLButtonElement,
+      );
     });
   });
 
@@ -33,7 +37,7 @@ describe("ButtonItem SSR", () => {
       ["aria-label", "test-aria-label"],
     ])("applies %s", (attribute, expected) => {
       const { container } = render(Component, {
-        props: { [attribute]: expected, ...baseProps},
+        props: { [attribute]: expected, ...baseProps },
       });
       expect(container.firstElementChild?.getAttribute(attribute)).toBe(
         expected,
@@ -45,7 +49,7 @@ describe("ButtonItem SSR", () => {
         props: { class: "test-class", ...baseProps },
       });
       const classes = ["test-class"];
-      classes.push("ds", "button-item");
+      classes.push("ds", "navigation-button-item", "navigation-item");
 
       for (const className of classes) {
         expect(container.firstElementChild?.classList).toContain(className);

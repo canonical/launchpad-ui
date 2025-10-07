@@ -152,7 +152,7 @@ The component has two sections:
 
     position: sticky;
     top: 0;
-    height: 100svh;
+    height: 100dvh;
     display: grid;
     overflow: hidden;
     font: var(--typography-side-navigation);

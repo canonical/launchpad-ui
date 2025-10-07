@@ -3,7 +3,7 @@
 import type { Snippet } from "svelte";
 import type { SvelteHTMLElements } from "svelte/elements";
 
-type ExpandToggleProps = {
+export type ExpandToggleProps = {
   "aria-expanded": boolean;
   "aria-controls": string;
   "aria-label": string;
@@ -36,4 +36,8 @@ export interface SideNavigationProps extends BaseProps {
    * @default true
    */
   expanded?: boolean;
+  /**
+   * Main page navigation items.
+   */
+  children: Snippet<[]>;
 }
