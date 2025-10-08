@@ -31,9 +31,3 @@ export interface ToolbarProps extends BaseProps {
    */
   noDefaultActions?: boolean;
 }
-
-export type ActionShortcut = {
-  label: string;
-  shortcut: Shortcut;
-  callback: (textarea: HTMLTextAreaElement) => void;
-};

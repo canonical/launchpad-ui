@@ -6,19 +6,13 @@ type TwoModShortcut<
   M2 extends string,
 > = `${M1}+${M2}+${Key}`;
 
-export type ShortcutExpression<M1 extends string, M2 extends string> =
+export type ShortcutExpression<M1 extends string, M2 extends string = M1> =
   | Key
   | OneModShortcut<M1>
   | TwoModShortcut<M1, M2>;
 
-export type StandardShortcut = ShortcutExpression<
-  "ctrl",
-  Exclude<StandardModifier, "ctrl">
->;
-export type MacShortcut = ShortcutExpression<
-  "cmd",
-  Exclude<MacModifier, "cmd">
->;
+export type StandardShortcut = ShortcutExpression<StandardModifier>;
+export type MacShortcut = ShortcutExpression<MacModifier>;
 
 export type StandardShortcutPart = Key | StandardModifier;
 export type MacShortcutPart = Key | MacModifier;

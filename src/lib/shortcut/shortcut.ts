@@ -1,6 +1,11 @@
-import { assertDefined } from "$lib/utils";
+import { assert, assertDefined } from "$lib/utils";
 import type { Key, MacModifier, Modifier, StandardModifier } from "./constants";
-import { CODE_KEY_MAP, MAC_MODIFIERS, STANDARD_MODIFIERS } from "./constants";
+import {
+  CODE_KEY_MAP,
+  KEYS,
+  MAC_MODIFIERS,
+  STANDARD_MODIFIERS,
+} from "./constants";
 import type {
   MacShortcut,
   MacShortcutPart,
@@ -107,43 +112,34 @@ export class Shortcut<T extends HTMLElement = HTMLElement> {
       .split("+")
       .filter(Boolean) as StandardShortcutPart[];
     const standardMods = standardParts.filter((p) =>
-      STANDARD_MODIFIERS.includes(p as StandardModifier),
-    ) as StandardModifier[];
-
-    const key = standardParts.find(
-      (p) => !STANDARD_MODIFIERS.includes(p as StandardModifier),
-    ) as Key;
+      Shortcut.isStandardModifier(p),
+    );
+    const key = standardParts.at(-1);
     assertDefined(
       key,
       `Invalid shortcut, missing key ${this._standardShortcut}`,
     );
+    assert(Shortcut.isKey(key), `Invalid shortcut, invalid key ${key}`);
 
-    if (!Shortcut.isMac()) return [...standardMods, key];
+    if (!Shortcut.isMacPlatform()) return [...standardMods, key];
 
     const macParts =
       this._macShortcut &&
       (this._macShortcut.split("+").filter(Boolean) as MacShortcutPart[]);
-    const macMods = macParts
-      ? (macParts.filter((p) =>
-          MAC_MODIFIERS.includes(p as MacModifier),
-        ) as MacModifier[])
-      : standardMods.map((m) => {
-          switch (m) {
-            case "ctrl":
-              return "cmd";
-            case "alt":
-              return "option";
-            case "shift":
-              return "shift";
-          }
-        });
-    const macKey = macParts
-      ? (macParts.find((p) => !MAC_MODIFIERS.includes(p as MacModifier)) as Key)
-      : key;
 
+    if (!macParts) {
+      return [...Shortcut.remapStandardModsToMacMods(standardMods), key];
+    }
+
+    const macMods = macParts.filter((p) => Shortcut.isMacModifier(p));
+    const macKey = macParts.at(-1);
     assertDefined(
       macKey,
       `Invalid shortcut, missing mac key ${this._macShortcut}`,
+    );
+    assert(
+      Shortcut.isKey(macKey),
+      `Invalid shortcut, invalid mac key ${macKey}`,
     );
 
     return [...macMods, macKey];
@@ -167,10 +163,10 @@ export class Shortcut<T extends HTMLElement = HTMLElement> {
     const wants = {
       ctrl:
         this.shortcut.includes("ctrl") ||
-        (Shortcut.isMac() && this.shortcut.includes("cmd")),
+        (Shortcut.isMacPlatform() && this.shortcut.includes("cmd")),
       alt:
         this.shortcut.includes("alt") ||
-        (Shortcut.isMac() && this.shortcut.includes("option")),
+        (Shortcut.isMacPlatform() && this.shortcut.includes("option")),
       shift: this.shortcut.includes("shift"),
     };
 
@@ -178,7 +174,7 @@ export class Shortcut<T extends HTMLElement = HTMLElement> {
     // which means two keys can trigger the cmd key.
     // Mac ctrl key is not a common in shortcuts.
     const event = {
-      ctrl: Shortcut.isMac() ? e.metaKey || e.ctrlKey : e.ctrlKey,
+      ctrl: Shortcut.isMacPlatform() ? e.metaKey || e.ctrlKey : e.ctrlKey,
       alt: e.altKey,
       shift: e.shiftKey,
     };
@@ -186,12 +182,11 @@ export class Shortcut<T extends HTMLElement = HTMLElement> {
     const key = Shortcut.normalizeEventKey(e.code);
     if (!key) return false;
 
-    const mismatch = [
-      wants.ctrl && !event.ctrl,
-      wants.alt && !event.alt,
-      wants.shift && !event.shift,
-      this.shortcut.at(-1) !== key,
-    ].some(Boolean);
+    const mismatch =
+      (wants.ctrl && !event.ctrl) ||
+      (wants.alt && !event.alt) ||
+      (wants.shift && !event.shift) ||
+      this.shortcut.at(-1) !== key;
 
     if (mismatch) return false;
 
@@ -199,11 +194,10 @@ export class Shortcut<T extends HTMLElement = HTMLElement> {
 
     // When exact is true, disqualify if there are extra modifiers beyond what is required.
     // Example: shortcut wants only ctrl, but event has ctrl+shift → should not match.
-    const hasExtraMods = [
-      event.ctrl && !wants.ctrl,
-      event.alt && !wants.alt,
-      event.shift && !wants.shift,
-    ].some(Boolean);
+    const hasExtraMods =
+      (event.ctrl && !wants.ctrl) ||
+      (event.alt && !wants.alt) ||
+      (event.shift && !wants.shift);
 
     return !hasExtraMods;
   }
@@ -213,10 +207,37 @@ export class Shortcut<T extends HTMLElement = HTMLElement> {
    * @returns False if the platform is not mac or Mac but
    * during SSR and then true once loaded in the browser.
    */
-  private static isMac() {
+  private static isMacPlatform() {
     return (
       typeof navigator !== "undefined" &&
       /Mac|iPod|iPhone|iPad/.test(navigator.platform)
     );
+  }
+
+  private static isKey(key: string): key is Key {
+    return KEYS.includes(key as Key);
+  }
+
+  private static isStandardModifier(key: string): key is StandardModifier {
+    return STANDARD_MODIFIERS.includes(key as StandardModifier);
+  }
+
+  private static isMacModifier(key: string): key is MacModifier {
+    return MAC_MODIFIERS.includes(key as MacModifier);
+  }
+
+  private static remapStandardModsToMacMods(
+    mods: StandardModifier[],
+  ): MacModifier[] {
+    return mods.map((m) => {
+      switch (m) {
+        case "ctrl":
+          return "cmd";
+        case "alt":
+          return "option";
+        case "shift":
+          return "shift";
+      }
+    });
   }
 }

@@ -107,81 +107,17 @@ describe("Markdown Editor > Toolbar > Action button component", () => {
     expect(setSelectedAction).toHaveBeenCalledWith(buttonEl);
   });
 
-  // TODO: it("tab index is -1 if the action button is disabled and is in tab order")
-  describe("action interactions", () => {
-    // it("calls callback on shortcut", async () => {
-    //   const callback = vitest.fn();
-    //   render(Component, {
-    //     label: "ActionButton",
-    //     children: createRawSnippet(() => ({
-    //       render: () => `<span>ActionButton</span>`,
-    //     })),
-    //     shortcut: "ctrl+shift+b",
-    //     callback,
-    //   });
-
-    //   markdownCtx.textareaElement.dispatchEvent(
-    //     new KeyboardEvent("keydown", {
-    //       code: "KeyB",
-    //     }),
-    //   );
-    //   // no callback should be called as the shortcut does not match
-    //   expect(callback).toHaveBeenCalledTimes(0);
-
-    //   markdownCtx.textareaElement.dispatchEvent(
-    //     new KeyboardEvent("keydown", {
-    //       code: "KeyB",
-    //       shiftKey: true,
-    //       ctrlKey: true,
-    //     }),
-    //   );
-    //   expect(callback).toHaveBeenCalledTimes(1);
-    //   expect(callback).toHaveBeenCalledWith(markdownCtx.textareaElement);
-    // });
-
-    // it("calls callback on click when onclick is not provided", async () => {
-    //   const callback = vitest.fn();
-    //   const page = render(Component, {
-    //     label: "ActionButton",
-    //     children: createRawSnippet(() => ({
-    //       render: () => `<span>ActionButton</span>`,
-    //     })),
-    //     callback,
-    //   });
-    //   const button = page.getByRole("button");
-    //   await button.click();
-    //   expect(callback).toHaveBeenCalledTimes(1);
-    //   expect(callback).toHaveBeenCalledWith(markdownCtx.textareaElement);
-    // });
-
-    // it("doesn't call callback on click when onclick is provided", async () => {
-    //   const callback = vitest.fn();
-    //   const onclick = vitest.fn();
-    //   const page = render(Component, {
-    //     label: "ActionButton",
-    //     children: createRawSnippet(() => ({
-    //       render: () => `<span>ActionButton</span>`,
-    //     })),
-    //     callback,
-    //     onclick,
-    //   });
-    //   const button = page.getByRole("button");
-    //   await button.click();
-    //   expect(callback).toHaveBeenCalledTimes(0);
-    //   expect(onclick).toHaveBeenCalledTimes(1);
-    // });
-
-    it("shows tooltip", async () => {
-      const label = "ActionButton";
-      const page = render(Component, {
-        label,
-        children: createRawSnippet(() => ({
-          render: () => `<span>ActionButton</span>`,
-        })),
-      });
-      const tooltip = page.getByRole("tooltip", { includeHidden: true });
-      await expect.element(tooltip).toBeInTheDocument();
-      await expect.element(tooltip).toHaveTextContent(label);
+  it("shows tooltip with label", async () => {
+    const label = "ActionButton";
+    const page = render(Component, {
+      label,
+      children: createRawSnippet(() => ({
+        render: () => `<span>ActionButton</span>`,
+      })),
     });
+    const tooltip = page.getByRole("tooltip", { includeHidden: true });
+    await expect.element(tooltip).toBeInTheDocument();
+    await expect.element(tooltip).toHaveTextContent(label);
   });
+  // TODO: it("tab index is -1 if the action button is disabled and is in tab order")
 });

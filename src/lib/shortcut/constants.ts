@@ -83,10 +83,6 @@ export const PUNCTUATIONS = [
   "~",
   "`",
   "|",
-  "=",
-  "+",
-  "-",
-  "_",
   "*",
   "\\",
   "{",
@@ -101,7 +97,13 @@ export const PUNCTUATIONS = [
 
 export type Punctuation = (typeof PUNCTUATIONS)[number];
 
-export type Key = NamedKey | Letter | Digit | Punctuation;
+export const KEYS = [
+  ...NAMED_KEYS,
+  ...LETTERS,
+  ...DIGITS,
+  ...PUNCTUATIONS,
+] as const;
+export type Key = (typeof KEYS)[number];
 
 /**
  * This is an important mapping, we cannot depend on `e.key` for normalization.
@@ -169,14 +171,10 @@ export const CODE_KEY_MAP = {
   Numpad8: "8",
   Numpad9: "9",
   NumpadMultiply: "*",
-  NumpadAdd: "+",
-  NumpadSubtract: "-",
   NumpadDecimal: ".",
   NumpadDivide: "/",
   Semicolon: ";",
-  Equal: "=",
   Comma: ",",
-  Minus: "-",
   Period: ".",
   Slash: "/",
   Backquote: "`",

@@ -17,13 +17,13 @@ describe("Markdown Editor > Toolbar > ActionButton SSR", () => {
   describe("basics", () => {
     it("doesn't throw", () => {
       expect(() => {
-        render(Component, { props: { ...baseProps } as ActionButtonProps });
+        render(Component, { props: { ...baseProps } });
       }).not.toThrow();
     });
 
     it("renders", () => {
       const { window, container } = render(Component, {
-        props: { ...baseProps } as ActionButtonProps,
+        props: { ...baseProps },
       });
       expect(container.firstElementChild).toBeInstanceOf(
         window.HTMLButtonElement,

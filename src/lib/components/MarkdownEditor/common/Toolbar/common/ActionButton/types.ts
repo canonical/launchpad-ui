@@ -15,7 +15,7 @@ export type ActionButtonProps = Omit<
   /**
    * The label to show for the action
    */
-  label?: string;
+  label: string;
 
   /**
    * The shortcut to run for the action, this will be attached to the textarea keydown event.

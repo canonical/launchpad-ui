@@ -27,19 +27,19 @@
       shortcut: {
         control: false,
       },
+      children: {
+        control: false,
+      },
       ...modifiersControl(buttonModifiers),
     },
   });
 </script>
 
-<Story name="Default">
+<Story name="Default" args={{ label: "Bold" }}>
   {#snippet template({ children, ...args })}
     <MarkdownEditor>
       <MarkdownEditor.Toolbar>
-        <MarkdownEditor.Toolbar.ActionButton
-          label={"label" in args ? args.label : "Bold"}
-          {...args}
-        >
+        <MarkdownEditor.Toolbar.ActionButton {...args}>
           {#if children}
             {@render children()}
           {:else}

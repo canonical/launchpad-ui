@@ -147,7 +147,7 @@ describe("Shortcut class > parse", () => {
           "Label",
           noop,
         ),
-    ).toThrowError(/Invalid shortcut, missing key/i);
+    ).toThrowError(/Invalid shortcut, invalid key ctrl/i);
   });
 
   it("throws when mac override is missing key on mac", () => {
@@ -155,7 +155,7 @@ describe("Shortcut class > parse", () => {
     expect(
       () =>
         new Shortcut("ctrl+k", "cmd+" as unknown as MacShortcut, "Label", noop),
-    ).toThrowError(/Invalid shortcut, missing mac key/i);
+    ).toThrowError(/Invalid shortcut, invalid mac key cmd/i);
   });
 });
 
