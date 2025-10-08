@@ -2,10 +2,10 @@
 
 <script lang="ts">
   import { ButtonPrimitive } from "$lib/components/common/index.js";
-  import type { LinkItemProps } from "./types.js";
-  import "../item.css";
+  import type { ButtonItemProps } from "./types.js";
+  import "./styles.css";
 
-  const componentCssClassName = "ds navigation-link-item navigation-item";
+  const componentCssClassName = "ds navigation-button-item navigation-item";
 
   let {
     class: className,
@@ -13,13 +13,13 @@
     icon,
     selected,
     ...rest
-  }: LinkItemProps = $props();
+  }: ButtonItemProps = $props();
 
   const labelId = $props.id();
 </script>
 
 <ButtonPrimitive
-  as="a"
+  as="button"
   class={[componentCssClassName, className, { selected }]}
   aria-labelledby={labelId}
   {...rest}

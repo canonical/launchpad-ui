@@ -1,4 +1,4 @@
-.ds.navigation-item {
+.ds.navigation-button-item {
   display: grid;
   position: relative;
   grid-column: 1 / -1;
