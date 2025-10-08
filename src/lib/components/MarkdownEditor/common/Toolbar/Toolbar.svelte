@@ -3,7 +3,7 @@
 <script lang="ts">
   import { Icon } from "$lib/components/index.js";
   import { getFirstElement, getSiblingElement } from "$lib/utils";
-  import { DEFAULT_SHORTCUTS } from "../DefaultActions/shortcuts.js";
+  import { getMarkdownEditorContext } from "../../context.js";
   import {
     ACTION_BUTTON_CSS_CLASS_NAME,
     ActionButton,
@@ -11,6 +11,7 @@
   } from "./common/index.js";
   import { setMarkdownEditorToolbarContext } from "./context.js";
   import type { ToolbarProps } from "./types.js";
+  import { createDefaultShortcuts } from "./utils/shortcuts.js";
 
   const componentCssClassName = "ds markdown-editor-toolbar";
 
@@ -93,6 +94,11 @@
   $effect(() => {
     selectDefaultAction();
   });
+
+  const markdownEditorContext = getMarkdownEditorContext();
+  const defaultShortcuts = createDefaultShortcuts(
+    () => markdownEditorContext?.textareaElement,
+  );
 </script>
 
 <div
@@ -105,36 +111,45 @@
 >
   {#if !noDefaultActions}
     <Group>
-      <ActionButton shortcut={DEFAULT_SHORTCUTS.h1}>
+      <ActionButton shortcut={defaultShortcuts.h1} label="Add heading 1">
         <Icon name="heading" />
       </ActionButton>
-      <ActionButton shortcut={DEFAULT_SHORTCUTS.bold}>
+      <ActionButton shortcut={defaultShortcuts.bold} label="Add bold">
         <Icon name="bold" />
       </ActionButton>
-      <ActionButton shortcut={DEFAULT_SHORTCUTS.italic}>
+      <ActionButton shortcut={defaultShortcuts.italic} label="Add italic">
         <Icon name="italic" />
       </ActionButton>
     </Group>
     <Group>
-      <ActionButton shortcut={DEFAULT_SHORTCUTS.quote}>
+      <ActionButton shortcut={defaultShortcuts.quote} label="Add quote">
         <Icon name="quote" />
       </ActionButton>
-      <ActionButton shortcut={DEFAULT_SHORTCUTS.code}>
+      <ActionButton shortcut={defaultShortcuts.code} label="Add code">
         <Icon name="code" />
       </ActionButton>
-      <ActionButton shortcut={DEFAULT_SHORTCUTS.insertLink}>
+      <ActionButton shortcut={defaultShortcuts.insertLink} label="Add link">
         <Icon name="get-link" />
       </ActionButton>
-      <ActionButton shortcut={DEFAULT_SHORTCUTS.unorderedList}>
+      <ActionButton
+        shortcut={defaultShortcuts.unorderedList}
+        label="Add bullet list"
+      >
         <Icon name="bulleted-list" />
       </ActionButton>
-      <ActionButton shortcut={DEFAULT_SHORTCUTS.numberedList}>
+      <ActionButton
+        shortcut={defaultShortcuts.numberedList}
+        label="Add numbered list"
+      >
         <Icon name="numbered-list" />
       </ActionButton>
-      <ActionButton shortcut={DEFAULT_SHORTCUTS.numberedList}>
+      <ActionButton
+        shortcut={defaultShortcuts.numberedList}
+        label="Add numbered list"
+      >
         <Icon name="numbered-list" />
       </ActionButton>
-      <ActionButton shortcut={DEFAULT_SHORTCUTS.taskList}>
+      <ActionButton shortcut={defaultShortcuts.taskList} label="Add task list">
         <Icon name="task-list" />
       </ActionButton>
     </Group>

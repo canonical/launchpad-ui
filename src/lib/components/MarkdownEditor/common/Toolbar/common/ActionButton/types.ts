@@ -1,7 +1,7 @@
 /* @canonical/generator-ds 0.10.0-experimental.3 */
 import type { Snippet } from "svelte";
-import type { ButtonProps } from "$lib/components";
-import type { Shortcut } from "$lib/shortcut";
+import type { ButtonProps } from "$lib/components/Button/index.js";
+import type { Shortcut } from "$lib/shortcuts/index.js";
 
 export type ActionButtonProps = Omit<
   ButtonProps,
@@ -18,7 +18,7 @@ export type ActionButtonProps = Omit<
   label: string;
 
   /**
-   * The shortcut to run for the action, this will be attached to the textarea keydown event.
+   * The shortcut associated with the action.
    */
-  shortcut?: Shortcut<HTMLTextAreaElement>;
+  shortcut?: Shortcut;
 };
