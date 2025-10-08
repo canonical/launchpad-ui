@@ -100,5 +100,6 @@ If needed, you may control the popover imperatively by calling `showPopover`, `h
   .ds.popover {
     border: 0;
     inset: auto;
+    background-color: transparent;
   }
 </style>
