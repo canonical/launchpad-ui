@@ -2,7 +2,7 @@
 
 <script lang="ts">
   import { Icon } from "$lib/components/index.js";
-  import { getFirstElement, getSiblingElement } from "$lib/utils";
+  import { getFirstElement, getSiblingElement } from "$lib/utils/index.js";
   import { getMarkdownEditorContext } from "../../context.js";
   import {
     ACTION_BUTTON_CSS_CLASS_NAME,
