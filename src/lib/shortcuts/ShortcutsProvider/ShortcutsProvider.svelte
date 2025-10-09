@@ -6,9 +6,9 @@
 
   const cssComponentClassName = "ds shortcuts-provider";
 
-  let { children }: ShortcutsProviderProps = $props();
+  let { children, ignoreIfTyping = false }: ShortcutsProviderProps = $props();
 
-  const { onkeydown } = useShortcutProvider();
+  const { onkeydown } = useShortcutProvider(() => ignoreIfTyping);
 </script>
 
 <!-- 
@@ -28,6 +28,8 @@
 
 <!-- @component
  `ShortcutsProvider` is a component that provides keyboard shortcut functionality to its children. It listens for keyboard events and triggers the corresponding actions defined in the shortcuts.
+
+ This provider **does not** ignore keyboard events when the target element is an input, textarea or select by default. This behavior can be customized using the `ignoreIfTyping` prop.
 
  ## Example Usage
  ```svelte

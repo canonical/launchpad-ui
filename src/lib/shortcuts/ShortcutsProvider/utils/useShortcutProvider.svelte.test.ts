@@ -25,7 +25,7 @@ describe("useShortcutProvider", () => {
 
   describe("context", () => {
     it("sets the shortcuts context", () => {
-      useShortcutProvider();
+      useShortcutProvider(() => false);
       expect(setShortcutsContextMock).toHaveBeenCalledTimes(1);
       expect(context).toBeDefined();
       expect(context?.shortcuts).toEqual([]);
@@ -33,7 +33,7 @@ describe("useShortcutProvider", () => {
     });
 
     it("registers and unregisters shortcuts", () => {
-      useShortcutProvider();
+      useShortcutProvider(() => false);
       const shortcut1 = new Shortcut("a", "label", () => {});
       const shortcut2 = new Shortcut("b", "label", () => {});
 
@@ -47,7 +47,7 @@ describe("useShortcutProvider", () => {
 
   describe("onkeydown", () => {
     it("checks each shortcuts' matches method against the event", () => {
-      const { onkeydown } = useShortcutProvider();
+      const { onkeydown } = useShortcutProvider(() => false);
       const shortcut1 = new Shortcut("a", "label", () => {});
       const shortcut2 = new Shortcut("b", "label", () => {});
       context?.registerShortcuts(shortcut1, shortcut2);
@@ -63,7 +63,7 @@ describe("useShortcutProvider", () => {
     });
 
     it("calls the callback of the matching shortcut", () => {
-      const { onkeydown } = useShortcutProvider();
+      const { onkeydown } = useShortcutProvider(() => false);
       const callback1 = vi.fn();
       const callback2 = vi.fn();
       const shortcut1 = new Shortcut("a", "label", callback1);
@@ -78,7 +78,7 @@ describe("useShortcutProvider", () => {
     });
 
     it("stops propagation and prevents default if specified in options", () => {
-      const { onkeydown } = useShortcutProvider();
+      const { onkeydown } = useShortcutProvider(() => false);
       const callback = vi.fn();
       const shortcut = new Shortcut("a", "label", callback, {
         preventDefault: true,
@@ -95,6 +95,67 @@ describe("useShortcutProvider", () => {
       expect(callback).toHaveBeenCalledWith(event);
       expect(stopPropagationSpy).toHaveBeenCalled();
       expect(preventDefaultSpy).toHaveBeenCalled();
+    });
+  });
+
+  describe("ignoreIfTyping", () => {
+    it("doesn't trigger shortcuts if ignoreIfTyping returns true and the event target is an input, textarea or select", () => {
+      const callback = vi.fn();
+
+      const { onkeydown } = useShortcutProvider(() => true);
+      context?.registerShortcuts(new Shortcut("a", "label", callback));
+
+      const ignoredElements = [
+        document.createElement("input"),
+        document.createElement("textarea"),
+        document.createElement("select"),
+      ];
+
+      ignoredElements.forEach((element) => {
+        const event = new KeyboardEvent("keydown", { code: "KeyA" });
+
+        Object.defineProperty(event, "target", {
+          value: element,
+        });
+
+        onkeydown(event);
+      });
+
+      expect(callback).not.toHaveBeenCalled();
+
+      const elementThatShouldTrigger = document.createElement("div");
+      const event = new KeyboardEvent("keydown", { code: "KeyA" });
+      Object.defineProperty(event, "target", {
+        value: elementThatShouldTrigger,
+      });
+      onkeydown(event);
+      expect(callback).toHaveBeenCalledOnce();
+    });
+
+    it("triggers shortcuts if ignoreIfTyping returns false, regardless of the event target", () => {
+      const callback = vi.fn();
+
+      const { onkeydown } = useShortcutProvider(() => false);
+      context?.registerShortcuts(new Shortcut("a", "label", callback));
+
+      const elements = [
+        document.createElement("input"),
+        document.createElement("textarea"),
+        document.createElement("select"),
+        document.createElement("div"),
+      ];
+
+      elements.forEach((element) => {
+        const event = new KeyboardEvent("keydown", { code: "KeyA" });
+
+        Object.defineProperty(event, "target", {
+          value: element,
+        });
+
+        onkeydown(event);
+      });
+
+      expect(callback).toHaveBeenCalledTimes(elements.length);
     });
   });
 });
