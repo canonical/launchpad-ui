@@ -1,5 +1,5 @@
 import { SvelteSet } from "svelte/reactivity";
-import { Shortcut } from "../../Shortcut.svelte.js";
+import type { Shortcut } from "../../Shortcut.svelte.js";
 import { setShortcutsContext } from "../context.js";
 
 export function useShortcutProvider() {
