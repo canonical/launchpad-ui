@@ -12,7 +12,9 @@
     tags: ["autodocs"],
     component: ShortcutsHelpModal,
   });
+</script>
 
+<script lang="ts">
   let modalMethods = $state<ShortcutsHelpModalMethods>();
 
   const localShortcuts = [
@@ -31,6 +33,24 @@
 
 <Story name="Default">
   {#snippet template(args)}
+    <!-- 
+      <script lang="ts">
+        let modalMethods = $state<ShortcutsHelpModalMethods>();
+
+        const localShortcuts = [
+          new Shortcut("ctrl+s", "Save Document", () => {}),
+          new Shortcut("ctrl+o", "Open Document", () => {}),
+        ];
+
+        const globalShortcuts = [
+          new Shortcut("ctrl+/", "Show Shortcuts Help", () => {
+            modalMethods?.showModal();
+          }),
+          new Shortcut("ctrl+q", "Quit Application", () => {}),
+          new Shortcut("ctrl+w", "Close Window", () => {}),
+      ];
+      </script>
+    -->
     <GlobalShortcutsProvider>
       <UseShortcuts shortcuts={globalShortcuts} />
       <ShortcutsHelpModal bind:this={modalMethods} {...args} />
