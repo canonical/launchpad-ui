@@ -4,7 +4,7 @@
   import type { ShortcutsProviderProps } from "./types.js";
   import { useShortcutProvider } from "./utils/useShortcutProvider.svelte.js";
 
-  const cssComponentClassName = "ds shortcut-shortcuts-provider";
+  const cssComponentClassName = "ds shortcuts-provider";
 
   let { children }: ShortcutsProviderProps = $props();
 
@@ -17,7 +17,12 @@
   2. The attachment approach would not work well with multiple children.
 -->
 <!-- svelte-ignore a11y_no_static_element_interactions -->
-<div class={cssComponentClassName} style="display: contents;" {onkeydown}>
+<div
+  class={cssComponentClassName}
+  data-testid="shortcuts-provider"
+  style="display: contents;"
+  {onkeydown}
+>
   {@render children()}
 </div>
 
