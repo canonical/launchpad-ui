@@ -3,6 +3,7 @@
 <script lang="ts">
   import { onMount, untrack } from "svelte";
   import { Button, Tooltip } from "$lib/components/index.js";
+  import { useShortcuts } from "$lib/shortcuts/index.js";
   import { useIsMounted } from "$lib/useIsMounted.svelte.js";
   import { getMarkdownEditorToolbarContext } from "../../context.js";
   import { ACTION_BUTTON_CSS_CLASS_NAME } from "./constant.js";
@@ -50,6 +51,8 @@
       markdownEditorToolbarContext?.notifyActionButtonChange();
     };
   });
+
+  useShortcuts(() => shortcut);
 </script>
 
 <Tooltip>

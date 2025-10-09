@@ -1,8 +1,13 @@
 <!-- @canonical/generator-ds 0.10.0-experimental.3 -->
 
 <script lang="ts">
-  import { Shortcut, ShortcutsManager } from "$lib/shortcut/index.js";
-  import { DEFAULT_SHORTCUTS, HelpModal } from "./common/index.js";
+  import { ShortcutsHelpModal } from "$lib/components/ShortcutsHelpModal/index.js";
+  import type { ShortcutsHelpModalMethods } from "$lib/components/ShortcutsHelpModal/index.js";
+  import {
+    ShortcutsProvider,
+    UseShortcuts,
+  } from "$lib/shortcuts/ShortcutsProvider/index.js";
+  import { Shortcut } from "$lib/shortcuts/index.js";
   import { setMarkdownEditorContext } from "./context.js";
   import type { MarkdownEditorProps } from "./types.js";
 
@@ -11,11 +16,6 @@
   let { class: className, children, ...rest }: MarkdownEditorProps = $props();
 
   let textareaElement = $state<HTMLTextAreaElement>();
-  let shortcuts = $state<Shortcut<HTMLTextAreaElement>[]>([
-    ...Object.values(DEFAULT_SHORTCUTS),
-  ]);
-  let shortcutsManager = $derived(new ShortcutsManager(shortcuts));
-
   setMarkdownEditorContext({
     get textareaElement() {
       return textareaElement;
@@ -23,28 +23,26 @@
     set textareaElement(value) {
       textareaElement = value;
     },
+  });
 
-    get shortcuts() {
-      return shortcuts;
-    },
-    set shortcuts(value) {
-      shortcuts = value;
-    },
+  let modalMethods = $state<ShortcutsHelpModalMethods>();
 
-    get shortcutsManager() {
-      return shortcutsManager;
-    },
+  const helpShortcut = new Shortcut("ctrl+/", "Show Shortcuts Help", () => {
+    modalMethods?.showModal();
   });
 </script>
 
-<div
-  class={[componentCssClassName, className]}
-  data-testid="markdown-editor"
-  {...rest}
->
-  {@render children?.()}
-  <HelpModal />
-</div>
+<ShortcutsProvider>
+  <UseShortcuts shortcuts={helpShortcut} />
+  <ShortcutsHelpModal bind:this={modalMethods} />
+  <div
+    class={[componentCssClassName, className]}
+    data-testid="markdown-editor"
+    {...rest}
+  >
+    {@render children?.()}
+  </div>
+</ShortcutsProvider>
 
 <style>
   .ds.markdown-editor {

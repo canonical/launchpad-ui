@@ -36,15 +36,11 @@
 </script>
 
 <Story name="Default" args={{ label: "Bold" }}>
-  {#snippet template({ children, ...args })}
+  {#snippet template({ children: _, ...args })}
     <MarkdownEditor>
       <MarkdownEditor.Toolbar>
         <MarkdownEditor.Toolbar.ActionButton {...args}>
-          {#if children}
-            {@render children()}
-          {:else}
-            <Icon name="bold" />
-          {/if}
+          <Icon name="bold" />
         </MarkdownEditor.Toolbar.ActionButton>
       </MarkdownEditor.Toolbar>
     </MarkdownEditor>

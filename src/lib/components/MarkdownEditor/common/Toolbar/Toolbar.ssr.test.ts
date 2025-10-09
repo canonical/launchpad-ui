@@ -2,9 +2,18 @@
 
 import { render } from "@canonical/svelte-ssr-test";
 import { createRawSnippet } from "svelte";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import Component from "./Toolbar.svelte";
 import type { ToolbarProps } from "./types.js";
+
+vi.mock("$lib/shortcuts/index.js", async (importActual) => {
+  const actual = await importActual<typeof import("$lib/shortcuts/index.js")>();
+  return {
+    ...actual,
+    // Mock so we don't get errors about `useShortcuts` being called outside of a provider
+    useShortcuts: vi.fn(),
+  };
+});
 
 describe("Markdown Editor > Toolbar SSR", () => {
   const baseProps = {

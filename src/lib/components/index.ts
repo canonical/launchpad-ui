@@ -13,6 +13,7 @@ export * from "./ModalContent/index.js";
 export * from "./MulticolorIcon/index.js";
 export * from "./Popover/index.js";
 export * from "./Radio/index.js";
+export * from "./ShortcutsHelpModal/index.js";
 export * from "./Spinner/index.js";
 export * from "./Switch/index.js";
 export * from "./TabList/index.js";
