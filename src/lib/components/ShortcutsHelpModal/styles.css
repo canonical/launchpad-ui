@@ -1,0 +1,61 @@
+/* TODO: this is a temporary header alternative to ModalContent.Header
+  which doesn't have a sticky header and doesn't allow for multi row header
+  */
+.ds.shortcuts-help-modal {
+  --dimension-margin-block-shortcuts-help-modal-section: var(
+    --tmp-dimension-spacing-block-xxl
+  );
+  --dimension-margin-block-shortcuts-help-modal-section-items: var(
+    --tmp-dimension-spacing-block-m
+  );
+  --typography-shortcuts-help-modal-dt: var(--tmp-typography-paragraph-xs);
+  --typography-shortcuts-help-modal-dd: var(--tmp-typography-paragraph-xs);
+
+  > .modal-content {
+    padding-block-start: 0;
+    > .modal-content-header {
+      position: sticky;
+      top: 0;
+      flex-direction: column;
+      background-color: var(--color-background-modal-content);
+      > .title {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-block: var(--dimension-padding-inline-modal-content);
+      }
+    }
+  }
+  .body {
+    > section {
+      &:not(:last-child) {
+        margin-block-end: var(
+          --dimension-margin-block-shortcuts-help-modal-section-items
+        );
+      }
+      dl {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: var(--dimension-margin-block-shortcuts-help-modal-section-items);
+        margin-block: var(
+          --dimension-margin-block-shortcuts-help-modal-section-items
+        );
+        white-space: pre-line;
+
+        dt {
+          text-align: left;
+          text-wrap: nowrap;
+          font: var(--typography-shortcuts-help-modal-dt);
+        }
+        dd {
+          font: var(--typography-shortcuts-help-modal-dd);
+        }
+      }
+    }
+  }
+}
+
+.ds.side-panel .ds.modal-content {
+  padding-block-start: 0;
+}

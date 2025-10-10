@@ -15,7 +15,7 @@
  ## Example Usage
  ```svelte
  <ShortcutsProvider>
-   <UseShortcuts shortcuts={new Shortcut("ctrl+s", "Save Document", saveFunction)} />
+   <UseShortcuts shortcuts={new Shortcut("ctrl+s", {label: "Save Document"}, saveFunction)} />
    <YourAppComponents />
  </ShortcutsProvider>
  ```

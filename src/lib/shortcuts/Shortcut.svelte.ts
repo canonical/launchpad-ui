@@ -3,6 +3,7 @@ import type { Modifier } from "./constants";
 import type {
   MacShortcut,
   ParsedShortcut,
+  ShortcutMetadata,
   ShortcutOptions,
   StandardShortcut,
 } from "./type";
@@ -22,12 +23,12 @@ import {
  *
  * @example
  * // standard shortcut
- * const shortcut = new Shortcut("ctrl+k", "Insert Link", (event) => {
+ * const shortcut = new Shortcut("ctrl+k", {label: "Insert Link"}, (event) => {
  *   document.execCommand("insertText", false, "[");
  * });
  *
  * // shortcut with mac shortcut
- * const shortcut = new Shortcut(["ctrl+k", "cmd+option+k"], "Open modal", (event) => {
+ * const shortcut = new Shortcut(["ctrl+k", "cmd+option+k"], {label: "Open modal"}, (event) => {
  *   openModal();
  * });
  */
@@ -41,7 +42,7 @@ export class Shortcut {
 
   constructor(
     shortcut: StandardShortcut | [StandardShortcut, MacShortcut],
-    public readonly label: string,
+    public readonly metadata: ShortcutMetadata,
     public readonly callback: (event: KeyboardEvent) => void,
     options: Partial<ShortcutOptions> = {},
     enabled = true,

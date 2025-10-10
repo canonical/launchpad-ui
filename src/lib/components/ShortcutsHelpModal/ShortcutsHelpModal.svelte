@@ -1,47 +1,101 @@
 <!-- @canonical/generator-ds 0.10.0-experimental.3 -->
 
 <script lang="ts">
-  import { Modal } from "$lib/components/Modal/index.js";
-  import type { ModalMethods } from "$lib/components/Modal/index.js";
   import { ModalContent } from "$lib/components/ModalContent/index.js";
-  import { useShortcuts } from "$lib/shortcuts/index.js";
+  import { Shortcut, useShortcuts } from "$lib/shortcuts/index.js";
+  import Search from "../Combobox/common/Search/Search.svelte";
+  import type { SidePanelMethods } from "../SidePanel";
+  import { SidePanel } from "../SidePanel";
+  import "./styles.css";
   import type {
     ShortcutsHelpModalMethods,
     ShortcutsHelpModalProps,
   } from "./types.js";
 
+  const componentCssClassName = "ds shortcuts-help-modal";
   const props: ShortcutsHelpModalProps = $props();
-  let modalMethods = $state<ModalMethods>();
+  let sidePanelMethods = $state<SidePanelMethods>();
 
-  export const showModal: ShortcutsHelpModalMethods["showModal"] = () => {
-    modalMethods?.showModal();
+  export const show: ShortcutsHelpModalMethods["show"] = () => {
+    sidePanelMethods?.show();
   };
 
   export const close: ShortcutsHelpModalMethods["close"] = () => {
-    modalMethods?.close();
+    sidePanelMethods?.close();
   };
 
   const shortcuts = useShortcuts();
+  let filterQuery = $state("");
+
+  const filteredShortcuts = $derived(
+    shortcuts()
+      .filter((shortcut) => shortcut.enabled)
+      .filter(
+        (shortcut) =>
+          shortcut.metadata.label
+            .toLowerCase()
+            .includes(filterQuery.toLowerCase()) ||
+          shortcut.metadata.description
+            ?.toLowerCase()
+            .includes(filterQuery.toLowerCase()) ||
+          shortcut.metadata.category
+            ?.toLowerCase()
+            .includes(filterQuery.toLowerCase()),
+      ),
+  );
+  const defaultCategory = "General";
+
+  const groupedByCategory = $derived.by(() => {
+    const grouped: Record<string, Shortcut[]> = {};
+    for (const shortcut of filteredShortcuts) {
+      grouped[shortcut.metadata.category || defaultCategory] =
+        grouped[shortcut.metadata.category || defaultCategory] || [];
+      grouped[shortcut.metadata.category || defaultCategory].push(shortcut);
+    }
+    return grouped;
+  });
 </script>
 
-<Modal bind:this={modalMethods} {...props}>
+<SidePanel
+  bind:this={sidePanelMethods}
+  class={componentCssClassName}
+  {...props}
+>
   {#snippet children(_, close)}
     <ModalContent>
       <ModalContent.Header>
-        Shortcuts Help
-        <ModalContent.Header.CloseButton onclick={close} />
+        <div class="title">
+          Command guide
+          <ModalContent.Header.CloseButton onclick={close} />
+        </div>
+        <Search
+          label="Search shortcuts"
+          autofocus
+          placeholder="Search"
+          bind:value={filterQuery}
+        />
       </ModalContent.Header>
-      <ModalContent.Body>
-        <dl>
-          {#each shortcuts().filter((shortcut) => shortcut.enabled) as shortcut (shortcut)}
-            <dt>{shortcut.label}</dt>
-            <dd>{shortcut.toHumanReadable()}</dd>
-          {/each}
-        </dl>
+      <ModalContent.Body class="body">
+        {#each Object.entries(groupedByCategory) as [category, shortcuts] (category)}
+          <section>
+            <dl>
+              <h5>{category}</h5>
+              <h5>Shortcut</h5>
+              <h5>Description</h5>
+            </dl>
+            <dl>
+              {#each shortcuts as shortcut (shortcut.metadata.label)}
+                <dt>{shortcut.metadata.label}</dt>
+                <dd>{shortcut.toHumanReadable()}</dd>
+                <dd>{shortcut.metadata.description}</dd>
+              {/each}
+            </dl>
+          </section>
+        {/each}
       </ModalContent.Body>
     </ModalContent>
   {/snippet}
-</Modal>
+</SidePanel>
 
 <!-- @component
  `ShortcutsHelpModal` is a modal dialog that displays a list of enabled keyboard shortcuts registered in the nearest `ShortcutsProvider`.
@@ -57,19 +111,3 @@
   </ShortcutsProvider>
   ```
 -->
-
-<style>
-  dl {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-
-    dt {
-      text-align: left;
-    }
-    dd {
-      text-align: right;
-      font-family: var(--typography-font-monospace);
-    }
-  }
-</style>

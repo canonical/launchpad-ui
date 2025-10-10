@@ -62,5 +62,8 @@
   },
   "patchedDependencies": {
     "@storybook/svelte-vite@9.1.6": "patches/@storybook%2Fsvelte-vite@9.1.6.patch"
+  },
+  "dependencies": {
+    "markdown-actions": "^1.1.2"
   }
 }

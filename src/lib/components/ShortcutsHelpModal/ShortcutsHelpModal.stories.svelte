@@ -18,16 +18,16 @@
   let modalMethods = $state<ShortcutsHelpModalMethods>();
 
   const localShortcuts = [
-    new Shortcut("ctrl+s", "Save Document", () => {}),
-    new Shortcut("ctrl+o", "Open Document", () => {}),
+    new Shortcut("ctrl+s", { label: "Save Document" }, () => {}),
+    new Shortcut("ctrl+o", { label: "Open Document" }, () => {}),
   ];
 
   const globalShortcuts = [
-    new Shortcut("ctrl+/", "Show Shortcuts Help", () => {
-      modalMethods?.showModal();
+    new Shortcut("ctrl+/", { label: "Show Shortcuts Help" }, () => {
+      modalMethods?.show();
     }),
-    new Shortcut("ctrl+q", "Quit Application", () => {}),
-    new Shortcut("ctrl+w", "Close Window", () => {}),
+    new Shortcut("ctrl+q", { label: "Quit Application" }, () => {}),
+    new Shortcut("ctrl+w", { label: "Close Window" }, () => {}),
   ];
 </script>
 
@@ -38,16 +38,16 @@
         let modalMethods = $state<ShortcutsHelpModalMethods>();
 
         const localShortcuts = [
-          new Shortcut("ctrl+s", "Save Document", () => {}),
-          new Shortcut("ctrl+o", "Open Document", () => {}),
+          new Shortcut("ctrl+s", { label: "Save Document" }, () => {}),
+          new Shortcut("ctrl+o", { label: "Open Document" }, () => {}),
         ];
 
         const globalShortcuts = [
-          new Shortcut("ctrl+/", "Show Shortcuts Help", () => {
-            modalMethods?.showModal();
+          new Shortcut("ctrl+/", { label: "Show Shortcuts Help" }, () => {
+            modalMethods?.show();
           }),
-          new Shortcut("ctrl+q", "Quit Application", () => {}),
-          new Shortcut("ctrl+w", "Close Window", () => {}),
+          new Shortcut("ctrl+q", { label: "Quit Application" }, () => {}),
+          new Shortcut("ctrl+w", { label: "Close Window" }  , () => {}),
       ];
       </script>
     -->
@@ -57,8 +57,8 @@
       <ShortcutsProvider>
         <UseShortcuts shortcuts={localShortcuts} />
         <ShortcutsHelpModal {...args}>
-          {#snippet trigger(_, showModal)}
-            <Button onclick={showModal}>Open local shortcuts help</Button>
+          {#snippet trigger(_, show)}
+            <Button onclick={show}>Open local shortcuts help</Button>
           {/snippet}
         </ShortcutsHelpModal>
         or press <kbd>Ctrl</kbd>+<kbd>/</kbd> to open global shortcuts help.

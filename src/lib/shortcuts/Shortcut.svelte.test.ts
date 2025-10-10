@@ -19,9 +19,9 @@ beforeEach(() => {
 
 describe("Shortcut class > normalize (via match/event.code)", () => {
   it("maps letter/digit/punctuation codes to normalized keys", () => {
-    const s1 = new Shortcut("a", "Label", noop);
-    const s2 = new Shortcut("9", "Label", noop);
-    const s3 = new Shortcut(",", "Label", noop);
+    const s1 = new Shortcut("a", { label: "Label" }, noop);
+    const s2 = new Shortcut("9", { label: "Label" }, noop);
+    const s3 = new Shortcut(",", { label: "Label" }, noop);
 
     expect(
       s1.matches(
@@ -49,8 +49,8 @@ describe("Shortcut class > normalize (via match/event.code)", () => {
   });
 
   it("maps Escape and Space codes to normalized keys", () => {
-    const esc = new Shortcut("ctrl+escape", "Label", noop);
-    const space = new Shortcut("space", "Label", noop);
+    const esc = new Shortcut("ctrl+escape", { label: "Label" }, noop);
+    const space = new Shortcut("space", { label: "Label" }, noop);
 
     expect(
       esc.matches(
@@ -73,37 +73,50 @@ describe("Shortcut class > normalize (via match/event.code)", () => {
 
 describe("Shortcut class > parse", () => {
   it("returns modifiers and key; maps ctrl->ctrl on non-mac", () => {
-    const s = new Shortcut("ctrl+alt+z", "Label", noop);
+    const s = new Shortcut("ctrl+alt+z", { label: "Label" }, noop);
     expect(s.parsedShortcut).toEqual(["ctrl", "alt", "z"]);
   });
 
   it("maps ctrl->cmd on mac when no explicit mac override is provided", () => {
     isMac = true;
-    const s = new Shortcut("ctrl+k", "Label", noop);
+    const s = new Shortcut("ctrl+k", { label: "Label" }, noop);
     expect(s.parsedShortcut).toEqual(["cmd", "k"]);
   });
 
   it("uses explicit mac override when provided (mac)", () => {
     isMac = true;
-    const s = new Shortcut(["ctrl+alt+z", "cmd+option+x"], "Label", noop);
+    const s = new Shortcut(
+      ["ctrl+alt+z", "cmd+option+x"],
+      { label: "Label" },
+      noop,
+    );
     expect(s.parsedShortcut).toEqual(["cmd", "option", "x"]);
   });
 
   it("falls back to standard mapping when mac override is absent (mac)", () => {
     isMac = true;
-    const s = new Shortcut("ctrl+shift+k", "Label", noop);
+    const s = new Shortcut("ctrl+shift+k", { label: "Label" }, noop);
     expect(s.parsedShortcut).toEqual(["cmd", "shift", "k"]);
   });
 
   it("ignores mac override on non-mac", () => {
-    const s = new Shortcut(["ctrl+alt+z", "cmd+option+x"], "Label", noop);
+    const s = new Shortcut(
+      ["ctrl+alt+z", "cmd+option+x"],
+      { label: "Label" },
+      noop,
+    );
     expect(s.parsedShortcut).toEqual(["ctrl", "alt", "z"]);
   });
 
   it("throws when key is missing", () => {
     // parse() runs in constructor
     expect(
-      () => new Shortcut("ctrl+" as unknown as StandardShortcut, "Label", noop),
+      () =>
+        new Shortcut(
+          "ctrl+" as unknown as StandardShortcut,
+          { label: "Label" },
+          noop,
+        ),
     ).toThrowError(/Invalid shortcut, invalid key ''/i);
   });
 
@@ -113,7 +126,7 @@ describe("Shortcut class > parse", () => {
       () =>
         new Shortcut(
           ["ctrl+k", "cmd+" as unknown as MacShortcut],
-          "Label",
+          { label: "Label" },
           noop,
         ),
     ).toThrowError(/Invalid shortcut, invalid mac key ''/i);
@@ -122,7 +135,7 @@ describe("Shortcut class > parse", () => {
 
 describe("Shortcut class > match", () => {
   it("matches exact by default and rejects extra modifiers", () => {
-    const s = new Shortcut("ctrl+a", "Label", noop);
+    const s = new Shortcut("ctrl+a", { label: "Label" }, noop);
     const ev = new KeyboardEvent("keydown", {
       code: "KeyA",
       ctrlKey: true,
@@ -132,7 +145,9 @@ describe("Shortcut class > match", () => {
   });
 
   it("allows extra modifiers when exact=false", () => {
-    const s = new Shortcut("ctrl+a", "Label", noop, { exact: false });
+    const s = new Shortcut("ctrl+a", { label: "Label" }, noop, {
+      exact: false,
+    });
     const ev = new KeyboardEvent("keydown", {
       code: "KeyA",
       ctrlKey: true,
@@ -143,7 +158,7 @@ describe("Shortcut class > match", () => {
   });
 
   it("normalizes event key (Esc→escape) for matching", () => {
-    const s = new Shortcut("ctrl+escape", "Label", noop);
+    const s = new Shortcut("ctrl+escape", { label: "Label" }, noop);
     const ev = new KeyboardEvent("keydown", {
       code: "Escape",
       ctrlKey: true,
@@ -156,7 +171,7 @@ describe("Shortcut class > match", () => {
     const s = new Shortcut(
       "ctrl+k",
 
-      "Label",
+      { label: "Label" },
       noop,
     );
     const ev = new KeyboardEvent("keydown", {
@@ -168,7 +183,7 @@ describe("Shortcut class > match", () => {
 
   it("cmd matches ctrl shortcuts on mac (ctrlKey)", () => {
     isMac = true;
-    const s = new Shortcut("ctrl+a", "Label", noop);
+    const s = new Shortcut("ctrl+a", { label: "Label" }, noop);
     const ev = new KeyboardEvent("keydown", {
       code: "KeyA",
       ctrlKey: true,
@@ -178,7 +193,7 @@ describe("Shortcut class > match", () => {
 
   it("doesn't treat ctrl as cmd when a mac specific shortcut is used", () => {
     isMac = true;
-    const s = new Shortcut(["ctrl+k", "cmd+l"], "Label", noop);
+    const s = new Shortcut(["ctrl+k", "cmd+l"], { label: "Label" }, noop);
     const ev = new KeyboardEvent("keydown", {
       code: "KeyK",
       ctrlKey: true,
@@ -188,7 +203,7 @@ describe("Shortcut class > match", () => {
 
   it("option matches on mac altKey", () => {
     isMac = true;
-    const s = new Shortcut("ctrl+alt+a", "Label", noop);
+    const s = new Shortcut("ctrl+alt+a", { label: "Label" }, noop);
     const ev = new KeyboardEvent("keydown", {
       code: "KeyA",
       altKey: true,
@@ -199,7 +214,7 @@ describe("Shortcut class > match", () => {
 
   it("shift matches on mac with shiftKey", () => {
     isMac = true;
-    const s = new Shortcut("ctrl+shift+a", "Label", noop);
+    const s = new Shortcut("ctrl+shift+a", { label: "Label" }, noop);
     const ev = new KeyboardEvent("keydown", {
       code: "KeyA",
       shiftKey: true,
@@ -209,7 +224,7 @@ describe("Shortcut class > match", () => {
   });
 
   it("doesn't match when disabled", () => {
-    const s = new Shortcut("a", "Label", noop, {}, false);
+    const s = new Shortcut("a", { label: "Label" }, noop, {}, false);
     const ev = new KeyboardEvent("keydown", {
       code: "KeyA",
     });
@@ -222,7 +237,7 @@ describe("Shortcut class > match", () => {
   it("doesn't match when predicate returns false", () => {
     const s = new Shortcut(
       "a",
-      "Label",
+      { label: "Label" },
       noop,
       {
         predicate: (e) => e.repeat,

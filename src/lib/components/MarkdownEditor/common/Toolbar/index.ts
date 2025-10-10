@@ -1,8 +1,7 @@
 /* @canonical/generator-ds 0.10.0-experimental.3 */
 
 import { default as ToolbarRoot } from "./Toolbar.svelte";
-import { ActionButton, Group } from "./common/index.js";
-
+import { ActionButton, DefaultActions, Group } from "./common/index.js";
 const Toolbar = ToolbarRoot as typeof ToolbarRoot & {
   /**
    * `Toolbar.Group` groups related toolbar items together.
@@ -42,10 +41,15 @@ const Toolbar = ToolbarRoot as typeof ToolbarRoot & {
    * ```
    */
   ActionButton: typeof ActionButton;
+  /**
+   * `Toolbar.DefaultActions` is a component that renders the default actions (Heading, Bold, Italic, etc.)
+   */
+  DefaultActions: typeof DefaultActions;
 };
 
 Toolbar.Group = Group;
 Toolbar.ActionButton = ActionButton;
+Toolbar.DefaultActions = DefaultActions;
 
 export type * from "./common/index.js";
 export * from "./types.js";

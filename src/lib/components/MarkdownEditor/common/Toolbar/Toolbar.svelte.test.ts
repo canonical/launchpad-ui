@@ -15,7 +15,7 @@ vi.mock("$lib/shortcuts/index.js", async (importActual) => {
 
 describe("Markdown Editor > Toolbar component", () => {
   it("renders", async () => {
-    const page = render(Component, { noDefaultActions: true });
+    const page = render(Component, { disableDefaultActions: true });
     const element = page.getByRole("toolbar");
     await expect.element(element).toBeInTheDocument();
   });
@@ -23,7 +23,7 @@ describe("Markdown Editor > Toolbar component", () => {
   it("applies class", async () => {
     const page = render(Component, {
       class: "test-class",
-      noDefaultActions: true,
+      disableDefaultActions: true,
     });
     const element = page.getByRole("toolbar");
     await expect.element(element).toHaveClass("test-class");

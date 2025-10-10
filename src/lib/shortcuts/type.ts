@@ -50,3 +50,9 @@ export type ShortcutOptions = {
 };
 
 export type ParsedShortcut = [...Modifier[], Key];
+
+export type ShortcutMetadata = {
+  label: string;
+  description?: string;
+  category?: string;
+};

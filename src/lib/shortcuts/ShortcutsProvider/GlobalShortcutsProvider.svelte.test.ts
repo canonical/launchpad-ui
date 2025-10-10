@@ -3,7 +3,6 @@
 import { createRawSnippet } from "svelte";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { render } from "vitest-browser-svelte";
-import type { RenderResult } from "vitest-browser-svelte";
 import Component from "./GlobalShortcutsProvider.svelte";
 import type { ShortcutsProviderProps } from "./types.js";
 

@@ -34,8 +34,8 @@ describe("useShortcutProvider", () => {
 
     it("registers and unregisters shortcuts", () => {
       useShortcutProvider(() => false);
-      const shortcut1 = new Shortcut("a", "label", () => {});
-      const shortcut2 = new Shortcut("b", "label", () => {});
+      const shortcut1 = new Shortcut("a", { label: "label" }, () => {});
+      const shortcut2 = new Shortcut("b", { label: "label" }, () => {});
 
       const unregister = context?.registerShortcuts(shortcut1, shortcut2);
       expect(context?.shortcuts).toEqual([shortcut1, shortcut2]);
@@ -48,8 +48,8 @@ describe("useShortcutProvider", () => {
   describe("onkeydown", () => {
     it("checks each shortcuts' matches method against the event", () => {
       const { onkeydown } = useShortcutProvider(() => false);
-      const shortcut1 = new Shortcut("a", "label", () => {});
-      const shortcut2 = new Shortcut("b", "label", () => {});
+      const shortcut1 = new Shortcut("a", { label: "label" }, () => {});
+      const shortcut2 = new Shortcut("b", { label: "label" }, () => {});
       context?.registerShortcuts(shortcut1, shortcut2);
 
       const shortcut1MatchesSpy = vi.spyOn(shortcut1, "matches");
@@ -66,8 +66,8 @@ describe("useShortcutProvider", () => {
       const { onkeydown } = useShortcutProvider(() => false);
       const callback1 = vi.fn();
       const callback2 = vi.fn();
-      const shortcut1 = new Shortcut("a", "label", callback1);
-      const shortcut2 = new Shortcut("b", "label", callback2);
+      const shortcut1 = new Shortcut("a", { label: "label" }, callback1);
+      const shortcut2 = new Shortcut("b", { label: "label" }, callback2);
       context?.registerShortcuts(shortcut1, shortcut2);
 
       const event = new KeyboardEvent("keydown", { code: "KeyA" });
@@ -80,7 +80,7 @@ describe("useShortcutProvider", () => {
     it("stops propagation and prevents default if specified in options", () => {
       const { onkeydown } = useShortcutProvider(() => false);
       const callback = vi.fn();
-      const shortcut = new Shortcut("a", "label", callback, {
+      const shortcut = new Shortcut("a", { label: "label" }, callback, {
         preventDefault: true,
         stopPropagation: true,
       });
@@ -103,7 +103,9 @@ describe("useShortcutProvider", () => {
       const callback = vi.fn();
 
       const { onkeydown } = useShortcutProvider(() => true);
-      context?.registerShortcuts(new Shortcut("a", "label", callback));
+      context?.registerShortcuts(
+        new Shortcut("a", { label: "label" }, callback),
+      );
 
       const ignoredElements = [
         document.createElement("input"),
@@ -136,7 +138,9 @@ describe("useShortcutProvider", () => {
       const callback = vi.fn();
 
       const { onkeydown } = useShortcutProvider(() => false);
-      context?.registerShortcuts(new Shortcut("a", "label", callback));
+      context?.registerShortcuts(
+        new Shortcut("a", { label: "label" }, callback),
+      );
 
       const elements = [
         document.createElement("input"),

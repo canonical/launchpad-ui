@@ -23,10 +23,9 @@ export interface ToolbarProps extends BaseProps {
   ref?: HTMLDivElement;
 
   /**
-   * Whether to hide the default actions.
-   * TODO: this is a temporary prop, to have an empty toolbar for component testing
+   * Whether to disable the default actions (Heading, Bold, Italic, etc.)
    *
-   * @link
+   * @default false
    */
-  noDefaultActions?: boolean;
+  disableDefaultActions?: boolean;
 }

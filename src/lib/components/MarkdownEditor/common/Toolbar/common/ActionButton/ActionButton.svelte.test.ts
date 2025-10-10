@@ -7,13 +7,6 @@ import type { MarkdownEditorContext } from "$lib/components/MarkdownEditor/types
 import type { MarkdownEditorToolbarContext } from "../../types";
 import Component from "./ActionButton.svelte";
 
-vi.mock("$lib/shortcuts/index.js", () => {
-  return {
-    // Mock so we don't get errors about `useShortcuts` being called outside of a provider
-    useShortcuts: vi.fn(),
-  };
-});
-
 const { ctx, setSelectedAction, notifyActionButtonChange } = vi.hoisted(() => {
   const setSelectedAction = vi.fn();
   const notifyActionButtonChange = vi.fn();

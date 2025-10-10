@@ -27,9 +27,15 @@
 
   let modalMethods = $state<ShortcutsHelpModalMethods>();
 
-  const helpShortcut = new Shortcut("ctrl+/", "Show Shortcuts Help", () => {
-    modalMethods?.showModal();
-  });
+  const helpShortcut = new Shortcut(
+    "ctrl+/",
+    {
+      label: "Open command guide",
+    },
+    () => {
+      modalMethods?.show();
+    },
+  );
 </script>
 
 <ShortcutsProvider>

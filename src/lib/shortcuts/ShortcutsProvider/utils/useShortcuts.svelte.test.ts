@@ -59,7 +59,7 @@ describe("useShortcuts", () => {
     });
 
     it("registers and unregisters a single shortcut", () => {
-      const shortcut = new Shortcut("a", "label", () => {});
+      const shortcut = new Shortcut("a", { label: "label" }, () => {});
       const unregisterSpy = vi.fn();
       const registerShortcutsSpy = vi.fn().mockReturnValue(unregisterSpy);
       context = {
@@ -78,8 +78,8 @@ describe("useShortcuts", () => {
     });
 
     it("registers and unregisters multiple shortcuts", () => {
-      const shortcut1 = new Shortcut("a", "label", () => {});
-      const shortcut2 = new Shortcut("b", "label", () => {});
+      const shortcut1 = new Shortcut("a", { label: "label" }, () => {});
+      const shortcut2 = new Shortcut("b", { label: "label" }, () => {});
       const unregisterSpy = vi.fn();
       const registerShortcutsSpy = vi.fn().mockReturnValue(unregisterSpy);
       context = {
@@ -114,12 +114,12 @@ describe("useShortcuts", () => {
         expect(registerShortcutsSpy).not.toHaveBeenCalled();
         expect(unregisterSpy).not.toHaveBeenCalled();
 
-        shortcut = new Shortcut("a", "label", () => {});
+        shortcut = new Shortcut("a", { label: "label" }, () => {});
         flushSync();
         expect(registerShortcutsSpy).toHaveBeenCalledExactlyOnceWith(shortcut);
         expect(unregisterSpy).not.toHaveBeenCalled();
 
-        shortcut = new Shortcut("b", "label", () => {});
+        shortcut = new Shortcut("b", { label: "label" }, () => {});
         flushSync();
         expect(registerShortcutsSpy).toHaveBeenCalledTimes(2);
         expect(registerShortcutsSpy).toHaveBeenLastCalledWith(shortcut);
