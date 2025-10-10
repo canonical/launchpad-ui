@@ -84,6 +84,16 @@ describe("Textarea Auto Completions", () => {
       expect(applied).toBe(true);
       expect(ta.value).toBe("1. First\n2. ");
     });
+
+    it("triggering a continuation should keep the textarea editable", () => {
+      const ta = document.createElement("textarea");
+      ta.value = "- ";
+      ta.setSelectionRange(3, 3);
+
+      const applied = autoCompletions(ta);
+      expect(applied).toBe(true);
+      expect(ta.contentEditable).toBe("true");
+    });
   });
 
   describe("Code Block Continuation", () => {

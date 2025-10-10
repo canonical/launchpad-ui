@@ -120,7 +120,7 @@ If JavaScript is disabled, SidePanel can be controlled as a popover with declara
     box-shadow: 0 0 32px 0 rgba(0, 0, 0, 0.2);
     transform: translateX(100%);
     transition-behavior: allow-discrete;
-    transition-property: display, transform;
+    transition-property: display, transform, overlay;
     transition-duration: var(--tmp-transition-duration-fast);
 
     &:open,

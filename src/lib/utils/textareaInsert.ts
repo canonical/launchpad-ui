@@ -1,16 +1,16 @@
 let canInsertText: boolean | null = null;
 
 export type InsertTextOptions = {
-  text: string;
   selectionStart?: number;
   selectionEnd?: number;
 };
 
 export function textareaInsert(
   textarea: HTMLTextAreaElement,
-  options: InsertTextOptions,
+  text: string,
+  options?: InsertTextOptions,
 ) {
-  const { text, selectionStart, selectionEnd } = options;
+  const { selectionStart, selectionEnd } = options || {};
   const originalSelectionStart = textarea.selectionStart;
   const before = textarea.value.slice(0, originalSelectionStart);
   const after = textarea.value.slice(textarea.selectionEnd);

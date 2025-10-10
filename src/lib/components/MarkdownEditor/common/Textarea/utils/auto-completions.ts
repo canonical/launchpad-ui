@@ -46,17 +46,14 @@ function applyListContinuation(
     const lineStart = textarea.selectionStart - currentLine.line.length;
     textarea.selectionEnd = textarea.selectionStart;
     textarea.selectionStart = lineStart;
-    textareaInsert(textarea, {
-      text: "",
-    });
+    textareaInsert(textarea, "");
     return true;
   }
 
   if (isTodoList) {
     const toInsert = `\n${leadingWhitespace}- [ ] `;
     const cursorPos = textarea.selectionEnd + toInsert.length;
-    textareaInsert(textarea, {
-      text: toInsert,
+    textareaInsert(textarea, toInsert, {
       selectionEnd: cursorPos,
       selectionStart: cursorPos,
     });
@@ -64,8 +61,7 @@ function applyListContinuation(
   } else if (isUnorderedList) {
     const toInsert = `\n${leadingWhitespace}${marker} `;
     const cursorPos = textarea.selectionEnd + toInsert.length;
-    textareaInsert(textarea, {
-      text: toInsert,
+    textareaInsert(textarea, toInsert, {
       selectionEnd: cursorPos,
       selectionStart: cursorPos,
     });
@@ -75,14 +71,12 @@ function applyListContinuation(
     if (isNaN(listIndex)) return false;
     const toInsert = `\n${leadingWhitespace}${listIndex + 1}. `;
     const cursorPos = textarea.selectionEnd + toInsert.length;
-    textareaInsert(textarea, {
-      text: toInsert,
+    textareaInsert(textarea, toInsert, {
       selectionEnd: cursorPos,
       selectionStart: cursorPos,
     });
     return true;
   }
-  return false;
 }
 
 function applyCodeBlockContinuation(
@@ -104,8 +98,7 @@ function applyCodeBlockContinuation(
 
   const toInsert = `\n\n${leadingWhitespace}\`\`\``;
   const cursorPos = textarea.selectionEnd + 1;
-  textareaInsert(textarea, {
-    text: toInsert,
+  textareaInsert(textarea, toInsert, {
     selectionEnd: cursorPos,
     selectionStart: cursorPos,
   });

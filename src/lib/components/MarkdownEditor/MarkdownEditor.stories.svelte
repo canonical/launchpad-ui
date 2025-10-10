@@ -46,7 +46,11 @@
       <MarkdownEditor.Header>
         <MarkdownEditor.Toolbar />
       </MarkdownEditor.Header>
-      <MarkdownEditor.Textarea rows={5} placeholder="Start typing…" autofocus />
+      <MarkdownEditor.Textarea
+        rows={12}
+        placeholder="Start typing…"
+        autofocus
+      />
     </MarkdownEditor>
   {/snippet}
 </Story>
