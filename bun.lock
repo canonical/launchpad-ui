@@ -47,6 +47,7 @@
   },
   "patchedDependencies": {
     "@storybook/svelte-vite@9.1.6": "patches/@storybook%2Fsvelte-vite@9.1.6.patch",
+    "markdown-actions@1.1.2": "patches/markdown-actions@1.1.2.patch",
   },
   "packages": {
     "@adobe/css-tools": ["@adobe/css-tools@4.4.3", "", {}, "sha512-VQKMkwriZbaOgVCby1UDY/LDk5fIjhQicCvVPFqfe+69fWaPWydbWJ3wRt59/YzIwda1I81loas3oCoHxnqvdA=="],
