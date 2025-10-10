@@ -27,6 +27,10 @@ export const positionAreaFallbackMap = {
   "block-end span-inline-end": "bottom-start", // spans 7, 8
   "inline-start": "left", // spans 1, 4, 6
   "inline-end": "right", // spans 3, 5, 8
+  "inline-start span-block-start": "left-end", // spans 1, 4
+  "inline-start span-block-end": "left-start", // spans 4, 6
+  "inline-end span-block-start": "right-end", // spans 3, 5
+  "inline-end span-block-end": "right-start", // spans 5, 8
 } as const satisfies Record<string, Placement>;
 
 export type PositionArea = keyof typeof positionAreaFallbackMap;
@@ -78,6 +82,10 @@ export function usePositionArea(
       };
     }
 
+    const crossAxis =
+      (position.startsWith("block") && tryFallback.includes("flip-inline")) ||
+      (position.startsWith("inline") && tryFallback.includes("flip-block"));
+
     return {
       placement: positionAreaFallbackMap[position],
       middleware: [
@@ -88,13 +96,8 @@ export function usePositionArea(
               tryFallback.includes("flip-block")) ||
             (position.startsWith("inline") &&
               tryFallback.includes("flip-inline")),
-          crossAxis:
-            (position.startsWith("block") &&
-              tryFallback.includes("flip-inline")) ||
-            (position.startsWith("inline") &&
-              tryFallback.includes("flip-block")),
-          flipAlignment:
-            position.startsWith("block") && tryFallback.includes("flip-inline"),
+          crossAxis,
+          flipAlignment: crossAxis,
         }),
       ],
     };
