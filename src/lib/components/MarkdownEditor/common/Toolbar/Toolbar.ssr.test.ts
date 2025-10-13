@@ -8,10 +8,11 @@ import type { ToolbarProps } from "./types.js";
 
 vi.mock("$lib/shortcuts/index.js", async (importActual) => {
   const actual = await importActual<typeof import("$lib/shortcuts/index.js")>();
+  const useShortcuts = () => () => [];
   return {
     ...actual,
     // Mock so we don't get errors about `useShortcuts` being called outside of a provider
-    useShortcuts: vi.fn(),
+    useShortcuts,
   };
 });
 

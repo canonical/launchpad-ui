@@ -23,7 +23,7 @@
   const isMounted = useIsMounted();
   const asPopover = $derived(!isMounted.value);
 
-  export const show: SidePanelMethods["show"] = () => {
+  export const showModal: SidePanelMethods["showModal"] = () => {
     dialogRef?.showModal();
   };
 
@@ -32,7 +32,7 @@
   };
 </script>
 
-{@render trigger?.(asPopover ? id : undefined, show)}
+{@render trigger?.(asPopover ? id : undefined, showModal)}
 
 <dialog
   bind:this={dialogRef}

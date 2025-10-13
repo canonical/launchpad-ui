@@ -11,4 +11,14 @@ export type TextareaProps = BaseTextareaProps & {
    * @default false
    */
   disableAutoCompletions?: boolean;
+
+  /**
+   * The maximum number of rows the textarea can have.
+   * The textarea will grow dynamically between `rows` and `maxRows`.
+   *
+   * This can be disabled by setting it to `undefined`, the textarea will have a static rows count.
+   *
+   * @default 4 // double the default rows count (2)
+   */
+  maxRows?: number | undefined;
 };

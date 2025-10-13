@@ -24,7 +24,7 @@
   let timeLeft = $state(0);
   const onclick = () => {
     if (!sidePanel) return;
-    sidePanel.show();
+    sidePanel.showModal();
     timeLeft = 5;
     const interval = setInterval(() => {
       timeLeft -= 1;

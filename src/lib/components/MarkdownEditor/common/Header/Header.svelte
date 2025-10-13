@@ -27,8 +27,16 @@
 
 <style>
   .ds.markdown-editor-header {
+    --dimension-padding-block-markdown-editor-header: var(
+      --tmp-dimension-spacing-block-xxs
+    );
+    --dimension-padding-inline-markdown-editor-header: var(
+      --tmp-dimension-spacing-inline-xs
+    );
     display: flex;
     align-items: center;
     justify-content: space-between;
+    padding-block: var(--dimension-padding-block-markdown-editor-header);
+    padding-inline: var(--dimension-padding-inline-markdown-editor-header);
   }
 </style>

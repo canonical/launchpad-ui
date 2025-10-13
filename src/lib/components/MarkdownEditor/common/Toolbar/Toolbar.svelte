@@ -96,6 +96,7 @@
   class={[componentCssClassName, className]}
   role="toolbar"
   aria-orientation="horizontal"
+  aria-label="Markdown editor toolbar"
   {onkeydown}
   bind:this={ref}
   {...rest}

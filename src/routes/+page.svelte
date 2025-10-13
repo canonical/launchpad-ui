@@ -8,9 +8,11 @@
   documentation
 </p>
 
+<br />
+<br />
 <MarkdownEditor>
   <MarkdownEditor.Header>
     <MarkdownEditor.Toolbar />
   </MarkdownEditor.Header>
-  <MarkdownEditor.Textarea rows={15} />
+  <MarkdownEditor.Textarea />
 </MarkdownEditor>

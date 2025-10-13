@@ -4,18 +4,18 @@
   import GlobalShortcutsProvider from "$lib/shortcuts/ShortcutsProvider/GlobalShortcutsProvider.svelte";
   import ShortcutsProvider from "$lib/shortcuts/ShortcutsProvider/ShortcutsProvider.svelte";
   import { Shortcut, UseShortcuts } from "$lib/shortcuts/index.js";
-  import ShortcutsHelpModal from "./ShortcutsHelpModal.svelte";
-  import type { ShortcutsHelpModalMethods } from "./types.js";
+  import ShortcutsHelpSidePanel from "./ShortcutsHelpSidePanel.svelte";
+  import type { ShortcutsHelpSidePanelMethods } from "./types.js";
 
   const { Story } = defineMeta({
-    title: "Components/ShortcutsHelpModal",
+    title: "Components/ShortcutsHelpSidePanel",
     tags: ["autodocs"],
-    component: ShortcutsHelpModal,
+    component: ShortcutsHelpSidePanel,
   });
 </script>
 
 <script lang="ts">
-  let modalMethods = $state<ShortcutsHelpModalMethods>();
+  let modalMethods = $state<ShortcutsHelpSidePanelMethods>();
 
   const localShortcuts = [
     new Shortcut("ctrl+s", { label: "Save Document" }, () => {}),
@@ -24,7 +24,7 @@
 
   const globalShortcuts = [
     new Shortcut("ctrl+/", { label: "Show Shortcuts Help" }, () => {
-      modalMethods?.show();
+      modalMethods?.showModal();
     }),
     new Shortcut("ctrl+q", { label: "Quit Application" }, () => {}),
     new Shortcut("ctrl+w", { label: "Close Window" }, () => {}),
@@ -35,7 +35,7 @@
   {#snippet template(args)}
     <!-- 
       <script lang="ts">
-        let modalMethods = $state<ShortcutsHelpModalMethods>();
+        let modalMethods = $state<ShortcutsHelpSidePanelMethods>();
 
         const localShortcuts = [
           new Shortcut("ctrl+s", { label: "Save Document" }, () => {}),
@@ -44,7 +44,7 @@
 
         const globalShortcuts = [
           new Shortcut("ctrl+/", { label: "Show Shortcuts Help" }, () => {
-            modalMethods?.show();
+            modalMethods?.showModal();
           }),
           new Shortcut("ctrl+q", { label: "Quit Application" }, () => {}),
           new Shortcut("ctrl+w", { label: "Close Window" }  , () => {}),
@@ -53,14 +53,14 @@
     -->
     <GlobalShortcutsProvider>
       <UseShortcuts shortcuts={globalShortcuts} />
-      <ShortcutsHelpModal bind:this={modalMethods} {...args} />
+      <ShortcutsHelpSidePanel bind:this={modalMethods} {...args} />
       <ShortcutsProvider>
         <UseShortcuts shortcuts={localShortcuts} />
-        <ShortcutsHelpModal {...args}>
-          {#snippet trigger(_, show)}
-            <Button onclick={show}>Open local shortcuts help</Button>
+        <ShortcutsHelpSidePanel {...args}>
+          {#snippet trigger(_, showModal)}
+            <Button onclick={showModal}>Open local shortcuts help</Button>
           {/snippet}
-        </ShortcutsHelpModal>
+        </ShortcutsHelpSidePanel>
         or press <kbd>Ctrl</kbd>+<kbd>/</kbd> to open global shortcuts help.
       </ShortcutsProvider>
     </GlobalShortcutsProvider>

@@ -3,5 +3,5 @@
 import type { WithoutChildren } from "$lib/type-utils.js";
 import type { SidePanelMethods, SidePanelProps } from "../SidePanel";
 
-export type ShortcutsHelpModalProps = WithoutChildren<SidePanelProps>;
-export type ShortcutsHelpModalMethods = SidePanelMethods;
+export type ShortcutsHelpSidePanelProps = WithoutChildren<SidePanelProps>;
+export type ShortcutsHelpSidePanelMethods = SidePanelMethods;

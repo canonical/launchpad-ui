@@ -1,6 +1,7 @@
 <script module lang="ts">
   import { defineMeta } from "@storybook/addon-svelte-csf";
-  import { Button, Checkbox, Icon } from "../index.js";
+  import Switch from "../Switch/Switch.svelte";
+  import { Button, Icon } from "../index.js";
   import { MarkdownEditor } from "./index.js";
 
   const { Story } = defineMeta({
@@ -68,7 +69,7 @@
         <MarkdownEditor.Toolbar />
         {#snippet controls()}
           <label style="display: flex; align-items: center; gap: 8px;">
-            <Checkbox bind:checked={preview} />
+            <Switch bind:checked={preview} />
             Preview
           </label>
         {/snippet}

@@ -2,8 +2,8 @@
 
 import { createRawSnippet } from "svelte";
 import { describe, expect, it } from "vitest";
-import { render } from "vitest-browser-svelte";
 import type { RenderResult } from "vitest-browser-svelte";
+import { render } from "vitest-browser-svelte";
 import Component from "./SidePanel.svelte";
 import type { SidePanelMethods } from "./types.js";
 
@@ -106,11 +106,11 @@ describe("SidePanel component", () => {
 
       const component = page.component as unknown as SidePanelMethods;
 
-      component.show();
+      component.showModal();
       await expect.element(page.getByRole("dialog")).toHaveAttribute("open");
       await expect.element(page.getByRole("dialog")).toBeVisible();
       // Calling showModal again does nothing
-      component.show();
+      component.showModal();
       await expect.element(page.getByRole("dialog")).toHaveAttribute("open");
       await expect.element(page.getByRole("dialog")).toBeVisible();
     });
@@ -138,7 +138,7 @@ describe("SidePanel component", () => {
       await closeButton.click();
       await expect
         .element(page.getByRole("dialog", { includeHidden: true }))
-        .not.toHaveAttribute("open");
+        .not.toHaveAttribute('open=""');
     });
 
     it("is closed by close() on the component instance", async () => {

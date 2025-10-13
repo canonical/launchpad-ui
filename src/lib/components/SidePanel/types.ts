@@ -40,6 +40,6 @@ export interface SidePanelProps extends BaseProps {
 }
 
 export interface SidePanelMethods {
-  show: () => void;
+  showModal: () => void;
   close: () => void;
 }

@@ -12,7 +12,6 @@ import {
 } from "markdown-actions";
 import type { ShortcutMetadata } from "$lib/shortcuts/index.js";
 import { Shortcut } from "$lib/shortcuts/index.js";
-import { textareaInsert } from "$lib/utils";
 import { isEventTargetInElement } from "$lib/utils/isEventTargetInElement.js";
 
 export function createDefaultActions(
@@ -47,12 +46,7 @@ export function createDefaultActions(
   const insertCodeBlock = () => {
     const textarea = getTextarea();
     if (!textarea) return;
-    const cursorPos = textarea.selectionEnd + 4;
-    textareaInsert(textarea, {
-      text: "```\n\n```",
-      selectionEnd: cursorPos,
-      selectionStart: cursorPos,
-    });
+    document.execCommand("insertText", false, "```\n\n```");
   };
 
   const actionHandler =
@@ -66,7 +60,7 @@ export function createDefaultActions(
     category: "Editor",
   };
 
-  const actions = {
+  return {
     h0: new Shortcut(
       "ctrl+alt+0",
       { ...metadata, label: "Apply normal text style" },
@@ -211,20 +205,4 @@ export function createDefaultActions(
       { predicate },
     ),
   } satisfies Record<string, Shortcut>;
-
-  return Object.entries(actions).reduce(
-    (acc, [key, value]) => {
-      acc[key as keyof typeof actions] = {
-        shortcut: value,
-        handler: () => value.callback(null as unknown as KeyboardEvent),
-      };
-      return acc;
-    },
-    {} as {
-      [key in keyof typeof actions]: {
-        shortcut: Shortcut;
-        handler: () => void;
-      };
-    },
-  );
 }

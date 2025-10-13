@@ -2,93 +2,153 @@
 
 <script lang="ts">
   import { Icon } from "$lib/components/Icon/index.js";
-  import { useShortcuts } from "$lib/shortcuts";
+  import ShortcutsHelpSidePanel from "$lib/components/ShortcutsHelpSidePanel/ShortcutsHelpSidePanel.svelte";
+  import type { ShortcutsHelpSidePanelMethods } from "$lib/components/ShortcutsHelpSidePanel/types.js";
+  import { Shortcut, useShortcuts } from "$lib/shortcuts";
   import { getMarkdownEditorContext } from "../../../../context.js";
   import { ActionButton } from "../ActionButton";
   import Group from "../Group/Group.svelte";
   import { createDefaultActions } from "./constants";
 
   const markdownEditorContext = getMarkdownEditorContext();
-  const defaultShortcuts = createDefaultActions(
-    () => markdownEditorContext?.textareaElement,
+  const textareaElement = $derived(markdownEditorContext?.textareaElement);
+  const defaultShortcuts = createDefaultActions(() => textareaElement);
+
+  let modalMethods = $state<ShortcutsHelpSidePanelMethods>();
+  let textareaSelectionBeforeHelp = $state<{
+    textareaElement: HTMLTextAreaElement;
+    selectionStart: number;
+    selectionEnd: number;
+  }>();
+
+  const handleShowHelp = () => {
+    if (textareaElement && document.activeElement === textareaElement) {
+      textareaSelectionBeforeHelp = {
+        textareaElement,
+        selectionStart: textareaElement.selectionStart ?? 0,
+        selectionEnd: textareaElement.selectionEnd ?? 0,
+      };
+    } else {
+      textareaSelectionBeforeHelp = undefined;
+    }
+    modalMethods?.showModal();
+  };
+
+  const handleCloseHelp = () => {
+    if (
+      textareaSelectionBeforeHelp &&
+      // if the textarea element is the same as the one before the help was shown
+      textareaElement === textareaSelectionBeforeHelp.textareaElement
+    ) {
+      textareaElement.setSelectionRange(
+        textareaSelectionBeforeHelp.selectionStart,
+        textareaSelectionBeforeHelp.selectionEnd,
+      );
+      textareaElement?.focus();
+      textareaSelectionBeforeHelp = undefined;
+    }
+  };
+
+  const helpShortcut = new Shortcut(
+    "ctrl+/",
+    {
+      label: "Open command guide",
+    },
+    () => {
+      handleShowHelp();
+    },
   );
 
-  useShortcuts(() =>
-    Object.values(defaultShortcuts).map((shortcut) => shortcut.shortcut),
-  );
+  useShortcuts(() => [
+    helpShortcut,
+    ...Object.values(defaultShortcuts).map((shortcut) => shortcut),
+  ]);
 </script>
 
-<Group>
+<Group aria-label="Inline elements">
   <ActionButton
-    onclick={() => defaultShortcuts.h1.handler()}
-    shortcut={defaultShortcuts.h1.shortcut}
+    onclick={() => defaultShortcuts.h1.callback()}
+    shortcut={defaultShortcuts.h1}
     label="Add heading 1"
   >
     <Icon name="heading" />
   </ActionButton>
   <ActionButton
-    onclick={() => defaultShortcuts.bold.handler()}
-    shortcut={defaultShortcuts.bold.shortcut}
+    onclick={() => defaultShortcuts.bold.callback()}
+    shortcut={defaultShortcuts.bold}
     label="Add bold"
   >
     <Icon name="bold" />
   </ActionButton>
   <ActionButton
-    onclick={() => defaultShortcuts.italic.handler()}
-    shortcut={defaultShortcuts.italic.shortcut}
+    onclick={() => defaultShortcuts.italic.callback()}
+    shortcut={defaultShortcuts.italic}
     label="Add italic"
   >
     <Icon name="italic" />
   </ActionButton>
 </Group>
-<Group>
+<Group aria-label="Block elements">
   <ActionButton
-    onclick={() => defaultShortcuts.quote.handler()}
-    shortcut={defaultShortcuts.quote.shortcut}
+    onclick={() => defaultShortcuts.quote.callback()}
+    shortcut={defaultShortcuts.quote}
     label="Add quote"
   >
     <Icon name="quote" />
   </ActionButton>
   <ActionButton
-    onclick={() => defaultShortcuts.code.handler()}
-    shortcut={defaultShortcuts.code.shortcut}
+    onclick={() => defaultShortcuts.code.callback()}
+    shortcut={defaultShortcuts.code}
     label="Add code"
   >
     <Icon name="code" />
   </ActionButton>
   <ActionButton
-    onclick={() => defaultShortcuts.insertLink.handler()}
-    shortcut={defaultShortcuts.insertLink.shortcut}
+    onclick={() => defaultShortcuts.insertLink.callback()}
+    shortcut={defaultShortcuts.insertLink}
     label="Add link"
   >
     <Icon name="get-link" />
   </ActionButton>
   <ActionButton
-    onclick={() => defaultShortcuts.unorderedList.handler()}
-    shortcut={defaultShortcuts.unorderedList.shortcut}
+    onclick={() => defaultShortcuts.unorderedList.callback()}
+    shortcut={defaultShortcuts.unorderedList}
     label="Add bullet list"
   >
     <Icon name="bulleted-list" />
   </ActionButton>
   <ActionButton
-    onclick={() => defaultShortcuts.numberedList.handler()}
-    shortcut={defaultShortcuts.numberedList.shortcut}
+    onclick={() => defaultShortcuts.numberedList.callback()}
+    shortcut={defaultShortcuts.numberedList}
     label="Add numbered list"
   >
     <Icon name="numbered-list" />
   </ActionButton>
   <ActionButton
-    onclick={() => defaultShortcuts.numberedList.handler()}
-    shortcut={defaultShortcuts.numberedList.shortcut}
+    onclick={() => defaultShortcuts.numberedList.callback()}
+    shortcut={defaultShortcuts.numberedList}
     label="Add numbered list"
   >
     <Icon name="numbered-list" />
   </ActionButton>
   <ActionButton
-    onclick={() => defaultShortcuts.taskList.handler()}
-    shortcut={defaultShortcuts.taskList.shortcut}
+    onclick={() => defaultShortcuts.taskList.callback()}
+    shortcut={defaultShortcuts.taskList}
     label="Add task list"
   >
     <Icon name="task-list" />
   </ActionButton>
+</Group>
+<Group aria-label="Miscellaneous">
+  <ActionButton
+    onclick={() => handleShowHelp()}
+    shortcut={helpShortcut}
+    label="Help"
+  >
+    <Icon name="help" />
+  </ActionButton>
+  <ShortcutsHelpSidePanel
+    bind:this={modalMethods}
+    onclose={() => handleCloseHelp()}
+  />
 </Group>

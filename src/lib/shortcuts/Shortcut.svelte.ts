@@ -43,7 +43,7 @@ export class Shortcut {
   constructor(
     shortcut: StandardShortcut | [StandardShortcut, MacShortcut],
     public readonly metadata: ShortcutMetadata,
-    public readonly callback: (event: KeyboardEvent) => void,
+    public readonly callback: (event?: KeyboardEvent) => void,
     options: Partial<ShortcutOptions> = {},
     enabled = true,
   ) {
