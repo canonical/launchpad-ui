@@ -131,6 +131,10 @@ If JavaScript is disabled, SidePanel can be controlled as a popover with declara
     &::backdrop {
       background-color: transparent;
     }
+
+    :global(> .ds.modal-content) {
+      --border-modal-content: none;
+    }
   }
 
   @starting-style {
@@ -140,9 +144,5 @@ If JavaScript is disabled, SidePanel can be controlled as a popover with declara
         transform: translateX(100%);
       }
     }
-  }
-
-  :global(.ds.side-panel .ds.modal-content) {
-    --border-modal-content: none;
   }
 </style>

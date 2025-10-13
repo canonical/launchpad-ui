@@ -49,9 +49,9 @@
   const groupedByCategory = $derived.by(() => {
     const grouped: Record<string, Shortcut[]> = {};
     for (const shortcut of filteredShortcuts) {
-      grouped[shortcut.metadata.category || defaultCategory] =
-        grouped[shortcut.metadata.category || defaultCategory] || [];
-      grouped[shortcut.metadata.category || defaultCategory].push(shortcut);
+      const category = shortcut.metadata.category || defaultCategory;
+      grouped[category] ??= [];
+      grouped[category].push(shortcut);
     }
     return grouped;
   });
@@ -63,7 +63,7 @@
   {...props}
 >
   {#snippet children(_, close)}
-    <ModalContent>
+    <ModalContent class="content">
       <ModalContent.Header>
         <h4>Command guide</h4>
         <ModalContent.Header.CloseButton onclick={close} />

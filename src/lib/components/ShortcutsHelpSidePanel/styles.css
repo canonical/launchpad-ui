@@ -10,57 +10,55 @@
   );
   --typography-shortcuts-help-modal-dt: var(--tmp-typography-paragraph-xs);
   --typography-shortcuts-help-modal-dd: var(--tmp-typography-paragraph-xs);
-
-  > .modal-content {
+  > .content {
     display: grid;
     grid-template-rows: auto 1fr;
     height: 100%;
-    > .modal-content-body {
+
+    .body {
       overflow-y: auto;
       > .shortcuts-help-modal-search {
         width: 100%;
         position: sticky;
         top: 0;
       }
-    }
-  }
 
-  .body {
-    > section {
-      &:not(:last-child) {
-        margin-block-end: var(
-          --dimension-margin-block-shortcuts-help-modal-section-items
-        );
-      }
-      dl,
-      .title {
-        display: grid;
-        grid-template-columns: 1fr 1fr 1fr;
-        gap: var(--dimension-margin-block-shortcuts-help-modal-section-items);
-        margin-block: var(
-          --dimension-margin-block-shortcuts-help-modal-section-items
-        );
-        white-space: pre-line;
-
-        dt {
-          grid-column: 1;
-          text-align: left;
-          text-wrap: nowrap;
-          font: var(--typography-shortcuts-help-modal-dt);
+      > section {
+        &:not(:last-child) {
+          margin-block-end: var(
+            --dimension-margin-block-shortcuts-help-modal-section-items
+          );
         }
+        dl,
+        .title {
+          display: grid;
+          grid-template-columns: 1fr 1fr 1fr;
+          gap: var(--dimension-margin-block-shortcuts-help-modal-section-items);
+          margin-block: var(
+            --dimension-margin-block-shortcuts-help-modal-section-items
+          );
+          white-space: pre-line;
 
-        dd {
-          font: var(--typography-shortcuts-help-modal-dd);
-          grid-column: 2;
-          &.description {
-            grid-column: 3;
+          dt {
+            grid-column: 1;
+            text-align: left;
+            text-wrap: nowrap;
+            font: var(--typography-shortcuts-help-modal-dt);
+          }
+
+          dd {
+            font: var(--typography-shortcuts-help-modal-dd);
+            grid-column: 2;
+            &.description {
+              grid-column: 3;
+            }
           }
         }
-      }
 
-      .title {
-        > * {
-          font: var(--tmp-typography-h5);
+        .title {
+          > * {
+            font: var(--tmp-typography-h5);
+          }
         }
       }
     }
