@@ -12,7 +12,7 @@
 
   const markdownEditorContext = getMarkdownEditorContext();
   const textareaElement = $derived(markdownEditorContext?.textareaElement);
-  const defaultShortcuts = createDefaultActions(() => textareaElement);
+  const defaultActions = createDefaultActions(() => textareaElement);
 
   let modalMethods = $state<ShortcutsHelpSidePanelMethods>();
   let textareaSelectionBeforeHelp = $state<{
@@ -61,28 +61,28 @@
 
   useShortcuts(() => [
     helpShortcut,
-    ...Object.values(defaultShortcuts).map((shortcut) => shortcut),
+    ...Object.values(defaultActions).map((action) => action.shortcut),
   ]);
 </script>
 
 <Group aria-label="Inline elements">
   <ActionButton
-    onclick={() => defaultShortcuts.h1.callback()}
-    shortcut={defaultShortcuts.h1}
+    onclick={() => defaultActions.h1.action()}
+    shortcut={defaultActions.h1.shortcut}
     label="Add heading 1"
   >
     <Icon name="heading" />
   </ActionButton>
   <ActionButton
-    onclick={() => defaultShortcuts.bold.callback()}
-    shortcut={defaultShortcuts.bold}
+    onclick={() => defaultActions.bold.action()}
+    shortcut={defaultActions.bold.shortcut}
     label="Add bold"
   >
     <Icon name="bold" />
   </ActionButton>
   <ActionButton
-    onclick={() => defaultShortcuts.italic.callback()}
-    shortcut={defaultShortcuts.italic}
+    onclick={() => defaultActions.italic.action()}
+    shortcut={defaultActions.italic.shortcut}
     label="Add italic"
   >
     <Icon name="italic" />
@@ -90,50 +90,50 @@
 </Group>
 <Group aria-label="Block elements">
   <ActionButton
-    onclick={() => defaultShortcuts.quote.callback()}
-    shortcut={defaultShortcuts.quote}
+    onclick={() => defaultActions.quote.action()}
+    shortcut={defaultActions.quote.shortcut}
     label="Add quote"
   >
     <Icon name="quote" />
   </ActionButton>
   <ActionButton
-    onclick={() => defaultShortcuts.code.callback()}
-    shortcut={defaultShortcuts.code}
+    onclick={() => defaultActions.code.action()}
+    shortcut={defaultActions.code.shortcut}
     label="Add code"
   >
     <Icon name="code" />
   </ActionButton>
   <ActionButton
-    onclick={() => defaultShortcuts.insertLink.callback()}
-    shortcut={defaultShortcuts.insertLink}
+    onclick={() => defaultActions.insertLink.action()}
+    shortcut={defaultActions.insertLink.shortcut}
     label="Add link"
   >
     <Icon name="get-link" />
   </ActionButton>
   <ActionButton
-    onclick={() => defaultShortcuts.unorderedList.callback()}
-    shortcut={defaultShortcuts.unorderedList}
+    onclick={() => defaultActions.unorderedList.action()}
+    shortcut={defaultActions.unorderedList.shortcut}
     label="Add bullet list"
   >
     <Icon name="bulleted-list" />
   </ActionButton>
   <ActionButton
-    onclick={() => defaultShortcuts.numberedList.callback()}
-    shortcut={defaultShortcuts.numberedList}
+    onclick={() => defaultActions.numberedList.action()}
+    shortcut={defaultActions.numberedList.shortcut}
     label="Add numbered list"
   >
     <Icon name="numbered-list" />
   </ActionButton>
   <ActionButton
-    onclick={() => defaultShortcuts.numberedList.callback()}
-    shortcut={defaultShortcuts.numberedList}
+    onclick={() => defaultActions.numberedList.action()}
+    shortcut={defaultActions.numberedList.shortcut}
     label="Add numbered list"
   >
     <Icon name="numbered-list" />
   </ActionButton>
   <ActionButton
-    onclick={() => defaultShortcuts.taskList.callback()}
-    shortcut={defaultShortcuts.taskList}
+    onclick={() => defaultActions.taskList.action()}
+    shortcut={defaultActions.taskList.shortcut}
     label="Add task list"
   >
     <Icon name="task-list" />

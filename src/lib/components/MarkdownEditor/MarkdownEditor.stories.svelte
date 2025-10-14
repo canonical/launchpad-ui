@@ -48,7 +48,7 @@
         <MarkdownEditor.Toolbar />
       </MarkdownEditor.Header>
       <MarkdownEditor.Textarea
-        rows={12}
+        rows={[3, 9]}
         placeholder="Start typing…"
         autofocus
       />
@@ -148,7 +148,7 @@
   {#snippet template(args)}
     <MarkdownEditor {...args}>
       <MarkdownEditor.Header>
-        <MarkdownEditor.Toolbar disableDefaultActions>
+        <MarkdownEditor.Toolbar>
           {#if !hideExistingActions}
             <MarkdownEditor.Toolbar.Group aria-label="Dynamic actions">
               <MarkdownEditor.Toolbar.ActionButton label="Revisions">

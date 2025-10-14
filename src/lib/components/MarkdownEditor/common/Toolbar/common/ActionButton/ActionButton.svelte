@@ -53,7 +53,7 @@
 </script>
 
 <Tooltip>
-  {#snippet trigger(triggerProps)}
+  {#snippet trigger({ "aria-describedby": _, ...triggerProps })}
     <Button
       bind:ref={actionElement}
       class={[componentCssClassName, className]}

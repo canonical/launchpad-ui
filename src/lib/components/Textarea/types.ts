@@ -1,9 +1,9 @@
 /* @canonical/generator-ds 0.10.0-experimental.3 */
 
 import type { HTMLTextareaAttributes } from "svelte/elements";
-import type { WithoutChildren } from "$lib/type-utils";
 
-export interface TextareaProps extends WithoutChildren<HTMLTextareaAttributes> {
+export interface TextareaProps
+  extends Omit<HTMLTextareaAttributes, "children" | "rows"> {
   /**
    * The value of the textarea.
    *
@@ -16,4 +16,13 @@ export interface TextareaProps extends WithoutChildren<HTMLTextareaAttributes> {
    * **@bindable**
    */
   ref?: HTMLTextAreaElement;
+
+  /**
+   * The number of rows the textarea should have.
+   *
+   * This can be an tuple of [minRows, maxRows] to allow the textarea to grow dynamically.
+   *
+   * @default [2, 5] // min 2 rows, max 5 rows
+   */
+  rows?: number | [number, number];
 }

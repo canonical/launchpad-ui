@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { enhance } from "$app/forms";
   import type { Snippet } from "svelte";
   import LaunchpadLogo from "$lib/components/LaunchpadLogo.svelte";
   import LaunchpadLogoText from "$lib/components/LaunchpadLogoText.svelte";
@@ -25,6 +24,7 @@
   import "../app.css";
   import type { LayoutData } from "./$types";
   import { ThemeSetter } from "./(common)/ThemeSetter";
+  import { enhance } from "$app/forms";
 
   let { children, data }: { children: Snippet; data: LayoutData } = $props();
 

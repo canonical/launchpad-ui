@@ -4,11 +4,14 @@
  * @returns The calculated number of rows.
  */
 export function calculateDynamicRows(
-  textarea: HTMLTextAreaElement,
+  textareaValue: string,
   minRows: number,
   maxRows: number,
 ): number {
-  const linesCount = countLinesToLimit(textarea, Math.max(minRows, maxRows));
+  const linesCount = countLinesToLimit(
+    textareaValue,
+    Math.max(minRows, maxRows),
+  );
 
   if (linesCount <= minRows) {
     return minRows;
@@ -24,12 +27,9 @@ export function calculateDynamicRows(
  *
  * @returns  The total number of lines counted or the limit, whichever is smaller.
  */
-function countLinesToLimit(
-  textarea: HTMLTextAreaElement,
-  limit: number,
-): number {
+function countLinesToLimit(value: string, limit: number): number {
   let totalLines = 1;
-  for (const char of textarea.value) {
+  for (const char of value) {
     if (char === "\n") {
       totalLines++;
     }

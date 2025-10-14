@@ -1,9 +1,9 @@
-type Line = {
+export type Line = {
   line: string;
   isCurrent: boolean;
 };
 
-function parseLines(textarea: HTMLTextAreaElement): Line[] {
+export function parseLines(textarea: HTMLTextAreaElement): Line[] {
   return textarea.value.split("\n").map((line, index) => ({
     line,
     isCurrent: index === getCurrentLineIndex(textarea),
@@ -17,7 +17,15 @@ function getCurrentLineIndex(textarea: HTMLTextAreaElement): number {
   return lines.length - 1;
 }
 
-function applyListContinuation(
+/**
+ * Applies list continuation when Enter is pressed on a list item line.
+ * Supports unordered lists (-, *), ordered lists (1., 2., etc.), and todo lists (- [ ], - [x]).
+ * If the current list item is empty, exits the list block by removing the list marker.
+ * Otherwise, inserts a new list item with the appropriate marker and indentation.
+ *
+ * @returns true if list continuation was applied, false otherwise
+ */
+export function applyListContinuation(
   textarea: HTMLTextAreaElement,
   lines: Line[],
 ): boolean {
@@ -65,7 +73,15 @@ function applyListContinuation(
   }
 }
 
-function applyCodeBlockContinuation(
+/**
+ * Applies code block continuation when Enter is pressed on a code block opening line.
+ * If the user presses Enter after typing ``` (with optional leading whitespace),
+ * this function automatically inserts a closing ``` with matching indentation
+ * and positions the cursor between the opening and closing lines.
+ *
+ * @returns true if code block continuation was applied, false otherwise
+ */
+export function applyCodeBlockContinuation(
   textarea: HTMLTextAreaElement,
   lines: Line[],
 ): boolean {
