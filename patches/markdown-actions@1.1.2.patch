@@ -1,5 +1,9 @@
 diff --git a/package.json b/package.json
 index 7caf9789d60c5188774d54506962aaeaa12cdb4f..9c8639c103c463fbbdac6271432876e15a019396 100644
+
+This patch adds an exports field to the package.json file.
+Otherwise SSR fails, and this will only work in client mode.
+
 --- a/package.json
 +++ b/package.json
 @@ -5,6 +5,10 @@

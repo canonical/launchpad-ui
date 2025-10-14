@@ -27,22 +27,17 @@
   const shortcuts = useShortcuts();
   let filterQuery = $state("");
 
-  const filteredShortcuts = $derived(
-    shortcuts()
+  const filteredShortcuts = $derived.by(() => {
+    const query = filterQuery.toLowerCase();
+    return shortcuts()
       .filter((shortcut) => shortcut.enabled)
       .filter(
         (shortcut) =>
-          shortcut.metadata.label
-            .toLowerCase()
-            .includes(filterQuery.toLowerCase()) ||
-          shortcut.metadata.description
-            ?.toLowerCase()
-            .includes(filterQuery.toLowerCase()) ||
-          shortcut.metadata.category
-            ?.toLowerCase()
-            .includes(filterQuery.toLowerCase()),
-      ),
-  );
+          shortcut.metadata.label.toLowerCase().includes(query) ||
+          shortcut.metadata.description?.toLowerCase().includes(query) ||
+          shortcut.metadata.category?.toLowerCase().includes(query),
+      );
+  });
 
   const defaultCategory = "General";
 
@@ -85,7 +80,7 @@
               <span aria-hidden="true">Description</span>
             </div>
             <dl>
-              {#each shortcuts as shortcut (shortcut.metadata.label)}
+              {#each shortcuts as shortcut (shortcut)}
                 <dt>{shortcut.metadata.label}</dt>
                 <dd>
                   <span class="visually-hidden">Shortcut:</span>

@@ -2,6 +2,7 @@
 
 <script lang="ts">
   import { getFirstElement, getSiblingElement } from "$lib/utils/index.js";
+  import { getMarkdownEditorContext } from "../../context.js";
   import {
     ACTION_BUTTON_CSS_CLASS_NAME,
     DefaultActions,
@@ -12,15 +13,14 @@
   const componentCssClassName = "ds markdown-editor-toolbar";
 
   let {
-    disableDefaultActions = false,
     class: className,
     ref = $bindable(),
     children,
     onkeydown: onkeydownProp,
     ...rest
   }: ToolbarProps = $props();
+  const markdownEditorContext = getMarkdownEditorContext();
   let selectedAction = $state<HTMLButtonElement>();
-
   /**
    * Select the default action when the toolbar is mounted
    * This can be called as many times as needed
@@ -96,15 +96,13 @@
   class={[componentCssClassName, className]}
   role="toolbar"
   aria-orientation="horizontal"
-  aria-label="Markdown editor toolbar"
+  aria-label="Toolbar text formatting"
+  aria-controls={markdownEditorContext?.textareaId}
   {onkeydown}
   bind:this={ref}
   {...rest}
 >
-  {#if !disableDefaultActions}
-    <DefaultActions />
-  {/if}
-
+  <DefaultActions />
   {@render children?.()}
 </div>
 

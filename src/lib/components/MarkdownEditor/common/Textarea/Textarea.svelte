@@ -21,20 +21,25 @@
     disableAutoCompletions = false,
     maxRows = defaultRows * 2,
     rows: rowsProp,
+    id: idProp,
     ...rest
   }: TextareaProps = $props();
 
+  const fallbackId = $props.id();
+  const id = $derived(idProp || fallbackId);
   const markdownEditorContext = getMarkdownEditorContext();
   const initialRows = rowsProp ?? defaultRows;
   let rows = $state(initialRows);
   $effect(() => {
     if (markdownEditorContext) {
       markdownEditorContext.textareaElement = ref;
+      markdownEditorContext.textareaId = id;
     }
 
     return () => {
       if (markdownEditorContext) {
         markdownEditorContext.textareaElement = undefined;
+        markdownEditorContext.textareaId = undefined;
       }
     };
   });
@@ -69,6 +74,7 @@
   {onkeydown}
   {oninput}
   {rows}
-  aria-label="Markdown editor textarea"
+  aria-label="Markdown"
+  {id}
   {...rest}
 />

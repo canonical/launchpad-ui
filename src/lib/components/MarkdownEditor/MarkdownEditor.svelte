@@ -8,14 +8,24 @@
   const componentCssClassName = "ds markdown-editor";
 
   let { class: className, children, ...rest }: MarkdownEditorProps = $props();
+  // TODO: add a textarea-id
 
   let textareaElement = $state<HTMLTextAreaElement>();
+  let textareaId = $state<string>();
+
   setMarkdownEditorContext({
     get textareaElement() {
       return textareaElement;
     },
     set textareaElement(value) {
       textareaElement = value;
+    },
+
+    set textareaId(value) {
+      textareaId = value;
+    },
+    get textareaId() {
+      return textareaId;
     },
   });
 </script>
@@ -24,6 +34,7 @@
   <div
     class={[componentCssClassName, className]}
     data-testid="markdown-editor"
+    aria-label="Markdown editor"
     {...rest}
   >
     {@render children?.()}

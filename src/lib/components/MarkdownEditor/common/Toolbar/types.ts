@@ -21,11 +21,4 @@ export interface ToolbarProps extends BaseProps {
    * **@bindable**
    */
   ref?: HTMLDivElement;
-
-  /**
-   * Whether to disable the default actions (Heading, Bold, Italic, etc.)
-   *
-   * @default false
-   */
-  disableDefaultActions?: boolean;
 }
