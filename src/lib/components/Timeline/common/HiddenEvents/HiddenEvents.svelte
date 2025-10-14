@@ -1,6 +1,7 @@
 <!-- @canonical/generator-ds 0.10.0-experimental.2 -->
 
 <script lang="ts">
+  import { Link } from "$lib/components/Link/index.js";
   import type { HiddenEventsProps } from "./types.js";
 
   const componentCssClassName = "ds hidden-events";
@@ -19,14 +20,13 @@
     <span>
       {numHidden} hidden
     </span>
-    <!-- TODO: Replace with <Link /> -->
     {#if showMoreHref}
       <span class="link-separator" aria-hidden="true"></span>
-      <a href={showMoreHref}>Show more</a>
+      <Link href={showMoreHref} class="show-link">Show more</Link>
     {/if}
     {#if showAllHref}
       <span class="link-separator" aria-hidden="true"></span>
-      <a href={showAllHref}>Show all</a>
+      <Link href={showAllHref} class="show-link">Show all</Link>
     {/if}
   </div>
 </li>
@@ -64,11 +64,6 @@
     );
     --color-text-timeline-hidden-events-links-separator: var(
       --tmp-color-text-muted
-    );
-
-    /* TODO: Should be handled by <Link> */
-    --color-text-timeline-hidden-events-links: var(
-      --tmp-color-text-link-default
     );
 
     position: relative;
@@ -113,14 +108,8 @@
       }
     }
 
-    a {
-      text-decoration: none;
+    :global(.show-link) {
       font: var(--typography-timeline-hidden-events-links);
-      color: var(--color-text-timeline-hidden-events-links);
-
-      &:hover {
-        text-decoration: underline;
-      }
     }
 
     .link-separator::before {
