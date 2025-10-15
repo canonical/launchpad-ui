@@ -24,19 +24,23 @@
           },
         },
       },
+      shortcut: {
+        control: false,
+      },
+      children: {
+        control: false,
+      },
       ...modifiersControl(buttonModifiers),
     },
   });
 </script>
 
-<Story name="Default">
-  {#snippet template(args)}
+<Story name="Default" args={{ label: "Bold" }}>
+  {#snippet template({ children: _, ...args })}
     <MarkdownEditor>
       <MarkdownEditor.Toolbar>
         <MarkdownEditor.Toolbar.ActionButton {...args}>
-          {#snippet iconLeft()}
-            <Icon name="bold" />
-          {/snippet}
+          <Icon name="bold" />
         </MarkdownEditor.Toolbar.ActionButton>
       </MarkdownEditor.Toolbar>
     </MarkdownEditor>

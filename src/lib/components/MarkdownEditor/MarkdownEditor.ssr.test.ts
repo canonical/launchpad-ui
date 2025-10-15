@@ -21,10 +21,12 @@ describe("MarkdownEditor SSR", () => {
     });
 
     it("renders", () => {
-      const { window, container } = render(Component, {
+      const { getByTestId, window } = render(Component, {
         props: { ...baseProps },
       });
-      expect(container.firstElementChild).toBeInstanceOf(window.HTMLDivElement);
+      expect(getByTestId("markdown-editor")).toBeInstanceOf(
+        window.HTMLDivElement,
+      );
     });
   });
 
@@ -34,23 +36,23 @@ describe("MarkdownEditor SSR", () => {
       ["style", "color: orange;"],
       ["aria-label", "test-aria-label"],
     ])("applies %s", (attribute, expected) => {
-      const { container } = render(Component, {
+      const { getByTestId } = render(Component, {
         props: { [attribute]: expected, ...baseProps },
       });
-      expect(container.firstElementChild?.getAttribute(attribute)).toBe(
+      expect(getByTestId("markdown-editor")?.getAttribute(attribute)).toBe(
         expected,
       );
     });
 
     it("applies classes", () => {
-      const { container } = render(Component, {
+      const { getByTestId } = render(Component, {
         props: { class: "test-class", ...baseProps },
       });
       const classes = ["test-class"];
       classes.push("ds", "markdown-editor");
 
       for (const className of classes) {
-        expect(container.firstElementChild?.classList).toContain(className);
+        expect(getByTestId("markdown-editor")?.classList).toContain(className);
       }
     });
   });

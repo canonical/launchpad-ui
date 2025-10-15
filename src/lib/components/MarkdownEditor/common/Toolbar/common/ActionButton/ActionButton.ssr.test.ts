@@ -2,15 +2,23 @@
 
 import { render } from "@canonical/svelte-ssr-test";
 import { createRawSnippet } from "svelte";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import Component from "./ActionButton.svelte";
 import type { ActionButtonProps } from "./types.js";
+
+vi.mock("$lib/shortcuts/index.js", () => {
+  return {
+    // Mock so we don't get errors about `useShortcuts` being called outside of a provider
+    useShortcuts: vi.fn(),
+  };
+});
 
 describe("Markdown Editor > Toolbar > ActionButton SSR", () => {
   const baseProps = {
     children: createRawSnippet(() => ({
       render: () => `<span>ActionButton</span>`,
     })),
+    label: "ActionButton",
   } satisfies ActionButtonProps;
 
   describe("basics", () => {

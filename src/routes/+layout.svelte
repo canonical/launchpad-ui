@@ -6,20 +6,29 @@
     ContextualMenuContent,
     Icon,
     Popover,
+    ShortcutsHelpSidePanel,
     SideNavigation,
   } from "$lib/components/index.js";
-  import type { IconName } from "$lib/components/index.js";
+  import type {
+    IconName,
+    ShortcutsHelpSidePanelMethods,
+  } from "$lib/components/index.js";
+  import {
+    GlobalShortcutsProvider,
+    Shortcut,
+    UseShortcuts,
+  } from "$lib/shortcuts";
   import { themes } from "$lib/theme";
-  import "../app.css";
   import type { Theme } from "$lib/theme.js";
   import { cssControlledFade } from "$lib/transitions/cssControlledFade.js";
+  import "../app.css";
   import type { LayoutData } from "./$types";
   import { ThemeSetter } from "./(common)/ThemeSetter";
   import { enhance } from "$app/forms";
 
   let { children, data }: { children: Snippet; data: LayoutData } = $props();
 
-  const theme = $derived(data.theme);
+  let theme = $derived(data.theme);
 
   let expanded = $derived(data.sideNavigation);
 
@@ -28,128 +37,158 @@
     dark: { icon: "moon", label: "Dark" },
     system: { icon: "desktop", label: "Follow system" },
   };
+
+  let modalMethods = $state<ShortcutsHelpSidePanelMethods>();
+  const helpShortcut = new Shortcut(
+    "ctrl+/",
+    {
+      label: "Open command guide",
+    },
+    () => {
+      modalMethods?.showModal();
+    },
+  );
+
+  const toggleThemeShortcut = new Shortcut(
+    "alt+shift+d",
+    {
+      label: "Cycle theme option",
+    },
+    () => {
+      theme =
+        Object.values(themes)[
+          (Object.values(themes).indexOf(theme) + 1) %
+            Object.values(themes).length
+        ];
+    },
+  );
 </script>
 
-<ThemeSetter {theme} />
+<GlobalShortcutsProvider>
+  <UseShortcuts shortcuts={[helpShortcut, toggleThemeShortcut]} />
+  <ShortcutsHelpSidePanel bind:this={modalMethods} />
 
-<div class="app-layout">
-  <SideNavigation {expanded}>
-    {#snippet logo()}
-      <a href="/" aria-label="Launchpad Home" class="logo-link">
-        {#if expanded}
-          <div
-            aria-hidden="true"
-            transition:cssControlledFade={{
-              durationVar: "--transition-duration-side-navigation",
-              easingVar: "--transition-easing-side-navigation",
-            }}
-          >
-            <LaunchpadLogoText />
+  <ThemeSetter {theme} />
+  <div class="app-layout">
+    <SideNavigation {expanded}>
+      {#snippet logo()}
+        <a href="/" aria-label="Launchpad Home" class="logo-link">
+          {#if expanded}
+            <div
+              aria-hidden="true"
+              transition:cssControlledFade={{
+                durationVar: "--transition-duration-side-navigation",
+                easingVar: "--transition-easing-side-navigation",
+              }}
+            >
+              <LaunchpadLogoText />
+            </div>
+          {/if}
+          <div aria-hidden="true">
+            <LaunchpadLogo />
           </div>
-        {/if}
-        <div aria-hidden="true">
-          <LaunchpadLogo />
-        </div>
-      </a>
-    {/snippet}
-    {#snippet expandToggle(toggleProps)}
-      <form
-        method="POST"
-        action="/?/toggleSideNavigation"
-        style="display: contents;"
-        use:enhance={({ cancel }) => {
-          // If we have JS, abort the submission and don't bother the server
-          cancel();
-          expanded = !expanded;
-          // TODO: Use cookie parsing library. Kit uses: https://github.com/jshttp/cookie
-          document.cookie = `side-navigation-expanded=${expanded}; path=/; expires=${new Date(
-            Date.now() + 1000 * 60 * 60 * 24 * 365,
-          ).toUTCString()}`;
-        }}
-      >
-        <SideNavigation.ExpandToggle
-          {...toggleProps}
-          name="expanded"
-          value={String(!expanded)}
-        />
-      </form>
-    {/snippet}
-    <SideNavigation.LinkItem href="/">
-      Home
-      {#snippet icon()}
-        <Icon name="home" />
+        </a>
       {/snippet}
-    </SideNavigation.LinkItem>
-    <!-- TODO: Placeholder links -->
-    <SideNavigation.LinkItem disabled>
-      View another MP
-      {#snippet icon()}
-        <Icon name="search" />
-      {/snippet}
-    </SideNavigation.LinkItem>
-    <SideNavigation.LinkItem disabled>
-      Give feedback
-      {#snippet icon()}
-        <Icon name="comments" />
-      {/snippet}
-    </SideNavigation.LinkItem>
-    {#snippet footer()}
-      <Popover position="inline-end span-block-start">
-        {#snippet trigger(triggerProps)}
-          <SideNavigation.ButtonItem {...triggerProps}>
-            {#snippet icon()}
-              <Icon name="color-palette" />
-            {/snippet}
-            Theme: {theme[0].toUpperCase() + theme.slice(1)}
-          </SideNavigation.ButtonItem>
-        {/snippet}
-        <ContextualMenuContent
-          style="margin-inline-start: var(--tmp-dimension-spacing-inline-xxs);"
+      {#snippet expandToggle(toggleProps)}
+        <form
+          method="POST"
+          action="/?/toggleSideNavigation"
+          style="display: contents;"
+          use:enhance={({ cancel }) => {
+            // If we have JS, abort the submission and don't bother the server
+            cancel();
+            expanded = !expanded;
+            // TODO: Use cookie parsing library. Kit uses: https://github.com/jshttp/cookie
+            document.cookie = `side-navigation-expanded=${expanded}; path=/; expires=${new Date(
+              Date.now() + 1000 * 60 * 60 * 24 * 365,
+            ).toUTCString()}`;
+          }}
         >
-          <form
-            method="POST"
-            action="/?/changeTheme"
-            use:enhance
-            style="display: contents;"
-          >
-            <ContextualMenuContent.Group style="min-width: 280px">
-              {#each themes as themeOption (themeOption)}
-                {@const { icon: iconName, label } = themesDisplay[themeOption]}
-                <ContextualMenuContent.ButtonItem
-                  text={label}
-                  name="theme"
-                  value={themeOption}
-                  type="submit"
-                >
-                  {#snippet icon()}
-                    <Icon name={iconName} />
-                  {/snippet}
-                </ContextualMenuContent.ButtonItem>
-              {/each}
-            </ContextualMenuContent.Group>
-          </form>
-        </ContextualMenuContent>
-      </Popover>
+          <SideNavigation.ExpandToggle
+            {...toggleProps}
+            name="expanded"
+            value={String(!expanded)}
+          />
+        </form>
+      {/snippet}
+      <SideNavigation.LinkItem href="/">
+        Home
+        {#snippet icon()}
+          <Icon name="home" />
+        {/snippet}
+      </SideNavigation.LinkItem>
       <!-- TODO: Placeholder links -->
       <SideNavigation.LinkItem disabled>
-        $username
+        View another MP
         {#snippet icon()}
-          <Icon name="user" />
+          <Icon name="search" />
         {/snippet}
       </SideNavigation.LinkItem>
       <SideNavigation.LinkItem disabled>
-        Log out
+        Give feedback
         {#snippet icon()}
-          <Icon name="log-out" />
+          <Icon name="comments" />
         {/snippet}
       </SideNavigation.LinkItem>
-    {/snippet}
-  </SideNavigation>
+      {#snippet footer()}
+        <Popover position="inline-end span-block-start">
+          {#snippet trigger(triggerProps)}
+            <SideNavigation.ButtonItem {...triggerProps}>
+              {#snippet icon()}
+                <Icon name="color-palette" />
+              {/snippet}
+              Theme: {theme[0].toUpperCase() + theme.slice(1)}
+            </SideNavigation.ButtonItem>
+          {/snippet}
+          <ContextualMenuContent
+            style="margin-inline-start: var(--tmp-dimension-spacing-inline-xxs);"
+          >
+            <form
+              method="POST"
+              action="/?/changeTheme"
+              use:enhance
+              style="display: contents;"
+            >
+              <ContextualMenuContent.Group style="min-width: 280px">
+                {#each themes as themeOption (themeOption)}
+                  {@const { icon: iconName, label } =
+                    themesDisplay[themeOption]}
+                  <ContextualMenuContent.ButtonItem
+                    text={label}
+                    name="theme"
+                    value={themeOption}
+                    type="submit"
+                  >
+                    {#snippet icon()}
+                      <Icon name={iconName} />
+                    {/snippet}
+                  </ContextualMenuContent.ButtonItem>
+                {/each}
+              </ContextualMenuContent.Group>
+            </form>
+          </ContextualMenuContent>
+        </Popover>
+        <!-- TODO: Placeholder links -->
+        <SideNavigation.LinkItem disabled>
+          $username
+          {#snippet icon()}
+            <Icon name="user" />
+          {/snippet}
+        </SideNavigation.LinkItem>
+        <SideNavigation.LinkItem disabled>
+          Log out
+          {#snippet icon()}
+            <Icon name="log-out" />
+          {/snippet}
+        </SideNavigation.LinkItem>
+      {/snippet}
+    </SideNavigation>
 
-  <main>
-    {@render children()}
-  </main>
-</div>
+    <main style:padding="1rem">
+      {@render children()}
+    </main>
+  </div>
+</GlobalShortcutsProvider>
 
 <style>
   .app-layout {

@@ -1,6 +1,7 @@
 <script module lang="ts">
   import { defineMeta } from "@storybook/addon-svelte-csf";
-  import { Button, Checkbox, Icon } from "../index.js";
+  import Switch from "../Switch/Switch.svelte";
+  import { Button, Icon } from "../index.js";
   import { MarkdownEditor } from "./index.js";
 
   const { Story } = defineMeta({
@@ -46,7 +47,11 @@
       <MarkdownEditor.Header>
         <MarkdownEditor.Toolbar />
       </MarkdownEditor.Header>
-      <MarkdownEditor.Textarea placeholder="Start typing…" autofocus />
+      <MarkdownEditor.Textarea
+        rows={[3, 9]}
+        placeholder="Start typing…"
+        autofocus
+      />
     </MarkdownEditor>
   {/snippet}
 </Story>
@@ -64,7 +69,7 @@
         <MarkdownEditor.Toolbar />
         {#snippet controls()}
           <label style="display: flex; align-items: center; gap: 8px;">
-            <Checkbox bind:checked={preview} />
+            <Switch bind:checked={preview} />
             Preview
           </label>
         {/snippet}
@@ -102,35 +107,31 @@
         <MarkdownEditor.Toolbar>
           <MarkdownEditor.Toolbar.Group aria-label="Magic actions">
             <MarkdownEditor.Toolbar.ActionButton
+              label="Magic"
               onclick={() => insertText("wow what happened?!")}
             >
-              {#snippet iconLeft()}
-                <Icon name="unstarred" />
-              {/snippet}
+              <Icon name="unstarred" />
             </MarkdownEditor.Toolbar.ActionButton>
           </MarkdownEditor.Toolbar.Group>
 
           <MarkdownEditor.Toolbar.Group aria-label="Git actions">
             <MarkdownEditor.Toolbar.ActionButton
               onclick={() => insertText("merge branch")}
+              label="Merge"
             >
-              {#snippet iconLeft()}
-                <Icon name="branch-merge" />
-              {/snippet}
+              <Icon name="branch-merge" />
             </MarkdownEditor.Toolbar.ActionButton>
             <MarkdownEditor.Toolbar.ActionButton
               onclick={() => insertText("branch merged")}
+              label="Merged"
             >
-              {#snippet iconLeft()}
-                <Icon name="branch-merged" />
-              {/snippet}
+              <Icon name="branch-merged" />
             </MarkdownEditor.Toolbar.ActionButton>
             <MarkdownEditor.Toolbar.ActionButton
               onclick={() => insertText("fork repository")}
+              label="Fork"
             >
-              {#snippet iconLeft()}
-                <Icon name="fork" />
-              {/snippet}
+              <Icon name="fork" />
             </MarkdownEditor.Toolbar.ActionButton>
           </MarkdownEditor.Toolbar.Group>
         </MarkdownEditor.Toolbar>
@@ -147,22 +148,18 @@
   {#snippet template(args)}
     <MarkdownEditor {...args}>
       <MarkdownEditor.Header>
-        <MarkdownEditor.Toolbar noDefaultActions>
+        <MarkdownEditor.Toolbar>
           {#if !hideExistingActions}
             <MarkdownEditor.Toolbar.Group aria-label="Dynamic actions">
-              <MarkdownEditor.Toolbar.ActionButton>
-                {#snippet iconLeft()}
-                  <Icon name="revisions" />
-                {/snippet}
+              <MarkdownEditor.Toolbar.ActionButton label="Revisions">
+                <Icon name="revisions" />
               </MarkdownEditor.Toolbar.ActionButton>
             </MarkdownEditor.Toolbar.Group>
           {/if}
           {#if showNewActions}
             <MarkdownEditor.Toolbar.Group aria-label="Dynamic actions">
-              <MarkdownEditor.Toolbar.ActionButton>
-                {#snippet iconLeft()}
-                  <Icon name="select-add" />
-                {/snippet}
+              <MarkdownEditor.Toolbar.ActionButton label="Select Add">
+                <Icon name="select-add" />
               </MarkdownEditor.Toolbar.ActionButton>
             </MarkdownEditor.Toolbar.Group>
           {/if}
@@ -195,10 +192,9 @@
           <MarkdownEditor.Toolbar.Group aria-label="Dynamic actions">
             <MarkdownEditor.Toolbar.ActionButton
               disabled={disableDynamicActions}
+              label="Revisions"
             >
-              {#snippet iconLeft()}
-                <Icon name="revisions" />
-              {/snippet}
+              <Icon name="revisions" />
             </MarkdownEditor.Toolbar.ActionButton>
           </MarkdownEditor.Toolbar.Group>
         </MarkdownEditor.Toolbar>

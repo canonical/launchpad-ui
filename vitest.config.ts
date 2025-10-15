@@ -17,7 +17,11 @@ export default mergeConfig(
               enabled: true,
               headless: true,
               provider: "playwright",
-              instances: [{ browser: "chromium" }],
+              instances: [
+                { browser: "chromium" },
+                { browser: "firefox" },
+                { browser: "webkit" },
+              ],
             },
             include: ["src/**/*.svelte.test.{js,ts}"],
             exclude: ["src/lib/server/**"],

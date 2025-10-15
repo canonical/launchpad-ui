@@ -1,0 +1,19 @@
+// source: https://vitest.dev/guide/debugging.html#browser-mode
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "chrome",
+      "request": "attach",
+      "name": "Attach to Vitest Browser",
+      "port": 9229
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Debug Vitest Browser",
+      "configurations": ["Attach to Vitest Browser"],
+      "stopAll": true
+    }
+  ]
+}

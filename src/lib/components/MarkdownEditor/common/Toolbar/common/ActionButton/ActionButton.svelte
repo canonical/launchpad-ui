@@ -2,7 +2,8 @@
 
 <script lang="ts">
   import { onMount, untrack } from "svelte";
-  import { Button } from "$lib/components/index.js";
+  import { Button } from "$lib/components/Button/index.js";
+  import { Tooltip } from "$lib/components/Tooltip/index.js";
   import { useIsMounted } from "$lib/useIsMounted.svelte.js";
   import { getMarkdownEditorToolbarContext } from "../../context.js";
   import { ACTION_BUTTON_CSS_CLASS_NAME } from "./constant.js";
@@ -13,7 +14,10 @@
   let {
     class: className,
     onfocus: onfocusProp,
+    children,
+    shortcut,
     modifiers,
+    label,
     ...rest
   }: ActionButtonProps = $props();
 
@@ -49,12 +53,25 @@
   });
 </script>
 
-<Button
-  bind:ref={actionElement}
-  class={[componentCssClassName, className]}
-  tabindex={isInTabOrder ? 0 : -1}
-  modifiers={{ density: "dense", severity: "base", ...(modifiers || {}) }}
-  {onfocus}
-  {disabled}
-  {...rest}
-/>
+<Tooltip>
+  {#snippet trigger({ "aria-describedby": _, ...triggerProps })}
+    <Button
+      bind:ref={actionElement}
+      class={[componentCssClassName, className]}
+      tabindex={isInTabOrder ? 0 : -1}
+      modifiers={{ density: "dense", severity: "base", ...(modifiers || {}) }}
+      {onfocus}
+      {disabled}
+      aria-keyshortcuts={shortcut?.toAriaLabel()}
+      aria-label={label}
+      {...triggerProps}
+      {...rest}
+    >
+      {#snippet iconLeft()}
+        {@render children()}
+      {/snippet}
+    </Button>
+  {/snippet}
+  <!-- TODO:  extract the shortcut label into a separate component (waiting for Enzo's design) -->
+  {`${label}${shortcut ? ` (${shortcut.toHumanReadable()})` : ""}`}
+</Tooltip>

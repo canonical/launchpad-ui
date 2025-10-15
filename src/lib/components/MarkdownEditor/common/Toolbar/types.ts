@@ -21,12 +21,4 @@ export interface ToolbarProps extends BaseProps {
    * **@bindable**
    */
   ref?: HTMLDivElement;
-
-  /**
-   * Whether to hide the default actions.
-   * TODO: this is a temporary prop, to have an empty toolbar for component testing
-   *
-   * @link
-   */
-  noDefaultActions?: boolean;
 }

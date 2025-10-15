@@ -2,7 +2,6 @@
 
 import { default as ToolbarRoot } from "./Toolbar.svelte";
 import { ActionButton, Group } from "./common/index.js";
-
 const Toolbar = ToolbarRoot as typeof ToolbarRoot & {
   /**
    * `Toolbar.Group` groups related toolbar items together.
@@ -12,20 +11,14 @@ const Toolbar = ToolbarRoot as typeof ToolbarRoot & {
    * <MarkdownEditor>
    *  <MarkdownEditor.Toolbar>
    *    <MarkdownEditor.Toolbar.Group>
-   *      <MarkdownEditor.Toolbar.ActionButton>
-   *        {#snippet iconLeft()}
-   *          <Icon name="bold" />
-   *        {/snippet}
+   *      <MarkdownEditor.Toolbar.ActionButton label="Bold">
+   *        <Icon name="bold" />
    *      </MarkdownEditor.Toolbar.ActionButton>
-   *      <MarkdownEditor.Toolbar.ActionButton>
-   *        {#snippet iconLeft()}
-   *          <Icon name="italic" />
-   *        {/snippet}
+   *      <MarkdownEditor.Toolbar.ActionButton label="Italic">
+   *        <Icon name="italic" />
    *      </MarkdownEditor.Toolbar.ActionButton>
-   *      <MarkdownEditor.Toolbar.ActionButton>
-   *        {#snippet iconLeft()}
-   *          <Icon name="heading" />
-   *        {/snippet}
+   *      <MarkdownEditor.Toolbar.ActionButton label="Heading">
+   *        <Icon name="heading" />
    *      </MarkdownEditor.Toolbar.ActionButton>
    *    </MarkdownEditor.Toolbar.Group>
    *  </MarkdownEditor.Toolbar>
@@ -40,10 +33,8 @@ const Toolbar = ToolbarRoot as typeof ToolbarRoot & {
    * ```svelte
    * <MarkdownEditor>
    *  <MarkdownEditor.Toolbar>
-   *   <MarkdownEditor.Toolbar.ActionButton>
-   *     {#snippet iconLeft()}
-   *       <Icon name="bold" />
-   *     {/snippet}
+   *   <MarkdownEditor.Toolbar.ActionButton label="Bold">
+   *     <Icon name="bold" />
    *   </MarkdownEditor.Toolbar.ActionButton>
    *  </MarkdownEditor.Toolbar>
    * </MarkdownEditor>

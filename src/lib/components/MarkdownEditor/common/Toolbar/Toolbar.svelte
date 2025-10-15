@@ -1,13 +1,11 @@
 <!-- @canonical/generator-ds 0.10.0-experimental.3 -->
 
 <script lang="ts">
-  import { Icon } from "$lib/components/index.js";
-  import { getFirstElement, getSiblingElement } from "$lib/utils";
+  import { getFirstElement, getSiblingElement } from "$lib/utils/index.js";
   import { getMarkdownEditorContext } from "../../context.js";
   import {
     ACTION_BUTTON_CSS_CLASS_NAME,
-    ActionButton,
-    Group,
+    DefaultActions,
   } from "./common/index.js";
   import { setMarkdownEditorToolbarContext } from "./context.js";
   import type { ToolbarProps } from "./types.js";
@@ -15,17 +13,14 @@
   const componentCssClassName = "ds markdown-editor-toolbar";
 
   let {
-    noDefaultActions = false,
     class: className,
     ref = $bindable(),
     children,
     onkeydown: onkeydownProp,
     ...rest
   }: ToolbarProps = $props();
-  let selectedAction = $state<HTMLButtonElement>();
-
   const markdownEditorContext = getMarkdownEditorContext();
-
+  let selectedAction = $state<HTMLButtonElement>();
   /**
    * Select the default action when the toolbar is mounted
    * This can be called as many times as needed
@@ -101,70 +96,13 @@
   class={[componentCssClassName, className]}
   role="toolbar"
   aria-orientation="horizontal"
+  aria-label="Text formatting"
+  aria-controls={markdownEditorContext?.textareaId}
   {onkeydown}
   bind:this={ref}
   {...rest}
 >
-  {#if !noDefaultActions}
-    <Group>
-      <ActionButton
-        onclick={() => {
-          // TODO: temporary placeholder, to be replaced with an action management system
-          if (markdownEditorContext?.textareaElement) {
-            markdownEditorContext.textareaElement.focus();
-            document.execCommand("insertText", false, "# ");
-          }
-        }}
-      >
-        {#snippet iconLeft()}
-          <Icon name="heading" />
-        {/snippet}
-      </ActionButton>
-      <ActionButton>
-        {#snippet iconLeft()}
-          <Icon name="bold" />
-        {/snippet}
-      </ActionButton>
-      <ActionButton>
-        {#snippet iconLeft()}
-          <Icon name="italic" />
-        {/snippet}
-      </ActionButton>
-    </Group>
-    <Group>
-      <ActionButton>
-        {#snippet iconLeft()}
-          <Icon name="quote" />
-        {/snippet}
-      </ActionButton>
-      <ActionButton>
-        {#snippet iconLeft()}
-          <Icon name="code" />
-        {/snippet}
-      </ActionButton>
-      <ActionButton>
-        {#snippet iconLeft()}
-          <Icon name="get-link" />
-        {/snippet}
-      </ActionButton>
-      <ActionButton>
-        {#snippet iconLeft()}
-          <Icon name="bulleted-list" />
-        {/snippet}
-      </ActionButton>
-      <ActionButton>
-        {#snippet iconLeft()}
-          <Icon name="numbered-list" />
-        {/snippet}
-      </ActionButton>
-      <ActionButton>
-        {#snippet iconLeft()}
-          <Icon name="task-list" />
-        {/snippet}
-      </ActionButton>
-    </Group>
-  {/if}
-
+  <DefaultActions />
   {@render children?.()}
 </div>
 

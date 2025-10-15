@@ -18,17 +18,18 @@
     "test": "vitest --run",
     "test:watch": "vitest",
     "test:server": "vitest --project=server",
-    "test:client": "vitest --project=client",
+    "test:client": "bun run test:client:chromium && bun run test:client:firefox && bun run test:client:webkit",
     "test:ssr": "vitest --project=ssr",
+    "test:client:chromium": "vitest --project=client --browser=chromium",
+    "test:client:firefox": "vitest --project=client --browser=firefox",
+    "test:client:webkit": "vitest --project=client --browser=webkit",
     "storybook": "storybook dev -p 6006 --no-open",
     "build-storybook": "storybook build"
   },
   "devDependencies": {
-    "@canonical/launchpad-design-tokens": "^1.0.20",
     "@canonical/svelte-ssr-test": "^0.10.0-experimental.3",
     "@chromatic-com/storybook": "^4.1.1",
     "@eslint/js": "^9.35.0",
-    "@floating-ui/dom": "^1.7.4",
     "@storybook/addon-a11y": "^9.1.6",
     "@storybook/addon-docs": "^9.1.6",
     "@storybook/addon-svelte-csf": "^5.0.8",
@@ -46,7 +47,6 @@
     "eslint-plugin-storybook": "^9.1.6",
     "eslint-plugin-svelte": "^3.12.3",
     "globals": "^16.4.0",
-    "normalize.css": "^8.0.1",
     "playwright": "^1.55.0",
     "prettier": "^3.6.2",
     "prettier-plugin-svelte": "^3.4.0",
@@ -61,6 +61,13 @@
     "vitest-browser-svelte": "^1.1.0"
   },
   "patchedDependencies": {
-    "@storybook/svelte-vite@9.1.6": "patches/@storybook%2Fsvelte-vite@9.1.6.patch"
+    "@storybook/svelte-vite@9.1.6": "patches/@storybook%2Fsvelte-vite@9.1.6.patch",
+    "markdown-actions@1.1.2": "patches/markdown-actions@1.1.2.patch"
+  },
+  "dependencies": {
+    "markdown-actions": "^1.1.2",
+    "normalize.css": "^8.0.1",
+    "@canonical/launchpad-design-tokens": "^1.0.20",
+    "@floating-ui/dom": "^1.7.4"
   }
 }
