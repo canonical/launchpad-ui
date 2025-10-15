@@ -2,7 +2,8 @@
 
 <script lang="ts">
   import { onMount, untrack } from "svelte";
-  import { Button, Tooltip } from "$lib/components/index.js";
+  import { Button } from "$lib/components/Button/index.js";
+  import { Tooltip } from "$lib/components/Tooltip/index.js";
   import { useIsMounted } from "$lib/useIsMounted.svelte.js";
   import { getMarkdownEditorToolbarContext } from "../../context.js";
   import { ACTION_BUTTON_CSS_CLASS_NAME } from "./constant.js";

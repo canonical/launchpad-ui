@@ -1,7 +1,7 @@
 <!-- @canonical/generator-ds 0.10.0-experimental.3 -->
 
 <script lang="ts">
-  import { Textarea } from "$lib/components/index.js";
+  import { Textarea } from "$lib/components/Textarea/index.js";
   import { getMarkdownEditorContext } from "../../context.js";
   import "./styles.css";
   import type { TextareaProps } from "./types.js";
