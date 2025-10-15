@@ -17,7 +17,7 @@
   }: TextareaProps = $props();
   const dynamicRows = $derived.by(() => {
     if (typeof rowsProps === "number") {
-      return rowsProps as number;
+      return rowsProps;
     }
 
     if (!value) {

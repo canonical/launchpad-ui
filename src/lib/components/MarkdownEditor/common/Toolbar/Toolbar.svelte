@@ -96,7 +96,7 @@
   class={[componentCssClassName, className]}
   role="toolbar"
   aria-orientation="horizontal"
-  aria-label="Toolbar text formatting"
+  aria-label="Text formatting"
   aria-controls={markdownEditorContext?.textareaId}
   {onkeydown}
   bind:this={ref}

@@ -23,10 +23,6 @@
           category: "properties",
         },
       },
-      rows: {
-        control: { type: "number" },
-        description: "The number of rows the textarea should have.",
-      },
     },
   });
   let value = $state("");

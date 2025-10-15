@@ -24,5 +24,5 @@ export interface TextareaProps
    *
    * @default [2, 5] // min 2 rows, max 5 rows
    */
-  rows?: number | [number, number];
+  rows?: number | [minRows: number, maxRows: number];
 }

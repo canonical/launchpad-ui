@@ -1,6 +1,3 @@
-/* TODO: this is a temporary header alternative to ModalContent.Header
-  which doesn't have a sticky header and doesn't allow for multi row header
-  */
 .ds.shortcuts-help-side-panel {
   --dimension-margin-block-shortcuts-help-modal-section: var(
     --tmp-dimension-spacing-block-xxl
