@@ -7,12 +7,12 @@ import Component from "./Search.svelte";
 describe("Search SSR", () => {
   it("doesn't throw", () => {
     expect(() => {
-      render(Component, { props: { label: "Search" } });
+      render(Component, { props: { "aria-label": "Search" } });
     }).not.toThrow();
   });
 
   it("renders", () => {
-    const { body } = render(Component, { props: { label: "Search" } });
+    const { body } = render(Component, { props: { "aria-label": "Search" } });
     expect(body).toContain("<input");
     expect(body).toContain('type="search"');
   });
@@ -20,14 +20,14 @@ describe("Search SSR", () => {
   describe("Basic attributes", () => {
     it("applies id", () => {
       const { body } = render(Component, {
-        props: { label: "Search", id: "test-id" },
+        props: { "aria-label": "Search", id: "test-id" },
       });
       expect(body).toContain('id="test-id"');
     });
 
     it("applies class", () => {
       const { body } = render(Component, {
-        props: { label: "Search", class: "test-class" },
+        props: { "aria-label": "Search", class: "test-class" },
       });
       expect(body).toMatch(/class="[^"]*test-class[^"]*"/);
     });
@@ -35,7 +35,7 @@ describe("Search SSR", () => {
     it("applies style", () => {
       const { body } = render(Component, {
         props: {
-          label: "Search",
+          "aria-label": "Search",
           style: "color: red;",
         },
       });
@@ -44,7 +44,7 @@ describe("Search SSR", () => {
 
     it("applies label", () => {
       const { body } = render(Component, {
-        props: { label: "Search" },
+        props: { "aria-label": "Search" },
       });
       expect(body).toContain('aria-label="Search"');
     });
@@ -52,17 +52,17 @@ describe("Search SSR", () => {
 
   describe("After-mount attributes", () => {
     it("doesn't apply role", () => {
-      const { body } = render(Component, { props: { label: "Search" } });
+      const { body } = render(Component, { props: { "aria-label": "Search" } });
       expect(body).not.toContain('role="combobox"');
     });
 
     it("doesn't apply aria-controls", () => {
-      const { body } = render(Component, { props: { label: "Search" } });
+      const { body } = render(Component, { props: { "aria-label": "Search" } });
       expect(body).not.toContain("aria-controls");
     });
 
     it("doesn't apply aria-autocomplete", () => {
-      const { body } = render(Component, { props: { label: "Search" } });
+      const { body } = render(Component, { props: { "aria-label": "Search" } });
       expect(body).not.toContain("aria-autocomplete");
     });
   });

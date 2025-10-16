@@ -1,14 +1,12 @@
 <!-- @canonical/generator-ds 0.10.0-experimental.2 -->
 <script lang="ts">
-  import { TextInput } from "$lib/components/TextInput/index.js";
+  import { SearchBox } from "$lib/components/SearchBox/index.js";
   import { useIsMounted } from "$lib/useIsMounted.svelte.js";
   import { getComboboxContext } from "../../context.js";
   import type { SearchProps } from "./types.js";
   import { getSiblingOptionId } from "./utils/getSiblingOptionId.js";
 
   let {
-    style,
-    label,
     onkeydown: onkeydownProp,
     onblur: onblurProp,
     value = $bindable(),
@@ -46,11 +44,7 @@
   };
 </script>
 
-<!-- TODO: Replace with <SearchBox> -->
-<TextInput
-  type="search"
-  aria-label={label}
-  style={`width: 100%; ${style}`}
+<SearchBox
   bind:value
   {onkeydown}
   {onblur}

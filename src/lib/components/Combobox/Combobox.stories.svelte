@@ -171,7 +171,7 @@
     <Combobox {...args}>
       {#snippet search()}
         <Combobox.Search
-          label="Merge Proposal reviewers"
+          aria-label="Merge Proposal reviewers"
           placeholder="Search users..."
           bind:value={queryStory1}
         />
@@ -260,7 +260,7 @@
     <Combobox {...args}>
       {#snippet search()}
         <Combobox.Search
-          label="Project owner"
+          aria-label="Project owner"
           placeholder="Search users..."
           bind:value={queryStory2}
         />
@@ -360,7 +360,7 @@
             {#snippet search()}
               <Combobox.Search
                 autofocus
-                label="Merge Proposal reviewers"
+                aria-label="Merge Proposal reviewers"
                 placeholder="Search users..."
                 bind:value={queryStory3}
               />
@@ -457,7 +457,7 @@
     <Combobox {...args}>
       {#snippet search()}
         <Combobox.Search
-          label="Some search"
+          aria-label="Some search"
           placeholder="Type something"
           bind:value={loadingQuery}
         />
