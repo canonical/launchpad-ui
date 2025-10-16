@@ -7,9 +7,17 @@
   );
   --typography-shortcuts-help-modal-dt: var(--tmp-typography-paragraph-xs);
   --typography-shortcuts-help-modal-dd: var(--tmp-typography-paragraph-xs);
+
+  /* 
+    When there are many shortcuts that cause overflow (and intentional scroll) of the `.body`, the dialog itself gets a second scrollbar for the reasons that remain unknown.
+
+    This prevents that from happening.
+  */
+  overflow: hidden;
+
   > .content {
     display: grid;
-    grid-template-rows: auto 1fr;
+    grid-template-rows: auto minmax(0, 1fr);
     height: 100%;
 
     .body {
