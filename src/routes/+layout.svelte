@@ -54,21 +54,16 @@
     {
       label: "Cycle theme option",
     },
-    () => {
-      theme =
-        Object.values(themes)[
-          (Object.values(themes).indexOf(theme) + 1) %
-            Object.values(themes).length
-        ];
-    },
+    () => (theme = themes[(themes.indexOf(theme) + 1) % themes.length]),
   );
 </script>
+
+<ThemeSetter {theme} />
 
 <GlobalShortcutsProvider>
   <UseShortcuts shortcuts={[helpShortcut, toggleThemeShortcut]} />
   <ShortcutsHelpSidePanel bind:this={modalMethods} />
 
-  <ThemeSetter {theme} />
   <div class="app-layout">
     <SideNavigation {expanded}>
       {#snippet logo()}
