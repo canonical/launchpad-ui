@@ -1,12 +1,11 @@
 <!-- @canonical/generator-ds 0.10.0-experimental.3 -->
 
-<script lang="ts" generics="T">
+<script lang="ts">
   import { modifiersValues } from "$lib/modifiers/utils.js";
   import { Icon } from "../Icon/index.js";
   import type { SelectProps } from "./types.js";
 
   const componentCssClassName = "ds select";
-  const componentCssClassNameContainer = "ds select-container";
 
   let {
     class: className,
@@ -15,25 +14,16 @@
     children,
     modifiers,
     ...rest
-  }: SelectProps<T> = $props();
+  }: SelectProps = $props();
 </script>
 
-<div
-  class={[
-    componentCssClassNameContainer,
-    modifiersValues(modifiers),
-    rest.multiple === true && "multiple",
-  ]}
->
-  <select
-    class={[componentCssClassName, className]}
-    bind:value
-    bind:this={ref}
-    {...rest}
-  >
+<div class={[componentCssClassName, className, modifiersValues(modifiers)]}>
+  <select bind:value bind:this={ref} {...rest}>
     {@render children?.()}
   </select>
-  <Icon name="chevron-down" />
+  {#if !rest.multiple}
+    <Icon name="chevron-down" />
+  {/if}
 </div>
 
 <!-- @component
@@ -50,32 +40,39 @@
 -->
 
 <style>
-  .ds.select-container {
-    --color-background-select-input-active: var(
-      --tmp-color-background-secondary-active-context,
-      var(--tmp-color-background-input)
-    );
+  .ds.select {
     --color-background-select-input-hover: var(
       --tmp-color-background-secondary-hover-context,
-      var(--tmp-color-background-input)
+      var(--tmp-color-background-hover)
+    );
+    --color-background-select-input-active: var(
+      --color-background-select-input-hover
     );
     --color-background-select-input: var(
       --tmp-color-background-secondary-context,
       var(--tmp-color-background-input)
     );
+
     --color-background-select-input-invalid: var(
       --tmp-color-background-negative-default
     );
-
-    --dimension-padding-inline-select-input: var(
-      --dimension-padding-inline-context,
-      var(--tmp-dimension-spacing-inline-xs)
+    --color-background-select-input-invalid-hover: var(
+      --tmp-color-background-negative-hover
+    );
+    --color-background-select-input-invalid-active: var(
+      --tmp-color-background-negative-active
     );
 
+    --opacity-select-input-disabled: var(--tmp-opacity-muted);
+
+    --dimension-padding-inline-select-input: var(
+      --tmp-dimension-spacing-inline-xs
+    );
     --dimension-padding-block-select-input: var(
       --dimension-padding-block-context,
       var(--tmp-dimension-spacing-block-xxs)
     );
+
     --color-border-select-input: var(
       --tmp-color-border-secondary-context,
       var(--tmp-color-border-high-contrast)
@@ -84,35 +81,37 @@
       --tmp-color-border-secondary-context,
       var(--tmp-color-border-focus)
     );
-    --color-border-select-input-invalid: var(--tmp-color-border-negative);
-    --color-outline-select-input-invalid: var(--tmp-color-border-negative);
-
     --border-style-select-input: none none solid none;
     --dimension-border-width-select-input: var(
       --dimension-stroke-thickness-default
     );
+    --color-border-select-input-invalid: var(--tmp-color-border-negative);
+    --color-outline-select-input-invalid: var(--tmp-color-border-negative);
 
     --color-text-select-input: var(--tmp-color-text-default);
     --color-text-select-input-placeholder: var(--tmp-color-text-muted);
     --typography-select-input: var(--tmp-typography-paragraph-default);
-    --dimension-gap-select-input: var(--tmp-dimension-spacing-inline-xxxs);
-    --dimension-icon-size-select-input: var(--tmp-dimension-size-xs);
-    --dimension-padding-block-select-input-option: var(
-      --dimension-padding-block-select-input
-    );
 
-    grid-template-columns: repeat(1, minmax(0, 1fr));
+    --dimension-gap-select-input: var(--tmp-dimension-spacing-inline-xxxs);
+
+    --dimension-radius-select-input: var(--dimension-radius-small);
+
+    --dimension-icon-size-select-input: var(--tmp-dimension-size-xs);
+
+    grid-template-columns: 1fr;
     display: inline-grid;
 
     color: var(--color-text-select-input);
     font: var(--typography-select-input);
 
-    > .ds.select {
+    > select {
       appearance: none;
       background-color: transparent;
       border: none;
+      cursor: pointer;
       color: var(--color-text-select-input);
       font: var(--typography-select-input);
+      border-radius: var(--dimension-radius-select-input);
 
       padding-inline-start: var(--dimension-padding-inline-select-input);
       padding-inline-end: calc(
@@ -137,11 +136,8 @@
         background-color: var(--color-background-select-input-hover);
       }
 
-      &::placeholder {
-        color: var(--color-text-select-input-placeholder);
-      }
-
-      &:active {
+      &:active,
+      &:focus {
         background-color: var(--color-background-select-input-active);
       }
 
@@ -154,12 +150,21 @@
         background-color: var(--color-background-select-input-invalid);
         border-color: var(--color-border-select-input-invalid);
         outline-color: var(--color-outline-select-input-invalid);
+
+        &:hover {
+          background-color: var(--color-background-select-input-invalid-hover);
+        }
+
+        &:active,
+        &:focus {
+          background-color: var(--color-background-select-input-invalid-active);
+        }
       }
     }
 
     > :global(.ds.icon) {
       --dimension-size-icon: var(--dimension-icon-size-select-input);
-      justify-self: flex-end;
+      justify-self: end;
       align-self: center;
       margin-block: var(--dimension-padding-block-select-input);
 
@@ -170,22 +175,29 @@
       grid-column-start: 1;
     }
 
-    &.multiple {
-      > :global(.ds.icon) {
-        align-self: start;
-        margin-block-start: calc(
-          (
-            (
-                1lh + 2 * var(--dimension-padding-block-select-input) -
-                  var(--dimension-icon-size-select-input)
-              ) /
-              2
-          )
+    > select[multiple] {
+      :global(option) {
+        --dimension-padding-block-select-input-option: var(
+          --dimension-padding-block-select-input
         );
-      }
-      > .ds.select :global(option) {
+        --color-background-select-input-option-selected: var(
+          --tmp-color-background-secondary-active-context,
+          var(--tmp-color-background-active)
+        );
+
         padding-block: var(--dimension-padding-block-select-input-option);
+        background-color: transparent;
+
+        &:checked {
+          background-color: var(
+            --color-background-select-input-option-selected
+          );
+        }
       }
+    }
+
+    > select[disabled] + :global(.ds.icon) {
+      opacity: var(--opacity-select-input-disabled);
     }
   }
 </style>

@@ -23,6 +23,8 @@ describe("Select component", () => {
 
     const page = render(Component, { children, class: "test-class" });
     const element = page.getByRole("combobox");
-    await expect.element(element.element()).toHaveClass("test-class");
+    await expect
+      .element(element.element().parentElement)
+      .toHaveClass("test-class");
   });
 });

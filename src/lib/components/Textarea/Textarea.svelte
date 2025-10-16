@@ -48,8 +48,10 @@
 
 <style>
   .ds.textarea {
-    --color-background-textarea-input-active: var(--tmp-color-background-input);
-    --color-background-textarea-input-hover: var(--tmp-color-background-input);
+    --color-background-textarea-input-active: var(
+      --tmp-color-background-active
+    );
+    --color-background-textarea-input-hover: var(--tmp-color-background-hover);
     --color-background-textarea-input: var(--tmp-color-background-input);
     --dimension-padding-inline-textarea-input: var(
       --tmp-dimension-spacing-inline-m
@@ -92,7 +94,8 @@
       background-color: var(--color-background-textarea-input-hover);
     }
 
-    &:active {
+    &:active,
+    &:focus {
       background-color: var(--color-background-textarea-input-active);
     }
 

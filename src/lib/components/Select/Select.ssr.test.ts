@@ -12,18 +12,20 @@ describe("Select SSR", () => {
       render: () => `<option value="1">Option 1</option>`,
     })),
     multiple: false,
-  } satisfies SelectProps<string>;
+  } satisfies SelectProps;
 
   describe("basics", () => {
     it("doesn't throw", () => {
       expect(() => {
-        renderSelect();
+        render(Component, { props: baseProps });
       }).not.toThrow();
     });
 
     it("renders", () => {
-      const { window, container } = renderSelect({
-        ...baseProps,
+      const { window, container } = render(Component, {
+        props: {
+          ...baseProps,
+        },
       });
       expect(container.firstElementChild).toBeInstanceOf(window.HTMLDivElement);
       expect(container.firstElementChild?.firstElementChild).toBeInstanceOf(
@@ -38,9 +40,11 @@ describe("Select SSR", () => {
       ["style", "color: orange;"],
       ["aria-label", "test-aria-label"],
     ])("applies %s", (attribute, expected) => {
-      const { container } = renderSelect({
-        [attribute]: expected,
-        ...baseProps,
+      const { container } = render(Component, {
+        props: {
+          [attribute]: expected,
+          ...baseProps,
+        },
       });
       expect(
         container.firstElementChild?.firstElementChild?.getAttribute(attribute),
@@ -48,23 +52,18 @@ describe("Select SSR", () => {
     });
 
     it("applies classes", () => {
-      const { container } = renderSelect({
-        class: "test-class",
-        ...baseProps,
+      const { container } = render(Component, {
+        props: {
+          class: "test-class",
+          ...baseProps,
+        },
       });
       const classes = ["test-class"];
       classes.push("ds", "select");
 
       for (const className of classes) {
-        expect(
-          container.firstElementChild?.firstElementChild?.classList,
-        ).toContain(className);
+        expect(container.firstElementChild?.classList).toContain(className);
       }
     });
   });
 });
-
-function renderSelect(props?: SelectProps) {
-  // @ts-expect-error TypeScript reports `Expression produces a union type that is too complex to represent.ts(2590)`
-  return render(Component, { props });
-}

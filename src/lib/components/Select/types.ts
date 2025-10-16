@@ -4,35 +4,21 @@ import type { HTMLSelectAttributes } from "svelte/elements";
 import type { ModifiedBy } from "$lib/modifiers";
 import type { SelectInputModifiers } from "./modifiers";
 
-type BaseProps = HTMLSelectAttributes &
-  ModifiedBy<SelectInputModifiers> & {
-    /**
-     * The ref of the select.
-     *
-     * @bindable
-     */
-    ref?: HTMLSelectElement;
-  };
+type BaseProps = Omit<HTMLSelectAttributes, "value">;
 
-export interface SingleSelectProps<T> extends BaseProps {
+export interface SelectProps
+  extends BaseProps,
+    ModifiedBy<SelectInputModifiers> {
   /**
    * The value of the select.
    *
    * @bindable
    */
-  value?: T;
-}
-
-export interface MultiSelectProps<T> extends BaseProps {
-  multiple: true;
+  value?: HTMLSelectAttributes["value"];
   /**
-   * The value of the select.
+   * The ref of the select.
    *
    * @bindable
    */
-  value?: T[];
+  ref?: HTMLSelectElement;
 }
-
-export type SelectProps<T = BaseProps["value"]> =
-  | SingleSelectProps<T>
-  | MultiSelectProps<T>;

@@ -16,8 +16,8 @@
 <style>
   /* Do not use classes to keep the specificity as low as possible - (0, 1, 1) with scoping, so that the direct wrappers (e.g. TextInput) with unscoped styles and `.ds.class` (0, 2, 0) selectors can override these styles */
   input {
-    --color-background-text-input-active: var(--tmp-color-background-input);
-    --color-background-text-input-hover: var(--tmp-color-background-input);
+    --color-background-text-input-active: var(--tmp-color-background-active);
+    --color-background-text-input-hover: var(--tmp-color-background-hover);
     --color-background-text-input: var(--tmp-color-background-input);
     --dimension-padding-inline-text-input: var(
       --tmp-dimension-spacing-inline-m
@@ -37,6 +37,12 @@
     --opacity-text-input-disabled: var(--tmp-opacity-muted);
     --color-background-text-input-invalid: var(
       --tmp-color-background-negative-default
+    );
+    --color-background-text-input-invalid-hover: var(
+      --tmp-color-background-negative-hover
+    );
+    --color-background-text-input-invalid-active: var(
+      --tmp-color-background-negative-active
     );
     --color-border-text-input-invalid: var(--tmp-color-border-negative);
     --color-outline-text-input-invalid: var(--tmp-color-border-negative);
@@ -62,7 +68,8 @@
       background-color: var(--color-background-text-input-hover);
     }
 
-    &:active {
+    &:active,
+    &:focus {
       background-color: var(--color-background-text-input-active);
     }
 
@@ -75,6 +82,13 @@
       background-color: var(--color-background-text-input-invalid);
       border-color: var(--color-border-text-input-invalid);
       outline-color: var(--color-outline-text-input-invalid);
+      &:hover {
+        background-color: var(--color-background-text-input-invalid-hover);
+      }
+      &:active,
+      &:focus {
+        background-color: var(--color-background-text-input-invalid-active);
+      }
     }
   }
 </style>
