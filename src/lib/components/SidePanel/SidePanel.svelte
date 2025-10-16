@@ -123,7 +123,16 @@ If JavaScript is disabled, SidePanel can be controlled as a popover with declara
     transition-property: display, transform, overlay;
     transition-duration: var(--tmp-transition-duration-fast);
 
-    &:open,
+    &:open {
+      transform: translateX(0);
+    }
+
+    /* 
+      Fallback for Safari that doesn't support the `:open`. It has to be kept separate from the above `&:open` to work.
+
+      TODO(:open): Remove when Safari supports it (https://developer.mozilla.org/en-US/docs/Web/CSS/:open)
+    */
+    &[open],
     &:popover-open {
       transform: translateX(0);
     }
@@ -139,7 +148,16 @@ If JavaScript is disabled, SidePanel can be controlled as a popover with declara
 
   @starting-style {
     .ds.side-panel {
-      &:open,
+      &:open {
+        transform: translateX(100%);
+      }
+
+      /* 
+        Fallback for Safari that doesn't support the `:open`. It has to be kept separate from the above `&:open` to work.
+
+        TODO(:open): Remove when Safari supports it (https://developer.mozilla.org/en-US/docs/Web/CSS/:open)
+      */
+      &[open],
       &:popover-open {
         transform: translateX(100%);
       }

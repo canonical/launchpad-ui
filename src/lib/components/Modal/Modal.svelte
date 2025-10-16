@@ -119,9 +119,21 @@ If JavaScript is disabled, Modal can be controlled as a popover with declarative
       background-color: var(--color-background-modal-backdrop);
     }
 
-    &:open,
+    &:open {
+      &,
+      &::backdrop {
+        opacity: 1;
+      }
+    }
+
+    /* 
+      Fallback for Safari that doesn't support the `:open`. It has to be kept separate from the above `&:open` to work.
+
+      TODO(:open): Remove when Safari supports it (https://developer.mozilla.org/en-US/docs/Web/CSS/:open)
+    */
+    &[open],
     &:popover-open {
-      opacity: 1;
+      &,
       &::backdrop {
         opacity: 1;
       }
@@ -137,11 +149,22 @@ If JavaScript is disabled, Modal can be controlled as a popover with declarative
   }
 
   @starting-style {
-    .ds.modal,
-    .ds.modal::backdrop {
-      &:open,
+    .ds.modal {
+      &:open {
+        &,
+        &::backdrop {
+          opacity: 0;
+        }
+      }
+
+      /* 
+        Fallback for Safari that doesn't support the `:open`. It has to be kept separate from the above `&:open` to work.
+
+        TODO(:open): Remove when Safari supports it (https://developer.mozilla.org/en-US/docs/Web/CSS/:open)
+      */
+      &[open],
       &:popover-open {
-        opacity: 0;
+        &,
         &::backdrop {
           opacity: 0;
         }
