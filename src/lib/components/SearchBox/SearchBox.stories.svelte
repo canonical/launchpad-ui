@@ -52,7 +52,7 @@
 <Story
   name="With invalid styles"
   args={{
-    styleInvalid: true,
+    invalidStyled: true,
     placeholder: "Type at least 3 characters",
     required: true,
     minlength: 3,

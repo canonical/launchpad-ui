@@ -21,7 +21,7 @@ export interface SearchBoxProps
    */
   onclick?: MouseEventHandler<HTMLButtonElement>;
   /**
-   * Whether to apply the invalid styles to the input when it fails validation.
+   * Whether to apply the invalid styles to the input when the input fails validation (e.g., required but empty).
    */
-  styleInvalid?: boolean;
+  invalidStyled?: boolean;
 }
