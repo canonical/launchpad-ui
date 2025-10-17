@@ -1,8 +1,7 @@
-<!-- `Modal` component provides a mechanism to display content in a dialog overlay. To see an example of how to compose it with `ModalContent` see [Modal pattern](https://main--689106f3797b06760a3c9414.chromatic.com/?path=/docs/patterns-modal--docs). -->
-
 <script module lang="ts">
   import { defineMeta } from "@storybook/addon-svelte-csf";
   import { Button } from "$lib/components/Button/index.js";
+  import { ModalContent } from "$lib/components/ModalContent/index.js";
   import type { ModalMethods } from "./types.js";
   import { Modal } from "./index.js";
 
@@ -36,17 +35,38 @@
   };
 </script>
 
-<Story name="Default">
+<!-- `Modal` component provides a mechanism to display content in a dialog overlay. This Story composes it with the [`ModalContent` component](?path=/docs/components-modalcontent--docs) to create a confirmation dialog. -->
+
+<Story name="With ModalContent">
   {#snippet template({ children: _, trigger: __, ...args })}
     <Modal {...args}>
       {#snippet trigger(triggerProps)}
         <Button {...triggerProps}>Show Modal</Button>
       {/snippet}
       {#snippet children(popovertarget, close)}
-        <div style="padding: 1rem;">
-          <p>This is the modal content.</p>
-          <Button {popovertarget} onclick={close}>Close</Button>
-        </div>
+        <ModalContent>
+          <ModalContent.Header>
+            Discard pending review?
+            <ModalContent.Header.CloseButton {popovertarget} onclick={close} />
+          </ModalContent.Header>
+          <ModalContent.Body>
+            You have added 4 comments. Discarding the pending review will
+            permanently delete them. Are you sure you want to continue?
+          </ModalContent.Body>
+          <ModalContent.Footer>
+            <Button {popovertarget} onclick={close}>Keep review</Button>
+            <Button
+              {popovertarget}
+              onclick={() => {
+                // doSomething();
+                close();
+              }}
+              modifiers={{ severity: "negative" }}
+            >
+              Discard review
+            </Button>
+          </ModalContent.Footer>
+        </ModalContent>
       {/snippet}
     </Modal>
   {/snippet}
