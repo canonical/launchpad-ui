@@ -14,15 +14,23 @@ import type {
 type BaseProps = Omit<HTMLDialogAttributes, "open" | "children">;
 type PopoverTarget = Exclude<HTMLButtonAttributes["popovertarget"], null>;
 
+export type SidePanelTriggerProps = {
+  onclick: () => void;
+  "aria-haspopup": "dialog";
+  popovertarget: PopoverTarget;
+};
+
 export interface SidePanelProps extends BaseProps {
   /**
    * A snippet containing a button element that triggers the side panel.
    *
    * Snippet arguments:
-   * - `popovertarget`: The id of the side panel element. Set it as `popovertarget` attribute on the button element to provide a no-JS fallback for opening the side panel. If there is JS, this will be `undefined`. The `show` should be used whenever possible as it provides better accessibility (e.g. making the rest of the document inert).
-   * - `show`: A function to open the side panel.
+   * - `triggerProps`: Props to spread on the button element. It contains:
+   *   - `onclick`: An onclick handler to open the side panel.
+   *   - `aria-haspopup`: Always set to `"dialog"` to indicate that the button opens a dialog.
+   *   - `popovertarget`: The id of the side panel element. Setting it as `popovertarget` attribute on the button element allows for a no-JS fallback for opening the side panel. If there is JS, this will be `undefined`.
    */
-  trigger?: Snippet<[popovertarget: PopoverTarget, show: () => void]>;
+  trigger?: Snippet<[triggerProps: SidePanelTriggerProps]>;
   /**
    * Whether to close the side panel when clicking outside of it.
    *

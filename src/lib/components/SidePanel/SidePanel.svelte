@@ -32,7 +32,11 @@
   };
 </script>
 
-{@render trigger?.(asPopover ? id : undefined, showModal)}
+{@render trigger?.({
+  onclick: showModal,
+  "aria-haspopup": "dialog",
+  popovertarget: asPopover ? id : undefined,
+})}
 
 <dialog
   bind:this={dialogRef}
@@ -53,13 +57,11 @@
 <!-- @component
 `SidePanel` provides a mechanism for displaying content overlaying the main application. It is a bring-your-own trigger and content component.
 
-The side panel-like layout and structure are provided by the `SidePanelContent` component.
-
 SidePanel can be imperatively controlled by the following methods available on the component instance:
-- `showSidePanel`: Additionally supplied via the `trigger` snippet.
-- `close`: Additionally supplied via the `footer` snippet.
+- `showModal`: Additionally supplied as `triggerProps.onclick` via the `trigger` snippet.
+- `close`: Additionally supplied via the `children` snippet.
 
-If JavaScript is disabled, SidePanel can be controlled as a popover with declaratively bound button triggers. To allow for that pass the `popovertarget` supplied via the `trigger` or `children` snippets to buttons you want to use as triggers. However this should be treated as a fallback. If possible, the side panel should be controlled using the imperative calls of `showSidePanel` and `close` which ensure better accessibility and user experience (e.g. rendering the rest of the document as inert) See [MDN](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/dialog) for more information.
+If JavaScript is disabled, SidePanel can be controlled as a popover with declaratively bound button triggers. To allow for that pass the `popovertarget` supplied via the `trigger` or `children` snippets to buttons you want to use as triggers. However this should be treated as a fallback. If possible, the side panel should be controlled using the imperative calls of `showModal` and `close` which ensure better accessibility and user experience (e.g. rendering the rest of the document as inert) See [MDN](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/dialog) for more information.
 
 ## Example Usage
 ```svelte
@@ -70,8 +72,8 @@ If JavaScript is disabled, SidePanel can be controlled as a popover with declara
 </script>
 
 <SidePanel bind:this={sidePanel}>
-  {#snippet trigger(popovertarget, open)}
-    <button {popovertarget} onclick={open}>
+  {#snippet trigger(triggerProps)}
+    <button {...triggerProps}>
       Open SidePanel
     </button>
   {/snippet}

@@ -57,8 +57,8 @@
       <ShortcutsProvider>
         <UseShortcuts shortcuts={localShortcuts} />
         <ShortcutsHelpSidePanel {...args}>
-          {#snippet trigger(_, showModal)}
-            <Button onclick={showModal}>Open local shortcuts help</Button>
+          {#snippet trigger(triggerProps)}
+            <Button {...triggerProps}>Open local shortcuts help</Button>
           {/snippet}
         </ShortcutsHelpSidePanel>
         or press <kbd>Ctrl</kbd>+<kbd>/</kbd> to open global shortcuts help.
