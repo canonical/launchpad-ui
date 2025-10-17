@@ -12,7 +12,7 @@ import type {
 type BaseProps = WithoutChildren<SvelteHTMLElements["div"]>;
 type PopoverTarget = NonNullable<HTMLButtonAttributes["popovertarget"]>;
 
-export type TriggerProps = {
+export type PopoverTriggerProps = {
   popovertarget: PopoverTarget;
   [key: symbol]: Attachment<HTMLElement>;
 };
@@ -33,7 +33,7 @@ export interface PopoverProps extends BaseProps {
    *   - attachment enabling JS-based positioning fallback for unsupported browsers (see `position` prop);
    * - `open`: A boolean indicating whether the popover is open or closed.
    */
-  trigger: Snippet<[triggerProps: TriggerProps, open: boolean]>;
+  trigger: Snippet<[triggerProps: PopoverTriggerProps, open: boolean]>;
   /**
    * Content to be displayed inside the popover.
    *

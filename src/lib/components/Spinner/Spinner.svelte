@@ -1,7 +1,7 @@
 <!-- @canonical/generator-ds 0.10.0-experimental.2 -->
 
 <script lang="ts">
-  import { Icon } from "../Icon/index.js";
+  import { Icon } from "$lib/components/Icon/index.js";
   import type { SpinnerProps } from "./types.js";
 
   const componentCssClassName = "ds spinner";

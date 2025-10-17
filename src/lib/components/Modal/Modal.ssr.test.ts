@@ -1,119 +1,138 @@
 /* @canonical/generator-ds 0.10.0-experimental.2 */
 
-import { createRawSnippet } from "svelte";
-import { render } from "svelte/server";
+import { render } from "@canonical/svelte-ssr-test";
+import type { RenderResult } from "@canonical/svelte-ssr-test";
 import { assert, describe, expect, it } from "vitest";
 import Component from "./Modal.svelte";
+import {
+  children,
+  closeButtonText,
+  contentText,
+  trigger,
+  triggerText,
+} from "./test.fixtures.svelte";
 
 describe("Modal SSR", () => {
-  it("doesn't throw", () => {
-    expect(() => {
-      render(Component);
-    }).not.toThrow();
-  });
+  describe("basics", () => {
+    it("doesn't throw", () => {
+      expect(() => {
+        render(Component);
+      }).not.toThrow();
+    });
 
-  describe("Renders", () => {
-    it("renders as dialog", () => {
-      const { body } = render(Component);
-      expect(body).toContain("<dialog");
-      expect(body).toContain("</dialog>");
+    it("renders", () => {
+      const page = render(Component);
+      expect(componentLocator(page)).toBeInstanceOf(
+        page.window.HTMLDialogElement,
+      );
     });
 
     it("renders children", () => {
-      const { body } = render(Component, {
+      const page = render(Component, {
         props: {
-          children: createRawSnippet(() => ({
-            render: () => `<span>Child Content</span>`,
-          })),
+          children,
         },
       });
-      expect(body).toContain("Child Content");
+      expect(page.getByText(contentText)).toBeDefined();
+    });
+
+    it("renders trigger", () => {
+      const page = render(Component, {
+        props: {
+          trigger,
+        },
+      });
+      expect(triggerLocator(page)).toBeDefined();
     });
   });
 
-  describe("basic attributes", () => {
-    it("applies id", () => {
-      const { body } = render(Component, {
-        props: { id: "test-id" },
+  describe("attributes", () => {
+    it.each([
+      ["id", "test-id"],
+      ["aria-label", "test-aria-label"],
+    ])("applies %s", (attribute, expected) => {
+      const page = render(Component, {
+        props: { [attribute]: expected },
       });
-      expect(body).toContain('id="test-id"');
+      expect(componentLocator(page).getAttribute(attribute)).toBe(expected);
+    });
+
+    it("applies classes", () => {
+      const page = render(Component, {
+        props: { class: "test-class" },
+      });
+      expect(componentLocator(page).classList).toContain("test-class");
+      expect(componentLocator(page).classList).toContain("ds");
+      expect(componentLocator(page).classList).toContain("modal");
     });
 
     it("applies style", () => {
-      const { body } = render(Component, {
-        props: { style: "color: red;" },
+      const page = render(Component, {
+        props: { style: "color: orange;" },
       });
-      expect(body).toMatch(/style="[^"]*color: red;[^"]*"/);
-    });
-
-    it("applies class", () => {
-      const { body } = render(Component, {
-        props: { class: "test-class" },
-      });
-      expect(body).toMatch(/class="[^"]*test-class[^"]*"/);
+      expect(componentLocator(page).style.color).toBe("orange");
     });
   });
 
   describe("Declarative controls", () => {
     it("properly links trigger with modal", () => {
-      const { body } = render(Component, {
+      const page = render(Component, {
         props: {
-          trigger: createRawSnippet<[string | undefined, () => void]>(
-            (popovertarget) => ({
-              render: () =>
-                `<button popovertarget="${popovertarget()}">Open Modal</button>`,
-            }),
-          ),
+          trigger,
         },
       });
-      const modalId = body.match(/id="([^"]*)"/)?.[1];
+      const modalId = componentLocator(page).getAttribute("id");
       assert(modalId !== undefined);
-      expect(body).toContain(
-        `<button popovertarget="${modalId}">Open Modal</button>`,
-      );
+      expect(triggerLocator(page).getAttribute("popovertarget")).toBe(modalId);
+      expect(triggerLocator(page).getAttribute("aria-haspopup")).toBe("dialog");
     });
 
     it("properly links children controls with modal", () => {
-      const { body } = render(Component, {
+      const page = render(Component, {
         props: {
-          children: createRawSnippet<[string | undefined, () => void]>(
-            (popovertarget) => ({
-              render: () =>
-                `<button popovertarget="${popovertarget()}">Close</button>`,
-            }),
-          ),
+          children,
         },
       });
-      const modalId = body.match(/id="([^"]*)"/)?.[1];
+      const modalId = componentLocator(page).getAttribute("id");
       assert(modalId !== undefined);
-      expect(body).toContain(
-        `<button popovertarget="${modalId}">Close</button>`,
-      );
+      const closeButton = page.getByRole("button", {
+        name: closeButtonText,
+        hidden: true,
+      });
+      expect(closeButton.getAttribute("popovertarget")).toBe(modalId);
     });
   });
 
   describe("Popover fallback", () => {
     it("renders as auto popover if `closeOnOutsideClick` is true", () => {
-      const { body } = render(Component, {
+      const page = render(Component, {
         props: {
           closeOnOutsideClick: true,
         },
       });
-      expect(body).toContain('popover="auto"');
+      expect(componentLocator(page).getAttribute("popover")).toBe("auto");
     });
 
     it("renders as manual popover if `closeOnOutsideClick` is false", () => {
-      const { body } = render(Component, {
+      const page = render(Component, {
         props: {
           closeOnOutsideClick: false,
         },
       });
-      expect(body).toContain('popover="manual"');
+      expect(componentLocator(page).getAttribute("popover")).toBe("manual");
     });
 
     it("does not have `closedby` attribute", () => {
-      const { body } = render(Component);
-      expect(body).not.toContain(`closedby`);
+      const page = render(Component);
+      expect(componentLocator(page).getAttribute("closedby")).toBeNull();
     });
   });
 });
+
+function componentLocator(page: RenderResult): HTMLElement {
+  return page.getByRole("dialog", { hidden: true });
+}
+
+function triggerLocator(page: RenderResult): HTMLElement {
+  return page.getByRole("button", { name: triggerText });
+}

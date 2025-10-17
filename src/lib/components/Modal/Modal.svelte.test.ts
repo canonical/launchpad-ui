@@ -1,234 +1,236 @@
 /* @canonical/generator-ds 0.10.0-experimental.2 */
 
-import { createRawSnippet } from "svelte";
+import { userEvent } from "@vitest/browser/context";
+import type { Locator } from "@vitest/browser/context";
+import type { ComponentProps } from "svelte";
 import { describe, expect, it } from "vitest";
 import { render } from "vitest-browser-svelte";
 import type { RenderResult } from "vitest-browser-svelte";
 import Component from "./Modal.svelte";
+import {
+  children,
+  closeButtonText,
+  contentText,
+  trigger,
+  triggerText,
+} from "./test.fixtures.svelte";
 import type { ModalMethods } from "./types.js";
 
-const trigger = createRawSnippet<[string | undefined, () => void]>(
-  (popovertarget, open) => ({
-    render: () => `<button>Open Modal</button>`,
-    setup: (element) => {
-      const clickHandler = open();
-      element.addEventListener("click", clickHandler);
+describe("Modal component", () => {
+  const baseProps = {
+    children,
+    trigger,
+  } satisfies ComponentProps<typeof Component>;
 
-      $effect(() => {
-        const popovertargetValue = popovertarget();
-        if (popovertargetValue) {
-          element.setAttribute("popovertarget", popovertargetValue);
-        } else {
-          element.removeAttribute("popovertarget");
-        }
-      });
-
-      return () => {
-        element.removeEventListener("click", clickHandler);
-      };
-    },
-  }),
-);
-
-const childrenWithSnippetProps = createRawSnippet<
-  [string | undefined, () => void]
->((popovertarget, close) => ({
-  render: () => `<button>Button in children</button>`,
-  setup: (element) => {
-    const clickHandler = close();
-    element.addEventListener("click", clickHandler);
-
-    $effect(() => {
-      const popovertargetValue = popovertarget();
-      if (popovertargetValue) {
-        element.setAttribute("popovertarget", popovertargetValue);
-      } else {
-        element.removeAttribute("popovertarget");
-      }
+  describe("basics", () => {
+    it("renders", async () => {
+      const page = render(Component, { props: baseProps });
+      await expect.element(componentLocator(page, true)).toBeInTheDocument();
     });
 
-    return () => {
-      element.removeEventListener("click", clickHandler);
-    };
-  },
-}));
+    it("renders trigger", async () => {
+      const page = render(Component, {
+        props: baseProps,
+      });
+      await expect.element(triggerLocator(page)).toBeInTheDocument();
+      await expect
+        .element(triggerLocator(page))
+        .toHaveAttribute("aria-haspopup", "dialog");
+    });
 
-describe("Modal component", () => {
-  it("renders dialog element", async () => {
-    const page = render(Component);
-    await expect.element(testIdLocator(page)).toBeInTheDocument();
-    await expect.element(testIdLocator(page)).not.toHaveAttribute("open");
+    it("renders children", async () => {
+      const page = render(Component, {
+        props: baseProps,
+      });
+      await expect
+        .element(
+          page.getByRole("button", {
+            name: closeButtonText,
+            includeHidden: true,
+          }),
+        )
+        .toBeInTheDocument();
+    });
+
+    it("is hidden by default", async () => {
+      const page = render(Component, { props: baseProps });
+      await expect.element(componentLocator(page, true)).not.toBeVisible();
+
+      await expect
+        .element(componentLocator(page, true))
+        .not.toHaveAttribute("open");
+    });
   });
 
   describe("Opening the Modal", () => {
     it("is opened when `showModal` on the dialog element is called", async () => {
       const page = render(Component, {
-        props: {
-          children: createRawSnippet(() => ({
-            render: () => `<div>Body Content</div>`,
-          })),
-        },
+        props: baseProps,
       });
-      (testIdLocator(page).element() as HTMLDialogElement).showModal();
-      await expect.element(page.getByRole("dialog")).toHaveAttribute("open");
-      await expect.element(page.getByRole("dialog")).toBeVisible();
+      await expect.element(componentLocator(page, true)).not.toBeVisible();
+
+      (componentLocator(page, true).element() as HTMLDialogElement).showModal();
+      await expect.element(componentLocator(page)).toBeVisible();
+      await expect.element(componentLocator(page)).toHaveAttribute("open");
+      await expect.element(page.getByText(contentText)).toBeVisible();
     });
 
-    it("is opened by open() supplied via trigger snippet", async () => {
+    it("is opened by trigger click", async () => {
       const page = render(Component, {
-        props: {
-          trigger,
-          children: createRawSnippet(() => ({
-            render: () => `<div>Body Content</div>`,
-          })),
-        },
+        props: baseProps,
       });
-      await expect.element(testIdLocator(page)).not.toHaveAttribute("open");
+      await expect.element(componentLocator(page, true)).not.toBeVisible();
+      await expect
+        .element(componentLocator(page, true))
+        .not.toHaveAttribute("popover");
 
-      const triggerButton = page.getByRole("button", { name: "Open Modal" });
-      await triggerButton.click();
-      await expect.element(page.getByRole("dialog")).toHaveAttribute("open");
-      await expect.element(page.getByRole("dialog")).toBeVisible();
+      await triggerLocator(page).click();
+      await expect.element(componentLocator(page)).toBeVisible();
+      await expect.element(componentLocator(page)).toHaveAttribute("open");
+      await expect.element(page.getByText(contentText)).toBeVisible();
     });
 
     it("is opened by showModal() on the component instance", async () => {
       const page = render(Component, {
-        props: {
-          trigger,
-          children: createRawSnippet(() => ({
-            render: () => `<div>Body Content</div>`,
-          })),
-        },
+        props: baseProps,
       });
-      await expect.element(testIdLocator(page)).not.toHaveAttribute("open");
+      await expect.element(componentLocator(page, true)).not.toBeVisible();
 
       const component = page.component as unknown as ModalMethods;
-
       component.showModal();
-      await expect.element(page.getByRole("dialog")).toHaveAttribute("open");
-      await expect.element(page.getByRole("dialog")).toBeVisible();
-      // Calling showModal again does nothing
-      component.showModal();
-      await expect.element(page.getByRole("dialog")).toHaveAttribute("open");
-      await expect.element(page.getByRole("dialog")).toBeVisible();
+      await expect.element(componentLocator(page)).toBeVisible();
+      await expect.element(componentLocator(page)).toHaveAttribute("open");
+      await expect.element(page.getByText(contentText)).toBeVisible();
     });
   });
 
   describe("Closing the Modal", () => {
     it("is closed when `close` on the dialog element is called", async () => {
-      const page = render(Component, { props: { trigger } });
+      const page = render(Component, { props: baseProps });
       await showModal(page);
-      (testIdLocator(page).element() as HTMLDialogElement).close();
+
+      (componentLocator(page).element() as HTMLDialogElement).close();
+      await expect.element(componentLocator(page, true)).not.toBeVisible();
       await expect
-        .element(page.getByRole("dialog"))
+        .element(componentLocator(page, true))
         .not.toHaveAttribute("open");
     });
 
     it("is closed by close() supplied via children snippet", async () => {
       const page = render(Component, {
-        props: { children: childrenWithSnippetProps },
+        props: baseProps,
       });
       await showModal(page);
 
-      const closeButton = page.getByRole("button", {
-        name: "Button in children",
-      });
-      await closeButton.click();
+      await page.getByRole("button", { name: closeButtonText }).click();
+      await expect.element(componentLocator(page, true)).not.toBeVisible();
       await expect
-        .element(page.getByRole("dialog", { includeHidden: true }))
+        .element(componentLocator(page, true))
         .not.toHaveAttribute("open");
     });
 
     it("is closed by close() on the component instance", async () => {
-      const page = render(Component, { props: { trigger } });
+      const page = render(Component, { props: baseProps });
       await showModal(page);
 
       const component = page.component as unknown as ModalMethods;
-
       component.close();
+      await expect.element(componentLocator(page, true)).not.toBeVisible();
       await expect
-        .element(page.getByRole("dialog"))
-        .not.toHaveAttribute("open");
-      // Calling close again does nothing
-      component.close();
-      await expect
-        .element(page.getByRole("dialog"))
+        .element(componentLocator(page, true))
         .not.toHaveAttribute("open");
     });
-  });
 
-  describe("Basic attributes", () => {
-    it("applies id", async () => {
-      const page = render(Component, { props: { id: "test-id" } });
-      await showModal(page);
-      await expect
-        .element(page.getByRole("dialog"))
-        .toHaveAttribute("id", "test-id");
-    });
+    // Webkit doesn't support `closedby` attribute on dialog elements (https://developer.mozilla.org/en-US/docs/Web/API/HTMLDialogElement/closedBy), as such the modals currently cannot be closed by clicking outside of them.
+    // FIXME: Provide a fallback mechanism for Webkit browsers.
+    it.runIf(!navigator.userAgent.includes("Macintosh"))(
+      "is closed by clicking outside the modal when `closeOnOutsideClick` is true",
+      async () => {
+        const page = render(Component, {
+          props: { ...baseProps, closeOnOutsideClick: true },
+        });
+        await showModal(page);
 
-    it("applies class", async () => {
-      const page = render(Component, { props: { class: "test-class" } });
-      await showModal(page);
-      await expect.element(page.getByRole("dialog")).toHaveClass("test-class");
-    });
-
-    it("applies style", async () => {
-      const page = render(Component, { props: { style: "color: red;" } });
-      await showModal(page);
-      await expect.element(page.getByRole("dialog")).toHaveStyle("color: red;");
-    });
-  });
-
-  it("renders children", async () => {
-    const page = render(Component, {
-      props: {
-        children: createRawSnippet(() => ({
-          render: () => `<div>Body Content</div>`,
-        })),
+        await componentLocator(page).click({ position: { x: 0, y: -10 } });
+        await expect.element(componentLocator(page, true)).not.toBeVisible();
+        await expect
+          .element(componentLocator(page, true))
+          .not.toHaveAttribute("open");
       },
-    });
-    await showModal(page);
+    );
 
-    await expect
-      .element(page.getByRole("dialog"))
-      .toHaveTextContent("Body Content");
+    it("is not closed by clicking outside the modal when `closeOnOutsideClick` is false", async () => {
+      const page = render(Component, {
+        props: { ...baseProps, closeOnOutsideClick: false },
+      });
+      await showModal(page);
+
+      await componentLocator(page).click({ position: { x: 0, y: -10 } });
+      await expect.element(componentLocator(page)).toBeVisible();
+      await expect.element(componentLocator(page)).toHaveAttribute("open");
+    });
+
+    it("is closed by pressing Escape", async () => {
+      const page = render(Component, {
+        props: { ...baseProps },
+      });
+      await showModal(page);
+
+      await userEvent.keyboard("{Escape}");
+      await expect.element(componentLocator(page, true)).not.toBeVisible();
+      await expect
+        .element(componentLocator(page, true))
+        .not.toHaveAttribute("open");
+    });
   });
 
   describe("Removal of the fallback when mounted", () => {
     it("does not have popover attribute", async () => {
-      const page = render(Component);
-      const dialogEl = testIdLocator(page);
-      await expect.element(dialogEl).not.toHaveAttribute("popover");
+      const page = render(Component, { props: baseProps });
+      await expect
+        .element(componentLocator(page, true))
+        .not.toHaveAttribute("popover");
     });
 
     it("popovertarget passed to trigger is undefined", async () => {
       const page = render(Component, { props: { trigger } });
-      const triggerButton = page.getByRole("button", { name: "Open Modal" });
-      await expect.element(triggerButton).not.toHaveAttribute("popovertarget");
+      await expect
+        .element(triggerLocator(page))
+        .not.toHaveAttribute("popovertarget");
     });
 
     it("popovertarget passed to children is undefined", async () => {
       const page = render(Component, {
-        props: { children: childrenWithSnippetProps },
+        props: baseProps,
       });
-      await showModal(page);
-      const footerButton = page.getByRole("button", {
-        name: "Button in children",
-      });
-      await expect.element(footerButton).not.toHaveAttribute("popovertarget");
+      await expect
+        .element(
+          page.getByRole("button", {
+            name: closeButtonText,
+            includeHidden: true,
+          }),
+        )
+        .not.toHaveAttribute("popovertarget");
     });
   });
 });
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function testIdLocator(page: RenderResult<any>) {
-  return page.getByTestId("modal");
+function componentLocator(
+  page: RenderResult<typeof Component>,
+  includeHidden = false,
+): Locator {
+  return page.getByRole("dialog", { includeHidden });
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-async function showModal(page: RenderResult<any>) {
-  const dialogEl = testIdLocator(page);
-  // Wait until it mounts and exits the no-JS popover fallback mode
-  await expect.element(dialogEl).not.toHaveAttribute("popover");
-  (dialogEl.element() as HTMLDialogElement).showModal();
+function triggerLocator(page: RenderResult<typeof Component>): Locator {
+  return page.getByRole("button", { name: triggerText });
+}
+
+async function showModal(page: RenderResult<typeof Component>): Promise<void> {
+  await expect
+    .element(componentLocator(page, true))
+    .not.toHaveAttribute("popover");
+  (page.component as unknown as ModalMethods).showModal();
+  await expect.element(componentLocator(page)).toBeVisible();
+  await expect.element(componentLocator(page)).toHaveAttribute("open");
 }

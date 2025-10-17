@@ -17,8 +17,8 @@ The following Modal example can be assembled using:
 
 <Story name="Modal" asChild>
   <Modal>
-    {#snippet trigger(popovertarget, open)}
-      <Button {popovertarget} onclick={open}>Open modal</Button>
+    {#snippet trigger(triggerProps)}
+      <Button {...triggerProps}>Open modal</Button>
     {/snippet}
     {#snippet children(popovertarget, close)}
       <ModalContent>
