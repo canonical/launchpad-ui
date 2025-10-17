@@ -1,62 +1,75 @@
-/* @canonical/generator-ds 0.10.0-experimental.2 */
+/* @canonical/generator-ds 0.10.0-experimental.5 */
 
-import { render } from "svelte/server";
+import { render } from "@canonical/svelte-ssr-test";
+import type { RenderResult } from "@canonical/svelte-ssr-test";
+import type { ComponentProps } from "svelte";
 import { describe, expect, it } from "vitest";
 import Component from "./RadioOption.svelte";
 
 describe("RadioOption SSR", () => {
+  const baseProps = {
+    text: "Option 1",
+  } satisfies ComponentProps<typeof Component>;
+
   it("doesn't throw", () => {
     expect(() => {
-      render(Component, { props: { text: "Option 1" } });
+      render(Component, { props: { ...baseProps } });
     }).not.toThrow();
   });
 
   it("renders", () => {
-    const { body } = render(Component, { props: { text: "Option 1" } });
-    expect(body).toContain("<label");
-    expect(body).toContain('type="radio"');
+    const page = render(Component, { props: { ...baseProps } });
+    expect(componentLocator(page)).toBeInstanceOf(page.window.HTMLElement);
   });
 
-  describe("Basic attributes", () => {
-    it("applies id", () => {
-      const { body } = render(Component, {
-        props: { text: "Text", id: "test-id" },
+  describe("attributes", () => {
+    it.each([
+      ["id", "test-id"],
+      ["aria-label", "test-aria-label"],
+    ])("applies %s", (attribute, expected) => {
+      const page = render(Component, {
+        props: { ...baseProps, [attribute]: expected },
       });
-      expect(body).toContain('id="test-id"');
+      expect(componentLocator(page)?.getAttribute(attribute)).toBe(expected);
     });
 
-    it("applies class", () => {
-      const { body } = render(Component, {
-        props: { text: "Text", class: "test-class" },
+    it("applies classes", () => {
+      const page = render(Component, {
+        props: { ...baseProps, class: "test-class" },
       });
-      expect(body).toMatch(/class="[^"]*test-class[^"]*"/);
+      expect(componentLocator(page)?.classList).toContain("test-class");
+      expect(componentLocator(page)?.classList).toContain("ds");
+      expect(componentLocator(page)?.classList).toContain("radio-option");
     });
 
     it("applies style", () => {
-      const { body } = render(Component, {
-        props: {
-          text: "Text",
-          style: "color: red;",
-        },
+      const page = render(Component, {
+        props: { ...baseProps, style: "color: orange;" },
       });
-      expect(body).toContain('style="color: red;"');
+      expect(componentLocator(page)?.style.color).toBe("orange");
     });
   });
 
   describe("After-mount attributes", () => {
     it("doesn't apply inert", () => {
-      const { body } = render(Component, { props: { text: "Option 1" } });
-      expect(body).not.toContain("inert");
+      const page = render(Component, { props: { ...baseProps } });
+      expect(componentLocator(page)?.hasAttribute("inert")).toBe(false);
     });
 
     it("doesn't apply role", () => {
-      const { body } = render(Component, { props: { text: "Option 1" } });
-      expect(body).not.toContain('role="option"');
+      const page = render(Component, { props: { ...baseProps } });
+      expect(componentLocator(page)?.getAttribute("role")).toBeNull();
     });
 
     it("doesn't apply aria-selected", () => {
-      const { body } = render(Component, { props: { text: "Option 1" } });
-      expect(body).not.toMatch(/aria-selected="(false|true)"/);
+      const page = render(Component, { props: { ...baseProps } });
+      expect(componentLocator(page)?.getAttribute("aria-selected")).toBeNull();
     });
   });
 });
+
+// Note: Prefer role/semantics-oriented ways of selecting elements (e.g., by role, label, etc.) not only for component roots but for all elements to enhance accessibility and maintainability.
+// To select the component's root element, use one of the available [Queries](https://testing-library.com/docs/queries/about/#priority).
+function componentLocator(page: RenderResult): HTMLElement | null {
+  return page.container.querySelector("label");
+}

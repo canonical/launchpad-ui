@@ -1,4 +1,4 @@
-/* @canonical/generator-ds 0.10.0-experimental.4 */
+/* @canonical/generator-ds 0.10.0-experimental.5 */
 
 import type { Locator } from "@vitest/browser/context";
 import type { ComponentProps } from "svelte";
@@ -12,6 +12,40 @@ describe("SearchBox component", () => {
     "aria-label": "Search articles",
   } satisfies ComponentProps<typeof Component>;
 
+  it("renders", async () => {
+    const page = render(Component, { ...baseProps });
+    await expect.element(componentLocator(page)).toBeVisible();
+  });
+
+  describe("attributes", () => {
+    it.each([
+      ["id", "test-id"],
+      ["aria-label", "test-aria-label"],
+    ])("applies %s", async (attribute, expected) => {
+      const page = render(Component, { ...baseProps, [attribute]: expected });
+      await expect
+        .element(componentLocator(page))
+        .toHaveAttribute(attribute, expected);
+    });
+
+    it("applies classes", async () => {
+      const page = render(Component, { ...baseProps, class: "test-class" });
+      await expect.element(componentLocator(page)).toHaveClass("test-class");
+      await expect.element(componentLocator(page)).toHaveClass("ds");
+      await expect.element(componentLocator(page)).toHaveClass("search-box");
+    });
+
+    it("applies style", async () => {
+      const page = render(Component, {
+        ...baseProps,
+        style: "color: orange;",
+      });
+      await expect
+        .element(componentLocator(page))
+        .toHaveStyle({ color: "orange" });
+    });
+  });
+
   describe("basics", () => {
     it("doesn't throw", async () => {
       expect(() => {
@@ -24,15 +58,6 @@ describe("SearchBox component", () => {
       await expect.element(wrapperLocator(page)).toBeInTheDocument();
       await expect.element(inputLocator(page)).toBeInTheDocument();
       await expect.element(buttonLocator(page)).toBeInTheDocument();
-    });
-  });
-
-  describe("wrapper attributes", () => {
-    it("applies classes to the wrapper", async () => {
-      const page = render(Component, { class: "test-class", ...baseProps });
-      await expect.element(wrapperLocator(page)).toHaveClass("test-class");
-      await expect.element(wrapperLocator(page)).toHaveClass("ds");
-      await expect.element(wrapperLocator(page)).toHaveClass("search-box");
     });
   });
 
@@ -97,6 +122,12 @@ describe("SearchBox component", () => {
     });
   });
 });
+
+// Note: Prefer role/semantics-oriented ways of selecting elements (e.g., by role, label, etc.) not only for component roots but for all elements to enhance accessibility and maintainability.
+// To select the component's root element, use one of the available [Locators](https://vitest.dev/guide/browser/locators.html).
+function componentLocator(page: RenderResult<typeof Component>): Locator {
+  return page.getByTestId("search-box");
+}
 
 function wrapperLocator(page: RenderResult<typeof Component>): Locator {
   return page.getByTestId("search-box");

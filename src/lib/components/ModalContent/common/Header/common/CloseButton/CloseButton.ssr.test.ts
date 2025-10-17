@@ -1,34 +1,56 @@
-/* @canonical/generator-ds 0.10.0-experimental.2 */
+/* @canonical/generator-ds 0.10.0-experimental.5 */
 
-import { render } from "svelte/server";
+import { render } from "@canonical/svelte-ssr-test";
+import type { RenderResult } from "@canonical/svelte-ssr-test";
+import type { ComponentProps } from "svelte";
 import { describe, expect, it } from "vitest";
 import Component from "./CloseButton.svelte";
 
 describe("CloseButton SSR", () => {
+  const baseProps = {} satisfies ComponentProps<typeof Component>;
+
   it("doesn't throw", () => {
-    expect(() => render(Component)).not.toThrow();
+    expect(() => {
+      render(Component, { props: { ...baseProps } });
+    }).not.toThrow();
   });
 
   it("renders", () => {
-    const { body } = render(Component);
-    expect(body).toContain("button");
-    expect(body).toMatch(/aria-label="Close"/);
+    const page = render(Component, { props: { ...baseProps } });
+    expect(componentLocator(page)).toBeInstanceOf(page.window.HTMLElement);
   });
 
-  describe("Basic attributes", () => {
-    it("applies id", () => {
-      const { body } = render(Component, { props: { id: "test-id" } });
-      expect(body).toContain('id="test-id"');
+  describe("attributes", () => {
+    it.each([
+      ["id", "test-id"],
+      ["aria-label", "test-aria-label"],
+    ])("applies %s", (attribute, expected) => {
+      const page = render(Component, {
+        props: { ...baseProps, [attribute]: expected },
+      });
+      expect(componentLocator(page)?.getAttribute(attribute)).toBe(expected);
     });
 
-    it("applies class", () => {
-      const { body } = render(Component, { props: { class: "test-class" } });
-      expect(body).toMatch(/class="[^"]*test-class[^"]*"/);
+    it("applies classes", () => {
+      const page = render(Component, {
+        props: { ...baseProps, class: "test-class" },
+      });
+      expect(componentLocator(page)?.classList).toContain("test-class");
+      expect(componentLocator(page)?.classList).toContain("ds");
+      expect(componentLocator(page)?.classList).toContain("close-button");
     });
 
     it("applies style", () => {
-      const { body } = render(Component, { props: { style: "color: red;" } });
-      expect(body).toContain('style="color: red;"');
+      const page = render(Component, {
+        props: { ...baseProps, style: "color: orange;" },
+      });
+      expect(componentLocator(page)?.style.color).toBe("orange");
     });
   });
 });
+
+// Note: Prefer role/semantics-oriented ways of selecting elements (e.g., by role, label, etc.) not only for component roots but for all elements to enhance accessibility and maintainability.
+// To select the component's root element, use one of the available [Queries](https://testing-library.com/docs/queries/about/#priority).
+function componentLocator(page: RenderResult): HTMLElement | null {
+  return page.getByRole("button", { name: "Close" });
+}

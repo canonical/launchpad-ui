@@ -1,8 +1,12 @@
+/* @canonical/generator-ds 0.10.0-experimental.5 */
+
+import type { Locator } from "@vitest/browser/context";
 import { page } from "@vitest/browser/context";
-import type { Snippet } from "svelte";
 import { createRawSnippet } from "svelte";
+import type { ComponentProps, Snippet } from "svelte";
 import { describe, expect, it, vi } from "vitest";
 import { render } from "vitest-browser-svelte";
+import type { RenderResult } from "vitest-browser-svelte";
 import Component from "./Chip.svelte";
 
 // Mock the Icon component to prevent testing its implementation details.
@@ -11,7 +15,45 @@ vi.mock("../Icon", () => ({
     `<div data-testid="icon-${props.name}"></div>`,
 }));
 
-describe("Chip", () => {
+describe("Chip component", () => {
+  const baseProps = {
+    value: "Chip",
+  } satisfies ComponentProps<typeof Component>;
+
+  it("renders", async () => {
+    const page = render(Component, { ...baseProps });
+    await expect.element(componentLocator(page)).toBeInTheDocument();
+  });
+
+  describe("attributes", () => {
+    it.each([
+      ["id", "test-id"],
+      ["aria-label", "test-aria-label"],
+    ])("applies %s", async (attribute, expected) => {
+      const page = render(Component, { ...baseProps, [attribute]: expected });
+      await expect
+        .element(componentLocator(page))
+        .toHaveAttribute(attribute, expected);
+    });
+
+    it("applies classes", async () => {
+      const page = render(Component, { ...baseProps, class: "test-class" });
+      await expect.element(componentLocator(page)).toHaveClass("test-class");
+      await expect.element(componentLocator(page)).toHaveClass("ds");
+      await expect.element(componentLocator(page)).toHaveClass("chip");
+    });
+
+    it("applies style", async () => {
+      const page = render(Component, {
+        ...baseProps,
+        style: "color: orange;",
+      });
+      await expect
+        .element(componentLocator(page))
+        .toHaveStyle({ color: "orange" });
+    });
+  });
+
   describe("Initial Rendering", () => {
     it("should render with default props as a non-interactive element", async () => {
       render(Component, { value: "Default Chip" });
@@ -49,13 +91,6 @@ describe("Chip", () => {
       await expect.element(element).toHaveClass("caution");
     });
 
-    it("should apply the id attribute", async () => {
-      render(Component, { value: "ID Chip", id: "my-chip-id" });
-
-      await expect
-        .element(page.getByTestId("chip"))
-        .toHaveAttribute("id", "my-chip-id");
-    });
     it("should not render a button when dismiss is provided", async () => {
       render(Component, { value: "Dismissible", ondismiss: () => {} });
 
@@ -102,3 +137,9 @@ describe("Chip", () => {
     });
   });
 });
+
+// Note: Prefer role/semantics-oriented ways of selecting elements (e.g., by role, label, etc.) not only for component roots but for all elements to enhance accessibility and maintainability.
+// To select the component's root element, use one of the available [Locators](https://vitest.dev/guide/browser/locators.html).
+function componentLocator(page: RenderResult<typeof Component>): Locator {
+  return page.getByTestId("chip");
+}

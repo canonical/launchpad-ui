@@ -1,8 +1,11 @@
-/* @canonical/generator-ds 0.10.0-experimental.2 */
+/* @canonical/generator-ds 0.10.0-experimental.5 */
 
+import type { Locator } from "@vitest/browser/context";
 import { userEvent } from "@vitest/browser/context";
+import type { ComponentProps } from "svelte";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { render } from "vitest-browser-svelte";
+import type { RenderResult } from "vitest-browser-svelte";
 import type { ComboboxContext } from "../../types.js";
 import Component from "./Search.svelte";
 
@@ -46,27 +49,38 @@ vi.mock("./utils/getSiblingOptionId.js", () => {
 });
 
 describe("Search component", () => {
+  const baseProps = {
+    "aria-label": "Search",
+  } satisfies ComponentProps<typeof Component>;
+
   it("renders", async () => {
-    const page = render(Component);
-    await expect.element(page.getByRole("combobox")).toBeInTheDocument();
+    const page = render(Component, { ...baseProps });
+    await expect.element(componentLocator(page)).toBeInTheDocument();
   });
 
-  describe("Basic attributes", () => {
-    it("applies id", async () => {
-      const page = render(Component, { id: "test-id", "aria-label": "Search" });
+  describe("attributes", () => {
+    it.each([["id", "test-id"]])("applies %s", async (attribute, expected) => {
+      const page = render(Component, { ...baseProps, [attribute]: expected });
       await expect
-        .element(page.getByRole("combobox"))
-        .toHaveAttribute("id", "test-id");
+        .element(componentLocator(page))
+        .toHaveAttribute(attribute, expected);
+    });
+
+    it("applies classes", async () => {
+      const page = render(Component, { ...baseProps, class: "test-class" });
+      await expect.element(componentLocator(page)).toHaveClass("test-class");
+      await expect.element(componentLocator(page)).toHaveClass("ds");
+      await expect.element(componentLocator(page)).toHaveClass("search");
     });
 
     it("applies style", async () => {
       const page = render(Component, {
-        style: "color: blue;",
-        "aria-label": "Search",
+        ...baseProps,
+        style: "color: orange;",
       });
       await expect
-        .element(page.getByRole("combobox"))
-        .toHaveStyle("color: blue;");
+        .element(componentLocator(page))
+        .toHaveStyle({ color: "orange" });
     });
   });
 
@@ -76,8 +90,8 @@ describe("Search component", () => {
     });
 
     it("calls getSiblingOptionId on arrow up and down", async () => {
-      const page = render(Component, { "aria-label": "Search" });
-      const input = page.getByRole("combobox");
+      const page = render(Component, { ...baseProps });
+      const input = componentLocator(page);
       await expect.element(input).toBeInTheDocument();
       await userEvent.click(input);
       await userEvent.keyboard("{ArrowDown}");
@@ -97,8 +111,8 @@ describe("Search component", () => {
     });
 
     it("calls setActiveDescendant on arrow up and down", async () => {
-      const page = render(Component, { "aria-label": "Search" });
-      const input = page.getByRole("combobox");
+      const page = render(Component, { ...baseProps });
+      const input = componentLocator(page);
       await expect.element(input).toBeInTheDocument();
       await userEvent.click(input);
       await userEvent.keyboard("{ArrowDown}");
@@ -112,8 +126,8 @@ describe("Search component", () => {
     });
 
     it("calls selectOption on enter", async () => {
-      const page = render(Component, { "aria-label": "Search" });
-      const input = page.getByRole("combobox");
+      const page = render(Component, { ...baseProps });
+      const input = componentLocator(page);
       await expect.element(input).toBeInTheDocument();
       await userEvent.click(input);
       await userEvent.keyboard("{Enter}");
@@ -124,11 +138,17 @@ describe("Search component", () => {
   });
 
   it("calls setActiveDescendant with null on blur", async () => {
-    const page = render(Component, { "aria-label": "Search" });
-    const input = page.getByRole("combobox");
+    const page = render(Component, { ...baseProps });
+    const input = componentLocator(page);
     await expect.element(input).toBeInTheDocument();
     await userEvent.click(input);
     await userEvent.tab();
     expect(setActiveDescendant).toHaveBeenCalledWith(null);
   });
 });
+
+// Note: Prefer role/semantics-oriented ways of selecting elements (e.g., by role, label, etc.) not only for component roots but for all elements to enhance accessibility and maintainability.
+// To select the component's root element, use one of the available [Locators](https://vitest.dev/guide/browser/locators.html).
+function componentLocator(page: RenderResult<typeof Component>): Locator {
+  return page.getByRole("combobox");
+}

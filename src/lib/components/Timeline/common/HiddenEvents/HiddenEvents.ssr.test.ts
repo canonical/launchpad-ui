@@ -1,67 +1,92 @@
-/* @canonical/generator-ds 0.10.0-experimental.2 */
+/* @canonical/generator-ds 0.10.0-experimental.5 */
 
-import { render } from "svelte/server";
+import { render } from "@canonical/svelte-ssr-test";
+import type { RenderResult } from "@canonical/svelte-ssr-test";
+import type { ComponentProps } from "svelte";
 import { describe, expect, it } from "vitest";
 import Component from "./HiddenEvents.svelte";
+
+const baseProps = {
+  numHidden: 888,
+} satisfies ComponentProps<typeof Component>;
+
+/**
+ * Returns the HiddenEvents component element.
+ * Prefers semantic queries (e.g., querySelector with role) for better accessibility testing.
+ */
+function componentLocator(page: RenderResult): HTMLElement | null {
+  return page.container.querySelector("li");
+}
 
 describe("HiddenEvents SSR", () => {
   it("doesn't throw", () => {
     expect(() => {
-      render(Component, { props: { numHidden: 888 } });
+      render(Component, { props: { ...baseProps } });
     }).not.toThrow();
   });
 
   it("renders", () => {
-    const { body } = render(Component, { props: { numHidden: 888 } });
-    expect(body).toContain("<li");
-    expect(body).toContain("</li>");
-    expect(body).toContain("888");
+    const page = render(Component, { props: { ...baseProps } });
+    const element = componentLocator(page);
+    expect(element).toBeInstanceOf(page.window.HTMLElement);
+    expect(element?.tagName).toBe("LI");
+    expect(page.container.innerHTML).toContain("888");
   });
 
   describe("Basic attributes", () => {
-    it("applies id", () => {
-      const { body } = render(Component, {
-        props: { id: "test-id", numHidden: 0 },
+    it.each([
+      ["id", "test-id"],
+      ["aria-label", "test-aria-label"],
+    ])("applies %s", (attribute, value) => {
+      const page = render(Component, {
+        props: { ...baseProps, numHidden: 0, [attribute]: value },
       });
-      expect(body).toContain('id="test-id"');
+      const element = componentLocator(page);
+      expect(element?.getAttribute(attribute)).toBe(value);
     });
 
     it("applies class", () => {
-      const { body } = render(Component, {
+      const page = render(Component, {
         props: {
-          class: "test-class",
+          ...baseProps,
           numHidden: 0,
+          class: "test-class",
         },
       });
-      expect(body).toMatch(/class="[^"]*test-class[^"]*"/);
+      const element = componentLocator(page);
+      expect(element?.classList.contains("ds")).toBe(true);
+      expect(element?.classList.contains("hidden-events")).toBe(true);
+      expect(element?.classList.contains("test-class")).toBe(true);
     });
 
     it("applies style", () => {
-      const { body } = render(Component, {
+      const page = render(Component, {
         props: {
-          style: "color: red;",
+          ...baseProps,
           numHidden: 0,
+          style: "color: orange;",
         },
       });
-      expect(body).toContain('style="color: red;"');
+      const element = componentLocator(page);
+      expect(element?.getAttribute("style")).toBe("color: orange;");
     });
   });
 
   describe("Links", () => {
     it("renders show more", () => {
-      const { body } = render(Component, {
-        props: { numHidden: 888, showMoreHref: "/show-more" },
+      const page = render(Component, {
+        props: { ...baseProps, showMoreHref: "/show-more" },
       });
-      expect(body).toContain("Show more");
-      expect(body).toContain('href="/show-more"');
+      expect(page.container.innerHTML).toContain("Show more");
+      expect(page.container.innerHTML).toContain('href="/show-more"');
     });
 
     it("renders show all", () => {
-      const { body } = render(Component, {
-        props: { numHidden: 888, showAllHref: "/show-all" },
+      const page = render(Component, {
+        props: { ...baseProps, showAllHref: "/show-all" },
       });
-      expect(body).toContain("Show all");
-      expect(body).toContain('href="/show-all"');
+      expect(page.container.innerHTML).toContain("Show all");
+      expect(page.container.innerHTML).toContain('href="/show-all"');
     });
   });
 });

@@ -1,11 +1,12 @@
-/* @canonical/generator-ds 0.10.0-experimental.3 */
+/* @canonical/generator-ds 0.10.0-experimental.5 */
 
+import type { Locator } from "@vitest/browser/context";
+import type { ComponentProps } from "svelte";
 import { createRawSnippet } from "svelte";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { render } from "vitest-browser-svelte";
 import type { RenderResult } from "vitest-browser-svelte";
 import Component from "./ShortcutsProvider.svelte";
-import type { ShortcutsProviderProps } from "./types.js";
 
 const { useShortcutProvider } = vi.hoisted(() => {
   const onkeydown = vi.fn();
@@ -21,22 +22,44 @@ vi.mock("./utils/useShortcutProvider.svelte.js", () => {
   };
 });
 
+const baseProps = {
+  children: createRawSnippet(() => ({
+    render: () => `<span>Content</span>`,
+  })),
+} satisfies ComponentProps<typeof Component>;
+
+/**
+ * Returns a locator for the ShortcutsProvider component.
+ * Prefers semantic queries (e.g., getByRole) for better accessibility testing.
+ */
+function componentLocator(page: RenderResult<typeof Component>): Locator {
+  return page.getByTestId("shortcuts-provider");
+}
+
 describe("ShortcutsProvider", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  const baseProps = {
-    children: createRawSnippet(() => ({
-      render: () => `<span>Content</span>`,
-    })),
-  } satisfies ShortcutsProviderProps;
-
   it("renders", async () => {
     const page = render(Component, baseProps);
-    await expect.element(testIdLocator(page)).toBeInTheDocument();
+    await expect.element(componentLocator(page)).toBeInTheDocument();
     await expect.element(page.getByText("Content")).toBeInTheDocument();
-    await expect.element(testIdLocator(page)).toHaveStyle("display: contents");
+    await expect
+      .element(componentLocator(page))
+      .toHaveStyle("display: contents");
+  });
+
+  describe("Basic attributes", () => {
+    it.each([
+      ["id", "test-id"],
+      ["aria-label", "test-aria-label"],
+    ])("applies %s", async (attribute, value) => {
+      const page = render(Component, { ...baseProps, [attribute]: value });
+      await expect
+        .element(componentLocator(page))
+        .toHaveAttribute(attribute, value);
+    });
   });
 
   it("calls useShortcutProvider", async () => {
@@ -44,8 +67,3 @@ describe("ShortcutsProvider", () => {
     expect(useShortcutProvider).toHaveBeenCalledOnce();
   });
 });
-
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function testIdLocator(page: RenderResult<any>) {
-  return page.getByTestId("shortcuts-provider");
-}

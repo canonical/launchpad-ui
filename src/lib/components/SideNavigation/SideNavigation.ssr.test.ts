@@ -1,56 +1,67 @@
-/* @canonical/generator-ds 0.10.0-experimental.3 */
+/* @canonical/generator-ds 0.10.0-experimental.5 */
 
 import { render } from "@canonical/svelte-ssr-test";
+import type { RenderResult } from "@canonical/svelte-ssr-test";
+import type { ComponentProps } from "svelte";
 import { describe, expect, it } from "vitest";
 import Component from "./SideNavigation.svelte";
 import { children, expandToggle, footer, logo } from "./test.fixtures.svelte";
-import type { SideNavigationProps } from "./types.js";
+
+const baseProps = {
+  children,
+  logo,
+  expandToggle,
+  footer,
+} satisfies ComponentProps<typeof Component>;
+
+/**
+ * Returns the SideNavigation component element.
+ * Prefers semantic queries (e.g., querySelector with role) for better accessibility testing.
+ */
+function componentLocator(page: RenderResult): HTMLElement {
+  return page.getByRole("banner");
+}
 
 describe("SideNavigation SSR", () => {
-  const baseProps = {
-    children,
-    logo,
-    expandToggle,
-    footer,
-  } satisfies SideNavigationProps;
+  it("doesn't throw", () => {
+    expect(() => {
+      render(Component, { props: { ...baseProps } });
+    }).not.toThrow();
+  });
 
-  describe("basics", () => {
-    it("doesn't throw", () => {
-      expect(() => {
-        render(Component, { props: { ...baseProps } });
-      }).not.toThrow();
-    });
-
-    it("renders", () => {
-      const { getByRole } = render(Component, {
-        props: { ...baseProps },
-      });
-      expect(getByRole("banner")).toBeDefined();
-    });
+  it("renders", () => {
+    const page = render(Component, { props: { ...baseProps } });
+    expect(componentLocator(page)).toBeDefined();
   });
 
   describe("attributes", () => {
     it.each([
       ["id", "test-id"],
-      ["style", "color: orange;"],
       ["aria-label", "test-aria-label"],
-    ])("applies %s", (attribute, expected) => {
-      const { getByRole } = render(Component, {
-        props: { [attribute]: expected, ...baseProps },
+    ])("applies %s", (attribute, value) => {
+      const page = render(Component, {
+        props: { ...baseProps, [attribute]: value },
       });
-      expect(getByRole("banner").getAttribute(attribute)).toBe(expected);
+      expect(componentLocator(page).getAttribute(attribute)).toBe(value);
     });
 
-    it("applies classes", () => {
-      const { getByRole } = render(Component, {
-        props: { class: "test-class", ...baseProps },
+    it("applies style", () => {
+      const page = render(Component, {
+        props: { ...baseProps, style: "color: orange;" },
       });
-      const classes = ["test-class"];
-      classes.push("ds", "side-navigation");
+      expect(componentLocator(page).getAttribute("style")).toContain(
+        "color: orange;",
+      );
+    });
 
-      for (const className of classes) {
-        expect(getByRole("banner").classList).toContain(className);
-      }
+    it("applies class", () => {
+      const page = render(Component, {
+        props: { ...baseProps, class: "test-class" },
+      });
+      const element = componentLocator(page);
+      expect(element.classList.contains("ds")).toBe(true);
+      expect(element.classList.contains("side-navigation")).toBe(true);
+      expect(element.classList.contains("test-class")).toBe(true);
     });
   });
 

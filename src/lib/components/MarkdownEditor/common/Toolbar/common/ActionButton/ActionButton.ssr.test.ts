@@ -1,10 +1,11 @@
-/* @canonical/generator-ds 0.10.0-experimental.3 */
+/* @canonical/generator-ds 0.10.0-experimental.5 */
 
 import { render } from "@canonical/svelte-ssr-test";
+import type { RenderResult } from "@canonical/svelte-ssr-test";
+import type { ComponentProps } from "svelte";
 import { createRawSnippet } from "svelte";
 import { describe, expect, it, vi } from "vitest";
 import Component from "./ActionButton.svelte";
-import type { ActionButtonProps } from "./types.js";
 
 vi.mock("$lib/shortcuts/index.js", () => {
   return {
@@ -13,64 +14,70 @@ vi.mock("$lib/shortcuts/index.js", () => {
   };
 });
 
+const baseProps = {
+  children: createRawSnippet(() => ({
+    render: () => `<span>ActionButton</span>`,
+  })),
+  label: "ActionButton",
+} satisfies ComponentProps<typeof Component>;
+
+/**
+ * Returns the ActionButton component element.
+ * Prefers semantic queries (e.g., querySelector with role) for better accessibility testing.
+ */
+function componentLocator(page: RenderResult): HTMLButtonElement {
+  return page.getByRole("button");
+}
+
 describe("Markdown Editor > Toolbar > ActionButton SSR", () => {
-  const baseProps = {
-    children: createRawSnippet(() => ({
-      render: () => `<span>ActionButton</span>`,
-    })),
-    label: "ActionButton",
-  } satisfies ActionButtonProps;
+  it("doesn't throw", () => {
+    expect(() => {
+      render(Component, { props: { ...baseProps } });
+    }).not.toThrow();
+  });
 
-  describe("basics", () => {
-    it("doesn't throw", () => {
-      expect(() => {
-        render(Component, { props: { ...baseProps } });
-      }).not.toThrow();
-    });
-
-    it("renders", () => {
-      const { window, container } = render(Component, {
-        props: { ...baseProps },
-      });
-      expect(container.firstElementChild).toBeInstanceOf(
-        window.HTMLButtonElement,
-      );
-    });
+  it("renders", () => {
+    const page = render(Component, { props: { ...baseProps } });
+    expect(componentLocator(page)).toBeInstanceOf(
+      page.window.HTMLButtonElement,
+    );
   });
 
   describe("attributes", () => {
     it.each([
       ["id", "test-id"],
-      ["style", "color: orange;"],
       ["aria-label", "test-aria-label"],
-    ])("applies %s", (attribute, expected) => {
-      const { container } = render(Component, {
-        props: { [attribute]: expected, ...baseProps },
+    ])("applies %s", (attribute, value) => {
+      const page = render(Component, {
+        props: { ...baseProps, [attribute]: value },
       });
-      expect(container.firstElementChild?.getAttribute(attribute)).toBe(
-        expected,
+      expect(componentLocator(page).getAttribute(attribute)).toBe(value);
+    });
+
+    it("applies style", () => {
+      const page = render(Component, {
+        props: { ...baseProps, style: "color: orange;" },
+      });
+      expect(componentLocator(page).getAttribute("style")).toContain(
+        "color: orange;",
       );
     });
 
-    it("applies classes", () => {
-      const { container } = render(Component, {
-        props: { class: "test-class", ...baseProps },
+    it("applies class", () => {
+      const page = render(Component, {
+        props: { ...baseProps, class: "test-class" },
       });
-      const classes = ["test-class"];
-      classes.push("ds", "markdown-editor-toolbar-action-button");
-
-      for (const className of classes) {
-        expect(container.firstElementChild?.classList).toContain(className);
-      }
+      const element = componentLocator(page);
+      expect(element.classList.contains("ds")).toBe(true);
+      expect(
+        element.classList.contains("markdown-editor-toolbar-action-button"),
+      ).toBe(true);
+      expect(element.classList.contains("test-class")).toBe(true);
     });
 
     it("disabled by default", () => {
-      const { container } = render(Component, {
-        props: { ...baseProps },
-      });
-      expect(
-        container.firstElementChild?.getAttribute("disabled"),
-      ).toBeDefined();
+      const page = render(Component, { props: { ...baseProps } });
+      expect(componentLocator(page).getAttribute("disabled")).toBeDefined();
     });
   });
 });

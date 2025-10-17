@@ -1,4 +1,4 @@
-/* @canonical/generator-ds 0.10.0-experimental.0 */
+/* @canonical/generator-ds 0.10.0-experimental.5 */
 
 import { render } from "svelte/server";
 import { describe, expect, it } from "vitest";
@@ -17,20 +17,25 @@ describe("Checkbox SSR", () => {
     expect(body).toContain('<input type="checkbox"');
   });
 
-  describe("Basic attributes", () => {
-    it("applies id", () => {
-      const { body } = renderCheckbox({ id: "test-id" });
-      expect(body).toContain('id="test-id"');
+  describe("attributes", () => {
+    it.each([
+      ["id", "test-id"],
+      ["aria-label", "test-aria-label"],
+    ])("applies %s", (attribute, expected) => {
+      const result = renderCheckbox({ [attribute]: expected });
+      expect(result.body).toContain(`${attribute}="${expected}"`);
     });
 
-    it("applies class", () => {
-      const { body } = renderCheckbox({ class: "test-class" });
-      expect(body).toMatch(/class="[^"]*test-class[^"]*"/);
+    it("applies classes", () => {
+      const result = renderCheckbox({ class: "test-class" });
+      expect(result.body).toMatch(/class="[^"]*test-class[^"]*"/);
+      expect(result.body).toMatch(/class="[^"]*ds[^"]*"/);
+      expect(result.body).toMatch(/class="[^"]*checkbox[^"]*"/);
     });
 
     it("applies style", () => {
-      const { body } = renderCheckbox({ style: "color: red;" });
-      expect(body).toContain('style="color: red;"');
+      const result = renderCheckbox({ style: "color: orange;" });
+      expect(result.body).toContain('style="color: orange;"');
     });
   });
 

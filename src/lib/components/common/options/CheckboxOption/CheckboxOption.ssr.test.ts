@@ -1,107 +1,136 @@
-/* @canonical/generator-ds 0.10.0-experimental.0 */
+/* @canonical/generator-ds 0.10.0-experimental.5 */
 
+import { render } from "@canonical/svelte-ssr-test";
+import type { RenderResult } from "@canonical/svelte-ssr-test";
 import { createRawSnippet } from "svelte";
-import { render } from "svelte/server";
+import type { ComponentProps } from "svelte";
 import { describe, expect, it } from "vitest";
 import Component from "./CheckboxOption.svelte";
 import type { CheckboxOptionProps } from "./types.js";
 
+const baseProps = {
+  text: "Text",
+} satisfies ComponentProps<typeof Component>;
+
+/**
+ * Returns the CheckboxOption component element.
+ * Uses testId as the component doesn't have a single semantic role.
+ */
+function componentLocator(page: RenderResult): HTMLElement | null {
+  return page.container.querySelector("[data-testid='checkbox-option']");
+}
+
 describe("CheckboxOption SSR", () => {
   it("doesn't throw", () => {
     expect(() => {
-      renderCheckboxOption({ text: "Text" });
+      renderCheckboxOption({ ...baseProps });
     }).not.toThrow();
   });
 
   it("renders", () => {
-    const { body } = renderCheckboxOption({ text: "Text" });
-    expect(body).toContain("<label");
-    expect(body).toContain('type="checkbox"');
+    const page = renderCheckboxOption({ ...baseProps });
+    const element = componentLocator(page);
+    expect(element).toBeInstanceOf(page.window.HTMLElement);
+    expect(element?.tagName).toBe("LABEL");
+    expect(page.container.innerHTML).toContain('type="checkbox"');
   });
 
   describe("Basic attributes", () => {
-    it("applies id", () => {
-      const { body } = renderCheckboxOption({ text: "Text", id: "test-id" });
-      expect(body).toContain('id="test-id"');
+    it.each([
+      ["id", "test-id"],
+      ["aria-label", "test-aria-label"],
+    ])("applies %s", (attribute, value) => {
+      const page = renderCheckboxOption({ ...baseProps, [attribute]: value });
+      const element = componentLocator(page);
+      expect(element?.getAttribute(attribute)).toBe(value);
     });
 
     it("applies class", () => {
-      const { body } = renderCheckboxOption({
-        text: "Text",
+      const page = renderCheckboxOption({
+        ...baseProps,
         class: "test-class",
       });
-      expect(body).toMatch(/class="[^"]*test-class[^"]*"/);
+      const element = componentLocator(page);
+      expect(element?.classList.contains("ds")).toBe(true);
+      expect(element?.classList.contains("checkbox-option")).toBe(true);
+      expect(element?.classList.contains("test-class")).toBe(true);
     });
 
     it("applies style", () => {
-      const { body } = renderCheckboxOption({
-        text: "Text",
-        style: "color: red;",
+      const page = renderCheckboxOption({
+        ...baseProps,
+        style: "color: orange;",
       });
-      expect(body).toContain('style="color: red;"');
+      const element = componentLocator(page);
+      expect(element?.getAttribute("style")).toBe("color: orange;");
     });
   });
 
   describe("Disabled state", () => {
     it("is not disabled by default", () => {
-      const { body } = renderCheckboxOption({ text: "Text" });
-      expect(body).not.toContain("disabled");
+      const page = renderCheckboxOption({ ...baseProps });
+      expect(page.container.innerHTML).not.toContain("disabled");
     });
 
     it("can be disabled", () => {
-      const { body } = renderCheckboxOption({
-        text: "Text",
+      const page = renderCheckboxOption({
+        ...baseProps,
         disabled: true,
       });
-      expect(body).toContain("disabled");
+      expect(page.container.innerHTML).toContain("disabled");
     });
   });
 
   describe("Checked state", () => {
     it("is not checked by default", () => {
-      const { body } = renderCheckboxOption({ text: "Text" });
-      expect(body).not.toMatch(/type="checkbox"[^>]*checked/);
+      const page = renderCheckboxOption({ ...baseProps });
+      expect(page.container.innerHTML).not.toMatch(
+        /type="checkbox"[^>]*checked/,
+      );
     });
 
     it("can be rendered checked", () => {
-      const { body } = renderCheckboxOption({
-        text: "Text",
+      const page = renderCheckboxOption({
+        ...baseProps,
         checked: true,
       });
-      expect(body).toMatch(/type="checkbox"[^>]*checked/);
+      expect(page.container.innerHTML).toMatch(/type="checkbox"[^>]*checked/);
     });
   });
 
   describe("Contents", () => {
     it("renders text", () => {
-      const { body } = renderCheckboxOption({ text: "Main Text" });
-      expect(body).toContain("Main Text");
+      const page = renderCheckboxOption({ ...baseProps, text: "Main Text" });
+      expect(page.container.innerHTML).toContain("Main Text");
     });
 
     it("renders secondary text", () => {
-      const { body } = renderCheckboxOption({
+      const page = renderCheckboxOption({
+        ...baseProps,
         text: "Main Text",
         secondaryText: "Secondary Text",
       });
-      expect(body).toContain("Secondary Text");
+      expect(page.container.innerHTML).toContain("Secondary Text");
     });
 
     it("renders trailing text", () => {
-      const { body } = renderCheckboxOption({
+      const page = renderCheckboxOption({
+        ...baseProps,
         text: "Main Text",
         trailingText: "Trailing Text",
       });
-      expect(body).toContain("Trailing Text");
+      expect(page.container.innerHTML).toContain("Trailing Text");
     });
 
     it("renders icon", () => {
-      const { body } = renderCheckboxOption({
+      const page = renderCheckboxOption({
+        ...baseProps,
         text: "Main Text",
         icon: createRawSnippet(() => ({
           render: () => `<span class="text-icon-class"></span>`,
         })),
       });
-      expect(body).toContain('class="text-icon-class"');
+      expect(page.container.innerHTML).toContain('class="text-icon-class"');
     });
   });
 });
