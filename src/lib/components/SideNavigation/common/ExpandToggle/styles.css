@@ -2,8 +2,6 @@
   display: grid;
   place-items: center;
   box-sizing: content-box;
-  --border-style-button: none;
-  --color-background-button: transparent;
 
   &[aria-expanded="true"] {
     .ds.icon {

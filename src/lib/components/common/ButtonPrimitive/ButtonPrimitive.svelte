@@ -46,10 +46,10 @@
       --tmp-color-background-neutral-active
     );
     --color-background-button-hover: var(--tmp-color-background-neutral-hover);
-    --color-background-button: var(--tmp-color-background-default);
+    --color-background-button: transparent;
     --color-border-button-active: var(--color-border-button);
     --color-border-button-hover: var(--color-border-button);
-    --color-border-button: var(--tmp-color-border-high-contrast);
+    --color-border-button: transparent;
     --color-text-button: var(--tmp-color-text-default);
     --dimension-border-width-button: var(--dimension-stroke-thickness-default);
     --dimension-padding-block-button: var(--tmp-dimension-spacing-block-xxs);

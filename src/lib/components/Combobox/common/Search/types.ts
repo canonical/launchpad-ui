@@ -1,10 +1,5 @@
 /* @canonical/generator-ds 0.10.0-experimental.2 */
 
-import type { TextInputProps } from "$lib/components/TextInput/index.js";
+import type { SearchBoxProps } from "$lib/components/SearchBox/index.js";
 
-export interface SearchProps extends Omit<TextInputProps, "type"> {
-  /**
-   * Label for the combobox search input.
-   */
-  label: string;
-}
+export type SearchProps = SearchBoxProps;

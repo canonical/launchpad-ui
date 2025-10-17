@@ -53,23 +53,16 @@ describe("Search component", () => {
 
   describe("Basic attributes", () => {
     it("applies id", async () => {
-      const page = render(Component, { id: "test-id", label: "Search" });
+      const page = render(Component, { id: "test-id", "aria-label": "Search" });
       await expect
         .element(page.getByRole("combobox"))
         .toHaveAttribute("id", "test-id");
     });
 
-    it("applies class", async () => {
-      const page = render(Component, { class: "test-class", label: "Search" });
-      await expect
-        .element(page.getByRole("combobox"))
-        .toHaveClass("test-class");
-    });
-
     it("applies style", async () => {
       const page = render(Component, {
         style: "color: blue;",
-        label: "Search",
+        "aria-label": "Search",
       });
       await expect
         .element(page.getByRole("combobox"))
@@ -83,7 +76,7 @@ describe("Search component", () => {
     });
 
     it("calls getSiblingOptionId on arrow up and down", async () => {
-      const page = render(Component, { label: "Search" });
+      const page = render(Component, { "aria-label": "Search" });
       const input = page.getByRole("combobox");
       await expect.element(input).toBeInTheDocument();
       await userEvent.click(input);
@@ -104,7 +97,7 @@ describe("Search component", () => {
     });
 
     it("calls setActiveDescendant on arrow up and down", async () => {
-      const page = render(Component, { label: "Search" });
+      const page = render(Component, { "aria-label": "Search" });
       const input = page.getByRole("combobox");
       await expect.element(input).toBeInTheDocument();
       await userEvent.click(input);
@@ -119,7 +112,7 @@ describe("Search component", () => {
     });
 
     it("calls selectOption on enter", async () => {
-      const page = render(Component, { label: "Search" });
+      const page = render(Component, { "aria-label": "Search" });
       const input = page.getByRole("combobox");
       await expect.element(input).toBeInTheDocument();
       await userEvent.click(input);
@@ -131,7 +124,7 @@ describe("Search component", () => {
   });
 
   it("calls setActiveDescendant with null on blur", async () => {
-    const page = render(Component, { label: "Search" });
+    const page = render(Component, { "aria-label": "Search" });
     const input = page.getByRole("combobox");
     await expect.element(input).toBeInTheDocument();
     await userEvent.click(input);

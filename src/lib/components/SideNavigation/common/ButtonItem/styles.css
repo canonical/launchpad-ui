@@ -3,8 +3,6 @@
   position: relative;
   grid-column: 1 / -1;
 
-  --border-style-button: none;
-  --color-background-button: transparent;
   --dimension-padding-inline-button: 0;
   --dimension-padding-block-button: var(--tmp-dimension-spacing-block-xxs);
   --dimension-padding-inline-start-button-label: var(
