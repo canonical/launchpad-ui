@@ -39,8 +39,8 @@
 <Story name="Default">
   {#snippet template({ children: _, trigger: __, ...args })}
     <Modal {...args}>
-      {#snippet trigger(popovertarget, showModal)}
-        <Button {popovertarget} onclick={showModal}>Show Modal</Button>
+      {#snippet trigger(triggerProps)}
+        <Button {...triggerProps}>Show Modal</Button>
       {/snippet}
       {#snippet children(popovertarget, close)}
         <div style="padding: 1rem;">

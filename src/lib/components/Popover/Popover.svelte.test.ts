@@ -5,9 +5,9 @@ import { assert, describe, expect, it, vi } from "vitest";
 import { render } from "vitest-browser-svelte";
 import type { RenderResult } from "vitest-browser-svelte";
 import Component from "./Popover.svelte";
-import type { PopoverMethods, TriggerProps } from "./types.js";
+import type { PopoverMethods, PopoverTriggerProps } from "./types.js";
 
-const trigger = createRawSnippet<[TriggerProps, boolean]>(
+const trigger = createRawSnippet<[PopoverTriggerProps, boolean]>(
   (triggerProps, open) => ({
     render: () =>
       `<button popovertarget="${triggerProps().popovertarget}">${open() ? "Close Popover" : "Open Popover"}</button>`,

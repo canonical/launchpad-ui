@@ -7,7 +7,7 @@ import type { PositionArea } from "$lib/usePositionArea.svelte.js";
 
 type BaseProps = SvelteHTMLElements["div"];
 
-export type TriggerProps = {
+export type TooltipTriggerProps = {
   "aria-describedby": string;
   [key: symbol]: Attachment<HTMLElement>;
 };
@@ -21,7 +21,7 @@ export interface TooltipProps extends BaseProps {
    *   - `aria-describedby`: The id of the tooltip element. Setting this attribute on the trigger element enables assistive technologies to associate the tooltip with the trigger;
    *   - attachments allow the tooltip to listen to events on the trigger element (hover, focus) and position the tooltip relative to the trigger element.
    */
-  trigger: Snippet<[triggerProps: TriggerProps]>;
+  trigger: Snippet<[triggerProps: TooltipTriggerProps]>;
   /**
    * Content to be displayed inside the tooltip. It should not contain interactive elements (see: https://www.w3.org/WAI/ARIA/apg/patterns/tooltip/)
    */

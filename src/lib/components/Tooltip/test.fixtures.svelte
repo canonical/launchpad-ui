@@ -1,10 +1,10 @@
 <script lang="ts" module>
-  import type { TriggerProps } from "./types.js";
+  import type { TooltipTriggerProps } from "./types.js";
 
   export { children, trigger };
 </script>
 
-{#snippet trigger(triggerProps: TriggerProps)}
+{#snippet trigger(triggerProps: TooltipTriggerProps)}
   <button {...triggerProps}>Tooltip trigger</button>
 {/snippet}
 

@@ -39,8 +39,8 @@
 <Story name="Default">
   {#snippet template({ children: _, trigger: __, ...args })}
     <SidePanel {...args}>
-      {#snippet trigger(popovertarget, show)}
-        <Button {popovertarget} onclick={show}>Show SidePanel</Button>
+      {#snippet trigger(triggerProps)}
+        <Button {...triggerProps}>Show SidePanel</Button>
       {/snippet}
       {#snippet children(popovertarget, close)}
         <div style="padding: 1rem;">

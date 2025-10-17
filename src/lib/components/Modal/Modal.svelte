@@ -32,7 +32,11 @@
   };
 </script>
 
-{@render trigger?.(asPopover ? id : undefined, showModal)}
+{@render trigger?.({
+  onclick: showModal,
+  "aria-haspopup": "dialog",
+  popovertarget: asPopover ? id : undefined,
+})}
 
 <dialog
   bind:this={dialogRef}
@@ -44,7 +48,6 @@
     : closeOnOutsideClick
       ? "any"
       : "closerequest"}
-  data-testid="modal"
   {...rest}
 >
   {@render children?.(asPopover ? id : undefined, close)}
@@ -56,8 +59,8 @@
 The modal-like layout and structure are provided by the `ModalContent` component.
 
 Modal can be imperatively controlled by the following methods available on the component instance:
-- `showModal`: Additionally supplied via the `trigger` snippet.
-- `close`: Additionally supplied via the `footer` snippet.
+- `showModal`: Additionally supplied as `triggerProps.onclick` via the `trigger` snippet.
+- `close`: Additionally supplied via the `children` snippet.
 
 If JavaScript is disabled, Modal can be controlled as a popover with declaratively bound button triggers. To allow for that pass the `popovertarget` supplied via the `trigger` or `children` snippets to buttons you want to use as triggers. However this should be treated as a fallback. If possible, the modal should be controlled using the imperative calls of `showModal` and `close` which ensure better accessibility and user experience (e.g. rendering the rest of the document as inert) See [MDN](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/dialog) for more information.
 
@@ -70,8 +73,8 @@ If JavaScript is disabled, Modal can be controlled as a popover with declarative
 </script>
 
 <Modal bind:this={modal}>
-  {#snippet trigger(popovertarget, open)}
-    <button {popovertarget} onclick={open}>
+  {#snippet trigger(triggerProps)}
+    <button {...triggerProps}>
       Open Modal
     </button>
   {/snippet}

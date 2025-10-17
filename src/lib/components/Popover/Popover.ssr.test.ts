@@ -4,9 +4,9 @@ import { createRawSnippet } from "svelte";
 import { render } from "svelte/server";
 import { assert, describe, expect, it } from "vitest";
 import Component from "./Popover.svelte";
-import type { TriggerProps } from "./types.js";
+import type { PopoverTriggerProps } from "./types.js";
 
-const trigger = createRawSnippet<[TriggerProps, boolean]>(
+const trigger = createRawSnippet<[PopoverTriggerProps, boolean]>(
   (triggerProps, open) => ({
     render: () =>
       `<button popovertarget="${triggerProps().popovertarget}">${open() ? "Close Popover" : "Open Popover"}</button>`,
