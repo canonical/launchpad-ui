@@ -17,7 +17,10 @@
   }: SelectProps = $props();
 </script>
 
-<div class={[componentCssClassName, className, modifiersValues(modifiers)]}>
+<div
+  class={[componentCssClassName, className, modifiersValues(modifiers)]}
+  data-testid="select"
+>
   <select bind:value bind:this={ref} {...rest}>
     {@render children?.()}
   </select>
