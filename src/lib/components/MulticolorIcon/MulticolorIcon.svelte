@@ -10,6 +10,7 @@
 <span
   class={[componentCssClassName, className]}
   style:--icon-url={`url(/icons/multicolor/${name}.svg)`}
+  data-testid="multicolor-icon"
   {...rest}
 ></span>
 
