@@ -1,58 +1,73 @@
-/* @canonical/generator-ds 0.10.0-experimental.0 */
+/* @canonical/generator-ds 0.10.0-experimental.5 */
 
+import type { Locator } from "@vitest/browser/context";
+import type { ComponentProps } from "svelte";
 import { describe, expect, it, vi } from "vitest";
 import { render } from "vitest-browser-svelte";
+import type { RenderResult } from "vitest-browser-svelte";
 import Component from "./Radio.svelte";
 
 describe("Radio component", () => {
+  const baseProps = {} satisfies ComponentProps<typeof Component>;
+
   it("renders", async () => {
-    const page = render(Component);
-    await expect.element(page.getByRole("radio")).toBeInTheDocument();
+    const page = render(Component, { ...baseProps });
+    await expect.element(componentLocator(page)).toBeInTheDocument();
   });
 
-  describe("Basic attributes", () => {
-    it("applies id", async () => {
-      const page = render(Component, { props: { id: "test-id" } });
+  describe("attributes", () => {
+    it.each([
+      ["id", "test-id"],
+      ["aria-label", "test-aria-label"],
+    ])("applies %s", async (attribute, expected) => {
+      const page = render(Component, { ...baseProps, [attribute]: expected });
       await expect
-        .element(page.getByRole("radio"))
-        .toHaveAttribute("id", "test-id");
+        .element(componentLocator(page))
+        .toHaveAttribute(attribute, expected);
     });
 
-    it("applies class", async () => {
-      const page = render(Component, { props: { class: "test-class" } });
-      await expect.element(page.getByRole("radio")).toHaveClass("test-class");
+    it("applies classes", async () => {
+      const page = render(Component, { ...baseProps, class: "test-class" });
+      await expect.element(componentLocator(page)).toHaveClass("test-class");
+      await expect.element(componentLocator(page)).toHaveClass("ds");
+      await expect.element(componentLocator(page)).toHaveClass("radio");
     });
 
     it("applies style", async () => {
-      const page = render(Component, { props: { style: "color: red;" } });
-      await expect.element(page.getByRole("radio")).toHaveStyle("color: red;");
+      const page = render(Component, {
+        ...baseProps,
+        style: "color: orange;",
+      });
+      await expect
+        .element(componentLocator(page))
+        .toHaveStyle({ color: "orange" });
     });
   });
 
   describe("Checked state", () => {
     it("is not checked by default", async () => {
-      const page = render(Component);
-      await expect.element(page.getByRole("radio")).not.toBeChecked();
+      const page = render(Component, { ...baseProps });
+      await expect.element(componentLocator(page)).not.toBeChecked();
     });
 
     it("can be checked", async () => {
-      const page = render(Component, { props: { checked: true } });
-      await expect.element(page.getByRole("radio")).toBeChecked();
+      const page = render(Component, { ...baseProps, checked: true });
+      await expect.element(componentLocator(page)).toBeChecked();
     });
 
     it("isn't disabled by default", async () => {
-      const page = render(Component);
-      await expect.element(page.getByRole("radio")).not.toBeDisabled();
+      const page = render(Component, { ...baseProps });
+      await expect.element(componentLocator(page)).not.toBeDisabled();
     });
 
     it("can be disabled", async () => {
-      const page = render(Component, { props: { disabled: true } });
-      await expect.element(page.getByRole("radio")).toBeDisabled();
+      const page = render(Component, { ...baseProps, disabled: true });
+      await expect.element(componentLocator(page)).toBeDisabled();
     });
 
     it("can be checked by on click", async () => {
-      const page = render(Component);
-      const radio = page.getByRole("radio");
+      const page = render(Component, { ...baseProps });
+      const radio = componentLocator(page);
 
       await expect.element(radio).not.toBeChecked();
       await radio.click();
@@ -63,23 +78,29 @@ describe("Radio component", () => {
   describe("Group controlled", () => {
     it("isn't checked if group and value are undefined", async () => {
       const page = render(Component, {
-        props: { group: undefined, value: undefined },
+        ...baseProps,
+        group: undefined,
+        value: undefined,
       });
-      await expect.element(page.getByRole("radio")).not.toBeChecked();
+      await expect.element(componentLocator(page)).not.toBeChecked();
     });
 
     it("isn't checked if group doesn't match value", async () => {
       const page = render(Component, {
-        props: { group: "test-group", value: "test-value" },
+        ...baseProps,
+        group: "test-group",
+        value: "test-value",
       });
-      await expect.element(page.getByRole("radio")).not.toBeChecked();
+      await expect.element(componentLocator(page)).not.toBeChecked();
     });
 
     it("is checked if group and value match", async () => {
       const page = render(Component, {
-        props: { group: "test-value", value: "test-value" },
+        ...baseProps,
+        group: "test-value",
+        value: "test-value",
       });
-      await expect.element(page.getByRole("radio")).toBeChecked();
+      await expect.element(componentLocator(page)).toBeChecked();
     });
   });
 
@@ -87,8 +108,8 @@ describe("Radio component", () => {
     it("emits change event on click", async () => {
       const onchange = vi.fn();
 
-      const page = render(Component, { props: { onchange } });
-      const radio = page.getByRole("radio");
+      const page = render(Component, { ...baseProps, onchange });
+      const radio = componentLocator(page);
 
       await expect.element(radio).not.toBeChecked();
       await radio.click();
@@ -96,3 +117,8 @@ describe("Radio component", () => {
     });
   });
 });
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function componentLocator(page: RenderResult<any>): Locator {
+  return page.getByRole("radio");
+}
