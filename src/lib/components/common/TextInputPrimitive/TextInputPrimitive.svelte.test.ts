@@ -1,17 +1,17 @@
-/* @canonical/generator-ds 0.10.0-experimental.4 */
+/* @canonical/generator-ds 0.10.0-experimental.5 */
 
 import type { Locator } from "@vitest/browser/context";
+import type { ComponentProps } from "svelte";
 import { describe, expect, it } from "vitest";
 import { render } from "vitest-browser-svelte";
 import type { RenderResult } from "vitest-browser-svelte";
 import Component from "./TextInputPrimitive.svelte";
-import type { TextInputPrimitiveProps } from "./types.js";
 
 describe("TextInputPrimitive component", () => {
-  const baseProps = {} satisfies TextInputPrimitiveProps;
+  const baseProps = {} satisfies ComponentProps<typeof Component>;
 
   it("renders", async () => {
-    const page = render(Component, { ...baseProps });
+    const page = render(Component, baseProps);
     await expect.element(componentLocator(page)).toBeInTheDocument();
   });
 
@@ -19,16 +19,11 @@ describe("TextInputPrimitive component", () => {
     it.each([
       ["id", "test-id"],
       ["aria-label", "test-aria-label"],
-    ])("applies %s", async (attribute, expected) => {
-      const page = render(Component, { ...baseProps, [attribute]: expected });
+    ])("applies %s", async (attribute, value) => {
+      const page = render(Component, { ...baseProps, [attribute]: value });
       await expect
         .element(componentLocator(page))
-        .toHaveAttribute(attribute, expected);
-    });
-
-    it("applies classes", async () => {
-      const page = render(Component, { ...baseProps, class: "test-class" });
-      await expect.element(componentLocator(page)).toHaveClass("test-class");
+        .toHaveAttribute(attribute, value);
     });
 
     it("applies style", async () => {
@@ -39,6 +34,12 @@ describe("TextInputPrimitive component", () => {
       await expect
         .element(componentLocator(page))
         .toHaveStyle({ color: "orange" });
+    });
+
+    it("applies class", async () => {
+      const page = render(Component, { ...baseProps, class: "test-class" });
+      const element = componentLocator(page);
+      await expect.element(element).toHaveClass("test-class");
     });
 
     describe("type", () => {
