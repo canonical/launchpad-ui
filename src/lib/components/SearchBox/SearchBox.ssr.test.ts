@@ -1,4 +1,4 @@
-/* @canonical/generator-ds 0.10.0-experimental.4 */
+/* @canonical/generator-ds 0.10.0-experimental.5 */
 
 import { render } from "@canonical/svelte-ssr-test";
 import type { RenderResult } from "@canonical/svelte-ssr-test";
@@ -6,11 +6,11 @@ import type { ComponentProps } from "svelte";
 import { describe, expect, it } from "vitest";
 import Component from "./SearchBox.svelte";
 
-describe("SearchBox SSR", () => {
-  const baseProps = {
-    "aria-label": "Search articles",
-  } satisfies ComponentProps<typeof Component>;
+const baseProps = {
+  "aria-label": "Search articles",
+} satisfies ComponentProps<typeof Component>;
 
+describe("SearchBox SSR", () => {
   describe("basics", () => {
     it("doesn't throw", () => {
       expect(() => {
@@ -20,20 +20,18 @@ describe("SearchBox SSR", () => {
 
     it("renders", () => {
       const page = render(Component, { props: { ...baseProps } });
-      expect(wrapperLocator(page)).toBeInstanceOf(page.window.HTMLDivElement);
+      expect(componentLocator(page)).toBeInstanceOf(page.window.HTMLDivElement);
       expect(inputLocator(page)).toBeInstanceOf(page.window.HTMLInputElement);
       expect(buttonLocator(page)).toBeInstanceOf(page.window.HTMLButtonElement);
     });
-  });
 
-  describe("wrapper attributes", () => {
-    it("applies classes to the wrapper", () => {
+    it("applies classes", () => {
       const page = render(Component, {
-        props: { class: "test-class", ...baseProps },
+        props: { ...baseProps, class: "test-class" },
       });
-      expect(wrapperLocator(page).classList).toContain("test-class");
-      expect(wrapperLocator(page).classList).toContain("ds");
-      expect(wrapperLocator(page).classList).toContain("search-box");
+      expect(componentLocator(page).classList).toContain("test-class");
+      expect(componentLocator(page).classList).toContain("ds");
+      expect(componentLocator(page).classList).toContain("search-box");
     });
   });
 
@@ -83,14 +81,14 @@ describe("SearchBox SSR", () => {
   });
 });
 
-function wrapperLocator(page: RenderResult): HTMLElement {
+function componentLocator(page: RenderResult): HTMLElement {
   return page.getByTestId("search-box");
 }
 
 function inputLocator(page: RenderResult): HTMLInputElement {
-  return page.getByRole("searchbox", { name: "Search articles" });
+  return page.getByRole("searchbox", { name: baseProps["aria-label"] });
 }
 
 function buttonLocator(page: RenderResult): HTMLButtonElement {
-  return page.getByRole("button", { name: "Search articles" });
+  return page.getByRole("button", { name: baseProps["aria-label"] });
 }
