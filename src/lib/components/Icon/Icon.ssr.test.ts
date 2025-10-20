@@ -1,40 +1,61 @@
-import { render } from "svelte/server";
+/* @canonical/generator-ds 0.10.0-experimental.5 */
+
+import { render } from "@canonical/svelte-ssr-test";
+import type { RenderResult } from "@canonical/svelte-ssr-test";
+import type { ComponentProps } from "svelte";
 import { describe, expect, it } from "vitest";
 import Component from "./Icon.svelte";
 
 describe("Icon SSR", () => {
-  it("doesn't throw", () => {
-    expect(() => {
-      render(Component, { props: { name: "edit" } });
-    }).not.toThrow();
-  });
+  const baseProps = { name: "edit" } satisfies ComponentProps<typeof Component>;
 
-  it("renders", () => {
-    const { body } = render(Component, { props: { name: "edit" } });
-    expect(body).toContain("<span");
-    expect(body).toContain("</span>");
+  describe("basics", () => {
+    it("doesn't throw", () => {
+      expect(() => {
+        render(Component, { props: { ...baseProps } });
+      }).not.toThrow();
+    });
+
+    it("renders", () => {
+      const page = render(Component, { props: { ...baseProps } });
+      expect(componentLocator(page)).toBeInstanceOf(
+        page.window.HTMLSpanElement,
+      );
+    });
   });
 
   describe("basic attributes", () => {
-    it("applies id", () => {
-      const { body } = render(Component, {
-        props: { id: "test-id", name: "edit" },
+    it.each([
+      ["id", "test-id"],
+      ["aria-label", "test-aria-label"],
+    ])("applies %s", (attribute, value) => {
+      const page = render(Component, {
+        props: { ...baseProps, [attribute]: value },
       });
-      expect(body).toContain('id="test-id"');
+      expect(componentLocator(page).getAttribute(attribute)).toBe(value);
     });
 
     it("applies style", () => {
-      const { body } = render(Component, {
-        props: { style: "color: red;", name: "edit" },
+      const page = render(Component, {
+        props: { ...baseProps, style: "color: red;" },
       });
-      expect(body).toMatch(/style="[^"]*color: red;[^"]*"/);
+      expect(componentLocator(page).getAttribute("style")).toContain(
+        "color: red;",
+      );
     });
 
     it("applies class", () => {
-      const { body } = render(Component, {
-        props: { class: "test-class", name: "edit" },
+      const page = render(Component, {
+        props: { ...baseProps, class: "test-class" },
       });
-      expect(body).toMatch(/class="[^"]*test-class[^"]*"/);
+      const el = componentLocator(page);
+      expect(el.classList.contains("ds")).toBe(true);
+      expect(el.classList.contains("icon")).toBe(true);
+      expect(el.classList.contains("test-class")).toBe(true);
     });
   });
 });
+
+function componentLocator(page: RenderResult): HTMLElement {
+  return page.getByTestId("icon");
+}

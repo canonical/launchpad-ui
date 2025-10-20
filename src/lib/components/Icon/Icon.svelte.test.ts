@@ -1,65 +1,66 @@
-/* @canonical/generator-ds 0.9.0-experimental.22 */
+/* @canonical/generator-ds 0.10.0-experimental.5 */
 
-import { assert, describe, expect, it } from "vitest";
+import type { Locator } from "@vitest/browser/context";
+import type { ComponentProps } from "svelte";
+import { describe, expect, it } from "vitest";
 import { render } from "vitest-browser-svelte";
+import type { RenderResult } from "vitest-browser-svelte";
 import Component from "./Icon.svelte";
 
 describe("Icon component", () => {
+  const baseProps = {
+    name: "edit",
+  } satisfies ComponentProps<typeof Component>;
+
   it("renders", async () => {
-    const { container } = render(Component, { name: "edit" });
-    const icon = container.querySelector(".ds.icon");
-    expect(icon).toBeDefined();
+    const page = render(Component, { ...baseProps });
+    await expect.element(componentLocator(page)).toBeInTheDocument();
   });
 
-  describe("basic attributes", () => {
-    it("applies id", () => {
-      const { container } = render(Component, {
-        id: "test-id",
-        name: "edit",
-      });
-      const icon = container.querySelector(".ds.icon");
-      expect(icon?.id).toBe("test-id");
-    });
-
-    it("applies style", () => {
-      const { container } = render(Component, {
-        style: "color: red;",
-        name: "edit",
-      });
-      const icon = container.querySelector(".ds.icon");
-      expect(icon?.getAttribute("style")).toContain("color: red;");
-    });
-
-    it("applies class", () => {
-      const { container } = render(Component, {
-        class: "test-class",
-        name: "edit",
-      });
-      const icon = container.querySelector(".ds.icon");
-      expect(icon?.classList.contains("test-class")).toBe(true);
+  describe("attributes", () => {
+    it.each([
+      ["id", "test-id"],
+      ["aria-label", "test-aria-label"],
+    ])("applies %s", async (attribute, expected) => {
+      const page = render(Component, { ...baseProps, [attribute]: expected });
+      await expect
+        .element(componentLocator(page))
+        .toHaveAttribute(attribute, expected);
     });
   });
 
-  it("renders icons with mask image", () => {
-    const { container } = render(Component, { name: "edit" });
-    const icon = container.querySelector(".ds.icon");
-
-    assert(icon !== null);
-    expect(icon.computedStyleMap().get("mask-image")?.toString()).not.toBe(
-      "none",
-    );
+  it("applies classes", async () => {
+    const page = render(Component, { ...baseProps, class: "test-class" });
+    await expect.element(componentLocator(page)).toHaveClass("test-class");
+    await expect.element(componentLocator(page)).toHaveClass("ds");
+    await expect.element(componentLocator(page)).toHaveClass("icon");
   });
 
-  it("renders icons with currentColor", () => {
-    const { container } = render(Component, {
+  it("applies style", async () => {
+    const page = render(Component, {
+      ...baseProps,
+      style: "color: orange;",
+    });
+    await expect.element(componentLocator(page)).toHaveStyle("color: orange;");
+  });
+
+  it("renders icons with mask image", async () => {
+    const page = render(Component, { name: "edit" });
+    await expect
+      .element(componentLocator(page))
+      .toHaveStyle({ maskImage: "url(/icons/monotone/edit.svg)" });
+  });
+
+  it("renders icons with currentColor", async () => {
+    const page = render(Component, {
       name: "edit",
       style: "color: blue;",
     });
-    const icon = container.querySelector(".ds.icon");
 
-    assert(icon !== null);
-    expect(icon.computedStyleMap().get("color")?.toString()).toBe(
-      "rgb(0, 0, 255)",
-    );
+    expect(componentLocator(page)).toHaveStyle({ backgroundColor: "blue" });
   });
 });
+
+function componentLocator(page: RenderResult<typeof Component>): Locator {
+  return page.getByTestId("icon");
+}
