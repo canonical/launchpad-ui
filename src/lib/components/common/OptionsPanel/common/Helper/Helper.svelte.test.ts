@@ -1,64 +1,67 @@
-/* @canonical/generator-ds 0.10.0-experimental.0 */
+/* @canonical/generator-ds 0.10.0-experimental.5 */
 
+import type { Locator } from "@vitest/browser/context";
 import { createRawSnippet } from "svelte";
+import type { ComponentProps } from "svelte";
 import { describe, expect, it } from "vitest";
 import { render } from "vitest-browser-svelte";
 import type { RenderResult } from "vitest-browser-svelte";
 import Component from "./Helper.svelte";
 
-const children = createRawSnippet(() => ({
-  render: () => "<span>Helper text</span>",
-}));
-
 describe("Helper component", () => {
+  const baseProps = {
+    children: createRawSnippet(() => ({
+      render: () => "<span>Helper text</span>",
+    })),
+    id: "helper-id",
+  } satisfies ComponentProps<typeof Component>;
+
   describe("Renders", () => {
     it("with required props", async () => {
-      const page = render(Component, { children, id: "helper-id" });
-      await expect.element(testIdLocator(page)).toBeInTheDocument();
+      const page = render(Component, baseProps);
+      await expect.element(componentLocator(page)).toBeInTheDocument();
     });
 
     it("with icon", async () => {
       const page = render(Component, {
-        children,
-        id: "helper-id",
+        ...baseProps,
         icon: createRawSnippet(() => ({
           render: () => '<span data-testid="test-icon">Test Icon</span>',
         })),
       });
-      await expect.element(testIdLocator(page)).toBeInTheDocument();
+      await expect.element(componentLocator(page)).toBeInTheDocument();
       await expect.element(page.getByTestId("test-icon")).toBeInTheDocument();
     });
   });
 
   describe("Basic attributes", () => {
-    it("applies id", async () => {
-      const page = render(Component, { children, id: "test-id" });
+    it.each([
+      ["id", "test-id"],
+      ["aria-label", "test-aria-label"],
+    ])("applies %s", async (attribute, value) => {
+      const page = render(Component, { ...baseProps, [attribute]: value });
       await expect
-        .element(testIdLocator(page))
-        .toHaveAttribute("id", "test-id");
+        .element(componentLocator(page))
+        .toHaveAttribute(attribute, value);
     });
 
     it("applies class", async () => {
-      const page = render(Component, {
-        children,
-        id: "test-id",
-        class: "test-class",
-      });
-      await expect.element(testIdLocator(page)).toHaveClass("test-class");
+      const page = render(Component, { ...baseProps, class: "test-class" });
+      const element = componentLocator(page);
+      await expect.element(element).toHaveClass("ds");
+      await expect.element(element).toHaveClass("options-panel-helper");
+      await expect.element(element).toHaveClass("test-class");
     });
 
     it("applies style", async () => {
-      const page = render(Component, {
-        children,
-        id: "test-id",
-        style: "color: red;",
-      });
-      await expect.element(testIdLocator(page)).toHaveStyle("color: red;");
+      const page = render(Component, { ...baseProps, style: "color: orange;" });
+      await expect
+        .element(componentLocator(page))
+        .toHaveStyle("color: orange;");
     });
   });
 });
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function testIdLocator(page: RenderResult<any>) {
+function componentLocator(page: RenderResult<typeof Component>): Locator {
   return page.getByTestId("helper");
 }
