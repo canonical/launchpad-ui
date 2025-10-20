@@ -1,73 +1,93 @@
-/* @canonical/generator-ds 0.10.0-experimental.0 */
+/* @canonical/generator-ds 0.10.0-experimental.5 */
 
-import { render } from "svelte/server";
+import { render } from "@canonical/svelte-ssr-test";
+import type { RenderResult } from "@canonical/svelte-ssr-test";
+import type { ComponentProps } from "svelte";
 import { describe, expect, it } from "vitest";
 import Component from "./OptionsGroup.svelte";
 
 describe("Group SSR", () => {
+  const baseProps = {} satisfies ComponentProps<typeof Component>;
   it("doesn't throw", () => {
     expect(() => {
-      render(Component);
+      render(Component, { props: { ...baseProps } });
     }).not.toThrow();
   });
 
   describe("renders", () => {
     it("the fieldset", () => {
-      const { body } = render(Component);
-      expect(body).toContain("<fieldset");
-      expect(body).toContain("</fieldset>");
+      const page = render(Component, { props: { ...baseProps } });
+      expect(componentLocator(page)).toBeInstanceOf(
+        page.window.HTMLFieldSetElement,
+      );
     });
 
     it("no legend by default", () => {
-      const { body } = render(Component);
-      expect(body).not.toContain("<legend");
+      const page = render(Component, { props: { ...baseProps } });
+      const legend = page.container.querySelector("legend");
+      expect(legend).toBeNull();
     });
 
     it("the legend with group title", () => {
-      const { body } = render(Component, {
-        props: { groupTitle: "Group Title" },
+      const page = render(Component, {
+        props: { ...baseProps, groupTitle: "Group Title" },
       });
 
-      expect(body).toContain("<legend");
-      expect(body).toContain("Group Title");
-      expect(body).toContain("</legend>");
+      const legend = page.container.querySelector("legend");
+      expect(legend?.textContent).toContain("Group Title");
+      expect(page.getByRole("group", { name: "Group Title" })).toBeTruthy();
     });
   });
 
   describe("Basic attributes", () => {
-    it("applies id", () => {
-      const { body } = render(Component, {
-        props: { id: "test-id" },
+    it.each([
+      ["id", "test-id"],
+      ["aria-label", "test-aria-label"],
+    ])("applies %s", (attribute, value) => {
+      const page = render(Component, {
+        props: { ...baseProps, [attribute]: value },
       });
-      expect(body).toContain('id="test-id"');
+      const element = componentLocator(page);
+      expect(element.getAttribute(attribute)).toBe(value);
     });
 
     it("applies class", () => {
-      const { body } = render(Component, {
-        props: { class: "test-class" },
+      const page = render(Component, {
+        props: { ...baseProps, class: "test-class" },
       });
-      expect(body).toMatch(/class="[^"]*test-class[^"]*"/);
+      const element = componentLocator(page);
+      expect(element.classList.contains("ds")).toBe(true);
+      expect(element.classList.contains("options-group")).toBe(true);
+      expect(element.classList.contains("test-class")).toBe(true);
     });
 
     it("applies style", () => {
-      const { body } = render(Component, {
-        props: { style: "color: red;" },
+      const page = render(Component, {
+        props: { ...baseProps, style: "color: orange;" },
       });
-      expect(body).toContain('style="color: red;"');
+      expect(componentLocator(page).getAttribute("style")).toBe(
+        "color: orange;",
+      );
     });
   });
 
   describe("Disabled state", () => {
     it("is not disabled by default", () => {
-      const { body } = render(Component);
-      expect(body).not.toContain("disabled");
+      const page = render(Component, { props: { ...baseProps } });
+      const element = componentLocator(page);
+      expect(element.hasAttribute("disabled")).toBe(false);
     });
 
     it("can be disabled", () => {
-      const { body } = render(Component, {
-        props: { disabled: true },
+      const page = render(Component, {
+        props: { ...baseProps, disabled: true },
       });
-      expect(body).toContain("disabled");
+      const element = componentLocator(page);
+      expect(element.hasAttribute("disabled")).toBe(true);
     });
   });
 });
+
+function componentLocator(page: RenderResult): HTMLElement {
+  return page.getByRole("group");
+}
