@@ -1,20 +1,20 @@
-/* @canonical/generator-ds 0.10.0-experimental.4 */
+/* @canonical/generator-ds 0.10.0-experimental.5 */
 
 import type { Locator } from "@vitest/browser/context";
 import { createRawSnippet } from "svelte";
+import type { ComponentProps, Snippet } from "svelte";
 import { describe, expect, it } from "vitest";
 import { render } from "vitest-browser-svelte";
 import type { RenderResult } from "vitest-browser-svelte";
 import Component from "./Link.svelte";
-import type { LinkProps } from "./types.js";
 
 describe("Link component", () => {
   const baseProps = {
     children: createRawSnippet(() => ({
       render: () => `<span>Link</span>`,
-    })),
+    })) as Snippet,
     href: "https://ubuntu.com",
-  } satisfies LinkProps;
+  } satisfies ComponentProps<typeof Component>;
 
   it("renders", async () => {
     const page = render(Component, { ...baseProps });

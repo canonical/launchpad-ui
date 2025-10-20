@@ -1,33 +1,31 @@
-/* @canonical/generator-ds 0.10.0-experimental.4 */
+/* @canonical/generator-ds 0.10.0-experimental.5 */
 
 import { render } from "@canonical/svelte-ssr-test";
 import type { RenderResult } from "@canonical/svelte-ssr-test";
 import { createRawSnippet } from "svelte";
+import type { ComponentProps, Snippet } from "svelte";
 import { describe, expect, it } from "vitest";
 import Component from "./Link.svelte";
-import type { LinkProps } from "./types.js";
 
 describe("Link SSR", () => {
   const baseProps = {
     children: createRawSnippet(() => ({
       render: () => `<span>Link</span>`,
-    })),
+    })) as Snippet,
     href: "https://ubuntu.com",
-  } satisfies LinkProps;
+  } satisfies ComponentProps<typeof Component>;
 
-  describe("basics", () => {
-    it("doesn't throw", () => {
-      expect(() => {
-        render(Component, { props: { ...baseProps } });
-      }).not.toThrow();
-    });
+  it("doesn't throw", () => {
+    expect(() => {
+      render(Component, { props: { ...baseProps } });
+    }).not.toThrow();
+  });
 
-    it("renders", () => {
-      const page = render(Component, { props: { ...baseProps } });
-      expect(componentLocator(page)).toBeInstanceOf(
-        page.window.HTMLAnchorElement,
-      );
-    });
+  it("renders", () => {
+    const page = render(Component, { props: { ...baseProps } });
+    expect(componentLocator(page)).toBeInstanceOf(
+      page.window.HTMLAnchorElement,
+    );
   });
 
   describe("attributes", () => {
