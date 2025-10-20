@@ -1,121 +1,116 @@
-/* @canonical/generator-ds 0.10.0-experimental.0 */
+/* @canonical/generator-ds 0.10.0-experimental.5 */
 
+import { render } from "@canonical/svelte-ssr-test";
+import type { RenderResult } from "@canonical/svelte-ssr-test";
 import { createRawSnippet } from "svelte";
-import { render } from "svelte/server";
+import type { ComponentProps } from "svelte";
 import { describe, expect, it } from "vitest";
 import Component from "./RadioOption.svelte";
 import type { RadioOptionProps } from "./types.js";
 
 describe("RadioOption SSR", () => {
+  const baseProps = {
+    text: "Text",
+  } satisfies ComponentProps<typeof Component>;
   it("doesn't throw", () => {
     expect(() => {
-      renderRadioOption({ text: "Text" });
+      renderRadioOption({ ...baseProps });
     }).not.toThrow();
   });
 
   it("renders", () => {
-    const { body } = renderRadioOption({ text: "Text" });
-    expect(body).toContain("<label");
-    expect(body).toContain('type="radio"');
+    const page = renderRadioOption({ ...baseProps });
+    expect(componentLocator(page)).toBeInstanceOf(page.window.HTMLLabelElement);
   });
 
   describe("Basic attributes", () => {
-    it("applies id", () => {
-      const { body } = renderRadioOption({ text: "Text", id: "test-id" });
-      expect(body).toContain('id="test-id"');
+    it.each([
+      ["id", "test-id"],
+      ["aria-label", "test-aria-label"],
+    ])("applies %s", (attribute, value) => {
+      const page = renderRadioOption({ ...baseProps, [attribute]: value });
+      expect(componentLocator(page).getAttribute(attribute)).toBe(value);
     });
 
     it("applies class", () => {
-      const { body } = renderRadioOption({ text: "Text", class: "test-class" });
-      expect(body).toMatch(/class="[^"]*test-class[^"]*"/);
+      const page = renderRadioOption({ ...baseProps, class: "test-class" });
+      const element = componentLocator(page);
+      expect(element.classList.contains("ds")).toBe(true);
+      expect(element.classList.contains("radio-option")).toBe(true);
+      expect(element.classList.contains("test-class")).toBe(true);
     });
 
     it("applies style", () => {
-      const { body } = renderRadioOption({
-        text: "Text",
-        style: "color: red;",
+      const page = renderRadioOption({
+        ...baseProps,
+        style: "color: orange;",
       });
-      expect(body).toContain('style="color: red;"');
+      expect(componentLocator(page).getAttribute("style")).toBe(
+        "color: orange;",
+      );
     });
   });
 
   describe("Disabled state", () => {
     it("is not disabled by default", () => {
-      const { body } = renderRadioOption({
-        text: "Text",
-        style: "color: red;",
-      });
-      expect(body).toContain('style="color: red;"');
-    });
-  });
-
-  describe("Disabled state", () => {
-    it("is not disabled by default", () => {
-      const { body } = renderRadioOption({
-        text: "Text",
-      });
-      expect(body).not.toContain("disabled");
+      const page = renderRadioOption({ ...baseProps });
+      expect(radioLocator(page).hasAttribute("disabled")).toBe(false);
     });
 
     it("can be disabled", () => {
-      const { body } = renderRadioOption({
-        text: "Text",
+      const page = renderRadioOption({
+        ...baseProps,
         disabled: true,
       });
-      expect(body).toContain("disabled");
+      expect(radioLocator(page).hasAttribute("disabled")).toBe(true);
     });
   });
 
   describe("Checked state", () => {
     it("is not checked by default", () => {
-      const { body } = renderRadioOption({
-        text: "Text",
-      });
-      expect(body).toContain('type="radio"');
-      expect(body).not.toMatch(/type="radio"[^>]*checked/);
+      const page = renderRadioOption({ ...baseProps });
+      expect(radioLocator(page).checked).toBe(false);
     });
 
     it("can be rendered checked", () => {
-      const { body } = renderRadioOption({
-        text: "Text",
+      const page = renderRadioOption({
+        ...baseProps,
         checked: true,
       });
-      expect(body).toMatch(/type="radio"[^>]*checked/);
+      expect(radioLocator(page).checked).toBe(true);
     });
   });
 
   describe("Contents", () => {
     it("renders text", () => {
-      const { body } = renderRadioOption({
-        text: "Main Text",
-      });
-      expect(body).toContain("Main Text");
+      const page = renderRadioOption({ ...baseProps, text: "Main Text" });
+      expect(componentLocator(page).textContent).toContain("Main Text");
     });
 
     it("renders secondary text", () => {
-      const { body } = renderRadioOption({
-        text: "Main Text",
+      const page = renderRadioOption({
+        ...baseProps,
         secondaryText: "Secondary Text",
       });
-      expect(body).toContain("Secondary Text");
+      expect(componentLocator(page).textContent).toContain("Secondary Text");
     });
 
     it("renders trailing text", () => {
-      const { body } = renderRadioOption({
-        text: "Main Text",
+      const page = renderRadioOption({
+        ...baseProps,
         trailingText: "Trailing Text",
       });
-      expect(body).toContain("Trailing Text");
+      expect(componentLocator(page).textContent).toContain("Trailing Text");
     });
 
     it("renders icon", () => {
-      const { body } = renderRadioOption({
-        text: "Main Text",
+      const page = renderRadioOption({
+        ...baseProps,
         icon: createRawSnippet(() => ({
-          render: () => `<span class="text-icon-class"></span>`,
+          render: () => `<span data-testid="text-icon"></span>`,
         })),
       });
-      expect(body).toContain('class="text-icon-class"');
+      expect(page.getByTestId("text-icon")).toBeTruthy();
     });
   });
 });
@@ -123,4 +118,12 @@ describe("RadioOption SSR", () => {
 function renderRadioOption(props: RadioOptionProps) {
   // @ts-expect-error TypeScript reports `Expression produces a union type that is too complex to represent.ts(2590)`
   return render(Component, { props });
+}
+
+function componentLocator(page: RenderResult): HTMLElement {
+  return page.getByTestId("radio-option");
+}
+
+function radioLocator(page: RenderResult): HTMLInputElement {
+  return page.getByRole("radio");
 }

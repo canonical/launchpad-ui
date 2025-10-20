@@ -1,22 +1,29 @@
-/* @canonical/generator-ds 0.10.0-experimental.0 */
+/* @canonical/generator-ds 0.10.0-experimental.5 */
 
+import type { Locator } from "@vitest/browser/context";
 import { createRawSnippet } from "svelte";
+import type { ComponentProps } from "svelte";
 import { describe, expect, it, vi } from "vitest";
 import { render } from "vitest-browser-svelte";
+import type { RenderResult } from "vitest-browser-svelte";
 import Component from "./ButtonOption.svelte";
 
 describe("ButtonOption component", () => {
+  const baseProps = {
+    text: "Button Option",
+  } satisfies ComponentProps<typeof Component>;
+
   describe("Renders", () => {
     it("renders", async () => {
-      const page = render(Component, { text: "Button Option" });
-      const element = page.getByRole("button");
+      const page = render(Component, baseProps);
+      const element = componentLocator(page);
       await expect.element(element).toBeInTheDocument();
       await expect.element(page.getByText("Button Option")).toBeVisible();
     });
 
     it("renders secondary text", async () => {
       const page = render(Component, {
-        text: "Option",
+        ...baseProps,
         secondaryText: "Secondary",
       });
       await expect.element(page.getByText("Secondary")).toBeInTheDocument();
@@ -24,7 +31,7 @@ describe("ButtonOption component", () => {
 
     it("renders trailing text", async () => {
       const page = render(Component, {
-        text: "Option",
+        ...baseProps,
         trailingText: "Trailing",
       });
       await expect.element(page.getByText("Trailing")).toBeInTheDocument();
@@ -33,7 +40,7 @@ describe("ButtonOption component", () => {
     it("renders icon", async () => {
       const icon = "<span data-testid='icon'>Icon</span>";
       const page = render(Component, {
-        text: "Option",
+        ...baseProps,
         icon: createRawSnippet(() => ({ render: () => icon })),
       });
       await expect.element(page.getByTestId("icon")).toBeInTheDocument();
@@ -41,59 +48,71 @@ describe("ButtonOption component", () => {
   });
 
   describe("Basic attributes", () => {
-    it("applies id", async () => {
-      const page = render(Component, { text: "Option", id: "test-id" });
+    it.each([
+      ["id", "test-id"],
+      ["aria-label", "test-aria-label"],
+    ])("applies %s", async (attribute, value) => {
+      const page = render(Component, { ...baseProps, [attribute]: value });
       await expect
-        .element(page.getByRole("button"))
-        .toHaveAttribute("id", "test-id");
+        .element(componentLocator(page))
+        .toHaveAttribute(attribute, value);
     });
 
     it("applies class", async () => {
-      const page = render(Component, { text: "Option", class: "test-class" });
-      await expect.element(page.getByRole("button")).toHaveClass("test-class");
+      const page = render(Component, { ...baseProps, class: "test-class" });
+      const element = componentLocator(page);
+      await expect.element(element).toHaveClass("ds");
+      await expect.element(element).toHaveClass("button-option");
+      await expect.element(element).toHaveClass("test-class");
     });
 
     it("applies style", async () => {
       const page = render(Component, {
-        text: "Option",
-        style: "color: red;",
+        ...baseProps,
+        style: "color: orange;",
       });
-      await expect.element(page.getByRole("button")).toHaveStyle("color: red;");
+      await expect
+        .element(componentLocator(page))
+        .toHaveStyle("color: orange;");
     });
   });
 
   describe("Disabled state", () => {
     it("is not disabled by default", async () => {
-      const page = render(Component, { text: "Button Option" });
-      await expect.element(page.getByRole("button")).not.toBeDisabled();
+      const page = render(Component, baseProps);
+      await expect.element(componentLocator(page)).not.toBeDisabled();
     });
 
     it("can be disabled", async () => {
-      const page = render(Component, { text: "Button Option", disabled: true });
-      await expect.element(page.getByRole("button")).toBeDisabled();
+      const page = render(Component, { ...baseProps, disabled: true });
+      await expect.element(componentLocator(page)).toBeDisabled();
     });
   });
 
   it("fires click handler", async () => {
     const onclick = vi.fn();
-    const page = render(Component, { text: "Button Option", onclick });
-    await page.getByRole("button").click();
+    const page = render(Component, { ...baseProps, onclick });
+    await componentLocator(page).click();
     expect(onclick).toHaveBeenCalled();
   });
 
   describe("type attribute", () => {
     it("is of type button by default", async () => {
-      const page = render(Component, { text: "Button Option" });
+      const page = render(Component, baseProps);
       await expect
-        .element(page.getByRole("button"))
+        .element(componentLocator(page))
         .toHaveAttribute("type", "button");
     });
 
     it("can be of other type", async () => {
-      const page = render(Component, { text: "Button Option", type: "submit" });
+      const page = render(Component, { ...baseProps, type: "submit" });
       await expect
-        .element(page.getByRole("button"))
+        .element(componentLocator(page))
         .toHaveAttribute("type", "submit");
     });
   });
 });
+
+function componentLocator(page: RenderResult<typeof Component>): Locator {
+  return page.getByRole("button");
+}
