@@ -1,7 +1,10 @@
-/* @canonical/generator-ds 0.10.0-experimental.2 */
+/* @canonical/generator-ds 0.10.0-experimental.5 */
 
+import type { Locator } from "@vitest/browser/context";
+import type { ComponentProps } from "svelte";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { render } from "vitest-browser-svelte";
+import type { RenderResult } from "vitest-browser-svelte";
 import type { ComboboxContext } from "../../types.js";
 import Component from "./RadioOption.svelte";
 
@@ -56,70 +59,84 @@ vi.mock("../../context.js", () => {
 });
 
 describe("RadioOption component", () => {
+  const baseProps = {
+    text: "Option 1",
+  } satisfies ComponentProps<typeof Component>;
+
   it("renders", async () => {
-    const page = render(Component, { text: "Option 1" });
-    await expect.element(page.getByRole("option")).toBeInTheDocument();
+    const page = render(Component, { ...baseProps });
+    await expect.element(componentLocator(page)).toBeInTheDocument();
   });
 
-  describe("Basic attributes", () => {
-    it("applies id", async () => {
-      const page = render(Component, { text: "Text", id: "test-id" });
+  describe("attributes", () => {
+    it.each([
+      ["id", "test-id"],
+      ["aria-label", "test-aria-label"],
+    ])("applies %s", async (attribute, expected) => {
+      const page = render(Component, { ...baseProps, [attribute]: expected });
       await expect
-        .element(page.getByRole("option"))
-        .toHaveAttribute("id", "test-id");
+        .element(componentLocator(page))
+        .toHaveAttribute(attribute, expected);
     });
 
-    it("applies class", async () => {
-      const page = render(Component, { text: "Text", class: "test-class" });
-      await expect.element(page.getByRole("option")).toHaveClass("test-class");
+    it("applies classes", async () => {
+      const page = render(Component, { ...baseProps, class: "test-class" });
+      await expect.element(componentLocator(page)).toHaveClass("test-class");
+      await expect.element(componentLocator(page)).toHaveClass("ds");
+      await expect.element(componentLocator(page)).toHaveClass("radio-option");
     });
 
     it("applies style", async () => {
-      const page = render(Component, { text: "Text", style: "color: red;" });
-      await expect.element(page.getByRole("option")).toHaveStyle("color: red;");
+      const page = render(Component, {
+        ...baseProps,
+        style: "color: orange;",
+      });
+      await expect
+        .element(componentLocator(page))
+        .toHaveStyle({ color: "orange" });
     });
   });
 
   describe("After-mount attributes", () => {
     it("applies inert", async () => {
-      const page = render(Component, { text: "Option 1" });
-      await expect.element(page.getByRole("radio")).toHaveAttribute("inert");
+      const page = render(Component, { ...baseProps });
+      await expect.element(radioLocator(page)).toHaveAttribute("inert");
     });
   });
 
   describe("Active descendant", () => {
     it("has active class when active", async () => {
       const page = render(Component, {
-        text: "Option 1",
+        ...baseProps,
         id: "active-descendant-id",
       });
-      await expect.element(page.getByRole("option")).toHaveClass("active");
+      await expect.element(componentLocator(page)).toHaveClass("active");
     });
 
     it("doesn't have active class when not active", async () => {
-      const page = render(Component, { text: "Option 1", id: "other-id" });
-      await expect.element(page.getByRole("option")).not.toHaveClass("active");
+      const page = render(Component, { ...baseProps, id: "other-id" });
+      await expect.element(componentLocator(page)).not.toHaveClass("active");
     });
   });
 
   describe("aria-selected", () => {
     it('applies aria-selected="true" when checked', async () => {
       const page = render(Component, {
-        text: "Option 1",
+        ...baseProps,
         checked: true,
       });
       await expect
-        .element(page.getByRole("option"))
+        .element(componentLocator(page))
         .toHaveAttribute("aria-selected", "true");
     });
 
     it('applies aria-selected="false" when not checked', async () => {
       const page = render(Component, {
-        text: "Option 1",
+        ...baseProps,
         checked: false,
       });
       await expect
-        .element(page.getByRole("option"))
+        .element(componentLocator(page))
         .toHaveAttribute("aria-selected", "false");
     });
   });
@@ -130,8 +147,8 @@ describe("RadioOption component", () => {
     });
 
     it("listens for radio check when mounted and unregisters when unmounted", async () => {
-      const page = render(Component, { text: "Option 1", id: "option-1" });
-      await expect.element(page.getByRole("option")).toBeInTheDocument();
+      const page = render(Component, { ...baseProps, id: "option-1" });
+      await expect.element(componentLocator(page)).toBeInTheDocument();
       expect(listenForOptionSelect).toHaveBeenCalledExactlyOnceWith(
         "option-1",
         expect.any(Function),
@@ -144,16 +161,16 @@ describe("RadioOption component", () => {
       const onchange = vi.fn();
       const oninput = vi.fn();
       const page = render(Component, {
-        text: "Option 1",
+        ...baseProps,
         id: "option-1",
         onchange,
         oninput,
       });
-      await expect.element(page.getByRole("option")).toBeInTheDocument();
+      await expect.element(componentLocator(page)).toBeInTheDocument();
       expect(onchange).not.toHaveBeenCalled();
       expect(oninput).not.toHaveBeenCalled();
       notifyListeners();
-      await expect.element(page.getByRole("option")).toBeInTheDocument();
+      await expect.element(componentLocator(page)).toBeInTheDocument();
       expect(onchange).toHaveBeenCalledOnce();
       expect(oninput).toHaveBeenCalledOnce();
     });
@@ -162,48 +179,48 @@ describe("RadioOption component", () => {
       const onchange = vi.fn();
       const oninput = vi.fn();
       const page = render(Component, {
-        text: "Option 1",
+        ...baseProps,
         id: "option-1",
         checked: true,
         onchange,
         oninput,
       });
-      await expect.element(page.getByRole("option")).toBeInTheDocument();
+      await expect.element(componentLocator(page)).toBeInTheDocument();
       expect(onchange).not.toHaveBeenCalled();
       expect(oninput).not.toHaveBeenCalled();
       notifyListeners();
-      await expect.element(page.getByRole("option")).toBeInTheDocument();
+      await expect.element(componentLocator(page)).toBeInTheDocument();
       expect(onchange).not.toHaveBeenCalled();
       expect(oninput).not.toHaveBeenCalled();
     });
 
     it("gets checked when notified of selection", async () => {
       const page = render(Component, {
-        text: "Option 1",
+        ...baseProps,
         id: "option-1",
         checked: false,
       });
-      await expect.element(page.getByRole("radio")).not.toBeChecked();
+      await expect.element(radioLocator(page)).not.toBeChecked();
       notifyListeners();
-      await expect.element(page.getByRole("radio")).toBeChecked();
+      await expect.element(radioLocator(page)).toBeChecked();
     });
 
     it("calls notifyRadioChecked when selected", async () => {
       const page = render(Component, {
-        text: "Option 1",
+        ...baseProps,
         id: "option-1",
         checked: false,
       });
       expect(notifyRadioChecked).not.toHaveBeenCalled();
-      await page.getByRole("option").click();
+      await componentLocator(page).click();
       expect(notifyRadioChecked).toHaveBeenCalledExactlyOnceWith("option-1");
     });
   });
 
   it("applies context name to input", async () => {
-    const page = render(Component, { text: "Option 1", id: "option-1" });
+    const page = render(Component, { ...baseProps, id: "option-1" });
     await expect
-      .element(page.getByRole("radio"))
+      .element(radioLocator(page))
       .toHaveAttribute("name", "test-radio-group");
   });
 
@@ -213,8 +230,8 @@ describe("RadioOption component", () => {
     });
 
     it("listens for radio check when mounted and unregisters when unmounted", async () => {
-      const page = render(Component, { text: "Option 1", id: "option-1" });
-      await expect.element(page.getByRole("option")).toBeInTheDocument();
+      const page = render(Component, { ...baseProps, id: "option-1" });
+      await expect.element(componentLocator(page)).toBeInTheDocument();
       expect(listenForRadioCheck).toHaveBeenCalledOnce();
       page.unmount();
       expect(unregisterRadioCheckListener).toHaveBeenCalledOnce();
@@ -222,43 +239,51 @@ describe("RadioOption component", () => {
 
     it("aria-selected becomes false when another option is checked", async () => {
       const page = render(Component, {
-        text: "Option 1",
+        ...baseProps,
         id: "option-1",
         checked: true,
       });
       await expect
-        .element(page.getByRole("option"))
+        .element(componentLocator(page))
         .toHaveAttribute("aria-selected", "true");
       notifyRadioChecked("other-option-id");
       await expect
-        .element(page.getByRole("option"))
+        .element(componentLocator(page))
         .toHaveAttribute("aria-selected", "false");
     });
 
     it("doesn't change checked state when notified of its own check", async () => {
       const page = render(Component, {
-        text: "Option 1",
+        ...baseProps,
         id: "option-1",
         checked: false,
       });
       await expect
-        .element(page.getByRole("option"))
+        .element(componentLocator(page))
         .toHaveAttribute("aria-selected", "false");
       notifyRadioChecked("option-1");
       await expect
-        .element(page.getByRole("option"))
+        .element(componentLocator(page))
         .toHaveAttribute("aria-selected", "false");
     });
 
     it("calls notifyRadioChecked when clicked", async () => {
       const page = render(Component, {
-        text: "Option 1",
+        ...baseProps,
         id: "option-1",
         checked: false,
       });
       expect(notifyRadioChecked).not.toHaveBeenCalled();
-      await page.getByRole("option").click();
+      await componentLocator(page).click();
       expect(notifyRadioChecked).toHaveBeenCalledExactlyOnceWith("option-1");
     });
   });
 });
+
+function componentLocator(page: RenderResult<typeof Component>): Locator {
+  return page.getByRole("option");
+}
+
+function radioLocator(page: RenderResult<typeof Component>): Locator {
+  return page.getByRole("radio");
+}

@@ -1,6 +1,8 @@
-/* @canonical/generator-ds 0.10.0-experimental.2 */
+/* @canonical/generator-ds 0.10.0-experimental.5 */
 
+import type { Locator } from "@vitest/browser/context";
 import { createRawSnippet } from "svelte";
+import type { ComponentProps, Snippet } from "svelte";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { render } from "vitest-browser-svelte";
 import type { RenderResult } from "vitest-browser-svelte";
@@ -22,38 +24,54 @@ vi.mock("../../context.js", () => {
 });
 
 describe("Loading component", () => {
+  const baseProps = {} satisfies ComponentProps<typeof Component>;
+
   it("renders", async () => {
-    const page = render(Component);
-    await expect.element(testIdLocator(page)).toHaveTextContent("Loading…");
+    const page = render(Component, { ...baseProps });
+    await expect.element(componentLocator(page)).toHaveTextContent("Loading…");
   });
 
   it("renders children", async () => {
+    const children = createRawSnippet(() => ({
+      render: () => "<span>Fetching data</span>",
+    }));
     const page = render(Component, {
-      children: createRawSnippet(() => ({
-        render: () => "<span>Fetching data</span>",
-      })),
+      ...baseProps,
+      children: children as Snippet,
     });
     await expect
-      .element(testIdLocator(page))
+      .element(componentLocator(page))
       .toHaveTextContent("Fetching data");
   });
 
-  describe("Basic attributes", () => {
-    it("applies id", async () => {
-      const page = render(Component, { id: "test-id" });
+  describe("attributes", () => {
+    it.each([
+      ["id", "test-id"],
+      ["aria-label", "test-aria-label"],
+    ])("applies %s", async (attribute, expected) => {
+      const page = render(Component, { ...baseProps, [attribute]: expected });
       await expect
-        .element(testIdLocator(page))
-        .toHaveAttribute("id", "test-id");
+        .element(componentLocator(page))
+        .toHaveAttribute(attribute, expected);
     });
 
-    it("applies class", async () => {
-      const page = render(Component, { class: "test-class" });
-      await expect.element(testIdLocator(page)).toHaveClass("test-class");
+    it("applies classes", async () => {
+      const page = render(Component, { ...baseProps, class: "test-class" });
+      await expect.element(componentLocator(page)).toHaveClass("test-class");
+      await expect.element(componentLocator(page)).toHaveClass("ds");
+      await expect
+        .element(componentLocator(page))
+        .toHaveClass("combobox-loading");
     });
 
     it("applies style", async () => {
-      const page = render(Component, { style: "color: red;" });
-      await expect.element(testIdLocator(page)).toHaveStyle("color: red;");
+      const page = render(Component, {
+        ...baseProps,
+        style: "color: orange;",
+      });
+      await expect
+        .element(componentLocator(page))
+        .toHaveStyle({ color: "orange" });
     });
   });
 
@@ -63,22 +81,21 @@ describe("Loading component", () => {
     });
 
     it("calls loadingShown when mounted", async () => {
-      const page = render(Component);
-      await expect.element(testIdLocator(page)).toBeInTheDocument();
+      const page = render(Component, { ...baseProps });
+      await expect.element(componentLocator(page)).toBeInTheDocument();
       expect(loadingShown).toHaveBeenCalledOnce();
     });
 
     it("calls loadingHidden when unmounted", async () => {
-      const page = render(Component);
-      await expect.element(testIdLocator(page)).toBeInTheDocument();
+      const page = render(Component, { ...baseProps });
+      await expect.element(componentLocator(page)).toBeInTheDocument();
       page.unmount();
-      await expect.element(testIdLocator(page)).not.toBeInTheDocument();
+      await expect.element(componentLocator(page)).not.toBeInTheDocument();
       expect(loadingHidden).toHaveBeenCalledOnce();
     });
   });
 });
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function testIdLocator(page: RenderResult<any>) {
+function componentLocator(page: RenderResult<typeof Component>): Locator {
   return page.getByTestId("combobox-loading");
 }
