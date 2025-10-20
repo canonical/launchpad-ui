@@ -1,34 +1,54 @@
-/* @canonical/generator-ds 0.10.0-experimental.2 */
+/* @canonical/generator-ds 0.10.0-experimental.5 */
 
-import { render } from "svelte/server";
+import { render } from "@canonical/svelte-ssr-test";
+import type { RenderResult } from "@canonical/svelte-ssr-test";
+import type { ComponentProps } from "svelte";
 import { describe, expect, it } from "vitest";
 import Component from "./CloseButton.svelte";
 
 describe("CloseButton SSR", () => {
-  it("doesn't throw", () => {
-    expect(() => render(Component)).not.toThrow();
-  });
+  const baseProps = {} satisfies ComponentProps<typeof Component>;
 
-  it("renders", () => {
-    const { body } = render(Component);
-    expect(body).toContain("button");
-    expect(body).toMatch(/aria-label="Close"/);
-  });
-
-  describe("Basic attributes", () => {
-    it("applies id", () => {
-      const { body } = render(Component, { props: { id: "test-id" } });
-      expect(body).toContain('id="test-id"');
+  describe("basics", () => {
+    it("doesn't throw", () => {
+      expect(() => {
+        render(Component, { props: { ...baseProps } });
+      }).not.toThrow();
     });
 
-    it("applies class", () => {
-      const { body } = render(Component, { props: { class: "test-class" } });
-      expect(body).toMatch(/class="[^"]*test-class[^"]*"/);
+    it("renders", () => {
+      const page = render(Component, { props: { ...baseProps } });
+      expect(componentLocator(page)).toBeInstanceOf(page.window.HTMLElement);
+    });
+  });
+
+  describe("attributes", () => {
+    it.each([
+      ["id", "test-id"],
+      ["aria-label", "test-aria-label"],
+    ])("applies %s", (attribute, expected) => {
+      const page = render(Component, {
+        props: { ...baseProps, [attribute]: expected },
+      });
+      expect(page.getByRole("button").getAttribute(attribute)).toBe(expected);
+    });
+
+    it("applies classes", () => {
+      const page = render(Component, {
+        props: { ...baseProps, class: "test-class" },
+      });
+      expect(componentLocator(page).classList).toContain("test-class");
     });
 
     it("applies style", () => {
-      const { body } = render(Component, { props: { style: "color: red;" } });
-      expect(body).toContain('style="color: red;"');
+      const page = render(Component, {
+        props: { ...baseProps, style: "color: orange;" },
+      });
+      expect(componentLocator(page).style.color).toBe("orange");
     });
   });
 });
+
+function componentLocator(page: RenderResult): HTMLElement {
+  return page.getByRole("button", { name: "Close" });
+}
