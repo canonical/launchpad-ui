@@ -9,45 +9,41 @@
   let {
     class: className,
     group = $bindable(),
-    checked: checkedProp = $bindable(),
-    onchange: onchangeProp,
+    checked = $bindable(),
     value,
     disabled,
     ...rest
   }: SwitchProps<T> = $props();
 
-  const onchange: typeof onchangeProp = (e) => {
-    onchangeProp?.(e);
-    const newChecked = (e.target as HTMLInputElement).checked;
-    checkedProp = newChecked;
-    if (value && group) {
+  function getChecked() {
+    if (group && value !== undefined) return group.includes(value);
+    return Boolean(checked);
+  }
+
+  function setChecked(newChecked: boolean) {
+    checked = newChecked;
+
+    if (group && value !== undefined) {
       if (newChecked) {
-        // Don't use push, because if the passed group is not bound, it would mutate not owned state
         group = [...group, value];
       } else {
-        // Don't use splice for the same reason
         group = group.filter((v) => v !== value);
       }
     }
-  };
-
-  const checked = $derived(
-    value !== undefined && group?.includes(value) ? true : checkedProp,
-  );
+  }
 
   const isMounted = useIsMounted();
   // If there is no JS, we have no way to update the `aria-checked` attribute even though, the checkbox remains functional. Don't set `aria-checked` server-side, to avoid mismatched `checked` and `aria-checked` states.
-  const ariaChecked = $derived(isMounted.value ? Boolean(checked) : undefined);
+  const ariaChecked = $derived(isMounted.value ? getChecked() : undefined);
 </script>
 
 <input
   type="checkbox"
   role="switch"
   class={[componentCssClassName, className]}
-  {onchange}
   {value}
   {disabled}
-  {checked}
+  bind:checked={getChecked, setChecked}
   aria-checked={ariaChecked}
   aria-readonly={disabled}
   {...rest}
