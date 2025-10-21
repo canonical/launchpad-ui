@@ -1,69 +1,74 @@
-/* @canonical/generator-ds 0.10.0-experimental.2 */
+/* @canonical/generator-ds 0.10.0-experimental.5 */
 
+import { render } from "@canonical/svelte-ssr-test";
+import type { RenderResult } from "@canonical/svelte-ssr-test";
+import type { ComponentProps } from "svelte";
 import { createRawSnippet } from "svelte";
-import { render } from "svelte/server";
 import { describe, expect, it } from "vitest";
 import Component from "./TitleRow.svelte";
 
-const children = createRawSnippet(() => ({
-  render: () => "<span>Title Row Content</span>",
-}));
-
-const date = createRawSnippet(() => ({
-  render: () => "<span>2023-03-15</span>",
-}));
-
 describe("TitleRow SSR", () => {
+  const baseProps = {
+    children: createRawSnippet(() => ({
+      render: () => "<span>Title Row Content</span>",
+    })),
+    date: createRawSnippet(() => ({
+      render: () => "<span>2023-03-15</span>",
+    })),
+  } satisfies ComponentProps<typeof Component>;
+
   it("doesn't throw", () => {
     expect(() => {
-      render(Component, { props: { children, date } });
+      render(Component, { props: { ...baseProps } });
     }).not.toThrow();
   });
 
-  describe("Renders", () => {
-    it("with required props", () => {
-      const { body } = render(Component, { props: { children, date } });
-      expect(body).toContain("<div");
-      expect(body).toContain("</div>");
-      expect(body).toContain("Title Row Content");
-    });
+  it("renders", () => {
+    const page = render(Component, { props: { ...baseProps } });
+    const element = componentLocator(page);
+    expect(element).toBeInstanceOf(page.window.HTMLElement);
+    expect(page.container.innerHTML).toContain("Title Row Content");
+  });
 
-    it("with leadingText", () => {
-      const { body } = render(Component, {
-        props: { children, date, leadingText: "Leading Text" },
-      });
-      expect(body).toContain("Leading Text");
+  it("renders leadingText", () => {
+    const page = render(Component, {
+      props: { ...baseProps, leadingText: "Leading Text" },
     });
+    expect(page.container.innerHTML).toContain("Leading Text");
   });
 
   describe("Basic attributes", () => {
-    it("applies id", () => {
-      const { body } = render(Component, {
-        props: { id: "test-id", children, date },
+    it.each([
+      ["id", "test-id"],
+      ["aria-label", "test-aria-label"],
+    ])("applies %s", (attribute, value) => {
+      const page = render(Component, {
+        props: { ...baseProps, [attribute]: value },
       });
-      expect(body).toContain('id="test-id"');
-    });
-
-    it("applies class", () => {
-      const { body } = render(Component, {
-        props: {
-          class: "test-class",
-          children,
-          date,
-        },
-      });
-      expect(body).toMatch(/class="[^"]*test-class[^"]*"/);
+      const element = componentLocator(page);
+      expect(element.getAttribute(attribute)).toBe(value);
     });
 
     it("applies style", () => {
-      const { body } = render(Component, {
-        props: {
-          style: "color: red;",
-          children,
-          date,
-        },
+      const page = render(Component, {
+        props: { ...baseProps, style: "color: orange;" },
       });
-      expect(body).toContain('style="color: red;"');
+      const element = componentLocator(page);
+      expect(element.getAttribute("style")).toContain("color: orange;");
+    });
+
+    it("applies class", () => {
+      const page = render(Component, {
+        props: { ...baseProps, class: "test-class" },
+      });
+      const element = componentLocator(page);
+      expect(element.classList.contains("ds")).toBe(true);
+      expect(element.classList.contains("title-row")).toBe(true);
+      expect(element.classList.contains("test-class")).toBe(true);
     });
   });
 });
+
+function componentLocator(page: RenderResult): HTMLElement {
+  return page.getByTestId("title-row");
+}
