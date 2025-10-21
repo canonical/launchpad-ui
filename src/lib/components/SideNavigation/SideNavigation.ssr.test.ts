@@ -1,10 +1,11 @@
-/* @canonical/generator-ds 0.10.0-experimental.3 */
+/* @canonical/generator-ds 0.10.0-experimental.5 */
 
 import { render } from "@canonical/svelte-ssr-test";
+import type { RenderResult } from "@canonical/svelte-ssr-test";
+import type { ComponentProps } from "svelte";
 import { describe, expect, it } from "vitest";
 import Component from "./SideNavigation.svelte";
 import { children, expandToggle, footer, logo } from "./test.fixtures.svelte";
-import type { SideNavigationProps } from "./types.js";
 
 describe("SideNavigation SSR", () => {
   const baseProps = {
@@ -12,152 +13,146 @@ describe("SideNavigation SSR", () => {
     logo,
     expandToggle,
     footer,
-  } satisfies SideNavigationProps;
+  } satisfies ComponentProps<typeof Component>;
 
-  describe("basics", () => {
-    it("doesn't throw", () => {
-      expect(() => {
-        render(Component, { props: { ...baseProps } });
-      }).not.toThrow();
-    });
+  it("doesn't throw", () => {
+    expect(() => {
+      render(Component, { props: { ...baseProps } });
+    }).not.toThrow();
+  });
 
-    it("renders", () => {
-      const { getByRole } = render(Component, {
-        props: { ...baseProps },
-      });
-      expect(getByRole("banner")).toBeDefined();
-    });
+  it("renders", () => {
+    const page = render(Component, { props: { ...baseProps } });
+    expect(componentLocator(page)).toBeDefined();
   });
 
   describe("attributes", () => {
     it.each([
       ["id", "test-id"],
-      ["style", "color: orange;"],
       ["aria-label", "test-aria-label"],
-    ])("applies %s", (attribute, expected) => {
-      const { getByRole } = render(Component, {
-        props: { [attribute]: expected, ...baseProps },
+    ])("applies %s", (attribute, value) => {
+      const page = render(Component, {
+        props: { ...baseProps, [attribute]: value },
       });
-      expect(getByRole("banner").getAttribute(attribute)).toBe(expected);
+      expect(componentLocator(page).getAttribute(attribute)).toBe(value);
     });
 
-    it("applies classes", () => {
-      const { getByRole } = render(Component, {
-        props: { class: "test-class", ...baseProps },
+    it("applies style", () => {
+      const page = render(Component, {
+        props: { ...baseProps, style: "color: orange;" },
       });
-      const classes = ["test-class"];
-      classes.push("ds", "side-navigation");
+      expect(componentLocator(page).getAttribute("style")).toContain(
+        "color: orange;",
+      );
+    });
 
-      for (const className of classes) {
-        expect(getByRole("banner").classList).toContain(className);
-      }
+    it("applies class", () => {
+      const page = render(Component, {
+        props: { ...baseProps, class: "test-class" },
+      });
+
+      const element = componentLocator(page);
+      expect(element.className).toContain("ds");
+      expect(element.className).toContain("side-navigation");
+      expect(element.className).toContain("test-class");
     });
   });
 
   describe("contents", () => {
     describe("while expanded", () => {
-      it("renders logo", async () => {
-        const { findByRole } = render(Component, {
+      it("renders logo", () => {
+        const page = render(Component, {
           props: { ...baseProps, expanded: true },
         });
 
-        const logo = await findByRole("link", { name: "Logo link" });
-        expect(logo).toBeDefined();
+        expect(page.getByRole("link", { name: "Logo link" })).toBeTruthy();
       });
 
-      it("renders children", async () => {
-        const { findByRole } = render(Component, {
+      it("renders children", () => {
+        const page = render(Component, {
           props: { ...baseProps, expanded: true },
         });
 
-        const navigation = await findByRole("navigation");
-        expect(navigation).toBeDefined();
-
-        const linkItem = await findByRole("link", { name: "Link in nav" });
-        expect(linkItem).toBeDefined();
-
-        const buttonItem = await findByRole("button", {
-          name: "Button in nav",
-        });
-        expect(buttonItem).toBeDefined();
+        expect(page.getByRole("navigation")).toBeTruthy();
+        expect(page.getByRole("link", { name: "Link in nav" })).toBeTruthy();
+        expect(
+          page.getByRole("button", { name: "Button in nav" }),
+        ).toBeTruthy();
       });
 
-      it("renders expand toggle", async () => {
-        const { findByRole } = render(Component, {
+      it("renders expand toggle", () => {
+        const page = render(Component, {
           props: { ...baseProps, expanded: true },
         });
 
-        const expandToggle = await findByRole("button", {
+        const expandToggle = page.getByRole("button", {
           name: "Collapse navigation",
         });
-        expect(expandToggle).toBeDefined();
+        expect(expandToggle).toBeTruthy();
         expect(expandToggle.getAttribute("aria-expanded")).toBe("true");
 
-        const navigation = await findByRole("navigation");
-        expect(expandToggle.getAttribute("aria-controls")).toBe(navigation.id);
+        expect(expandToggle.getAttribute("aria-controls")).toBe(
+          page.getByRole("navigation").id,
+        );
       });
 
-      it("renders footer", async () => {
-        const { findByRole } = render(Component, {
+      it("renders footer", () => {
+        const page = render(Component, {
           props: { ...baseProps, expanded: true },
         });
 
-        const linkItem = await findByRole("link", { name: "Link in footer" });
-        expect(linkItem).toBeDefined();
-
-        const buttonItem = await findByRole("button", {
-          name: "Button in footer",
-        });
-        expect(buttonItem).toBeDefined();
+        expect(page.getByRole("link", { name: "Link in footer" })).toBeTruthy();
+        expect(
+          page.getByRole("button", { name: "Button in footer" }),
+        ).toBeTruthy();
       });
     });
 
     describe("while expanded", () => {
-      it("renders logo", async () => {
-        const { findByRole } = render(Component, {
+      it("renders logo", () => {
+        const page = render(Component, {
           props: { ...baseProps, expanded: false },
         });
 
-        const logo = await findByRole("link", { name: "Logo link" });
-        expect(logo).toBeDefined();
+        expect(page.getByRole("link", { name: "Logo link" })).toBeTruthy();
       });
 
-      it("doesn't render children", async () => {
-        const { container } = render(Component, {
+      it("doesn't render children", () => {
+        const page = render(Component, {
           props: { ...baseProps, expanded: false },
         });
 
-        const navigation = container.querySelector("nav");
-        expect(navigation).toBeNull();
+        expect(page.queryByRole("navigation")).toBeNull();
       });
 
-      it("renders expand toggle", async () => {
-        const { findByRole } = render(Component, {
+      it("renders expand toggle", () => {
+        const page = render(Component, {
           props: { ...baseProps, expanded: false },
         });
 
-        const expandToggle = await findByRole("button", {
+        const expandToggle = page.getByRole("button", {
           name: "Expand navigation",
         });
-        expect(expandToggle).toBeDefined();
+        expect(expandToggle).toBeTruthy();
         expect(expandToggle.getAttribute("aria-expanded")).toBe("false");
 
         expect(expandToggle.getAttribute("aria-controls")).toBeTruthy();
       });
 
-      it("renders footer", async () => {
-        const { findByRole } = render(Component, {
+      it("renders footer", () => {
+        const page = render(Component, {
           props: { ...baseProps, expanded: false },
         });
 
-        const linkItem = await findByRole("link", { name: "Link in footer" });
-        expect(linkItem).toBeDefined();
-
-        const buttonItem = await findByRole("button", {
-          name: "Button in footer",
-        });
-        expect(buttonItem).toBeDefined();
+        expect(page.getByRole("link", { name: "Link in footer" })).toBeTruthy();
+        expect(
+          page.getByRole("button", { name: "Button in footer" }),
+        ).toBeTruthy();
       });
     });
   });
 });
+
+function componentLocator(page: RenderResult): HTMLElement {
+  return page.getByRole("banner");
+}
