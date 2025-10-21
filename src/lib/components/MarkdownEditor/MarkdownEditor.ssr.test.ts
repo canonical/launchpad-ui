@@ -1,59 +1,62 @@
-/* @canonical/generator-ds 0.10.0-experimental.3 */
+/* @canonical/generator-ds 0.10.0-experimental.5 */
 
 import { render } from "@canonical/svelte-ssr-test";
+import type { RenderResult } from "@canonical/svelte-ssr-test";
+import type { ComponentProps } from "svelte";
 import { createRawSnippet } from "svelte";
 import { describe, expect, it } from "vitest";
 import Component from "./MarkdownEditor.svelte";
-import type { MarkdownEditorProps } from "./types.js";
 
 describe("MarkdownEditor SSR", () => {
   const baseProps = {
     children: createRawSnippet(() => ({
       render: () => `<span>MarkdownEditor</span>`,
     })),
-  } satisfies MarkdownEditorProps;
+  } satisfies ComponentProps<typeof Component>;
 
-  describe("basics", () => {
-    it("doesn't throw", () => {
-      expect(() => {
-        render(Component, { props: { ...baseProps } });
-      }).not.toThrow();
-    });
+  it("doesn't throw", () => {
+    expect(() => {
+      render(Component, { props: { ...baseProps } });
+    }).not.toThrow();
+  });
 
-    it("renders", () => {
-      const { getByTestId, window } = render(Component, {
-        props: { ...baseProps },
-      });
-      expect(getByTestId("markdown-editor")).toBeInstanceOf(
-        window.HTMLDivElement,
-      );
-    });
+  it("renders", () => {
+    const page = render(Component, { props: { ...baseProps } });
+    expect(componentLocator(page)).toBeInstanceOf(page.window.HTMLDivElement);
   });
 
   describe("attributes", () => {
     it.each([
       ["id", "test-id"],
-      ["style", "color: orange;"],
       ["aria-label", "test-aria-label"],
-    ])("applies %s", (attribute, expected) => {
-      const { getByTestId } = render(Component, {
-        props: { [attribute]: expected, ...baseProps },
+    ])("applies %s", (attribute, value) => {
+      const page = render(Component, {
+        props: { ...baseProps, [attribute]: value },
       });
-      expect(getByTestId("markdown-editor")?.getAttribute(attribute)).toBe(
-        expected,
+      expect(componentLocator(page)?.getAttribute(attribute)).toBe(value);
+    });
+
+    it("applies style", () => {
+      const page = render(Component, {
+        props: { ...baseProps, style: "color: orange;" },
+      });
+      expect(componentLocator(page)?.getAttribute("style")).toContain(
+        "color: orange;",
       );
     });
 
-    it("applies classes", () => {
-      const { getByTestId } = render(Component, {
-        props: { class: "test-class", ...baseProps },
+    it("applies class", () => {
+      const page = render(Component, {
+        props: { ...baseProps, class: "test-class" },
       });
-      const classes = ["test-class"];
-      classes.push("ds", "markdown-editor");
-
-      for (const className of classes) {
-        expect(getByTestId("markdown-editor")?.classList).toContain(className);
-      }
+      const element = componentLocator(page);
+      expect(element?.classList.contains("ds")).toBe(true);
+      expect(element?.classList.contains("markdown-editor")).toBe(true);
+      expect(element?.classList.contains("test-class")).toBe(true);
     });
   });
 });
+
+function componentLocator(page: RenderResult): HTMLElement {
+  return page.getByTestId("markdown-editor");
+}

@@ -1,5 +1,7 @@
-/* @canonical/generator-ds 0.10.0-experimental.3 */
+/* @canonical/generator-ds 0.10.0-experimental.5 */
 
+import type { Locator } from "@vitest/browser/context";
+import type { ComponentProps } from "svelte";
 import { createRawSnippet } from "svelte";
 import { describe, expect, it } from "vitest";
 import { render } from "vitest-browser-svelte";
@@ -7,28 +9,46 @@ import type { RenderResult } from "vitest-browser-svelte";
 import Component from "./MarkdownEditor.svelte";
 
 describe("MarkdownEditor component", () => {
-  it("renders", async () => {
-    const children = createRawSnippet(() => ({
+  const baseProps = {
+    children: createRawSnippet(() => ({
       render: () => `<span>MarkdownEditor</span>`,
-    }));
+    })),
+  } satisfies ComponentProps<typeof Component>;
 
-    const page = render(Component, { children });
+  it("renders", async () => {
+    const page = render(Component, baseProps);
     const element = page.getByText("MarkdownEditor");
     await expect.element(element).toBeInTheDocument();
   });
 
-  it("applies class", async () => {
-    const children = createRawSnippet(() => ({
-      render: () => `<span>MarkdownEditor</span>`,
-    }));
+  describe("Basic attributes", () => {
+    it.each([
+      ["id", "test-id"],
+      ["aria-label", "test-aria-label"],
+    ])("applies %s", async (attribute, value) => {
+      const page = render(Component, { ...baseProps, [attribute]: value });
+      await expect
+        .element(componentLocator(page))
+        .toHaveAttribute(attribute, value);
+    });
 
-    const page = render(Component, { children, class: "test-class" });
-    const element = testIdLocator(page);
-    await expect.element(element).toHaveClass("test-class");
+    it("applies style", async () => {
+      const page = render(Component, { ...baseProps, style: "color: orange;" });
+      await expect
+        .element(componentLocator(page))
+        .toHaveStyle("color: orange;");
+    });
+
+    it("applies class", async () => {
+      const page = render(Component, { ...baseProps, class: "test-class" });
+      const element = componentLocator(page);
+      await expect.element(element).toHaveClass("ds");
+      await expect.element(element).toHaveClass("markdown-editor");
+      await expect.element(element).toHaveClass("test-class");
+    });
   });
 });
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function testIdLocator(page: RenderResult<any>) {
+function componentLocator(page: RenderResult<typeof Component>): Locator {
   return page.getByTestId("markdown-editor");
 }

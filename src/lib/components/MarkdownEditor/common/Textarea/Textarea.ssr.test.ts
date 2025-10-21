@@ -1,58 +1,62 @@
-/* @canonical/generator-ds 0.10.0-experimental.3 */
+/* @canonical/generator-ds 0.10.0-experimental.5 */
 
 import { render } from "@canonical/svelte-ssr-test";
+import type { RenderResult } from "@canonical/svelte-ssr-test";
+import type { ComponentProps } from "svelte";
 import { describe, expect, it } from "vitest";
 import Component from "./Textarea.svelte";
-import type { TextareaProps } from "./types.js";
 
 describe("Markdown Editor > Textarea SSR", () => {
   const baseProps = {
     value: "Textarea",
-  } satisfies TextareaProps;
+  } satisfies ComponentProps<typeof Component>;
 
-  describe("basics", () => {
-    it("doesn't throw", () => {
-      expect(() => {
-        render(Component, { props: { ...baseProps } });
-      }).not.toThrow();
-    });
+  it("doesn't throw", () => {
+    expect(() => {
+      render(Component, { props: { ...baseProps } });
+    }).not.toThrow();
+  });
 
-    it("renders", () => {
-      const { window, container } = render(Component, {
-        props: { ...baseProps },
-      });
-      expect(container.firstElementChild).toBeInstanceOf(
-        window.HTMLTextAreaElement,
-      );
-      const textarea = container.firstElementChild as HTMLTextAreaElement;
-      expect(textarea.value).toBe("Textarea");
-    });
+  it("renders", () => {
+    const page = render(Component, { props: { ...baseProps } });
+    expect(componentLocator(page)).toBeInstanceOf(
+      page.window.HTMLTextAreaElement,
+    );
+    expect(componentLocator(page).value).toBe("Textarea");
   });
 
   describe("attributes", () => {
     it.each([
       ["id", "test-id"],
-      ["style", "color: orange;"],
       ["aria-label", "test-aria-label"],
-    ])("applies %s", (attribute, expected) => {
-      const { container } = render(Component, {
-        props: { [attribute]: expected, ...baseProps },
+    ])("applies %s", (attribute, value) => {
+      const page = render(Component, {
+        props: { ...baseProps, [attribute]: value },
       });
-      expect(container.firstElementChild?.getAttribute(attribute)).toBe(
-        expected,
+      expect(componentLocator(page).getAttribute(attribute)).toBe(value);
+    });
+
+    it("applies style", () => {
+      const page = render(Component, {
+        props: { ...baseProps, style: "color: orange;" },
+      });
+      expect(componentLocator(page).getAttribute("style")).toContain(
+        "color: orange;",
       );
     });
 
-    it("applies classes", () => {
-      const { container } = render(Component, {
-        props: { class: "test-class", ...baseProps },
+    it("applies class", () => {
+      const page = render(Component, {
+        props: { ...baseProps, class: "test-class" },
       });
-      const classes = ["test-class"];
-      classes.push("ds", "markdown-editor-textarea");
-
-      for (const className of classes) {
-        expect(container.firstElementChild?.classList).toContain(className);
-      }
+      const element = componentLocator(page);
+      expect(element.classList).toContain("ds");
+      expect(element.classList).toContain("markdown-editor-textarea");
+      expect(element.classList).toContain("test-class");
     });
   });
 });
+
+function componentLocator(page: RenderResult): HTMLTextAreaElement {
+  return page.getByRole("textbox");
+}
