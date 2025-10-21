@@ -172,10 +172,11 @@ describe("Modal component", () => {
         .not.toHaveAttribute("open");
     });
 
-    // Webkit doesn't support `closedby` attribute on dialog elements (https://developer.mozilla.org/en-US/docs/Web/API/HTMLDialogElement/closedBy), as such the modals currently cannot be closed by clicking outside of them.
-    // FIXME: Provide a fallback mechanism for Webkit browsers.
-    it.runIf(!navigator.userAgent.includes("Macintosh"))(
+    it(
       "is closed by clicking outside the modal when `closeOnOutsideClick` is true",
+      // Webkit doesn't support `closedby` attribute on dialog elements (https://developer.mozilla.org/en-US/docs/Web/API/HTMLDialogElement/closedBy), as such the modals currently cannot be closed by clicking outside of them.
+      // FIXME: Provide a fallback mechanism for Webkit browsers.
+      { todo: navigator.userAgent.includes("Macintosh") },
       async () => {
         const page = render(Component, {
           ...baseProps,

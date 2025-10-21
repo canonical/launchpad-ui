@@ -114,7 +114,7 @@ describe("Search component", () => {
       const page = render(Component, { ...baseProps });
       const input = componentLocator(page);
       await expect.element(input).toBeInTheDocument();
-      await userEvent.click(input);
+      (input.element() as HTMLElement).focus();
       await userEvent.keyboard("{ArrowDown}");
       expect(setActiveDescendant).toHaveBeenCalledExactlyOnceWith(
         "sibling-option-id",
