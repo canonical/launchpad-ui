@@ -1,4 +1,4 @@
-/* @canonical/generator-ds 0.10.0-experimental.2 */
+/* @canonical/generator-ds 0.10.0-experimental.5 */
 
 import { userEvent } from "@vitest/browser/context";
 import type { Locator } from "@vitest/browser/context";
@@ -22,15 +22,48 @@ describe("SidePanel component", () => {
     trigger,
   } satisfies ComponentProps<typeof Component>;
 
-  describe("basics", () => {
-    it("renders", async () => {
-      const page = render(Component, { props: baseProps });
-      await expect.element(componentLocator(page, true)).toBeInTheDocument();
+  it("renders", async () => {
+    const page = render(Component, { ...baseProps });
+    await expect.element(componentLocator(page, true)).toBeInTheDocument();
+  });
+
+  describe("attributes", () => {
+    it.each([
+      ["id", "test-id"],
+      ["aria-label", "test-aria-label"],
+    ])("applies %s", async (attribute, expected) => {
+      const page = render(Component, { ...baseProps, [attribute]: expected });
+      await expect
+        .element(componentLocator(page, true))
+        .toHaveAttribute(attribute, expected);
     });
 
+    it("applies classes", async () => {
+      const page = render(Component, { ...baseProps, class: "test-class" });
+      await expect
+        .element(componentLocator(page, true))
+        .toHaveClass("test-class");
+      await expect.element(componentLocator(page, true)).toHaveClass("ds");
+      await expect
+        .element(componentLocator(page, true))
+        .toHaveClass("side-panel");
+    });
+
+    it("applies style", async () => {
+      const page = render(Component, {
+        ...baseProps,
+        style: "color: orange;",
+      });
+      await expect
+        .element(componentLocator(page, true))
+        .toHaveStyle({ color: "orange" });
+    });
+  });
+
+  describe("basics", () => {
     it("renders trigger", async () => {
       const page = render(Component, {
-        props: baseProps,
+        ...baseProps,
       });
       await expect.element(triggerLocator(page)).toBeInTheDocument();
       await expect
@@ -40,7 +73,7 @@ describe("SidePanel component", () => {
 
     it("renders children", async () => {
       const page = render(Component, {
-        props: baseProps,
+        ...baseProps,
       });
       await expect
         .element(
@@ -53,7 +86,7 @@ describe("SidePanel component", () => {
     });
 
     it("is hidden by default", async () => {
-      const page = render(Component, { props: baseProps });
+      const page = render(Component, { ...baseProps });
       await expect.element(componentLocator(page, true)).not.toBeVisible();
 
       await expect
@@ -65,7 +98,7 @@ describe("SidePanel component", () => {
   describe("Opening the SidePanel", () => {
     it("is opened when `showModal` on the dialog element is called", async () => {
       const page = render(Component, {
-        props: baseProps,
+        ...baseProps,
       });
       await expect.element(componentLocator(page, true)).not.toBeVisible();
 
@@ -77,7 +110,7 @@ describe("SidePanel component", () => {
 
     it("is opened by trigger click", async () => {
       const page = render(Component, {
-        props: baseProps,
+        ...baseProps,
       });
       await expect.element(componentLocator(page, true)).not.toBeVisible();
       await expect
@@ -92,7 +125,7 @@ describe("SidePanel component", () => {
 
     it("is opened by showModal() on the component instance", async () => {
       const page = render(Component, {
-        props: baseProps,
+        ...baseProps,
       });
       await expect.element(componentLocator(page, true)).not.toBeVisible();
 
@@ -106,7 +139,7 @@ describe("SidePanel component", () => {
 
   describe("Closing the SidePanel", () => {
     it("is closed when `close` on the dialog element is called", async () => {
-      const page = render(Component, { props: baseProps });
+      const page = render(Component, { ...baseProps });
       await showSidePanel(page);
 
       (componentLocator(page).element() as HTMLDialogElement).close();
@@ -118,7 +151,7 @@ describe("SidePanel component", () => {
 
     it("is closed by close() supplied via children snippet", async () => {
       const page = render(Component, {
-        props: baseProps,
+        ...baseProps,
       });
       await showSidePanel(page);
 
@@ -130,7 +163,7 @@ describe("SidePanel component", () => {
     });
 
     it("is closed by close() on the component instance", async () => {
-      const page = render(Component, { props: baseProps });
+      const page = render(Component, { ...baseProps });
       await showSidePanel(page);
 
       const component = page.component as unknown as SidePanelMethods;
@@ -147,7 +180,8 @@ describe("SidePanel component", () => {
       "is closed by clicking outside the side panel when `closeOnOutsideClick` is true",
       async () => {
         const page = render(Component, {
-          props: { ...baseProps, closeOnOutsideClick: true },
+          ...baseProps,
+          closeOnOutsideClick: true,
         });
         await showSidePanel(page);
 
@@ -161,7 +195,8 @@ describe("SidePanel component", () => {
 
     it("is not closed by clicking outside the side panel when `closeOnOutsideClick` is false", async () => {
       const page = render(Component, {
-        props: { ...baseProps, closeOnOutsideClick: false },
+        ...baseProps,
+        closeOnOutsideClick: false,
       });
       await showSidePanel(page);
 
@@ -172,7 +207,7 @@ describe("SidePanel component", () => {
 
     it("is closed by pressing Escape", async () => {
       const page = render(Component, {
-        props: { ...baseProps },
+        ...baseProps,
       });
       await showSidePanel(page);
 
@@ -186,14 +221,14 @@ describe("SidePanel component", () => {
 
   describe("Removal of the fallback when mounted", () => {
     it("does not have popover attribute", async () => {
-      const page = render(Component, { props: baseProps });
+      const page = render(Component, { ...baseProps });
       await expect
         .element(componentLocator(page, true))
         .not.toHaveAttribute("popover");
     });
 
     it("popovertarget passed to trigger is undefined", async () => {
-      const page = render(Component, { props: { trigger } });
+      const page = render(Component, { trigger });
       await expect
         .element(triggerLocator(page))
         .not.toHaveAttribute("popovertarget");
@@ -201,7 +236,7 @@ describe("SidePanel component", () => {
 
     it("popovertarget passed to children is undefined", async () => {
       const page = render(Component, {
-        props: baseProps,
+        ...baseProps,
       });
       await expect
         .element(
