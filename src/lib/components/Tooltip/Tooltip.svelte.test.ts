@@ -1,7 +1,10 @@
-/* @canonical/generator-ds 0.10.0-experimental.3 */
+/* @canonical/generator-ds 0.10.0-experimental.5 */
 
+import type { Locator } from "@vitest/browser/context";
+import type { ComponentProps } from "svelte";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { render } from "vitest-browser-svelte";
+import type { RenderResult } from "vitest-browser-svelte";
 import Component from "./Tooltip.svelte";
 import { children, trigger } from "./test.fixtures.svelte";
 import { ChainingManager } from "./utils/ChainingManager.js";
@@ -40,49 +43,41 @@ describe("Tooltip component", () => {
   const baseProps = {
     trigger,
     children,
-  };
+  } satisfies ComponentProps<typeof Component>;
 
-  describe("Renders", () => {
-    it("trigger", async () => {
-      const page = render(Component, { ...baseProps });
-      const button = page.getByRole("button", { name: "Tooltip trigger" });
-      await expect.element(button).toBeInTheDocument();
-    });
-
-    it("tooltip", async () => {
-      const page = render(Component, { ...baseProps });
-      const tooltip = page.getByRole("tooltip", { includeHidden: true });
-      await expect.element(tooltip).toBeInTheDocument();
-      await expect.element(tooltip).toHaveTextContent("Tooltip content");
-    });
-
-    it("not visible by default", async () => {
-      const page = render(Component, { ...baseProps });
-      const tooltip = page.getByRole("tooltip", { includeHidden: true });
-      await expect.element(tooltip).not.toBeVisible();
-    });
+  it("renders", async () => {
+    const page = render(Component, { ...baseProps });
+    await expect.element(componentLocator(page, true)).toBeInTheDocument();
   });
 
-  describe("Basic attributes", () => {
-    it("applies id", async () => {
-      const page = render(Component, { id: "test-id", ...baseProps });
-      const tooltip = page.getByRole("tooltip", { includeHidden: true });
-      await expect.element(tooltip).toHaveAttribute("id", "test-id");
+  describe("attributes", () => {
+    it.each([
+      ["id", "test-id"],
+      ["aria-label", "test-aria-label"],
+    ])("applies %s", async (attribute, expected) => {
+      const page = render(Component, { ...baseProps, [attribute]: expected });
+      await expect
+        .element(componentLocator(page, true))
+        .toHaveAttribute(attribute, expected);
+    });
+
+    it("applies classes", async () => {
+      const page = render(Component, { ...baseProps, class: "test-class" });
+      await expect
+        .element(componentLocator(page, true))
+        .toHaveClass("test-class");
+      await expect.element(componentLocator(page, true)).toHaveClass("ds");
+      await expect.element(componentLocator(page, true)).toHaveClass("tooltip");
     });
 
     it("applies style", async () => {
       const page = render(Component, {
-        style: "color: orange;",
         ...baseProps,
+        style: "color: orange;",
       });
-      const tooltip = page.getByRole("tooltip", { includeHidden: true });
-      await expect.element(tooltip).toHaveStyle("color: orange;");
-    });
-
-    it("applies classes", async () => {
-      const page = render(Component, { class: "test-class", ...baseProps });
-      const tooltip = page.getByRole("tooltip", { includeHidden: true });
-      await expect.element(tooltip).toHaveClass("test-class");
+      await expect
+        .element(componentLocator(page, true))
+        .toHaveStyle({ color: "orange" });
     });
   });
 
@@ -187,4 +182,32 @@ describe("Tooltip component", () => {
       vi.useRealTimers();
     });
   });
+
+  describe("Renders", () => {
+    it("trigger", async () => {
+      const page = render(Component, { ...baseProps });
+      const button = page.getByRole("button", { name: "Tooltip trigger" });
+      await expect.element(button).toBeInTheDocument();
+    });
+
+    it("tooltip", async () => {
+      const page = render(Component, { ...baseProps });
+      const tooltip = componentLocator(page, true);
+      await expect.element(tooltip).toBeInTheDocument();
+      await expect.element(tooltip).toHaveTextContent("Tooltip content");
+    });
+
+    it("not visible by default", async () => {
+      const page = render(Component, { ...baseProps });
+      const tooltip = componentLocator(page, true);
+      await expect.element(tooltip).not.toBeVisible();
+    });
+  });
 });
+
+function componentLocator(
+  page: RenderResult<typeof Component>,
+  includeHidden?: boolean,
+): Locator {
+  return page.getByRole("tooltip", { includeHidden });
+}
