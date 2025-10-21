@@ -3,7 +3,7 @@
 <script lang="ts">
   import type { TabListProps } from "./types.js";
 
-  const componentCssClassName = "ds tabs";
+  const componentCssClassName = "ds tab-list";
 
   let { class: className, children, ...rest }: TabListProps = $props();
 </script>
@@ -28,7 +28,7 @@
 -->
 
 <style>
-  .ds.tabs {
+  .ds.tab-list {
     > ul {
       display: flex;
     }
