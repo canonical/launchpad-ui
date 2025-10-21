@@ -1,49 +1,56 @@
-/* @canonical/generator-ds 0.10.0-experimental.2 */
+/* @canonical/generator-ds 0.10.0-experimental.5 */
 
+import type { Locator } from "@vitest/browser/context";
+import type { ComponentProps } from "svelte";
 import { describe, expect, it } from "vitest";
 import { render } from "vitest-browser-svelte";
+import type { RenderResult } from "vitest-browser-svelte";
 import Component from "./TextInput.svelte";
 import { textInputModifiers } from "./modifiers.js";
 
 describe("TextInput component", () => {
+  const baseProps = {} satisfies ComponentProps<typeof Component>;
+
   it("renders", async () => {
-    const page = render(Component);
-    await expect.element(page.getByRole("textbox")).toBeVisible();
+    const page = render(Component, { ...baseProps });
+    await expect.element(componentLocator(page)).toBeVisible();
   });
 
-  describe("Basic attributes", () => {
-    it("applies id", async () => {
-      const page = render(Component, {
-        props: { id: "test-id" },
-      });
+  describe("attributes", () => {
+    it.each([
+      ["id", "test-id"],
+      ["aria-label", "test-aria-label"],
+    ])("applies %s", async (attribute, expected) => {
+      const page = render(Component, { ...baseProps, [attribute]: expected });
       await expect
-        .element(page.getByRole("textbox"))
-        .toHaveAttribute("id", "test-id");
+        .element(componentLocator(page))
+        .toHaveAttribute(attribute, expected);
     });
 
-    it("applies class", async () => {
-      const page = render(Component, {
-        props: { class: "test-class" },
-      });
-      await expect.element(page.getByRole("textbox")).toHaveClass("test-class");
+    it("applies classes", async () => {
+      const page = render(Component, { ...baseProps, class: "test-class" });
+      await expect.element(componentLocator(page)).toHaveClass("test-class");
+      await expect.element(componentLocator(page)).toHaveClass("ds");
+      await expect.element(componentLocator(page)).toHaveClass("text-input");
     });
 
     it("applies style", async () => {
       const page = render(Component, {
-        props: { style: "color: red;" },
+        ...baseProps,
+        style: "color: orange;",
       });
       await expect
-        .element(page.getByRole("textbox"))
-        .toHaveStyle("color: red;");
+        .element(componentLocator(page))
+        .toHaveStyle({ color: "orange" });
     });
   });
 
   describe("Input attributes", () => {
     describe("type", () => {
       it("defaults to text", async () => {
-        const page = render(Component);
+        const page = render(Component, { ...baseProps });
         await expect
-          .element(page.getByRole("textbox"))
+          .element(componentLocator(page))
           .toHaveAttribute("type", "text");
       });
 
@@ -51,17 +58,19 @@ describe("TextInput component", () => {
         "accepts %s",
         async (type) => {
           const page = render(Component, {
-            props: { type },
+            ...baseProps,
+            type,
           });
           await expect
-            .element(page.getByRole("textbox"))
+            .element(componentLocator(page))
             .toHaveAttribute("type", type);
         },
       );
 
       it("accepts search", async () => {
         const page = render(Component, {
-          props: { type: "search" },
+          ...baseProps,
+          type: "search",
         });
         await expect
           .element(page.getByRole("searchbox"))
@@ -71,22 +80,24 @@ describe("TextInput component", () => {
 
     it("applies value", async () => {
       const page = render(Component, {
-        props: { value: "Test value" },
+        ...baseProps,
+        value: "Test value",
       });
-      await expect.element(page.getByRole("textbox")).toHaveValue("Test value");
+      await expect.element(componentLocator(page)).toHaveValue("Test value");
     });
 
     describe("Disabled state", () => {
       it("isn't disabled by default", async () => {
-        const page = render(Component);
-        await expect.element(page.getByRole("textbox")).not.toBeDisabled();
+        const page = render(Component, { ...baseProps });
+        await expect.element(componentLocator(page)).not.toBeDisabled();
       });
 
       it("can be disabled", async () => {
         const page = render(Component, {
-          props: { disabled: true },
+          ...baseProps,
+          disabled: true,
         });
-        await expect.element(page.getByRole("textbox")).toBeDisabled();
+        await expect.element(componentLocator(page)).toBeDisabled();
       });
     });
   });
@@ -94,9 +105,10 @@ describe("TextInput component", () => {
   describe("Validation attributes", () => {
     it("applies required", async () => {
       const page = render(Component, {
-        props: { required: true },
+        ...baseProps,
+        required: true,
       });
-      const input = page.getByRole("textbox");
+      const input = componentLocator(page);
 
       await expect.element(input).toBeRequired();
       await expect.element(input).toBeInvalid();
@@ -107,9 +119,10 @@ describe("TextInput component", () => {
 
     it("minlength", async () => {
       const page = render(Component, {
-        props: { minlength: 5 },
+        ...baseProps,
+        minlength: 5,
       });
-      const input = page.getByRole("textbox");
+      const input = componentLocator(page);
 
       await expect.element(input).toHaveAttribute("minlength", "5");
 
@@ -126,9 +139,10 @@ describe("TextInput component", () => {
       "applies %s severity modifier",
       async (modifier) => {
         const page = render(Component, {
-          props: { modifiers: { severity: modifier } },
+          ...baseProps,
+          modifiers: { severity: modifier },
         });
-        await expect.element(page.getByRole("textbox")).toHaveClass(modifier);
+        await expect.element(componentLocator(page)).toHaveClass(modifier);
       },
     );
 
@@ -136,10 +150,15 @@ describe("TextInput component", () => {
       "applies %s density modifier",
       async (modifier) => {
         const page = render(Component, {
-          props: { modifiers: { density: modifier } },
+          ...baseProps,
+          modifiers: { density: modifier },
         });
-        await expect.element(page.getByRole("textbox")).toHaveClass(modifier);
+        await expect.element(componentLocator(page)).toHaveClass(modifier);
       },
     );
   });
 });
+
+function componentLocator(page: RenderResult<typeof Component>): Locator {
+  return page.getByRole("textbox");
+}
