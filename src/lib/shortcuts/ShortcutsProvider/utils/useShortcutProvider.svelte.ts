@@ -1,3 +1,4 @@
+import { untrack } from "svelte";
 import { SvelteSet } from "svelte/reactivity";
 import type { Shortcut } from "../../Shortcut.svelte.js";
 import { setShortcutsContext } from "../context.js";
@@ -25,8 +26,19 @@ export function useShortcutProvider(ignoreIfTyping: () => boolean) {
 
   setShortcutsContext({
     registerShortcuts: (...toRegister) => {
-      toRegister.forEach((shortcut) => shortcuts.add(shortcut));
-      return () => toRegister.forEach((shortcut) => shortcuts.delete(shortcut));
+      // eslint-disable-next-line svelte/prefer-svelte-reactivity
+      const added = new Set<Shortcut>();
+
+      toRegister.forEach((shortcut) => {
+        // We only register the shortcut if it hasn't already been registered, and keep track of the ones that were added in this call...
+        if (untrack(() => !shortcuts.has(shortcut))) {
+          shortcuts.add(shortcut);
+          added.add(shortcut);
+        }
+      });
+
+      // ...so that only those get removed when unregistering. This makes sure that only the component that successfully registered the shortcut can unregister it.
+      return () => added.forEach((shortcut) => shortcuts.delete(shortcut));
     },
     get shortcuts() {
       return Array.from(shortcuts);

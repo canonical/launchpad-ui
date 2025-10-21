@@ -43,6 +43,28 @@ describe("useShortcutProvider", () => {
       unregister?.();
       expect(context?.shortcuts).toEqual([]);
     });
+
+    it("unregisters only these shortcuts that were actually registered", () => {
+      useShortcutProvider(() => false);
+      const shortcut1 = new Shortcut("a", { label: "label" }, () => {});
+      const shortcut2 = new Shortcut("b", { label: "label" }, () => {});
+      const shortcut3 = new Shortcut("c", { label: "label" }, () => {});
+
+      const unregister1 = context?.registerShortcuts(shortcut1, shortcut2);
+      const unregister2 = context?.registerShortcuts(
+        shortcut1,
+        shortcut2,
+        shortcut3,
+      );
+
+      expect(context?.shortcuts).toEqual([shortcut1, shortcut2, shortcut3]);
+
+      unregister2?.();
+      expect(context?.shortcuts).toEqual([shortcut1, shortcut2]);
+
+      unregister1?.();
+      expect(context?.shortcuts).toEqual([]);
+    });
   });
 
   describe("onkeydown", () => {
