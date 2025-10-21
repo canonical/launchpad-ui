@@ -104,7 +104,7 @@ describe("DateTime SSR", () => {
         const page = render(Component, {
           props: { ...baseProps, date: now, nowThreshold: 999999 },
         });
-        expect(page.container.innerHTML).toContain("now");
+        expect(componentLocator(page).textContent).toContain("now");
       });
 
       it("does not render nowLabel when outside nowThreshold", () => {
@@ -112,7 +112,7 @@ describe("DateTime SSR", () => {
         const page = render(Component, {
           props: { ...baseProps, date: now - 1000, nowThreshold: 10 },
         });
-        expect(page.container.innerHTML).not.toContain("now");
+        expect(componentLocator(page).textContent).not.toContain("now");
       });
 
       it("renders custom nowLabel when within nowThreshold", () => {
@@ -125,7 +125,7 @@ describe("DateTime SSR", () => {
             nowLabel: "just now",
           },
         });
-        expect(page.container.innerHTML).toContain("just now");
+        expect(componentLocator(page).textContent).toContain("just now");
       });
     });
 
@@ -137,7 +137,7 @@ describe("DateTime SSR", () => {
           props: { ...baseProps, date: pastDate, nowThreshold: 0 },
         });
 
-        expect(page.container.innerHTML).toContain("3 hours ago");
+        expect(componentLocator(page).textContent).toContain("3 hours ago");
       });
     });
 
@@ -147,7 +147,9 @@ describe("DateTime SSR", () => {
           props: { ...baseProps, absolute: true },
         });
 
-        expect(page.container.innerHTML).toContain("1/1/24, 12:00 PM");
+        expect(componentLocator(page).textContent).toContain(
+          "1/1/24, 12:00 PM",
+        );
       });
     });
   });
@@ -157,18 +159,20 @@ describe("DateTime SSR", () => {
       const page = render(Component, {
         props: { ...baseProps },
       });
-      expect(page.container.innerHTML).toContain("1/1/24, 12:00 PM");
+      expect(componentLocator(page).getAttribute("title")).toBe(
+        "1/1/24, 12:00 PM",
+      );
     });
 
     it("does not apply title for absolute time", () => {
       const page = render(Component, {
         props: { ...baseProps, absolute: true },
       });
-      expect(page.container.innerHTML).not.toContain("title=");
+      expect(componentLocator(page).hasAttribute("title")).toBe(false);
     });
   });
 });
 
-function componentLocator(page: RenderResult): HTMLElement {
-  return page.container.querySelector("time") as HTMLTimeElement;
+function componentLocator(page: RenderResult): HTMLTimeElement {
+  return page.getByRole("time");
 }

@@ -2,7 +2,7 @@
 
 import type { Locator } from "@vitest/browser/context";
 import { createRawSnippet } from "svelte";
-import type { ComponentProps, Snippet } from "svelte";
+import type { ComponentProps } from "svelte";
 import { describe, expect, it } from "vitest";
 import { render } from "vitest-browser-svelte";
 import type { RenderResult } from "vitest-browser-svelte";
@@ -12,12 +12,11 @@ describe("Footer component", () => {
   const baseProps = {} satisfies ComponentProps<typeof Component>;
 
   it("renders", async () => {
-    const children = createRawSnippet(() => ({
-      render: () => "<span>Footer</span>",
-    }));
     const page = render(Component, {
       ...baseProps,
-      children: children as Snippet,
+      children: createRawSnippet(() => ({
+        render: () => "<span>Footer</span>",
+      })),
     });
     await expect.element(componentLocator(page)).toBeInTheDocument();
     await expect.element(page.getByText("Footer")).toBeInTheDocument();

@@ -27,14 +27,15 @@ describe("TitleRow SSR", () => {
     const page = render(Component, { props: { ...baseProps } });
     const element = componentLocator(page);
     expect(element).toBeInstanceOf(page.window.HTMLElement);
-    expect(page.container.innerHTML).toContain("Title Row Content");
+    expect(componentLocator(page).textContent).toContain("Title Row Content");
+    expect(componentLocator(page).textContent).toContain("2023-03-15");
   });
 
   it("renders leadingText", () => {
     const page = render(Component, {
       props: { ...baseProps, leadingText: "Leading Text" },
     });
-    expect(page.container.innerHTML).toContain("Leading Text");
+    expect(componentLocator(page).textContent).toContain("Leading Text");
   });
 
   describe("Basic attributes", () => {

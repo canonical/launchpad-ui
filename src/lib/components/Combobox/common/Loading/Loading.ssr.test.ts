@@ -3,7 +3,7 @@
 import { render } from "@canonical/svelte-ssr-test";
 import type { RenderResult } from "@canonical/svelte-ssr-test";
 import { createRawSnippet } from "svelte";
-import type { ComponentProps, Snippet } from "svelte";
+import type { ComponentProps } from "svelte";
 import { describe, expect, it } from "vitest";
 import Component from "./Loading.svelte";
 
@@ -24,13 +24,12 @@ describe("Loading SSR", () => {
     });
 
     it("with children", () => {
-      const children = createRawSnippet(() => ({
-        render: () => "<span>Fetching data</span>",
-      }));
       const page = render(Component, {
         props: {
           ...baseProps,
-          children: children as Snippet,
+          children: createRawSnippet(() => ({
+            render: () => "<span>Fetching data</span>",
+          })),
         },
       });
       expect(componentLocator(page).textContent).toContain("Fetching data");

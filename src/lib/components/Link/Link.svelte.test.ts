@@ -2,7 +2,7 @@
 
 import type { Locator } from "@vitest/browser/context";
 import { createRawSnippet } from "svelte";
-import type { ComponentProps, Snippet } from "svelte";
+import type { ComponentProps } from "svelte";
 import { describe, expect, it } from "vitest";
 import { render } from "vitest-browser-svelte";
 import type { RenderResult } from "vitest-browser-svelte";
@@ -12,7 +12,7 @@ describe("Link component", () => {
   const baseProps = {
     children: createRawSnippet(() => ({
       render: () => `<span>Link</span>`,
-    })) as Snippet,
+    })),
     href: "https://ubuntu.com",
   } satisfies ComponentProps<typeof Component>;
 

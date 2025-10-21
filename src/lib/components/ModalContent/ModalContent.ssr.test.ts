@@ -26,7 +26,7 @@ describe("ModalContent SSR", () => {
       },
     });
     expect(componentLocator(page)).toBeInstanceOf(page.window.HTMLElement);
-    expect(page.container.innerHTML).toContain("<span>Content</span>");
+    expect(componentLocator(page).textContent).toContain("Content");
   });
 
   describe("attributes", () => {

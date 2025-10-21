@@ -3,7 +3,7 @@
 import { render } from "@canonical/svelte-ssr-test";
 import type { RenderResult } from "@canonical/svelte-ssr-test";
 import { createRawSnippet } from "svelte";
-import type { ComponentProps, Snippet } from "svelte";
+import type { ComponentProps } from "svelte";
 import { describe, expect, it } from "vitest";
 import Component from "./Link.svelte";
 
@@ -11,7 +11,7 @@ describe("Link SSR", () => {
   const baseProps = {
     children: createRawSnippet(() => ({
       render: () => `<span>Link</span>`,
-    })) as Snippet,
+    })),
     href: "https://ubuntu.com",
   } satisfies ComponentProps<typeof Component>;
 
