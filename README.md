@@ -49,3 +49,31 @@ The application will be available at [http://localhost:5173](http://localhost:51
 | `bun run test:client`        | Run client-side tests                            |
 | `bun run test:server`        | Run server-side tests                            |
 | `bun run test:ssr`           | Run SSR tests                                    |
+
+## Export for testing
+
+1. **Package the components**
+
+   ```bash
+   bun run pack
+   ```
+
+2. **Link the package**
+
+   ```bash
+   bun link
+   ```
+
+3. **Install the package**
+
+   Navigate to your test project directory
+
+   ```bash
+   bun link launchpad-ui
+   ```
+
+   or
+
+   ```bash
+   bun install ~/Desktop/launchpad-ui/launchpad-ui-0.0.1.tgz
+   ```
