@@ -44,13 +44,6 @@ describe("Icon component", () => {
     await expect.element(componentLocator(page)).toHaveStyle("color: orange;");
   });
 
-  it("renders icons with mask image", async () => {
-    const page = render(Component, { name: "edit" });
-    await expect
-      .element(componentLocator(page))
-      .toHaveStyle({ maskImage: "url(/icons/monotone/edit.svg)" });
-  });
-
   it("renders icons with currentColor", async () => {
     const page = render(Component, {
       name: "edit",

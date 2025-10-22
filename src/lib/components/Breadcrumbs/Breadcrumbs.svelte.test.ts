@@ -1,7 +1,7 @@
 /* @canonical/generator-ds 0.10.0-experimental.5 */
 
 import type { Locator } from "@vitest/browser/context";
-import { userEvent } from "@vitest/browser/context";
+import { page as pageContext, userEvent } from "@vitest/browser/context";
 import type { ComponentProps } from "svelte";
 import { describe, expect, it } from "vitest";
 import { render } from "vitest-browser-svelte";
@@ -141,7 +141,7 @@ describe("Breadcrumbs component", () => {
       });
 
       // Mock narrow container
-      page.container.style.width = "100px";
+      pageContext.viewport(100, 800);
 
       await expectAreCollapsed(page);
 
@@ -154,8 +154,8 @@ describe("Breadcrumbs component", () => {
         collapsedLocator(page).getByRole("listitem").elements(),
       ).toHaveLength(baseProps.segments.length);
 
-      // Mock wider container
-      page.container.style.width = "1000px";
+      // Expand the container
+      pageContext.viewport(1000, 800);
 
       // Check that no segments are collapsed again
       await expectNoCollapsed(page);
@@ -172,7 +172,7 @@ describe("Breadcrumbs component", () => {
       });
 
       // Mock narrow container
-      page.container.style.width = "100px";
+      pageContext.viewport(100, 800);
 
       // Check that maxNumCollapsed segments are collapsed
       await expectAreCollapsed(page);
@@ -188,7 +188,7 @@ describe("Breadcrumbs component", () => {
           minNumExpanded: 1000,
         });
 
-        page.container.style.width = "100px";
+        pageContext.viewport(100, 800);
 
         await expectNoCollapsed(page);
         expect(page.getByRole("link").elements()).toHaveLength(
@@ -202,7 +202,7 @@ describe("Breadcrumbs component", () => {
           minNumExpanded: -1,
         });
 
-        page.container.style.width = "100px";
+        pageContext.viewport(100, 800);
 
         await expectAreCollapsed(page);
         expect(
@@ -240,7 +240,7 @@ describe("Breadcrumbs component", () => {
           minNumExpanded: 1,
         });
 
-        page.container.style.width = "100px";
+        pageContext.viewport(100, 800);
 
         await expectAreCollapsed(page);
         expect(
@@ -276,7 +276,7 @@ describe("Breadcrumbs component", () => {
           minNumExpanded: 2,
         });
 
-        page.container.style.width = "100px";
+        pageContext.viewport(100, 800);
 
         await expectAreCollapsed(page);
 

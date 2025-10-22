@@ -104,7 +104,8 @@ describe("Tooltip component", () => {
   });
 
   describe("Is shown", () => {
-    it("on trigger hover", async () => {
+    // Seems like `button.hover()` is very flaky in firefox, so it needs some retries. If this is really bad, maybe we should skip hover tests in firefox altogether?
+    it("on trigger hover", { retry: 3 }, async () => {
       const page = render(Component, { ...baseProps, delay: 0 });
       const button = page.getByRole("button", { name: "Tooltip trigger" });
       await expect

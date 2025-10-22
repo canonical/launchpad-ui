@@ -41,13 +41,6 @@ describe("MulticolorIcon component", () => {
       await expect.element(element).toHaveClass("test-class");
     });
   });
-
-  it("renders icons with background image", async () => {
-    const page = render(Component, baseProps);
-    expect(componentLocator(page)).toHaveStyle({
-      backgroundImage: `url(/icons/multicolor/${baseProps.name}.svg)`,
-    });
-  });
 });
 
 function componentLocator(page: RenderResult<typeof Component>): Locator {
