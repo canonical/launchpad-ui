@@ -1,50 +1,60 @@
-/* @canonical/generator-ds 0.9.1-experimental.0 */
+/* @canonical/generator-ds 0.10.0-experimental.5 */
 
-import { render } from "svelte/server";
+import { render } from "@canonical/svelte-ssr-test";
+import type { RenderResult } from "@canonical/svelte-ssr-test";
+import type { ComponentProps } from "svelte";
 import { describe, expect, it } from "vitest";
 import Component from "./Breadcrumbs.svelte";
 
 describe("Breadcrumbs SSR", () => {
-  const defaultSegments = [
-    { label: "Home", href: "/" },
-    { label: "Category", href: "/category" },
-    { label: "Current Page" },
-  ];
+  const baseProps = {
+    segments: [
+      { label: "Home", href: "/" },
+      { label: "Category", href: "/category" },
+      { label: "Current Page" },
+    ],
+  } satisfies ComponentProps<typeof Component>;
 
-  it("doesn't throw", () => {
-    expect(() => {
-      render(Component, { props: { segments: defaultSegments } });
-    }).not.toThrow();
-  });
-
-  it("renders", () => {
-    const { body } = render(Component, {
-      props: { segments: defaultSegments },
+  describe("basics", () => {
+    it("doesn't throw", () => {
+      expect(() => {
+        render(Component, { props: { ...baseProps } });
+      }).not.toThrow();
     });
-    expect(body).toContain("<nav");
-    expect(body).toContain("</nav>");
+
+    it("renders", () => {
+      const page = render(Component, {
+        props: { ...baseProps },
+      });
+      expect(componentLocator(page)).toBeInstanceOf(page.window.HTMLElement);
+    });
   });
 
-  describe("basic attributes", () => {
-    it("applies id", () => {
-      const { body } = render(Component, {
-        props: { id: "test-id", segments: defaultSegments },
+  describe("attributes", () => {
+    it.each([
+      ["id", "test-id"],
+      ["aria-label", "test-aria-label"],
+    ])("applies %s", (attribute, expected) => {
+      const page = render(Component, {
+        props: { ...baseProps, [attribute]: expected },
       });
-      expect(body).toContain('id="test-id"');
+      expect(componentLocator(page).getAttribute(attribute)).toBe(expected);
+    });
+
+    it("applies classes", () => {
+      const page = render(Component, {
+        props: { ...baseProps, class: "test-class" },
+      });
+      expect(componentLocator(page).classList).toContain("test-class");
+      expect(componentLocator(page).classList).toContain("ds");
+      expect(componentLocator(page).classList).toContain("breadcrumbs");
     });
 
     it("applies style", () => {
-      const { body } = render(Component, {
-        props: { style: "color: red;", segments: defaultSegments },
+      const page = render(Component, {
+        props: { ...baseProps, style: "color: orange;" },
       });
-      expect(body).toMatch(/style="[^"]*color: red;[^"]*"/);
-    });
-
-    it("applies class", () => {
-      const { body } = render(Component, {
-        props: { class: "test-class", segments: defaultSegments },
-      });
-      expect(body).toMatch(/class="[^"]*ds breadcrumbs[^"]*test-class[^"]*"/);
+      expect(componentLocator(page).style.color).toBe("orange");
     });
   });
 
@@ -54,19 +64,20 @@ describe("Breadcrumbs SSR", () => {
         { label: "Home", href: "/" },
         { label: "Products", href: "/products" },
       ];
-      const { body } = render(Component, { props: { segments } });
-      expect(body).toContain('href="/"');
-      expect(body).toContain('href="/products"');
-      expect(body).toContain("Home");
-      expect(body).toContain("Products");
+      const page = render(Component, { props: { segments } });
+
+      expect(page.getAllByRole("link").length).toBe(2);
+      expect(page.getByText("Home").getAttribute("href")).toBe("/");
+      expect(page.getByText("Products").getAttribute("href")).toBe("/products");
     });
 
     it("renders segments without links", () => {
       const segments = [{ label: "Current Page" }];
-      const { body } = render(Component, { props: { segments } });
-      expect(body).toContain("Current Page");
-      expect(body).not.toContain("<a");
-      expect(body).not.toContain('href="');
+      const page = render(Component, { props: { segments } });
+      expect(page.getByText("Current Page")).toBeDefined();
+      expect(page.getByText("Current Page")).not.toBeInstanceOf(
+        page.window.HTMLAnchorElement,
+      );
     });
 
     it("marks last segment as current page", () => {
@@ -74,8 +85,12 @@ describe("Breadcrumbs SSR", () => {
         { label: "Home", href: "/" },
         { label: "Current", href: "/current" },
       ];
-      const { body } = render(Component, { props: { segments } });
-      expect(body).toContain('aria-current="page"');
+      const page = render(Component, { props: { segments } });
+      expect(
+        page
+          .getByRole("link", { name: "Current" })
+          .getAttribute("aria-current"),
+      ).toBe("page");
     });
   });
 
@@ -83,13 +98,15 @@ describe("Breadcrumbs SSR", () => {
     it.each(["all", 0, 1, 2] as const)(
       "renders with minNumExpanded='%s'",
       (minNumExpanded) => {
-        const { body } = render(Component, {
-          props: { segments: defaultSegments, minNumExpanded },
+        const page = render(Component, {
+          props: { ...baseProps, minNumExpanded },
         });
-        expect(body).toContain("Home");
-        expect(body).toContain("Category");
-        expect(body).toContain("Current Page");
+        expect(page.getAllByRole("listitem").length).toBe(3);
       },
     );
   });
 });
+
+function componentLocator(page: RenderResult): HTMLElement {
+  return page.getByRole("navigation");
+}

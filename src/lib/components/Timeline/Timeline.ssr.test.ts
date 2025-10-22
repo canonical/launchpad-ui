@@ -1,46 +1,54 @@
-/* @canonical/generator-ds 0.10.0-experimental.2 */
+/* @canonical/generator-ds 0.10.0-experimental.5 */
 
-import { render } from "svelte/server";
+import { render } from "@canonical/svelte-ssr-test";
+import type { RenderResult } from "@canonical/svelte-ssr-test";
+import type { ComponentProps } from "svelte";
 import { describe, expect, it } from "vitest";
 import Component from "./Timeline.svelte";
 
 describe("Timeline SSR", () => {
+  const baseProps = {} satisfies ComponentProps<typeof Component>;
+
   it("doesn't throw", () => {
     expect(() => {
-      render(Component);
+      render(Component, { props: { ...baseProps } });
     }).not.toThrow();
   });
 
   it("renders", () => {
-    const { body } = render(Component);
-    expect(body).toContain("<ol");
-    expect(body).toContain("</ol>");
+    const page = render(Component, { props: { ...baseProps } });
+    expect(componentLocator(page)).toBeInstanceOf(page.window.HTMLOListElement);
   });
 
-  describe("Basic attributes", () => {
-    it("applies id", () => {
-      const { body } = render(Component, {
-        props: { id: "test-id" },
+  describe("attributes", () => {
+    it.each([
+      ["id", "test-id"],
+      ["aria-label", "test-aria-label"],
+    ])("applies %s", (attribute, expected) => {
+      const page = render(Component, {
+        props: { ...baseProps, [attribute]: expected },
       });
-      expect(body).toContain('id="test-id"');
+      expect(componentLocator(page).getAttribute(attribute)).toBe(expected);
     });
 
-    it("applies class", () => {
-      const { body } = render(Component, {
-        props: {
-          class: "test-class",
-        },
+    it("applies classes", () => {
+      const page = render(Component, {
+        props: { ...baseProps, class: "test-class" },
       });
-      expect(body).toMatch(/class="[^"]*test-class[^"]*"/);
+      expect(componentLocator(page).classList).toContain("test-class");
+      expect(componentLocator(page).classList).toContain("ds");
+      expect(componentLocator(page).classList).toContain("timeline");
     });
 
     it("applies style", () => {
-      const { body } = render(Component, {
-        props: {
-          style: "color: red;",
-        },
+      const page = render(Component, {
+        props: { ...baseProps, style: "color: orange;" },
       });
-      expect(body).toContain('style="color: red;"');
+      expect(componentLocator(page).style.color).toBe("orange");
     });
   });
 });
+
+function componentLocator(page: RenderResult): HTMLElement {
+  return page.getByRole("list");
+}

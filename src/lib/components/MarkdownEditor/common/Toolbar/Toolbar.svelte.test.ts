@@ -1,7 +1,10 @@
-/* @canonical/generator-ds 0.10.0-experimental.3 */
+/* @canonical/generator-ds 0.10.0-experimental.5 */
 
+import type { Locator } from "@vitest/browser/context";
+import type { ComponentProps } from "svelte";
 import { describe, expect, it, vi } from "vitest";
 import { render } from "vitest-browser-svelte";
+import type { RenderResult } from "vitest-browser-svelte";
 import Component from "./Toolbar.svelte";
 
 const textareaId = ":c1:";
@@ -14,23 +17,48 @@ vi.mock("../../context.js", () => {
 });
 
 describe("Markdown Editor > Toolbar component", () => {
+  const baseProps = {} satisfies ComponentProps<typeof Component>;
+
   it("renders", async () => {
-    const page = render(Component);
-    const element = page.getByRole("toolbar");
-    await expect.element(element).toBeInTheDocument();
+    const page = render(Component, baseProps);
+    await expect.element(componentLocator(page)).toBeInTheDocument();
   });
 
-  it("applies class", async () => {
-    const page = render(Component, {
-      class: "test-class",
+  describe("Basic attributes", () => {
+    it.each([
+      ["id", "test-id"],
+      ["aria-label", "test-aria-label"],
+    ])("applies %s", async (attribute, value) => {
+      const page = render(Component, { ...baseProps, [attribute]: value });
+      await expect
+        .element(componentLocator(page))
+        .toHaveAttribute(attribute, value);
     });
-    const element = page.getByRole("toolbar");
-    await expect.element(element).toHaveClass("test-class");
+
+    it("applies style", async () => {
+      const page = render(Component, { ...baseProps, style: "color: orange;" });
+      await expect
+        .element(componentLocator(page))
+        .toHaveStyle("color: orange;");
+    });
+
+    it("applies class", async () => {
+      const page = render(Component, { ...baseProps, class: "test-class" });
+      const element = componentLocator(page);
+      await expect.element(element).toHaveClass("ds");
+      await expect.element(element).toHaveClass("markdown-editor-toolbar");
+      await expect.element(element).toHaveClass("test-class");
+    });
   });
 
   it("applies aria-controls", async () => {
-    const page = render(Component);
-    const element = page.getByRole("toolbar");
-    await expect.element(element).toHaveAttribute("aria-controls", textareaId);
+    const page = render(Component, baseProps);
+    await expect
+      .element(componentLocator(page))
+      .toHaveAttribute("aria-controls", textareaId);
   });
 });
+
+function componentLocator(page: RenderResult<typeof Component>): Locator {
+  return page.getByRole("toolbar");
+}

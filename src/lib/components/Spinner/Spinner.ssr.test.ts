@@ -1,24 +1,62 @@
-/* @canonical/generator-ds 0.10.0-experimental.2 */
+/* @canonical/generator-ds 0.10.0-experimental.5 */
 
-import { render } from "svelte/server";
+import { render } from "@canonical/svelte-ssr-test";
+import type { RenderResult } from "@canonical/svelte-ssr-test";
+import type { ComponentProps } from "svelte";
 import { describe, expect, it } from "vitest";
 import Component from "./Spinner.svelte";
 
 describe("Spinner SSR", () => {
-  it("doesn't throw", () => {
-    expect(() => {
-      render(Component);
-    }).not.toThrow();
+  const baseProps = {} satisfies ComponentProps<typeof Component>;
+
+  describe("basics", () => {
+    it("doesn't throw", () => {
+      expect(() => {
+        render(Component, { props: { ...baseProps } });
+      }).not.toThrow();
+    });
+
+    it("renders", () => {
+      const page = render(Component, { props: { ...baseProps } });
+      const body = componentLocator(page);
+      expect(body).toBeTruthy();
+    });
   });
 
-  it("renders", () => {
-    const { body } = render(Component);
-    expect(body).toContain("<span");
-    expect(body).toContain("</span>");
-  });
+  describe("attributes", () => {
+    it.each([
+      ["id", "test-id"],
+      ["aria-label", "test-aria-label"],
+    ])("applies %s", (attribute, expected) => {
+      const page = render(Component, {
+        props: { ...baseProps, [attribute]: expected },
+      });
+      expect(
+        componentLocator(
+          page,
+          attribute === "aria-label" ? expected : "Loading",
+        ).getAttribute(attribute),
+      ).toBe(expected);
+    });
 
-  it("applies class", () => {
-    const { body } = render(Component, { props: { class: "test-class" } });
-    expect(body).toContain('class="ds icon ds spinner');
+    it("applies classes", () => {
+      const page = render(Component, {
+        props: { ...baseProps, class: "test-class" },
+      });
+      expect(componentLocator(page).classList).toContain("test-class");
+      expect(componentLocator(page).classList).toContain("ds");
+      expect(componentLocator(page).classList).toContain("spinner");
+    });
+
+    it("applies style", () => {
+      const page = render(Component, {
+        props: { ...baseProps, style: "color: orange;" },
+      });
+      expect(componentLocator(page).style.color).toBe("orange");
+    });
   });
 });
+
+function componentLocator(page: RenderResult, label = "Loading"): HTMLElement {
+  return page.getByLabelText(label);
+}

@@ -1,69 +1,75 @@
-/* @canonical/generator-ds 0.10.0-experimental.2 */
+/* @canonical/generator-ds 0.10.0-experimental.5 */
 
-import { render } from "svelte/server";
+import { render } from "@canonical/svelte-ssr-test";
+import type { RenderResult } from "@canonical/svelte-ssr-test";
+import type { ComponentProps } from "svelte";
 import { describe, expect, it } from "vitest";
 import Component from "./Search.svelte";
 
 describe("Search SSR", () => {
-  it("doesn't throw", () => {
-    expect(() => {
-      render(Component, { props: { "aria-label": "Search" } });
-    }).not.toThrow();
-  });
+  const baseProps = {
+    "aria-label": "Search",
+  } satisfies ComponentProps<typeof Component>;
 
-  it("renders", () => {
-    const { body } = render(Component, { props: { "aria-label": "Search" } });
-    expect(body).toContain("<input");
-    expect(body).toContain('type="search"');
-  });
-
-  describe("Basic attributes", () => {
-    it("applies id", () => {
-      const { body } = render(Component, {
-        props: { "aria-label": "Search", id: "test-id" },
-      });
-      expect(body).toContain('id="test-id"');
+  describe("basics", () => {
+    it("doesn't throw", () => {
+      expect(() => {
+        render(Component, { props: { ...baseProps } });
+      }).not.toThrow();
     });
 
-    it("applies class", () => {
-      const { body } = render(Component, {
-        props: { "aria-label": "Search", class: "test-class" },
+    it("renders", () => {
+      const page = render(Component, { props: { ...baseProps } });
+      expect(componentLocator(page)).toBeInstanceOf(page.window.HTMLElement);
+    });
+  });
+
+  describe("attributes", () => {
+    it.each([
+      ["id", "test-id"],
+      ["aria-label", "test-aria-label"],
+    ])("applies %s", (attribute, expected) => {
+      const page = render(Component, {
+        props: { ...baseProps, [attribute]: expected },
       });
-      expect(body).toMatch(/class="[^"]*test-class[^"]*"/);
+      expect(componentLocator(page).getAttribute(attribute)).toBe(expected);
+    });
+
+    it("applies classes", () => {
+      const page = render(Component, {
+        props: { ...baseProps, class: "test-class" },
+      });
+      expect(page.getByTestId("search-box").classList).toContain("test-class");
     });
 
     it("applies style", () => {
-      const { body } = render(Component, {
-        props: {
-          "aria-label": "Search",
-          style: "color: red;",
-        },
+      const page = render(Component, {
+        props: { ...baseProps, style: "color: orange;" },
       });
-      expect(body).toMatch(/style="[^"]*color: red;[^"]*"/);
-    });
-
-    it("applies label", () => {
-      const { body } = render(Component, {
-        props: { "aria-label": "Search" },
-      });
-      expect(body).toContain('aria-label="Search"');
+      expect(componentLocator(page).style.color).toBe("orange");
     });
   });
 
   describe("After-mount attributes", () => {
     it("doesn't apply role", () => {
-      const { body } = render(Component, { props: { "aria-label": "Search" } });
-      expect(body).not.toContain('role="combobox"');
+      const page = render(Component, { props: { ...baseProps } });
+      expect(componentLocator(page).getAttribute("role")).toBeNull();
     });
 
     it("doesn't apply aria-controls", () => {
-      const { body } = render(Component, { props: { "aria-label": "Search" } });
-      expect(body).not.toContain("aria-controls");
+      const page = render(Component, { props: { ...baseProps } });
+      expect(componentLocator(page).getAttribute("aria-controls")).toBeNull();
     });
 
     it("doesn't apply aria-autocomplete", () => {
-      const { body } = render(Component, { props: { "aria-label": "Search" } });
-      expect(body).not.toContain("aria-autocomplete");
+      const page = render(Component, { props: { ...baseProps } });
+      expect(
+        componentLocator(page).getAttribute("aria-autocomplete"),
+      ).toBeNull();
     });
   });
 });
+
+function componentLocator(page: RenderResult): HTMLInputElement {
+  return page.getByRole("searchbox");
+}

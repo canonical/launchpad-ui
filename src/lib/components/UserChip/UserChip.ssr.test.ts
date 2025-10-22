@@ -1,77 +1,123 @@
-/* @canonical/generator-ds 0.9.1-experimental.0 */
+/* @canonical/generator-ds 0.10.0-experimental.5 */
 
-import { render } from "svelte/server";
+import { render } from "@canonical/svelte-ssr-test";
+import type { RenderResult } from "@canonical/svelte-ssr-test";
+import type { ComponentProps } from "svelte";
 import { describe, expect, it } from "vitest";
 import Component from "./UserChip.svelte";
 
 describe("UserChip SSR", () => {
-  it("doesn't throw", () => {
-    expect(() => {
-      render(Component, {
-        props: {
-          userName: "John Doe",
-        },
+  const baseProps = {
+    userName: "John Doe",
+  } satisfies ComponentProps<typeof Component>;
+
+  describe("basics", () => {
+    it("doesn't throw", () => {
+      expect(() => {
+        render(Component, { props: { ...baseProps } });
+      }).not.toThrow();
+    });
+
+    it("renders", () => {
+      const page = render(Component, { props: { ...baseProps } });
+      expect(componentLocator(page)).toBeInstanceOf(page.window.HTMLElement);
+    });
+  });
+
+  describe("attributes", () => {
+    it.each([
+      ["id", "test-id"],
+      ["aria-label", "test-aria-label"],
+    ])("applies %s", (attribute, expected) => {
+      const page = render(Component, {
+        props: { ...baseProps, [attribute]: expected },
       });
-    }).not.toThrow();
+      const element = componentLocator(page);
+      expect(element.getAttribute(attribute)).toBe(expected);
+    });
+
+    it("applies classes", () => {
+      const page = render(Component, {
+        props: { ...baseProps, class: "test-class" },
+      });
+      const element = componentLocator(page);
+      expect(element.classList).toContain("test-class");
+      expect(element.classList).toContain("ds");
+      expect(element.classList).toContain("user-chip");
+    });
+
+    it("applies style", () => {
+      const page = render(Component, {
+        props: { ...baseProps, style: "color: orange;" },
+      });
+      const element = componentLocator(page);
+      expect(element.style.color).toBe("orange");
+    });
   });
 
   describe("renders", () => {
     it("with the user's name", () => {
-      const { body } = render(Component, {
+      const page = render(Component, {
         props: {
+          ...baseProps,
           userName: "John Doe",
         },
       });
-      expect(body).toContain("<span>John Doe</span>");
+      expect(page.getByText("John Doe")).toBeInstanceOf(
+        page.window.HTMLElement,
+      );
     });
 
     it("with avatar by default", () => {
-      const { body } = render(Component, {
+      const page = render(Component, {
         props: {
+          ...baseProps,
           userName: "John Doe",
         },
       });
-      expect(body).toContain("user-avatar");
+      expect(page.container.querySelector(".ds.user-avatar")).toBeInstanceOf(
+        page.window.HTMLElement,
+      );
     });
 
     it("with avatar when showAvatar is explicitly true", () => {
-      const { body } = render(Component, {
+      const page = render(Component, {
         props: {
+          ...baseProps,
           userName: "John Doe",
           showAvatar: true,
         },
       });
-      expect(body).toContain("user-avatar");
+      expect(page.container.querySelector(".ds.user-avatar")).toBeInstanceOf(
+        page.window.HTMLElement,
+      );
     });
 
     it("without avatar when showAvatar is false", () => {
-      const { body } = render(Component, {
+      const page = render(Component, {
         props: {
+          ...baseProps,
           userName: "John Doe",
           showAvatar: false,
         },
       });
-      expect(body).not.toContain("user-avatar");
-    });
-
-    it("applies custom class", () => {
-      const { body } = render(Component, {
-        props: {
-          userName: "John Doe",
-          class: "test-class",
-        },
-      });
-      expect(body).toMatch(/class="[^"]*test-class[^"]*"/);
+      expect(page.container.querySelector(".ds.user-avatar")).toBeNull();
     });
 
     it("applies modifiers", () => {
-      const { body } = render(Component, {
+      const page = render(Component, {
         props: {
+          ...baseProps,
           userName: "John Doe",
           modifiers: { size: "small" },
         },
       });
-      expect(body).toMatch(/class="[^"]*small[^"]*"/);
+      const element = componentLocator(page);
+      expect(element.classList).toContain("small");
     });
   });
 });
+
+function componentLocator(page: RenderResult): HTMLElement {
+  return page.getByTestId("user-chip");
+}

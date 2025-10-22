@@ -1,21 +1,28 @@
-/* @canonical/generator-ds 0.10.0-experimental.0 */
+/* @canonical/generator-ds 0.10.0-experimental.5 */
 
+import type { Locator } from "@vitest/browser/context";
 import { createRawSnippet } from "svelte";
+import type { ComponentProps } from "svelte";
 import { describe, expect, it } from "vitest";
 import { render } from "vitest-browser-svelte";
+import type { RenderResult } from "vitest-browser-svelte";
 import Component from "./LinkOption.svelte";
 
 describe("LinkOption component", () => {
+  const baseProps = {
+    text: "Option",
+    href: "#",
+  } satisfies ComponentProps<typeof Component>;
+
   describe("Renders", () => {
     it("renders", async () => {
-      const page = render(Component, { text: "Option", href: "#" });
-      await expect.element(page.getByRole("link")).toBeInTheDocument();
+      const page = render(Component, baseProps);
+      await expect.element(componentLocator(page)).toBeInTheDocument();
     });
 
     it("renders secondary text", async () => {
       const page = render(Component, {
-        text: "Option",
-        href: "#",
+        ...baseProps,
         secondaryText: "Secondary",
       });
       await expect.element(page.getByText("Secondary")).toBeInTheDocument();
@@ -23,8 +30,7 @@ describe("LinkOption component", () => {
 
     it("renders trailing text", async () => {
       const page = render(Component, {
-        text: "Option",
-        href: "#",
+        ...baseProps,
         trailingText: "Trailing",
       });
       await expect.element(page.getByText("Trailing")).toBeInTheDocument();
@@ -33,8 +39,7 @@ describe("LinkOption component", () => {
     it("renders icon", async () => {
       const icon = "<span data-testid='icon'>Icon</span>";
       const page = render(Component, {
-        text: "Option",
-        href: "#",
+        ...baseProps,
         icon: createRawSnippet(() => ({ render: () => icon })),
       });
       await expect.element(page.getByTestId("icon")).toBeInTheDocument();
@@ -42,63 +47,61 @@ describe("LinkOption component", () => {
   });
 
   describe("Basic attributes", () => {
-    it("applies id", async () => {
-      const page = render(Component, {
-        text: "Option",
-        href: "#",
-        id: "test-id",
-      });
+    it.each([
+      ["id", "test-id"],
+      ["aria-label", "test-aria-label"],
+    ])("applies %s", async (attribute, value) => {
+      const page = render(Component, { ...baseProps, [attribute]: value });
       await expect
-        .element(page.getByRole("link"))
-        .toHaveAttribute("id", "test-id");
+        .element(componentLocator(page))
+        .toHaveAttribute(attribute, value);
     });
 
     it("applies class", async () => {
-      const page = render(Component, {
-        text: "Option",
-        href: "#",
-        class: "test-class",
-      });
-      await expect.element(page.getByRole("link")).toHaveClass("test-class");
+      const page = render(Component, { ...baseProps, class: "test-class" });
+      const element = componentLocator(page);
+      await expect.element(element).toHaveClass("ds");
+      await expect.element(element).toHaveClass("link-option");
+      await expect.element(element).toHaveClass("test-class");
     });
 
     it("applies style", async () => {
       const page = render(Component, {
-        text: "Option",
-        href: "#",
-        style: "color: red;",
+        ...baseProps,
+        style: "color: orange;",
       });
-      await expect.element(page.getByRole("link")).toHaveStyle("color: red;");
+      await expect
+        .element(componentLocator(page))
+        .toHaveStyle("color: orange;");
     });
   });
 
   describe("Link-specific", () => {
     it("has correct href", async () => {
       const page = render(Component, {
-        text: "Option",
+        ...baseProps,
         href: "https://example.com",
       });
       await expect
-        .element(page.getByRole("link"))
+        .element(componentLocator(page))
         .toHaveAttribute("href", "https://example.com");
     });
 
     it("is not disabled by default", async () => {
-      const page = render(Component, { text: "Option", href: "#" });
-      await expect
-        .element(page.getByRole("link"))
-        .not.toHaveAttribute("aria-disabled", "true");
+      const page = render(Component, baseProps);
+      await expect.element(componentLocator(page)).not.toBeDisabled();
     });
 
     it("can be disabled", async () => {
       const page = render(Component, {
-        text: "Option",
-        href: "#",
+        ...baseProps,
         disabled: true,
       });
-      await expect
-        .element(page.getByRole("link"))
-        .toHaveAttribute("aria-disabled", "true");
+      await expect.element(componentLocator(page)).toBeDisabled();
     });
   });
 });
+
+function componentLocator(page: RenderResult<typeof Component>): Locator {
+  return page.getByRole("link");
+}

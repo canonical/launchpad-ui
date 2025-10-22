@@ -1,7 +1,10 @@
-/* @canonical/generator-ds 0.10.0-experimental.2 */
+/* @canonical/generator-ds 0.10.0-experimental.5 */
 
+import type { Locator } from "@vitest/browser/context";
+import type { ComponentProps } from "svelte";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { render } from "vitest-browser-svelte";
+import type { RenderResult } from "vitest-browser-svelte";
 import type { ComboboxContext } from "../../types.js";
 import Component from "./CheckboxOption.svelte";
 
@@ -35,70 +38,86 @@ vi.mock("../../context.js", () => {
 });
 
 describe("CheckboxOption component", () => {
+  const baseProps = {
+    text: "Option 1",
+  } satisfies ComponentProps<typeof Component>;
+
   it("renders", async () => {
-    const page = render(Component, { text: "Option 1" });
-    await expect.element(page.getByRole("option")).toBeInTheDocument();
+    const page = render(Component, { ...baseProps });
+    await expect.element(componentLocator(page)).toBeInTheDocument();
   });
 
-  describe("Basic attributes", () => {
-    it("applies id", async () => {
-      const page = render(Component, { text: "Text", id: "test-id" });
+  describe("attributes", () => {
+    it.each([
+      ["id", "test-id"],
+      ["aria-label", "test-aria-label"],
+    ])("applies %s", async (attribute, expected) => {
+      const page = render(Component, { ...baseProps, [attribute]: expected });
       await expect
-        .element(page.getByRole("option"))
-        .toHaveAttribute("id", "test-id");
+        .element(componentLocator(page))
+        .toHaveAttribute(attribute, expected);
     });
 
-    it("applies class", async () => {
-      const page = render(Component, { text: "Text", class: "test-class" });
-      await expect.element(page.getByRole("option")).toHaveClass("test-class");
+    it("applies classes", async () => {
+      const page = render(Component, { ...baseProps, class: "test-class" });
+      await expect.element(componentLocator(page)).toHaveClass("test-class");
+      await expect.element(componentLocator(page)).toHaveClass("ds");
+      await expect
+        .element(componentLocator(page))
+        .toHaveClass("combobox-option");
     });
 
     it("applies style", async () => {
-      const page = render(Component, { text: "Text", style: "color: red;" });
-      await expect.element(page.getByRole("option")).toHaveStyle("color: red;");
+      const page = render(Component, {
+        ...baseProps,
+        style: "color: orange;",
+      });
+      await expect
+        .element(componentLocator(page))
+        .toHaveStyle({ color: "orange" });
     });
   });
 
   describe("After-mount attributes", () => {
     it("applies inert", async () => {
-      const page = render(Component, { text: "Option 1" });
-      await expect.element(page.getByRole("checkbox")).toHaveAttribute("inert");
+      const page = render(Component, { ...baseProps });
+      await expect.element(checkboxLocator(page)).toHaveAttribute("inert");
     });
   });
 
   describe("Active descendant", () => {
     it("has active class when active", async () => {
       const page = render(Component, {
-        text: "Option 1",
+        ...baseProps,
         id: "active-descendant-id",
       });
-      await expect.element(page.getByRole("option")).toHaveClass("active");
+      await expect.element(componentLocator(page)).toHaveClass("active");
     });
 
     it("doesn't have active class when not active", async () => {
-      const page = render(Component, { text: "Option 1", id: "other-id" });
-      await expect.element(page.getByRole("option")).not.toHaveClass("active");
+      const page = render(Component, { ...baseProps, id: "other-id" });
+      await expect.element(componentLocator(page)).not.toHaveClass("active");
     });
   });
 
   describe("aria-selected", () => {
     it('applies aria-selected="true" when checked', async () => {
       const page = render(Component, {
-        text: "Option 1",
+        ...baseProps,
         checked: true,
       });
       await expect
-        .element(page.getByRole("option"))
+        .element(componentLocator(page))
         .toHaveAttribute("aria-selected", "true");
     });
 
     it('applies aria-selected="false" when not checked', async () => {
       const page = render(Component, {
-        text: "Option 1",
+        ...baseProps,
         checked: false,
       });
       await expect
-        .element(page.getByRole("option"))
+        .element(componentLocator(page))
         .toHaveAttribute("aria-selected", "false");
     });
   });
@@ -109,8 +128,8 @@ describe("CheckboxOption component", () => {
     });
 
     it("listens for selection when mounted and unregisters when unmounted", async () => {
-      const page = render(Component, { text: "Option 1", id: "option-1" });
-      await expect.element(page.getByRole("option")).toBeInTheDocument();
+      const page = render(Component, { ...baseProps, id: "option-1" });
+      await expect.element(componentLocator(page)).toBeInTheDocument();
       expect(listenForOptionSelect).toHaveBeenCalledExactlyOnceWith(
         "option-1",
         expect.any(Function),
@@ -123,11 +142,11 @@ describe("CheckboxOption component", () => {
       const onchange = vi.fn();
       const oninput = vi.fn();
       const page = render(Component, {
-        text: "Option 1",
+        ...baseProps,
         onchange,
         oninput,
       });
-      await expect.element(page.getByRole("option")).toBeInTheDocument();
+      await expect.element(componentLocator(page)).toBeInTheDocument();
       expect(onchange).not.toHaveBeenCalled();
       expect(oninput).not.toHaveBeenCalled();
       notifyListeners();
@@ -136,8 +155,8 @@ describe("CheckboxOption component", () => {
     });
 
     it("changes checked state when notified of selection", async () => {
-      const page = render(Component, { text: "Option 1", checked: false });
-      const checkbox = page.getByRole("checkbox");
+      const page = render(Component, { ...baseProps, checked: false });
+      const checkbox = checkboxLocator(page);
       await expect.element(checkbox).not.toBeChecked();
       notifyListeners();
       await expect.element(checkbox).toBeChecked();
@@ -146,10 +165,18 @@ describe("CheckboxOption component", () => {
 
   it("applies context name to input", async () => {
     const page = render(Component, {
-      text: "Option 1",
+      ...baseProps,
     });
     await expect
-      .element(page.getByRole("checkbox"))
+      .element(checkboxLocator(page))
       .toHaveAttribute("name", "test-checkbox-group");
   });
 });
+
+function componentLocator(page: RenderResult<typeof Component>): Locator {
+  return page.getByRole("option");
+}
+
+function checkboxLocator(page: RenderResult<typeof Component>): Locator {
+  return page.getByRole("checkbox");
+}

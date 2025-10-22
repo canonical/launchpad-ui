@@ -1,69 +1,91 @@
-/* @canonical/generator-ds 0.10.0-experimental.3 */
+/* @canonical/generator-ds 0.10.0-experimental.5 */
 
 import { render } from "@canonical/svelte-ssr-test";
+import type { RenderResult } from "@canonical/svelte-ssr-test";
 import { createRawSnippet } from "svelte";
+import type { ComponentProps } from "svelte";
 import { describe, expect, it } from "vitest";
 import Component from "./Select.svelte";
-import type { SelectProps } from "./types";
 
 describe("Select SSR", () => {
   const baseProps = {
     children: createRawSnippet(() => ({
       render: () => `<option value="1">Option 1</option>`,
     })),
-    multiple: false,
-  } satisfies SelectProps;
+  } satisfies ComponentProps<typeof Component>;
 
   describe("basics", () => {
     it("doesn't throw", () => {
       expect(() => {
-        render(Component, { props: baseProps });
+        render(Component, { props: { ...baseProps } });
       }).not.toThrow();
     });
 
     it("renders", () => {
-      const { window, container } = render(Component, {
+      const page = render(Component, {
         props: {
           ...baseProps,
         },
       });
-      expect(container.firstElementChild).toBeInstanceOf(window.HTMLDivElement);
-      expect(container.firstElementChild?.firstElementChild).toBeInstanceOf(
-        window.HTMLSelectElement,
-      );
+      expect(selectLocator(page)).toBeInstanceOf(page.window.HTMLSelectElement);
+      expect(page.getByRole("option").textContent).toBe("Option 1");
     });
   });
 
   describe("attributes", () => {
     it.each([
       ["id", "test-id"],
-      ["style", "color: orange;"],
       ["aria-label", "test-aria-label"],
     ])("applies %s", (attribute, expected) => {
-      const { container } = render(Component, {
+      const page = render(Component, {
         props: {
-          [attribute]: expected,
           ...baseProps,
+          [attribute]: expected,
         },
       });
-      expect(
-        container.firstElementChild?.firstElementChild?.getAttribute(attribute),
-      ).toBe(expected);
+      expect(selectLocator(page).getAttribute(attribute)).toBe(expected);
     });
 
     it("applies classes", () => {
-      const { container } = render(Component, {
+      const page = render(Component, {
         props: {
-          class: "test-class",
           ...baseProps,
+          class: "test-class",
         },
       });
-      const classes = ["test-class"];
-      classes.push("ds", "select");
+      const wrapper = componentLocator(page);
+      expect(wrapper.classList).toContain("test-class");
+      expect(wrapper.classList).toContain("ds");
+      expect(wrapper.classList).toContain("select");
+    });
 
-      for (const className of classes) {
-        expect(container.firstElementChild?.classList).toContain(className);
-      }
+    it("applies style", () => {
+      const page = render(Component, {
+        props: {
+          ...baseProps,
+          style: "color: orange;",
+        },
+      });
+      expect(selectLocator(page).style.color).toBe("orange");
     });
   });
+
+  it("renders when multiple is true", () => {
+    const page = render(Component, {
+      props: {
+        ...baseProps,
+        multiple: true,
+      },
+    });
+    expect(page.getByRole<HTMLSelectElement>("listbox").multiple).toBe(true);
+    expect(page.getByRole("option").textContent).toBe("Option 1");
+  });
 });
+
+function componentLocator(page: RenderResult): HTMLElement {
+  return page.getByTestId("select");
+}
+
+function selectLocator(page: RenderResult): HTMLSelectElement {
+  return page.getByRole("combobox");
+}

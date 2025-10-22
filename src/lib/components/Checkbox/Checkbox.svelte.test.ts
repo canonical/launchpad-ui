@@ -1,62 +1,72 @@
-/* @canonical/generator-ds 0.10.0-experimental.0 */
+/* @canonical/generator-ds 0.10.0-experimental.5 */
 
+import type { Locator } from "@vitest/browser/context";
 import { describe, expect, it, vi } from "vitest";
 import { render } from "vitest-browser-svelte";
+import type { RenderResult } from "vitest-browser-svelte";
 import Component from "./Checkbox.svelte";
 
 describe("Checkbox component", () => {
+  const baseProps = {};
+
   it("renders", async () => {
-    const page = render(Component);
-    await expect.element(page.getByRole("checkbox")).toBeInTheDocument();
+    const page = render(Component, { ...baseProps });
+    await expect.element(componentLocator(page)).toBeInTheDocument();
   });
 
-  describe("Basic attributes", () => {
-    it("applies id", async () => {
-      const page = render(Component, { props: { id: "test-id" } });
+  describe("attributes", () => {
+    it.each([
+      ["id", "test-id"],
+      ["aria-label", "test-aria-label"],
+    ])("applies %s", async (attribute, expected) => {
+      const page = render(Component, { ...baseProps, [attribute]: expected });
       await expect
-        .element(page.getByRole("checkbox"))
-        .toHaveAttribute("id", "test-id");
+        .element(componentLocator(page))
+        .toHaveAttribute(attribute, expected);
     });
 
-    it("applies class", async () => {
-      const page = render(Component, { props: { class: "test-class" } });
-      await expect
-        .element(page.getByRole("checkbox"))
-        .toHaveClass("test-class");
+    it("applies classes", async () => {
+      const page = render(Component, { ...baseProps, class: "test-class" });
+      await expect.element(componentLocator(page)).toHaveClass("test-class");
+      await expect.element(componentLocator(page)).toHaveClass("ds");
+      await expect.element(componentLocator(page)).toHaveClass("checkbox");
     });
 
     it("applies style", async () => {
-      const page = render(Component, { props: { style: "color: red;" } });
+      const page = render(Component, {
+        ...baseProps,
+        style: "color: orange;",
+      });
       await expect
-        .element(page.getByRole("checkbox"))
-        .toHaveStyle("color: red;");
+        .element(componentLocator(page))
+        .toHaveStyle({ color: "orange" });
     });
   });
 
   describe("Checked state", () => {
     it("is not checked by default", async () => {
-      const page = render(Component);
-      await expect.element(page.getByRole("checkbox")).not.toBeChecked();
+      const page = render(Component, { ...baseProps });
+      await expect.element(componentLocator(page)).not.toBeChecked();
     });
 
     it("can be checked", async () => {
-      const page = render(Component, { props: { checked: true } });
-      await expect.element(page.getByRole("checkbox")).toBeChecked();
+      const page = render(Component, { ...baseProps, checked: true });
+      await expect.element(componentLocator(page)).toBeChecked();
     });
 
     it("isn't disabled by default", async () => {
-      const page = render(Component);
-      await expect.element(page.getByRole("checkbox")).not.toBeDisabled();
+      const page = render(Component, { ...baseProps });
+      await expect.element(componentLocator(page)).not.toBeDisabled();
     });
 
     it("can be disabled", async () => {
-      const page = render(Component, { props: { disabled: true } });
-      await expect.element(page.getByRole("checkbox")).toBeDisabled();
+      const page = render(Component, { ...baseProps, disabled: true });
+      await expect.element(componentLocator(page)).toBeDisabled();
     });
 
     it("toggles on click", async () => {
-      const page = render(Component);
-      const checkbox = page.getByRole("checkbox");
+      const page = render(Component, { ...baseProps });
+      const checkbox = componentLocator(page);
 
       await expect.element(checkbox).not.toBeChecked();
       await checkbox.click();
@@ -64,18 +74,19 @@ describe("Checkbox component", () => {
     });
 
     it("is not indeterminate by default", async () => {
-      const page = render(Component);
+      const page = render(Component, { ...baseProps });
       await expect
-        .element(page.getByRole("checkbox"))
+        .element(componentLocator(page))
         .not.toHaveAttribute("indeterminate");
     });
 
     it("can be indeterminate", async () => {
       const onlyIndeterminate = render(Component, {
-        props: { indeterminate: true },
+        ...baseProps,
+        indeterminate: true,
       });
       await expect
-        .element(onlyIndeterminate.getByRole("checkbox"))
+        .element(componentLocator(onlyIndeterminate))
         .toBePartiallyChecked();
     });
   });
@@ -83,23 +94,29 @@ describe("Checkbox component", () => {
   describe("Group controlled", () => {
     it("isn't checked if group and value are undefined", async () => {
       const page = render(Component, {
-        props: { group: undefined, value: undefined },
+        ...baseProps,
+        group: undefined,
+        value: undefined,
       });
-      await expect.element(page.getByRole("checkbox")).not.toBeChecked();
+      await expect.element(componentLocator(page)).not.toBeChecked();
     });
 
     it("isn't checked if group doesn't include value", async () => {
       const page = render(Component, {
-        props: { group: ["a", "b"], value: "c" },
+        ...baseProps,
+        group: ["a", "b"],
+        value: "c",
       });
-      await expect.element(page.getByRole("checkbox")).not.toBeChecked();
+      await expect.element(componentLocator(page)).not.toBeChecked();
     });
 
     it("is checked if group includes value", async () => {
       const page = render(Component, {
-        props: { group: ["a", "b", "c"], value: "c" },
+        ...baseProps,
+        group: ["a", "b", "c"],
+        value: "c",
       });
-      await expect.element(page.getByRole("checkbox")).toBeChecked();
+      await expect.element(componentLocator(page)).toBeChecked();
     });
   });
 
@@ -107,8 +124,8 @@ describe("Checkbox component", () => {
     it("emits change event on click", async () => {
       const onchange = vi.fn();
 
-      const page = render(Component, { props: { onchange } });
-      const checkbox = page.getByRole("checkbox");
+      const page = render(Component, { ...baseProps, onchange });
+      const checkbox = componentLocator(page);
 
       await expect.element(checkbox).not.toBeChecked();
       await checkbox.click();
@@ -116,3 +133,8 @@ describe("Checkbox component", () => {
     });
   });
 });
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function componentLocator(page: RenderResult<any>): Locator {
+  return page.getByRole("checkbox");
+}

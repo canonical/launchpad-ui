@@ -1,109 +1,123 @@
-/* @canonical/generator-ds 0.10.0-experimental.0 */
+/* @canonical/generator-ds 0.10.0-experimental.5 */
 
+import { render } from "@canonical/svelte-ssr-test";
+import type { RenderResult } from "@canonical/svelte-ssr-test";
 import { createRawSnippet } from "svelte";
-import { render } from "svelte/server";
+import type { ComponentProps } from "svelte";
 import { describe, expect, it } from "vitest";
 import Component from "./SwitchOption.svelte";
 import type { SwitchOptionProps } from "./types.js";
 
 describe("SwitchOption SSR", () => {
+  const baseProps = {
+    text: "Text",
+  } satisfies ComponentProps<typeof Component>;
   it("doesn't throw", () => {
     expect(() => {
-      renderSwitchOption({ text: "Text" });
+      renderSwitchOption({ ...baseProps });
     }).not.toThrow();
   });
 
   it("renders", () => {
-    const { body } = renderSwitchOption({ text: "Text" });
-    expect(body).toContain("<label");
+    const page = renderSwitchOption({ ...baseProps });
+    expect(componentLocator(page)).toBeInstanceOf(page.window.HTMLLabelElement);
   });
 
   describe("Basic attributes", () => {
-    it("applies id", () => {
-      const { body } = renderSwitchOption({
-        text: "Text",
-        id: "test-id",
+    it.each([
+      ["id", "test-id"],
+      ["aria-label", "test-aria-label"],
+    ])("applies %s", (attribute, value) => {
+      const page = renderSwitchOption({
+        ...baseProps,
+        [attribute]: value,
       });
-      expect(body).toContain('id="test-id"');
+      const element = componentLocator(page);
+      expect(element.getAttribute(attribute)).toBe(value);
     });
 
     it("applies class", () => {
-      const { body } = renderSwitchOption({
-        text: "Text",
+      const page = renderSwitchOption({
+        ...baseProps,
         class: "test-class",
       });
-      expect(body).toMatch(/class="[^"]*test-class[^"]*"/);
+      const element = componentLocator(page);
+      expect(element.classList.contains("ds")).toBe(true);
+      expect(element.classList.contains("switch-option")).toBe(true);
+      expect(element.classList.contains("test-class")).toBe(true);
     });
 
     it("applies style", () => {
-      const { body } = renderSwitchOption({
-        text: "Text",
-        style: "color: red;",
+      const page = renderSwitchOption({
+        ...baseProps,
+        style: "color: orange;",
       });
-      expect(body).toContain('style="color: red;"');
+      expect(componentLocator(page).getAttribute("style")).toBe(
+        "color: orange;",
+      );
     });
   });
 
   describe("Disabled state", () => {
     it("is not disabled by default", () => {
-      const { body } = renderSwitchOption({ text: "Text" });
-      expect(body).not.toContain("disabled");
+      const page = renderSwitchOption({ ...baseProps });
+      expect(switchLocator(page).hasAttribute("disabled")).toBe(false);
     });
 
     it("can be disabled", () => {
-      const { body } = renderSwitchOption({
-        text: "Text",
+      const page = renderSwitchOption({
+        ...baseProps,
         disabled: true,
       });
-      expect(body).toContain("disabled");
+      expect(switchLocator(page).hasAttribute("disabled")).toBe(true);
     });
   });
 
   describe("Checked state", () => {
     it("is not checked by default", () => {
-      const { body } = renderSwitchOption({ text: "Text" });
-      expect(body).not.toContain("checked");
+      const page = renderSwitchOption({ ...baseProps });
+      expect(switchLocator(page).checked).toBe(false);
     });
 
     it("can be rendered checked", () => {
-      const { body } = renderSwitchOption({
-        text: "Text",
+      const page = renderSwitchOption({
+        ...baseProps,
         checked: true,
       });
-      expect(body).toContain("checked");
+      expect(switchLocator(page).checked).toBe(true);
     });
   });
 
   describe("Contents", () => {
     it("renders text", () => {
-      const { body } = renderSwitchOption({ text: "Main Text" });
-      expect(body).toContain("Main Text");
+      const page = renderSwitchOption({ ...baseProps, text: "Main Text" });
+      expect(componentLocator(page).textContent).toContain("Main Text");
     });
 
     it("renders secondary text", () => {
-      const { body } = renderSwitchOption({
-        text: "Main Text",
+      const page = renderSwitchOption({
+        ...baseProps,
         secondaryText: "Secondary Text",
       });
-      expect(body).toContain("Secondary Text");
+      expect(componentLocator(page).textContent).toContain("Secondary Text");
     });
 
     it("renders trailing text", () => {
-      const { body } = renderSwitchOption({
-        text: "Main Text",
+      const page = renderSwitchOption({
+        ...baseProps,
         trailingText: "Trailing Text",
       });
-      expect(body).toContain("Trailing Text");
+      expect(componentLocator(page).textContent).toContain("Trailing Text");
     });
 
     it("renders icon", () => {
-      const { body } = renderSwitchOption({
-        text: "Main Text",
+      const page = renderSwitchOption({
+        ...baseProps,
         icon: createRawSnippet(() => ({
-          render: () => `<span class="text-icon-class"></span>`,
+          render: () => `<span data-testid="text-icon"></span>`,
         })),
       });
-      expect(body).toContain('class="text-icon-class"');
+      expect(page.getByTestId("text-icon")).toBeTruthy();
     });
   });
 });
@@ -111,4 +125,12 @@ describe("SwitchOption SSR", () => {
 function renderSwitchOption(props: SwitchOptionProps) {
   // @ts-expect-error TypeScript reports `Expression produces a union type that is too complex to represent.ts(2590)`
   return render(Component, { props });
+}
+
+function componentLocator(page: RenderResult): HTMLElement {
+  return page.getByTestId("switch-option");
+}
+
+function switchLocator(page: RenderResult): HTMLInputElement {
+  return page.getByRole("switch");
 }

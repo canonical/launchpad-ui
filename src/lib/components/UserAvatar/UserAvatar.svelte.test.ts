@@ -1,27 +1,81 @@
-/* @canonical/generator-ds 0.9.0-experimental.22 */
+/* @canonical/generator-ds 0.10.0-experimental.5 */
 
-import { assert, describe, expect, it } from "vitest";
+import type { ComponentProps } from "svelte";
+import { describe, expect, it } from "vitest";
 import { render } from "vitest-browser-svelte";
 import Component from "./UserAvatar.svelte";
 
 describe("UserAvatar component", () => {
+  const baseProps = {} satisfies ComponentProps<typeof Component>;
+
+  describe("basics", () => {
+    it("renders", async () => {
+      const page = render(Component, { ...baseProps });
+      await expect.element(page.getByTestId("user-avatar")).toBeInTheDocument();
+    });
+  });
+
+  describe("attributes", () => {
+    it.each([
+      ["id", "test-id"],
+      ["aria-label", "test-aria-label"],
+    ])("applies %s", async (attribute, expected) => {
+      const page = render(Component, { ...baseProps, [attribute]: expected });
+      await expect
+        .element(page.getByTestId("user-avatar"))
+        .toHaveAttribute(attribute, expected);
+    });
+
+    it("applies classes", async () => {
+      const page = render(Component, { ...baseProps, class: "test-class" });
+      const element = page.getByTestId("user-avatar");
+      await expect.element(element).toHaveClass("test-class");
+      await expect.element(element).toHaveClass("ds");
+      await expect.element(element).toHaveClass("user-avatar");
+    });
+
+    it("applies style", async () => {
+      const page = render(Component, {
+        ...baseProps,
+        style: "color: orange;",
+      });
+      await expect
+        .element(page.getByTestId("user-avatar"))
+        .toHaveStyle({ color: "orange" });
+    });
+  });
+
   describe("renders", () => {
     it("with image when userAvatarUrl is provided", async () => {
-      const { container } = render(Component, {
+      const page = render(Component, {
+        ...baseProps,
         userAvatarUrl: "https://example.com/avatar.png",
         userName: "John Doe",
       });
 
-      const objectElement = container.querySelector("object[title='John Doe']");
-      await expect.element(objectElement).toBeInTheDocument();
+      const element = page.getByRole("img", { name: "John Doe" });
+      await expect.element(element).toBeInTheDocument();
       await expect
-        .element(objectElement)
+        .element(element)
         .toHaveAttribute("data", "https://example.com/avatar.png");
-      await expect.element(objectElement).toHaveAttribute("type", "image/png");
+      await expect.element(element).toHaveAttribute("type", "image/png");
+    });
+
+    it("with image when userAvatarUrl is provided but no userName", async () => {
+      const page = render(Component, {
+        ...baseProps,
+        userAvatarUrl: "https://example.com/avatar.png",
+      });
+
+      const element = page.getByRole("img", { name: "User avatar" });
+      await expect.element(element).toBeInTheDocument();
+      await expect
+        .element(element)
+        .toHaveAttribute("data", "https://example.com/avatar.png");
     });
 
     it("initials when name is provided but no userAvatarUrl", async () => {
-      const page = render(Component, { userName: "John Doe" });
+      const page = render(Component, { ...baseProps, userName: "John Doe" });
 
       const abbrElement = page.getByTitle("John Doe");
       await expect.element(abbrElement).toBeInTheDocument();
@@ -29,7 +83,7 @@ describe("UserAvatar component", () => {
     });
 
     it("only first letter from single name", async () => {
-      const page = render(Component, { userName: "John" });
+      const page = render(Component, { ...baseProps, userName: "John" });
 
       const abbrElement = page.getByTitle("John");
       await expect.element(abbrElement).toBeInTheDocument();
@@ -37,7 +91,10 @@ describe("UserAvatar component", () => {
     });
 
     it("first letter from first two words of multi-word names", async () => {
-      const page = render(Component, { userName: "John Jacob Smith" });
+      const page = render(Component, {
+        ...baseProps,
+        userName: "John Jacob Smith",
+      });
 
       const abbrElement = page.getByTitle("John Jacob Smith");
       await expect.element(abbrElement).toBeInTheDocument();
@@ -45,65 +102,42 @@ describe("UserAvatar component", () => {
     });
 
     it("default icon when no user data is provided", async () => {
-      const page = render(Component, {});
+      const page = render(Component, { ...baseProps });
 
       const iconElement = page.getByLabelText("User avatar");
       await expect.element(iconElement).toBeInTheDocument();
     });
 
     it("default icon when user object is empty", async () => {
-      const page = render(Component);
+      const page = render(Component, { ...baseProps });
 
       const iconElement = page.getByLabelText("User avatar");
       await expect.element(iconElement).toBeInTheDocument();
     });
 
     it("default icon when user name is empty", async () => {
-      const page = render(Component, { userName: "" });
+      const page = render(Component, { ...baseProps, userName: "" });
 
       const iconElement = page.getByLabelText("User avatar");
       await expect.element(iconElement).toBeInTheDocument();
     });
   });
 
-  describe("basic attributes", () => {
-    it("applies id", () => {
-      const { container } = render(Component, {
-        id: "test-id",
-      });
-      const icon = container.querySelector(".ds.user-avatar");
-      expect(icon?.id).toBe("test-id");
-    });
-
-    it("applies style", () => {
-      const { container } = render(Component, {
-        style: "color: red;",
-      });
-      const icon = container.querySelector(".ds.user-avatar");
-      expect(icon?.getAttribute("style")).toContain("color: red;");
-    });
-
-    it("applies class", () => {
-      const { container } = render(Component, {
-        class: "test-class",
-      });
-      const icon = container.querySelector(".ds.user-avatar");
-      expect(icon?.classList.contains("test-class")).toBe(true);
-    });
-  });
-
   describe("modifiers", () => {
     const sizeModifiers = ["small", "large"] as const;
 
-    it.each(sizeModifiers)("applies %s modifier", (size) => {
-      const { container } = render(Component, { modifiers: { size } });
-      const icon = container.querySelector(".ds.user-avatar");
+    it.each(sizeModifiers)("applies %s modifier", async (size) => {
+      const page = render(Component, {
+        ...baseProps,
+        modifiers: { size },
+      });
+      const element = page.getByTestId("user-avatar");
+      const classList = element.element().classList;
 
-      assert(icon !== null);
-      expect(icon.classList.contains(size)).toBe(true);
+      expect(classList.contains(size)).toBe(true);
       sizeModifiers.forEach((s) => {
         if (s !== size) {
-          expect(icon.classList.contains(s)).toBe(false);
+          expect(classList.contains(s)).toBe(false);
         }
       });
     });

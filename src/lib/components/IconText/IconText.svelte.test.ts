@@ -1,24 +1,29 @@
-/* @canonical/generator-ds 0.10.0-experimental.2 */
+/* @canonical/generator-ds 0.10.0-experimental.5 */
 
+import type { Locator } from "@vitest/browser/context";
 import { createRawSnippet } from "svelte";
+import type { ComponentProps } from "svelte";
 import { describe, expect, it } from "vitest";
 import { render } from "vitest-browser-svelte";
+import type { RenderResult } from "vitest-browser-svelte";
 import Component from "./IconText.svelte";
 
 describe("IconText component", () => {
-  const children = createRawSnippet(() => ({
-    render: () => `<Text>Text</Text>`,
-  }));
-
-  const icon = createRawSnippet(() => ({
-    render: () => "<span>Icon</span>",
-  }));
+  const baseProps = {
+    icon: createRawSnippet(() => ({
+      render: () => "<span>Icon</span>",
+    })),
+    children: createRawSnippet(() => ({
+      render: () => `<Text>Text</Text>`,
+    })),
+  } satisfies ComponentProps<typeof Component>;
 
   it("renders", async () => {
     const page = render(Component, {
-      icon,
-      children,
+      ...baseProps,
     });
+
+    await expect.element(componentLocator(page)).toBeVisible();
 
     const textElement = page.getByText("Text");
     await expect.element(textElement).toBeInTheDocument();
@@ -27,14 +32,36 @@ describe("IconText component", () => {
     await expect.element(iconElement).toBeInTheDocument();
   });
 
-  it("applies class", async () => {
-    const page = render(Component, {
-      icon,
-      children,
-      class: "test-class",
+  describe("attributes", () => {
+    it.each([
+      ["id", "test-id"],
+      ["aria-label", "test-aria-label"],
+    ])("applies %s", async (attribute, expected) => {
+      const page = render(Component, { ...baseProps, [attribute]: expected });
+      await expect
+        .element(componentLocator(page))
+        .toHaveAttribute(attribute, expected);
     });
 
-    const element = page.getByTestId("icon-text");
-    await expect.element(element).toHaveClass("test-class");
+    it("applies classes", async () => {
+      const page = render(Component, { ...baseProps, class: "test-class" });
+      await expect.element(componentLocator(page)).toHaveClass("test-class");
+      await expect.element(componentLocator(page)).toHaveClass("ds");
+      await expect.element(componentLocator(page)).toHaveClass("icon-text");
+    });
+
+    it("applies style", async () => {
+      const page = render(Component, {
+        ...baseProps,
+        style: "color: orange;",
+      });
+      await expect
+        .element(componentLocator(page))
+        .toHaveStyle({ color: "orange" });
+    });
   });
 });
+
+function componentLocator(page: RenderResult<typeof Component>): Locator {
+  return page.getByTestId("icon-text");
+}

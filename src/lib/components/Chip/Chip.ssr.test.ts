@@ -1,70 +1,92 @@
-import { render } from "svelte/server";
+/* @canonical/generator-ds 0.10.0-experimental.5 */
+
+import { render } from "@canonical/svelte-ssr-test";
+import type { RenderResult } from "@canonical/svelte-ssr-test";
+import type { ComponentProps } from "svelte";
 import { describe, expect, it } from "vitest";
 import Component from "./Chip.svelte";
 
 describe("Chip SSR", () => {
-  describe("Initial Rendering", () => {
-    it("should render without errors when given required props", () => {
+  const baseProps = {
+    value: "Test",
+  } satisfies ComponentProps<typeof Component>;
+
+  describe("basics", () => {
+    it("doesn't throw", () => {
       expect(() =>
-        render(Component, { props: { value: "Test" } }),
+        render(Component, { props: { ...baseProps } }),
       ).not.toThrow();
     });
 
-    it("should render essential content", () => {
-      const { body } = render(Component, {
-        props: { value: "Essential Content" },
+    it("renders value", () => {
+      const page = render(Component, {
+        props: { ...baseProps, value: "Essential Content" },
       });
-      expect(body).toContain("Essential Content");
+      expect(componentLocator(page).textContent).toContain("Essential Content");
     });
 
-    it("should render as a span by default", () => {
-      const { body } = render(Component, { props: { value: "Span Chip" } });
-      expect(body).toContain('<span class="ds chip');
-      expect(body).not.toContain("<button");
+    it("renders as a span by default", () => {
+      const page = render(Component, {
+        props: { ...baseProps, value: "Span Chip" },
+      });
+
+      expect(componentLocator(page)).toBeInstanceOf(
+        page.window.HTMLSpanElement,
+      );
+      expect(page.queryByRole("button")).toBeNull();
     });
 
-    it("should render with lead text", () => {
-      const { body } = render(Component, {
-        props: { lead: "Key:", value: "Value" },
+    it("renders lead and value text", () => {
+      const page = render(Component, {
+        props: { ...baseProps, lead: "Key:", value: "Value" },
       });
-      expect(body).toMatch(/<span class="[^"]*lead[^"]*">Key:<\/span>/);
-      expect(body).toMatch(/<span class="[^"]*value[^"]*">Value<\/span>/);
+
+      expect(page.getByText("Key:")).toBeTruthy();
+      expect(page.getByText("Value")).toBeTruthy();
     });
   });
 
   describe("State Variants", () => {
-    it("should render as a button when onclick is provided", () => {
-      const { body } = render(Component, {
-        props: { value: "Clickable", onclick: () => {} },
+    it("renders as a button when onclick is provided", () => {
+      const page = render(Component, {
+        props: { ...baseProps, value: "Clickable", onclick: () => {} },
       });
-      expect(body).toContain('<button class="ds chip');
-    });
 
-    it("should render a dismiss button when ondismiss is provided", () => {
-      const { body } = render(Component, {
-        props: { value: "Dismissible", ondismiss: () => {} },
-      });
-      expect(body).toContain('<span class="ds chip');
-      expect(body).toMatch(
-        /<button class="[^"]*dismiss[^"]*" aria-label="Dismiss"/,
+      expect(page.getByRole("button")).toBeInstanceOf(
+        page.window.HTMLButtonElement,
       );
     });
 
-    it("should be non-interactive when readonly", () => {
-      const { body } = render(Component, {
-        props: { value: "Readonly Chip", modifiers: { readMode: "readonly" } },
+    it("renders a dismiss button when ondismiss is provided", () => {
+      const page = render(Component, {
+        props: { ...baseProps, value: "Dismissible", ondismiss: () => {} },
       });
-      expect(body).toContain('<span class="ds chip readonly');
-      expect(body).not.toContain("<button");
-    });
-  });
 
-  describe("Accessibility", () => {
-    it("should include aria-label on dismiss button", () => {
-      const { body } = render(Component, {
-        props: { value: "Dismissible", ondismiss: () => {} },
+      expect(componentLocator(page)).toBeInstanceOf(
+        page.window.HTMLSpanElement,
+      );
+      expect(page.getByRole("button", { name: "Dismiss" })).toBeInstanceOf(
+        page.window.HTMLButtonElement,
+      );
+    });
+
+    it("is non-interactive when readonly", () => {
+      const page = render(Component, {
+        props: {
+          ...baseProps,
+          value: "Readonly Chip",
+          modifiers: { readMode: "readonly" },
+        },
       });
-      expect(body).toContain('aria-label="Dismiss"');
+      expect(componentLocator(page)).toBeInstanceOf(
+        page.window.HTMLSpanElement,
+      );
+      expect(componentLocator(page).classList.contains("readonly")).toBe(true);
+      expect(page.queryByRole("button")).toBeNull();
     });
   });
 });
+
+function componentLocator(page: RenderResult): HTMLElement {
+  return page.getByTestId("chip");
+}

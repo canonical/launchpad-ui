@@ -1,13 +1,13 @@
-/* @canonical/generator-ds 0.10.0-experimental.4 */
+/* @canonical/generator-ds 0.10.0-experimental.5 */
 
 import { render } from "@canonical/svelte-ssr-test";
 import type { RenderResult } from "@canonical/svelte-ssr-test";
+import type { ComponentProps } from "svelte";
 import { describe, expect, it } from "vitest";
 import Component from "./TextInputPrimitive.svelte";
-import type { TextInputPrimitiveProps } from "./types.js";
 
 describe("TextInputPrimitive SSR", () => {
-  const baseProps = {} satisfies TextInputPrimitiveProps;
+  const baseProps = {} satisfies ComponentProps<typeof Component>;
 
   describe("basics", () => {
     it("doesn't throw", () => {
@@ -28,25 +28,26 @@ describe("TextInputPrimitive SSR", () => {
     it.each([
       ["id", "test-id"],
       ["aria-label", "test-aria-label"],
-    ])("applies %s", (attribute, expected) => {
+    ])("applies %s", (attribute, value) => {
       const page = render(Component, {
-        props: { ...baseProps, [attribute]: expected },
+        props: { ...baseProps, [attribute]: value },
       });
-      expect(componentLocator(page).getAttribute(attribute)).toBe(expected);
-    });
-
-    it("applies classes", () => {
-      const page = render(Component, {
-        props: { class: "test-class", ...baseProps },
-      });
-      expect(componentLocator(page).classList).toContain("test-class");
+      expect(componentLocator(page).getAttribute(attribute)).toBe(value);
     });
 
     it("applies style", () => {
       const page = render(Component, {
-        props: { style: "color: orange;", ...baseProps },
+        props: { ...baseProps, style: "color: orange;" },
       });
       expect(componentLocator(page).style.color).toBe("orange");
+    });
+
+    it("applies class", () => {
+      const page = render(Component, {
+        props: { ...baseProps, class: "test-class" },
+      });
+      const element = componentLocator(page);
+      expect(element.classList.contains("test-class")).toBe(true);
     });
 
     describe("type", () => {
@@ -106,7 +107,7 @@ describe("TextInputPrimitive SSR", () => {
 
       it("can be disabled", () => {
         const page = render(Component, {
-          props: { disabled: true, ...baseProps },
+          props: { ...baseProps, disabled: true },
         });
         expect(componentLocator(page).disabled).toBe(true);
       });

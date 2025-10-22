@@ -1,30 +1,69 @@
-/* @canonical/generator-ds 0.10.0-experimental.3 */
+/* @canonical/generator-ds 0.10.0-experimental.5 */
 
+import type { Locator } from "@vitest/browser/context";
 import { createRawSnippet } from "svelte";
+import type { ComponentProps } from "svelte";
 import { describe, expect, it } from "vitest";
 import { render } from "vitest-browser-svelte";
+import type { RenderResult } from "vitest-browser-svelte";
 import Component from "./Select.svelte";
 
 describe("Select component", () => {
-  it("renders", async () => {
-    const children = createRawSnippet(() => ({
+  const baseProps = {
+    children: createRawSnippet(() => ({
       render: () => `<option value="1">Option 1</option>`,
-    }));
+    })),
+  } satisfies ComponentProps<typeof Component>;
 
-    const page = render(Component, { children });
-    const element = page.getByRole("combobox");
-    await expect.element(element).toBeInTheDocument();
+  it("renders", async () => {
+    const page = render(Component, { ...baseProps });
+    await expect.element(selectLocator(page)).toBeVisible();
+    await expect
+      .element(page.getByRole("option"))
+      .toHaveTextContent("Option 1");
   });
 
-  it("applies class", async () => {
-    const children = createRawSnippet(() => ({
-      render: () => `<option value="1">Option 1</option>`,
-    }));
+  describe("attributes", () => {
+    it.each([
+      ["id", "test-id"],
+      ["aria-label", "test-aria-label"],
+    ])("applies %s", async (attribute, expected) => {
+      const page = render(Component, { ...baseProps, [attribute]: expected });
+      await expect
+        .element(selectLocator(page))
+        .toHaveAttribute(attribute, expected);
+    });
 
-    const page = render(Component, { children, class: "test-class" });
-    const element = page.getByRole("combobox");
+    it("applies classes", async () => {
+      const page = render(Component, { ...baseProps, class: "test-class" });
+      const wrapper = componentLocator(page).element();
+      await expect.element(wrapper).toHaveClass("test-class");
+      await expect.element(wrapper).toHaveClass("ds");
+      await expect.element(wrapper).toHaveClass("select");
+    });
+
+    it("applies style", async () => {
+      const page = render(Component, {
+        ...baseProps,
+        style: "color: orange;",
+      });
+      await expect.element(selectLocator(page)).toHaveStyle("color: orange;");
+    });
+  });
+
+  it("renders when multiple is true", async () => {
+    const page = render(Component, { ...baseProps, multiple: true });
+    await expect.element(page.getByRole("listbox")).toHaveAttribute("multiple");
     await expect
-      .element(element.element().parentElement)
-      .toHaveClass("test-class");
+      .element(page.getByRole("option"))
+      .toHaveTextContent("Option 1");
   });
 });
+
+function componentLocator(page: RenderResult<typeof Component>): Locator {
+  return page.getByTestId("select");
+}
+
+function selectLocator(page: RenderResult<typeof Component>): Locator {
+  return page.getByRole("combobox");
+}

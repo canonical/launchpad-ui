@@ -1,10 +1,12 @@
-/* @canonical/generator-ds 0.10.0-experimental.3 */
+/* @canonical/generator-ds 0.10.0-experimental.5 */
 
+import type { Locator } from "@vitest/browser/context";
+import type { ComponentProps } from "svelte";
 import { describe, expect, it } from "vitest";
 import { render } from "vitest-browser-svelte";
+import type { RenderResult } from "vitest-browser-svelte";
 import Component from "./SideNavigation.svelte";
 import { children, expandToggle, footer, logo } from "./test.fixtures.svelte";
-import type { SideNavigationProps } from "./types.js";
 
 describe("SideNavigation component", () => {
   const baseProps = {
@@ -12,35 +14,47 @@ describe("SideNavigation component", () => {
     logo,
     expandToggle,
     footer,
-  } satisfies SideNavigationProps;
+  } satisfies ComponentProps<typeof Component>;
 
   it("renders", async () => {
-    const page = render(Component, { ...baseProps });
-    await expect.element(page.getByRole("banner")).toBeInTheDocument();
+    const page = render(Component, baseProps);
+    await expect.element(componentLocator(page)).toBeInTheDocument();
   });
 
   describe("attributes", () => {
     it.each([
       ["id", "test-id"],
-      ["style", "color: orange;"],
       ["aria-label", "test-aria-label"],
-    ])("applies %s", async (attribute, expected) => {
+    ])("applies %s", async (attribute, value) => {
       const page = render(Component, {
-        [attribute]: expected,
         ...baseProps,
+        [attribute]: value,
       });
 
       await expect
-        .element(page.getByRole("banner"))
-        .toHaveAttribute(attribute, expected);
+        .element(componentLocator(page))
+        .toHaveAttribute(attribute, value);
     });
 
-    it("applies classes", async () => {
+    it("applies style", async () => {
       const page = render(Component, {
-        class: "test-class",
         ...baseProps,
+        style: "color: orange;",
       });
-      await expect.element(page.getByRole("banner")).toHaveClass("test-class");
+      await expect
+        .element(componentLocator(page))
+        .toHaveStyle("color: orange;");
+    });
+
+    it("applies class", async () => {
+      const page = render(Component, {
+        ...baseProps,
+        class: "test-class",
+      });
+      const element = componentLocator(page);
+      await expect.element(element).toHaveClass("ds");
+      await expect.element(element).toHaveClass("side-navigation");
+      await expect.element(element).toHaveClass("test-class");
     });
   });
 
@@ -184,3 +198,7 @@ describe("SideNavigation component", () => {
     await expect.element(page.getByRole("navigation")).not.toBeInTheDocument();
   });
 });
+
+function componentLocator(page: RenderResult<typeof Component>): Locator {
+  return page.getByRole("banner");
+}

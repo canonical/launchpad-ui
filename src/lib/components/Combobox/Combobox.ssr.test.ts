@@ -1,109 +1,127 @@
-/* @canonical/generator-ds 0.10.0-experimental.2 */
+/* @canonical/generator-ds 0.10.0-experimental.5 */
 
+import { render } from "@canonical/svelte-ssr-test";
+import type { RenderResult } from "@canonical/svelte-ssr-test";
 import { createRawSnippet } from "svelte";
-import { render } from "svelte/server";
+import type { ComponentProps } from "svelte";
 import { describe, expect, it } from "vitest";
 import Component from "./Combobox.svelte";
 
-const requiredProps = {
-  search: createRawSnippet(() => ({
-    render: () => `<input type="search" />`,
-  })),
-  inputsName: "options",
-};
-
 describe("Combobox SSR", () => {
-  it("doesn't throw", () => {
-    expect(() => {
-      render(Component, { props: requiredProps });
-    }).not.toThrow();
+  const baseProps = {
+    search: createRawSnippet(() => ({
+      render: () => `<input type="search" data-testid="search-input" />`,
+    })),
+    inputsName: "options",
+  } satisfies ComponentProps<typeof Component>;
+
+  describe("basics", () => {
+    it("doesn't throw", () => {
+      expect(() => {
+        render(Component, { props: { ...baseProps } });
+      }).not.toThrow();
+    });
+
+    it("renders", () => {
+      const page = render(Component, { props: { ...baseProps } });
+      expect(componentLocator(page)).toBeInstanceOf(page.window.HTMLElement);
+    });
+  });
+
+  describe("attributes", () => {
+    it.each([
+      ["id", "test-id"],
+      ["aria-label", "test-aria-label"],
+    ])("applies %s", (attribute, expected) => {
+      const page = render(Component, {
+        props: { ...baseProps, [attribute]: expected },
+      });
+      expect(componentLocator(page).getAttribute(attribute)).toBe(expected);
+    });
+
+    it("applies classes", () => {
+      const page = render(Component, {
+        props: { ...baseProps, class: "test-class" },
+      });
+      expect(componentLocator(page).classList).toContain("test-class");
+    });
+
+    it("applies style", () => {
+      const page = render(Component, {
+        props: { ...baseProps, style: "color: orange;" },
+      });
+      expect(componentLocator(page).style.color).toBe("orange");
+    });
   });
 
   describe("Renders", () => {
     it("search", () => {
-      const { body } = render(Component, { props: requiredProps });
-      expect(body).toContain('<input type="search" />');
+      const page = render(Component, { props: { ...baseProps } });
+      expect(page.getByTestId("search-input")).toBeTruthy();
     });
 
     it("children", () => {
-      const { body } = render(Component, {
+      const children = createRawSnippet(() => ({
+        render: () => "<div>Option 1</div>",
+      }));
+      const page = render(Component, {
         props: {
-          ...requiredProps,
-          children: createRawSnippet(() => ({
-            render: () => "<div>Option 1</div>",
-          })),
+          ...baseProps,
+          children,
         },
       });
-      expect(body).toContain("Option 1");
+      expect(componentLocator(page).textContent).toContain("Option 1");
     });
 
     it("footer", () => {
-      const { body } = render(Component, {
+      const footer = createRawSnippet(() => ({
+        render: () => "<div>Footer content</div>",
+      }));
+      const page = render(Component, {
         props: {
-          ...requiredProps,
-          footer: createRawSnippet(() => ({
-            render: () => "<div>Footer content</div>",
-          })),
+          ...baseProps,
+          footer,
         },
       });
-      expect(body).toContain("Footer content");
+      expect(componentLocator(page).textContent).toContain("Footer content");
     });
 
     it("helper", () => {
-      const { body } = render(Component, {
+      const helper = createRawSnippet(() => ({
+        render: () => "<div>Helper content</div>",
+      }));
+      const page = render(Component, {
         props: {
-          ...requiredProps,
-          helper: createRawSnippet(() => ({
-            render: () => "<div>Helper content</div>",
-          })),
+          ...baseProps,
+          helper,
         },
       });
-      expect(body).toContain("Helper content");
-    });
-  });
-
-  describe("Basic attributes", () => {
-    it("applies id", () => {
-      const { body } = render(Component, {
-        props: { ...requiredProps, id: "test-id" },
-      });
-      expect(body).toContain('id="test-id"');
-    });
-
-    it("applies class", () => {
-      const { body } = render(Component, {
-        props: { ...requiredProps, class: "test-class" },
-      });
-      expect(body).toMatch(/class="[^"]*test-class[^"]*"/);
-    });
-
-    it("applies style", () => {
-      const { body } = render(Component, {
-        props: {
-          ...requiredProps,
-          style: "color: red;",
-        },
-      });
-      expect(body).toContain('style="color: red;"');
+      expect(componentLocator(page).textContent).toContain("Helper content");
     });
   });
 
   describe("After-mount attributes", () => {
     it("doesn't apply role", () => {
-      const { body } = render(Component, { props: requiredProps });
-      expect(body).not.toContain('role="listbox"');
+      const page = render(Component, { props: { ...baseProps } });
+      expect(componentLocator(page).hasAttribute("role")).toBe(false);
     });
 
     it("doesn't apply aria-multiselectable", () => {
-      const { body } = render(Component, { props: requiredProps });
-      expect(body).not.toContain("aria-multiselectable");
+      const page = render(Component, { props: { ...baseProps } });
+      expect(componentLocator(page).hasAttribute("aria-multiselectable")).toBe(
+        false,
+      );
     });
 
     it("doesn't apply aria-busy", () => {
-      const { body } = render(Component, {
-        props: { ...requiredProps, "aria-busy": true },
+      const page = render(Component, {
+        props: { ...baseProps, "aria-busy": true },
       });
-      expect(body).not.toContain('aria-busy="true"');
+      expect(componentLocator(page).hasAttribute("aria-busy")).toBe(false);
     });
   });
 });
+
+function componentLocator(page: RenderResult): HTMLElement {
+  return page.getByTestId("combobox");
+}

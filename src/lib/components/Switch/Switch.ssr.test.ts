@@ -1,101 +1,129 @@
-/* @canonical/generator-ds 0.10.0-experimental.0 */
+/* @canonical/generator-ds 0.10.0-experimental.5 */
 
-import { render } from "svelte/server";
+import { render } from "@canonical/svelte-ssr-test";
+import type { RenderResult } from "@canonical/svelte-ssr-test";
 import { describe, expect, it } from "vitest";
 import Component from "./Switch.svelte";
 import type { SwitchProps } from "./types.js";
 
 describe("Switch SSR", () => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const baseProps = {} satisfies SwitchProps<any>;
+
   it("doesn't throw", () => {
     expect(() => {
-      render(Component);
+      renderSwitch({ ...baseProps });
     }).not.toThrow();
   });
 
   it("renders", () => {
-    const { body } = render(Component);
-    expect(body).toContain('<input type="checkbox" role="switch"');
+    const page = renderSwitch({ ...baseProps });
+    expect(componentLocator(page)).toBeInstanceOf(page.window.HTMLInputElement);
   });
 
-  describe("Basic attributes", () => {
-    it("applies id", () => {
-      const { body } = renderSwitch({ id: "test-id" });
-      expect(body).toContain('id="test-id"');
+  describe("attributes", () => {
+    it.each([
+      ["id", "test-id"],
+      ["aria-label", "test-aria-label"],
+    ])("applies %s", (attribute, expected) => {
+      const page = renderSwitch({ ...baseProps, [attribute]: expected });
+      expect(componentLocator(page).getAttribute(attribute)).toBe(expected);
     });
 
-    it("applies class", () => {
-      const { body } = renderSwitch({ class: "test-class" });
-      expect(body).toMatch(/class="[^"]*test-class[^"]*"/);
+    it("applies classes", () => {
+      const page = renderSwitch({ ...baseProps, class: "test-class" });
+      expect(componentLocator(page).classList).toContain("test-class");
+      expect(componentLocator(page).classList).toContain("ds");
+      expect(componentLocator(page).classList).toContain("switch");
     });
 
     it("applies style", () => {
-      const { body } = renderSwitch({ style: "color: red;" });
-      expect(body).toContain('style="color: red;"');
+      const page = renderSwitch({ ...baseProps, style: "color: orange;" });
+      expect(componentLocator(page).style.color).toBe("orange");
     });
   });
 
   describe("Switch state", () => {
     it("doesn't include aria-checked attribute", () => {
-      const { body: bodyDefault } = renderSwitch();
-      const { body: bodyChecked } = renderSwitch({
-        checked: true,
-      });
-      const { body: bodyNotChecked } = renderSwitch({
-        checked: false,
-      });
+      const defaultSwitch = componentLocator(renderSwitch({ ...baseProps }));
+      const checkedSwitch = componentLocator(
+        renderSwitch({
+          ...baseProps,
+          checked: true,
+        }),
+      );
+      const notCheckedSwitch = componentLocator(
+        renderSwitch({
+          ...baseProps,
+          checked: false,
+        }),
+      );
 
-      expect(bodyDefault).not.toContain("aria-checked");
-      expect(bodyChecked).not.toContain("aria-checked");
-      expect(bodyNotChecked).not.toContain("aria-checked");
+      expect(defaultSwitch.hasAttribute("aria-checked")).toBe(false);
+      expect(checkedSwitch.hasAttribute("aria-checked")).toBe(false);
+      expect(notCheckedSwitch.hasAttribute("aria-checked")).toBe(false);
     });
 
     it("is not checked by default", () => {
-      const { body } = renderSwitch();
-      expect(body).not.toContain("checked");
+      const page = renderSwitch({ ...baseProps });
+      expect(componentLocator(page).checked).toBe(false);
     });
 
     it("can be checked", () => {
-      const { body } = renderSwitch({ checked: true });
-      expect(body).toContain("checked");
+      const page = renderSwitch({ ...baseProps, checked: true });
+      expect(componentLocator(page).checked).toBe(true);
     });
 
     it("isn't disabled by default", () => {
-      const { body } = renderSwitch();
-      expect(body).not.toContain('aria-readonly="true"');
+      const page = renderSwitch({ ...baseProps });
+      expect(componentLocator(page).hasAttribute("disabled")).toBe(false);
+      expect(componentLocator(page).getAttribute("aria-readonly")).not.toBe(
+        "true",
+      );
     });
 
     it("can be disabled", () => {
-      const { body } = renderSwitch({ disabled: true });
-      expect(body).toContain('aria-readonly="true"');
-      expect(body).toContain("disabled");
+      const page = renderSwitch({ ...baseProps, disabled: true });
+      expect(componentLocator(page).getAttribute("aria-readonly")).toBe("true");
+      expect(componentLocator(page).hasAttribute("disabled")).toBe(true);
     });
   });
 
   describe("Group controlled", () => {
     it("isn't checked if group and value are undefined", () => {
-      const { body } = renderSwitch({ group: undefined, value: undefined });
-      expect(body).not.toContain("checked");
+      const page = renderSwitch({
+        ...baseProps,
+        group: undefined,
+        value: undefined,
+      });
+      expect(componentLocator(page).checked).toBe(false);
     });
 
     it("isn't checked if group doesn't include value", () => {
-      const { body } = renderSwitch({
+      const page = renderSwitch({
+        ...baseProps,
         group: ["a", "b"],
         value: "c",
       });
-      expect(body).not.toContain("checked");
+      expect(componentLocator(page).checked).toBe(false);
     });
 
     it("is checked if group includes value", () => {
-      const { body } = renderSwitch({
+      const page = renderSwitch({
+        ...baseProps,
         group: ["a", "b", "c"],
         value: "c",
       });
-      expect(body).toContain("checked");
+      expect(componentLocator(page).checked).toBe(true);
     });
   });
 });
 
-function renderSwitch(props?: SwitchProps) {
+function renderSwitch(props: SwitchProps) {
   // @ts-expect-error TypeScript reports `Expression produces a union type that is too complex to represent.ts(2590)`
   return render(Component, { props });
+}
+
+function componentLocator(page: RenderResult): HTMLInputElement {
+  return page.getByRole("switch");
 }

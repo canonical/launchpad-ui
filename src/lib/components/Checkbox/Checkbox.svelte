@@ -9,33 +9,33 @@
     class: className,
     group = $bindable(),
     checked = $bindable(),
-    onchange: onchangeProp,
     value,
     ...rest
   }: CheckboxProps<T> = $props();
 
-  const onchange: typeof onchangeProp = (e) => {
-    onchangeProp?.(e);
-    const newChecked = (e.target as HTMLInputElement).checked;
+  function getChecked() {
+    if (group && value !== undefined) return group.includes(value);
+    return Boolean(checked);
+  }
+
+  function setChecked(newChecked: boolean) {
     checked = newChecked;
-    if (value && group) {
+
+    if (group && value !== undefined) {
       if (newChecked) {
-        // Don't use push, because if the passed group is not bound, it would mutate not owned state
         group = [...group, value];
       } else {
-        // Don't use splice for the same reason
         group = group.filter((v) => v !== value);
       }
     }
-  };
+  }
 </script>
 
 <input
   type="checkbox"
   class={[componentCssClassName, className]}
-  {onchange}
   {value}
-  checked={value !== undefined && group?.includes(value) ? true : checked}
+  bind:checked={getChecked, setChecked}
   {...rest}
 />
 

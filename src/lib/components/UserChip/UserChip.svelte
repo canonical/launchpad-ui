@@ -19,6 +19,7 @@
 
 <div
   class={[componentCssClassName, className, modifiersValues(modifiers)]}
+  data-testid="user-chip"
   {...rest}
 >
   {#if showAvatar}

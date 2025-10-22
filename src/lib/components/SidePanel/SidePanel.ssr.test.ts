@@ -1,7 +1,8 @@
-/* @canonical/generator-ds 0.10.0-experimental.2 */
+/* @canonical/generator-ds 0.10.0-experimental.5 */
 
 import { render } from "@canonical/svelte-ssr-test";
 import type { RenderResult } from "@canonical/svelte-ssr-test";
+import type { ComponentProps } from "svelte";
 import { assert, describe, expect, it } from "vitest";
 import Component from "./SidePanel.svelte";
 import {
@@ -13,36 +14,20 @@ import {
 } from "./test.fixtures.svelte";
 
 describe("SidePanel SSR", () => {
+  const baseProps = {} satisfies ComponentProps<typeof Component>;
+
   describe("basics", () => {
     it("doesn't throw", () => {
       expect(() => {
-        render(Component);
+        render(Component, { props: { ...baseProps } });
       }).not.toThrow();
     });
 
     it("renders", () => {
-      const page = render(Component);
+      const page = render(Component, { props: { ...baseProps } });
       expect(componentLocator(page)).toBeInstanceOf(
         page.window.HTMLDialogElement,
       );
-    });
-
-    it("renders children", () => {
-      const page = render(Component, {
-        props: {
-          children,
-        },
-      });
-      expect(page.getByText(contentText)).toBeDefined();
-    });
-
-    it("renders trigger", () => {
-      const page = render(Component, {
-        props: {
-          trigger,
-        },
-      });
-      expect(triggerLocator(page)).toBeDefined();
     });
   });
 
@@ -52,14 +37,14 @@ describe("SidePanel SSR", () => {
       ["aria-label", "test-aria-label"],
     ])("applies %s", (attribute, expected) => {
       const page = render(Component, {
-        props: { [attribute]: expected },
+        props: { ...baseProps, [attribute]: expected },
       });
       expect(componentLocator(page).getAttribute(attribute)).toBe(expected);
     });
 
     it("applies classes", () => {
       const page = render(Component, {
-        props: { class: "test-class" },
+        props: { ...baseProps, class: "test-class" },
       });
       expect(componentLocator(page).classList).toContain("test-class");
       expect(componentLocator(page).classList).toContain("ds");
@@ -68,9 +53,31 @@ describe("SidePanel SSR", () => {
 
     it("applies style", () => {
       const page = render(Component, {
-        props: { style: "color: orange;" },
+        props: { ...baseProps, style: "color: orange;" },
       });
       expect(componentLocator(page).style.color).toBe("orange");
+    });
+  });
+
+  describe("basics", () => {
+    it("renders children", () => {
+      const page = render(Component, {
+        props: {
+          ...baseProps,
+          children,
+        },
+      });
+      expect(page.getByText(contentText)).toBeDefined();
+    });
+
+    it("renders trigger", () => {
+      const page = render(Component, {
+        props: {
+          ...baseProps,
+          trigger,
+        },
+      });
+      expect(triggerLocator(page)).toBeDefined();
     });
   });
 
@@ -78,6 +85,7 @@ describe("SidePanel SSR", () => {
     it("properly links trigger with side panel", () => {
       const page = render(Component, {
         props: {
+          ...baseProps,
           trigger,
         },
       });
@@ -92,6 +100,7 @@ describe("SidePanel SSR", () => {
     it("properly links children controls with side panel", () => {
       const page = render(Component, {
         props: {
+          ...baseProps,
           children,
         },
       });
@@ -109,6 +118,7 @@ describe("SidePanel SSR", () => {
     it("renders as auto popover if `closeOnOutsideClick` is true", () => {
       const page = render(Component, {
         props: {
+          ...baseProps,
           closeOnOutsideClick: true,
         },
       });
@@ -118,6 +128,7 @@ describe("SidePanel SSR", () => {
     it("renders as manual popover if `closeOnOutsideClick` is false", () => {
       const page = render(Component, {
         props: {
+          ...baseProps,
           closeOnOutsideClick: false,
         },
       });
@@ -125,7 +136,7 @@ describe("SidePanel SSR", () => {
     });
 
     it("does not have `closedby` attribute", () => {
-      const page = render(Component);
+      const page = render(Component, { props: { ...baseProps } });
       expect(componentLocator(page).getAttribute("closedby")).toBeNull();
     });
   });

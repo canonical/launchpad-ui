@@ -38,7 +38,7 @@
     {@render avatarFallback(true)}
   </object>
 {:else}
-  <span {...avatarProps}>
+  <span data-testid="user-avatar" {...avatarProps}>
     {@render avatarFallback()}
   </span>
 {/if}

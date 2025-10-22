@@ -1,6 +1,8 @@
-/* @canonical/generator-ds 0.10.0-experimental.2 */
+/* @canonical/generator-ds 0.10.0-experimental.5 */
 
-import { render } from "svelte/server";
+import { render } from "@canonical/svelte-ssr-test";
+import type { RenderResult } from "@canonical/svelte-ssr-test";
+import type { ComponentProps } from "svelte";
 import { describe, expect, it, vi } from "vitest";
 import Component from "./DateTime.svelte";
 
@@ -23,58 +25,75 @@ const timestamp = date.getTime();
 const dateString = date.toISOString();
 
 describe("DateTime SSR", () => {
-  it("doesn't throw", () => {
-    expect(() => {
-      render(Component, { props: { date } });
-    }).not.toThrow();
-  });
+  const baseProps = {
+    date,
+  } satisfies ComponentProps<typeof Component>;
 
-  it("renders", () => {
-    const { body } = render(Component, { props: { date } });
-    expect(body).toContain("<time");
-    expect(body).toContain("</time>");
+  describe("basics", () => {
+    it("doesn't throw", () => {
+      expect(() => {
+        render(Component, { props: { ...baseProps } });
+      }).not.toThrow();
+    });
+
+    it("renders", () => {
+      const page = render(Component, { props: { ...baseProps } });
+      expect(componentLocator(page)).toBeInstanceOf(
+        page.window.HTMLTimeElement,
+      );
+    });
   });
 
   describe("Basic attributes", () => {
-    it("applies id", () => {
-      const { body } = render(Component, {
-        props: { id: "test-id", date },
+    it.each([
+      ["id", "test-id"],
+      ["aria-label", "test-aria-label"],
+    ])("applies %s", (attribute, value) => {
+      const page = render(Component, {
+        props: { ...baseProps, [attribute]: value },
       });
-      expect(body).toContain('id="test-id"');
+      const element = componentLocator(page);
+      expect(element.getAttribute(attribute)).toBe(value);
     });
 
     it("applies style", () => {
-      const { body } = render(Component, {
-        props: { style: "color: red;", date },
+      const page = render(Component, {
+        props: { ...baseProps, style: "color: orange;" },
       });
-      expect(body).toMatch(/style="[^"]*color: red;[^"]*"/);
+      const element = componentLocator(page);
+      expect(element.getAttribute("style")).toContain("color: orange;");
     });
 
     it("applies class", () => {
-      const { body } = render(Component, {
-        props: { class: "test-class", date },
+      const page = render(Component, {
+        props: { ...baseProps, class: "test-class" },
       });
-      expect(body).toMatch(/class="[^"]*test-class[^"]*"/);
+      const element = componentLocator(page);
+      expect(element.classList.contains("test-class")).toBe(true);
     });
   });
 
   describe("datetime attribute", () => {
     it("applies correct datetime attribute for Date input", () => {
-      const { body } = render(Component, { props: { date } });
-
-      expect(body).toContain(`datetime="${date.toISOString()}"`);
+      const page = render(Component, { props: { ...baseProps } });
+      const element = componentLocator(page);
+      expect(element.getAttribute("datetime")).toBe(date.toISOString());
     });
 
     it("applies correct datetime attribute for timestamp input", () => {
-      const { body } = render(Component, { props: { date: timestamp } });
-
-      expect(body).toContain(`datetime="${date.toISOString()}"`);
+      const page = render(Component, {
+        props: { ...baseProps, date: timestamp },
+      });
+      const element = componentLocator(page);
+      expect(element.getAttribute("datetime")).toBe(date.toISOString());
     });
 
     it("applies correct datetime attribute for date string input", () => {
-      const { body } = render(Component, { props: { date: dateString } });
-
-      expect(body).toContain(`datetime="${date.toISOString()}"`);
+      const page = render(Component, {
+        props: { ...baseProps, date: dateString },
+      });
+      const element = componentLocator(page);
+      expect(element.getAttribute("datetime")).toBe(date.toISOString());
     });
   });
 
@@ -82,26 +101,31 @@ describe("DateTime SSR", () => {
     describe("now label for relative time", () => {
       it("renders nowLabel when within nowThreshold", () => {
         const now = Date.now();
-        const { body } = render(Component, {
-          props: { date: now, nowThreshold: 999999 },
+        const page = render(Component, {
+          props: { ...baseProps, date: now, nowThreshold: 999999 },
         });
-        expect(body).toContain("now");
+        expect(componentLocator(page).textContent).toContain("now");
       });
 
       it("does not render nowLabel when outside nowThreshold", () => {
         const now = Date.now();
-        const { body } = render(Component, {
-          props: { date: now - 1000, nowThreshold: 10 },
+        const page = render(Component, {
+          props: { ...baseProps, date: now - 1000, nowThreshold: 10 },
         });
-        expect(body).not.toContain("now");
+        expect(componentLocator(page).textContent).not.toContain("now");
       });
 
       it("renders custom nowLabel when within nowThreshold", () => {
         const now = Date.now();
-        const { body } = render(Component, {
-          props: { date: now, nowThreshold: 999999, nowLabel: "just now" },
+        const page = render(Component, {
+          props: {
+            ...baseProps,
+            date: now,
+            nowThreshold: 999999,
+            nowLabel: "just now",
+          },
         });
-        expect(body).toContain("just now");
+        expect(componentLocator(page).textContent).toContain("just now");
       });
     });
 
@@ -109,38 +133,46 @@ describe("DateTime SSR", () => {
       it("renders relative time when outside nowThreshold", () => {
         const now = Date.now();
         const pastDate = new Date(now - 1000 * 60 * 60 * 3); // 3 hours ago
-        const { body } = render(Component, {
-          props: { date: pastDate, nowThreshold: 0 },
+        const page = render(Component, {
+          props: { ...baseProps, date: pastDate, nowThreshold: 0 },
         });
 
-        expect(body).toContain("3 hours ago");
+        expect(componentLocator(page).textContent).toContain("3 hours ago");
       });
     });
 
     describe("Absolute time", () => {
       it("renders absolute time when absolute is true", () => {
-        const { body } = render(Component, {
-          props: { date, absolute: true },
+        const page = render(Component, {
+          props: { ...baseProps, absolute: true },
         });
 
-        expect(body).toContain("1/1/24, 12:00 PM");
+        expect(componentLocator(page).textContent).toContain(
+          "1/1/24, 12:00 PM",
+        );
       });
     });
   });
 
   describe("title attribute", () => {
     it("applies formatted date as title for relative time", () => {
-      const { body } = render(Component, {
-        props: { date },
+      const page = render(Component, {
+        props: { ...baseProps },
       });
-      expect(body).toContain("1/1/24, 12:00 PM");
+      expect(componentLocator(page).getAttribute("title")).toBe(
+        "1/1/24, 12:00 PM",
+      );
     });
 
     it("does not apply title for absolute time", () => {
-      const { body } = render(Component, {
-        props: { date, absolute: true },
+      const page = render(Component, {
+        props: { ...baseProps, absolute: true },
       });
-      expect(body).not.toContain("title=");
+      expect(componentLocator(page).hasAttribute("title")).toBe(false);
     });
   });
 });
+
+function componentLocator(page: RenderResult): HTMLTimeElement {
+  return page.getByRole("time");
+}
