@@ -174,25 +174,19 @@ describe("SidePanel component", () => {
         .not.toHaveAttribute("open");
     });
 
-    it(
-      "is closed by clicking outside the side panel when `closeOnOutsideClick` is true",
-      // Webkit doesn't support `closedby` attribute on dialog elements (https://developer.mozilla.org/en-US/docs/Web/API/HTMLDialogElement/closedBy), as such the side panels currently cannot be closed by clicking outside of them.
-      // FIXME: Provide a fallback mechanism for Webkit browsers.
-      { todo: navigator.userAgent.includes("Macintosh") },
-      async () => {
-        const page = render(Component, {
-          ...baseProps,
-          closeOnOutsideClick: true,
-        });
-        await showSidePanel(page);
+    it("is closed by clicking outside the side panel when `closeOnOutsideClick` is true", async () => {
+      const page = render(Component, {
+        ...baseProps,
+        closeOnOutsideClick: true,
+      });
+      await showSidePanel(page);
 
-        await componentLocator(page).click({ position: { x: -10, y: 10 } });
-        await expect.element(componentLocator(page, true)).not.toBeVisible();
-        await expect
-          .element(componentLocator(page, true))
-          .not.toHaveAttribute("open");
-      },
-    );
+      await componentLocator(page).click({ position: { x: -10, y: 10 } });
+      await expect.element(componentLocator(page, true)).not.toBeVisible();
+      await expect
+        .element(componentLocator(page, true))
+        .not.toHaveAttribute("open");
+    });
 
     it("is not closed by clicking outside the side panel when `closeOnOutsideClick` is false", async () => {
       const page = render(Component, {

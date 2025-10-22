@@ -2,6 +2,7 @@
 
 <script lang="ts">
   import { useIsMounted } from "$lib/useIsMounted.svelte.js";
+  import { isEventTargetInElement } from "$lib/utils/index.js";
   import type { SidePanelMethods, SidePanelProps } from "./types.js";
 
   const componentCssClassName = "ds side-panel";
@@ -12,6 +13,7 @@
     trigger,
     children,
     closeOnOutsideClick = true,
+    onclick,
     ...rest
   }: SidePanelProps = $props();
 
@@ -29,6 +31,25 @@
 
   export const close: SidePanelMethods["close"] = () => {
     dialogRef?.close();
+  };
+
+  // Webkit doesn't support `closedby` attribute on dialog elements (https://developer.mozilla.org/en-US/docs/Web/API/HTMLDialogElement/closedBy).
+  // TODO(closedby): Remove this fallback when Webkit supports it.
+  let contentWrapperRef = $state<HTMLElement>();
+
+  const isClosedByFallbackNeeded = $derived(
+    isMounted.value && !("closedBy" in HTMLDialogElement.prototype),
+  );
+
+  const fallbackOnclick: typeof onclick = (e) => {
+    onclick?.(e);
+    if (
+      closeOnOutsideClick &&
+      contentWrapperRef &&
+      !isEventTargetInElement(e.target, contentWrapperRef)
+    ) {
+      close();
+    }
   };
 </script>
 
@@ -49,9 +70,13 @@
       ? "any"
       : "closerequest"}
   data-testid="side-panel"
+  onclick={isClosedByFallbackNeeded ? fallbackOnclick : onclick}
   {...rest}
 >
-  {@render children?.(asPopover ? id : undefined, close)}
+  <!-- TODO(closedby): Remove this wrapper when Webkit supports closedby -->
+  <div style="display: contents;" bind:this={contentWrapperRef}>
+    {@render children?.(asPopover ? id : undefined, close)}
+  </div>
 </dialog>
 
 <!-- @component
