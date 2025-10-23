@@ -3,7 +3,6 @@
 <script lang="ts">
   import { Icon } from "$lib/components/Icon/index.js";
   import type { SpinnerProps } from "./types.js";
-  import "./styles.css";
 
   const componentCssClassName = "ds spinner";
 
@@ -25,3 +24,19 @@
 <Spinner />
 ```
 -->
+
+<style>
+  :global(.ds.spinner) {
+    animation: loading-spinner var(--tmp-transition-duration-sleepy) infinite
+      linear;
+  }
+
+  @keyframes loading-spinner {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+</style>

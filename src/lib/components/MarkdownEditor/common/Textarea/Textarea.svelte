@@ -3,7 +3,6 @@
 <script lang="ts">
   import { Textarea } from "$lib/components/Textarea/index.js";
   import { getMarkdownEditorContext } from "../../context.js";
-  import "./styles.css";
   import type { TextareaProps } from "./types.js";
   import { applyAutoCompletions } from "./utils/index.js";
 
@@ -62,3 +61,9 @@
   {id}
   {...rest}
 />
+
+<style>
+  :global(.ds.markdown-editor-textarea) {
+    resize: vertical;
+  }
+</style>
