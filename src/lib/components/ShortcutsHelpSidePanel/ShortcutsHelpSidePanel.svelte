@@ -6,7 +6,7 @@
   import type { SidePanelMethods } from "../SidePanel";
   import { SidePanel } from "../SidePanel";
   import TextInput from "../TextInput/TextInput.svelte";
-  import "./styles.css";
+  import { Section } from "./common/index.js";
   import type {
     ShortcutsHelpSidePanelMethods,
     ShortcutsHelpSidePanelProps,
@@ -73,28 +73,7 @@
           bind:value={filterQuery}
         />
         {#each Object.entries(groupedByCategory) as [category, shortcuts] (category)}
-          <section>
-            <div class="title">
-              <h5>{category}</h5>
-              <span aria-hidden="true">Shortcut</span>
-              <span aria-hidden="true">Description</span>
-            </div>
-            <dl>
-              {#each shortcuts as shortcut (shortcut)}
-                <dt>{shortcut.metadata.label}</dt>
-                <dd>
-                  <span class="visually-hidden">Shortcut:</span>
-                  {shortcut.toHumanReadable()}
-                </dd>
-                {#if shortcut.metadata.description}
-                  <dd class="description">
-                    <span class="visually-hidden">Description:</span>
-                    {shortcut.metadata.description}
-                  </dd>
-                {/if}
-              {/each}
-            </dl>
-          </section>
+          <Section {category} {shortcuts} />
         {/each}
       </ModalContent.Body>
     </ModalContent>
@@ -115,3 +94,40 @@
   </ShortcutsProvider>
   ```
 -->
+
+<style>
+  :global {
+    .ds.shortcuts-help-side-panel {
+      --dimension-margin-block-shortcuts-help-modal-section: var(
+        --tmp-dimension-spacing-block-xxl
+      );
+      --dimension-margin-block-shortcuts-help-modal-section-items: var(
+        --tmp-dimension-spacing-block-m
+      );
+      --typography-shortcuts-help-modal-dt: var(--tmp-typography-paragraph-xs);
+      --typography-shortcuts-help-modal-dd: var(--tmp-typography-paragraph-xs);
+
+      /* 
+      When there are many shortcuts that cause overflow (and intentional scroll) of the `.body`, the dialog itself gets a second scrollbar for the reasons that remain unknown.
+
+      This prevents that from happening.
+      */
+      overflow: hidden;
+
+      > .content {
+        display: grid;
+        grid-template-rows: auto minmax(0, 1fr);
+        height: 100%;
+
+        .body {
+          overflow-y: auto;
+          > .shortcuts-help-modal-search {
+            width: 100%;
+            position: sticky;
+            top: 0;
+          }
+        }
+      }
+    }
+  }
+</style>

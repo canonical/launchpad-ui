@@ -7,7 +7,6 @@
   import { useIsMounted } from "$lib/useIsMounted.svelte.js";
   import { getComboboxContext } from "../../context.js";
   import type { RadioOptionProps } from "./types.js";
-  import "./styles.css";
 
   let {
     id: idProp,
@@ -103,3 +102,10 @@
 </Combobox.RadioOption>
 ```
 -->
+
+<style>
+  :global(.ds.combobox-option.active) {
+    outline: var(--focus-outline);
+    outline-offset: var(--focus-outline-offset);
+  }
+</style>
