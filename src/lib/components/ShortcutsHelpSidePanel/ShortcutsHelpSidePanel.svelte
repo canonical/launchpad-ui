@@ -114,10 +114,11 @@
       */
       overflow: hidden;
 
-      > .content {
+      .content {
         display: grid;
         grid-template-rows: auto minmax(0, 1fr);
         height: 100%;
+        border: none;
 
         .body {
           overflow-y: auto;
