@@ -5,10 +5,10 @@
 
   const componentCssClassName = "ds link";
 
-  let { class: className, children, appearance, ...rest }: LinkProps = $props();
+  let { class: className, children, soft, ...rest }: LinkProps = $props();
 </script>
 
-<a class={[componentCssClassName, className, appearance]} {...rest}>
+<a class={[componentCssClassName, className, { soft }]} {...rest}>
   {@render children?.()}
 </a>
 

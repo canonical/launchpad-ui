@@ -5,7 +5,7 @@ import type { Shortcut } from "$lib/shortcuts/index.js";
 
 export type ActionButtonProps = Omit<
   ButtonProps,
-  "children" | "iconLeft" | "iconRight"
+  "children" | "iconLeft" | "iconRight" | "density" | "severity"
 > & {
   /**
    * The icon to show for the action

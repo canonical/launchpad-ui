@@ -3,5 +3,8 @@
 import type { HTMLAnchorAttributes } from "svelte/elements";
 
 export interface LinkProps extends HTMLAnchorAttributes {
-  appearance?: "soft";
+  /**
+   * Whether the link should be styled as a soft link.
+   */
+  soft?: boolean;
 }
