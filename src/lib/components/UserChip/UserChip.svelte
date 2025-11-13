@@ -2,14 +2,13 @@
 
 <script lang="ts">
   import { UserAvatar } from "$lib/components/UserAvatar/index.js";
-  import { modifiersValues } from "$lib/modifiers/utils.js";
   import type { UserChipProps } from "./types.js";
 
   const componentCssClassName = "ds user-chip";
 
   let {
     class: className,
-    modifiers,
+    size,
     userName,
     userAvatarUrl,
     showAvatar = true,
@@ -18,7 +17,7 @@
 </script>
 
 <div
-  class={[componentCssClassName, className, modifiersValues(modifiers)]}
+  class={[componentCssClassName, className, size]}
   data-testid="user-chip"
   {...rest}
 >

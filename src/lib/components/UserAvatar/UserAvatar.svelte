@@ -1,7 +1,6 @@
 <script lang="ts">
   /* @canonical/generator-ds 0.9.0-experimental.22 */
   import { Icon } from "$lib/components/Icon/index.js";
-  import { modifiersValues } from "$lib/modifiers";
   import type { UserAvatarProps } from "./types.js";
 
   const componentCssClassName = "ds user-avatar";
@@ -10,12 +9,12 @@
     class: className,
     userName,
     userAvatarUrl,
-    modifiers,
+    size,
     ...rest
   }: UserAvatarProps = $props();
   const avatarProps = $derived({
     ...rest,
-    class: [componentCssClassName, className, modifiersValues(modifiers)],
+    class: [componentCssClassName, className, size],
   });
 </script>
 

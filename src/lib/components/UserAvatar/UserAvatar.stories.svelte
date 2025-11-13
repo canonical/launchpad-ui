@@ -1,6 +1,5 @@
 <script module lang="ts">
   import { defineMeta } from "@storybook/addon-svelte-csf";
-  import { modifiersControl } from "$lib/modifiers";
   import UserAvatar from "./UserAvatar.svelte";
   import { userAvatarModifiers } from "./modifiers";
 
@@ -10,10 +9,6 @@
     title: "Components/UserAvatar",
     tags: ["autodocs"],
     component: UserAvatar,
-
-    argTypes: {
-      ...modifiersControl(userAvatarModifiers),
-    },
   });
 </script>
 
@@ -23,21 +18,13 @@
   {#snippet template(args)}
     <div class="row">
       {#each userAvatarModifiers.size as size (size)}
-        <UserAvatar
-          {...args}
-          modifiers={{ ...(args.modifiers || {}), size }}
-          userName={`John Doe (${size})`}
-        />
+        <UserAvatar {...args} {size} userName={`John Doe (${size})`} />
       {/each}
     </div>
     <br />
     <div class="row">
       {#each userAvatarModifiers.size as size (size)}
-        <UserAvatar
-          {...args}
-          modifiers={{ ...(args.modifiers || {}), size }}
-          userName={undefined}
-        />
+        <UserAvatar {...args} {size} userName={undefined} />
       {/each}
     </div>
   {/snippet}

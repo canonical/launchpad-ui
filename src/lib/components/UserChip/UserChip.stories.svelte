@@ -1,6 +1,5 @@
 <script module lang="ts">
   import { defineMeta } from "@storybook/addon-svelte-csf";
-  import { modifiersControl } from "$lib/modifiers";
   import { userAvatarModifiers } from "../UserAvatar";
   import UserChip from "./UserChip.svelte";
 
@@ -14,9 +13,6 @@
       userName: "John Doe",
       userAvatarUrl,
     },
-    argTypes: {
-      ...modifiersControl(userAvatarModifiers),
-    },
   });
 </script>
 
@@ -25,11 +21,7 @@
 <Story name="Sizes">
   {#snippet template(args)}
     {#each userAvatarModifiers.size as size (size)}
-      <UserChip
-        {...args}
-        userName={`John Doe (${size})`}
-        modifiers={{ ...(args.modifiers || {}), size }}
-      />
+      <UserChip {...args} userName={`John Doe (${size})`} {size} />
       <br /><br />
     {/each}
   {/snippet}
