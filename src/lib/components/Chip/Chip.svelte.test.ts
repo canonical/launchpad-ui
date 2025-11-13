@@ -80,7 +80,8 @@ describe("Chip component", () => {
       const page = render(Component, {
         value: "Styled Chip",
         class: "extra-class",
-        modifiers: { density: "dense", severity: "caution" },
+        density: "dense",
+        severity: "caution",
       });
 
       await expect.element(componentLocator(page)).toHaveClass("extra-class");
@@ -105,7 +106,7 @@ describe("Chip component", () => {
     it("should not render a button when readonly is provided", async () => {
       const page = render(Component, {
         value: "Readonly",
-        modifiers: { readMode: "readonly" },
+        readonly: true,
         onclick: () => {},
       });
 

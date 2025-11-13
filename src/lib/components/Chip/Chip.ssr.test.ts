@@ -75,7 +75,7 @@ describe("Chip SSR", () => {
         props: {
           ...baseProps,
           value: "Readonly Chip",
-          modifiers: { readMode: "readonly" },
+          readonly: true,
         },
       });
       expect(componentLocator(page)).toBeInstanceOf(

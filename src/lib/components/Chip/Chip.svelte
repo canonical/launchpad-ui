@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { modifiersValues } from "$lib/modifiers";
   import { Icon } from "../Icon";
   import type { ChipProps } from "./types.js";
 
@@ -7,7 +6,9 @@
 
   const {
     class: className,
-    modifiers,
+    density,
+    severity,
+    readonly,
     lead,
     value,
     icon,
@@ -18,17 +19,16 @@
   }: ChipProps = $props();
 
   const dismissible = $derived(ondismiss !== undefined);
-  const isClickable = $derived(onclick !== undefined);
-  const isReadonly = $derived(modifiers?.readMode === "readonly");
+  const clickable = $derived(onclick !== undefined);
 
   const rootElement = $derived(
-    dismissible || isReadonly || !isClickable ? "span" : "button",
+    dismissible || readonly || !clickable ? "span" : "button",
   );
 </script>
 
 <svelte:element
   this={rootElement}
-  class={[componentCssClassName, className, modifiersValues(modifiers)]}
+  class={[componentCssClassName, className, density, severity, { readonly }]}
   type={rootElement === "button" ? "button" : undefined}
   {onclick}
   data-testid="chip"
@@ -71,11 +71,13 @@
 ```svelte
 <Chip value="Value"/>
 <Chip lead="Lead" value="Value" />
-<Chip lead="Lead" value="Value" modifiers={{ severity: "caution" }} />
+<Chip lead="Lead" value="Value" severity="caution" />
 <Chip
   lead="Lead"
   value="Value"
-  modifiers={{ readMode: "readonly", density: "dense", severity: "caution" }}
+  readonly
+  density="dense"
+  severity="caution"
 />
 ```
 -->
