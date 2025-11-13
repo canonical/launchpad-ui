@@ -1,7 +1,7 @@
 import type { MODIFIER_FAMILIES } from "./constants.js";
 
 type ModifierFamilyKey = keyof typeof MODIFIER_FAMILIES;
-type ModifierValues = {
+export type ModifierFamilyValues = {
   [K in ModifierFamilyKey]?: (typeof MODIFIER_FAMILIES)[K][number] | undefined;
 };
 
@@ -25,4 +25,4 @@ type ModifierValues = {
  * ```
  */
 export type ModifierFamily<T extends ModifierFamilyKey | ModifierFamilyKey[]> =
-  Pick<ModifierValues, T extends ModifierFamilyKey[] ? T[number] : T>;
+  Pick<ModifierFamilyValues, T extends ModifierFamilyKey[] ? T[number] : T>;

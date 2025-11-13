@@ -239,10 +239,8 @@
       {/snippet}
       {#snippet footer()}
         <Combobox.Footer>
-          <Button modifiers={{ severity: "base", density: "dense" }}>
-            Cancel
-          </Button>
-          <Button modifiers={{ density: "dense" }}>Save</Button>
+          <Button severity="base" density="dense">Cancel</Button>
+          <Button density="dense">Save</Button>
         </Combobox.Footer>
       {/snippet}
     </Combobox>
@@ -330,10 +328,8 @@
       {/snippet}
       {#snippet footer()}
         <Combobox.Footer>
-          <Button modifiers={{ severity: "base", density: "dense" }}>
-            Cancel
-          </Button>
-          <Button modifiers={{ density: "dense" }}>Save</Button>
+          <Button severity="base" density="dense">Cancel</Button>
+          <Button density="dense">Save</Button>
         </Combobox.Footer>
       {/snippet}
     </Combobox>
@@ -428,15 +424,10 @@
             {/snippet}
             {#snippet footer()}
               <Combobox.Footer>
-                <Button
-                  {popovertarget}
-                  modifiers={{ severity: "base", density: "dense" }}
-                >
+                <Button {popovertarget} severity="base" density="dense">
                   Cancel
                 </Button>
-                <Button {popovertarget} modifiers={{ density: "dense" }}
-                  >Save</Button
-                >
+                <Button {popovertarget} density="dense">Save</Button>
               </Combobox.Footer>
             {/snippet}
           </Combobox>

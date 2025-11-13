@@ -2,12 +2,11 @@
 
 import type { Snippet } from "svelte";
 import type { SvelteHTMLElements } from "svelte/elements";
-import type { ModifiedBy } from "$lib/modifiers";
-import type { ButtonModifiers } from "./modifiers";
+import type { ModifierFamilyValues } from "$lib/modifier-families";
 
 type BaseProps = SvelteHTMLElements["button"];
 
-export interface ButtonProps extends ModifiedBy<ButtonModifiers>, BaseProps {
+export interface ButtonProps extends BaseProps {
   /**
    * The ref of the button.
    *
@@ -17,4 +16,6 @@ export interface ButtonProps extends ModifiedBy<ButtonModifiers>, BaseProps {
   iconLeft?: Snippet;
   iconRight?: Snippet;
   loading?: boolean;
+  severity?: ModifierFamilyValues["severity"] | "base" | "brand";
+  density?: ModifierFamilyValues["density"];
 }

@@ -22,10 +22,10 @@
 ## Example Usage
 ```svelte
 <Combobox.Footer>
-  <Button modifiers={{ severity: "base", density: "dense" }}>
+  <Button severity="base" density="dense">
     Cancel
   </Button>
-  <Button modifiers={{ density: "dense" }}>Save</Button>
+  <Button density="dense">Save</Button>
 </Combobox.Footer>
 ```
 -->

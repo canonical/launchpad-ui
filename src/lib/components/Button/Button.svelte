@@ -3,7 +3,6 @@
 <script lang="ts">
   import { Spinner } from "$lib/components/Spinner/index.js";
   import { ButtonPrimitive } from "$lib/components/common/index.js";
-  import { modifiersValues } from "$lib/modifiers";
   import { Content } from "./common";
   import type { ButtonProps } from "./types.js";
 
@@ -12,7 +11,8 @@
   let {
     class: className,
     ref = $bindable(),
-    modifiers,
+    severity,
+    density,
     children,
     iconLeft,
     iconRight,
@@ -30,7 +30,8 @@
   class={[
     componentCssClassName,
     className,
-    modifiersValues(modifiers),
+    severity,
+    density,
     { loading, "explicit-disabled": disabled },
   ]}
   disabled={isDisabled}
@@ -51,7 +52,7 @@
 
 ## Example Usage
 ```svelte
-<Button modifiers={{ density: "dense", severity: "brand" }}>
+<Button density="dense" severity="brand">
   {#snippet iconLeft()}
     <Icon name="check" />
   {/snippet}

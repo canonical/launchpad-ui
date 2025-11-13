@@ -14,6 +14,6 @@
 <Story name="Default" asChild>
   <ModalContent.Footer>
     <Button>Cancel</Button>
-    <Button modifiers={{ severity: "positive" }}>Save</Button>
+    <Button severity="positive">Save</Button>
   </ModalContent.Footer>
 </Story>
