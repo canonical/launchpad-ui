@@ -1,18 +1,14 @@
 <!-- @canonical/generator-ds 0.10.0-experimental.4 -->
 
 <script lang="ts">
-  import { modifiersValues } from "$lib/modifiers/utils.js";
   import type { LinkProps } from "./types.js";
 
   const componentCssClassName = "ds link";
 
-  let { class: className, children, modifiers, ...rest }: LinkProps = $props();
+  let { class: className, children, appearance, ...rest }: LinkProps = $props();
 </script>
 
-<a
-  class={[componentCssClassName, modifiersValues(modifiers), className]}
-  {...rest}
->
+<a class={[componentCssClassName, className, appearance]} {...rest}>
   {@render children?.()}
 </a>
 
