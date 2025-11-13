@@ -8,7 +8,6 @@
 </script>
 
 <script lang="ts">
-  import { modifiersValues } from "$lib/modifiers";
   import type { BadgeProps } from "./types.js";
 
   const componentCssClassName = "ds badge";
@@ -17,7 +16,7 @@
     class: className,
     value,
     variant = "capped",
-    modifiers,
+    severity,
     ...rest
   }: BadgeProps = $props();
 
@@ -33,7 +32,7 @@
 </script>
 
 <span
-  class={[componentCssClassName, className, modifiersValues(modifiers)]}
+  class={[componentCssClassName, className, severity]}
   data-testid="badge"
   {...rest}
 >
@@ -45,7 +44,7 @@
 
 ## Example Usage
 ```svelte
-<Badge value={42} modifiers={{ severity: "caution" }} />
+<Badge value={42} severity="caution" />
 <Badge value={2351} variant="rounded" />
 ```
 -->

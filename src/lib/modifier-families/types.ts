@@ -2,7 +2,7 @@ import type { MODIFIER_FAMILIES } from "./constants.js";
 
 type ModifierFamilyKey = keyof typeof MODIFIER_FAMILIES;
 type ModifierValues = {
-  [K in ModifierFamilyKey]: (typeof MODIFIER_FAMILIES)[K][number];
+  [K in ModifierFamilyKey]?: (typeof MODIFIER_FAMILIES)[K][number] | undefined;
 };
 
 /**
