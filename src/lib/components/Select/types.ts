@@ -1,14 +1,11 @@
 /* @canonical/generator-ds 0.10.0-experimental.3 */
 
 import type { HTMLSelectAttributes } from "svelte/elements";
-import type { ModifiedBy } from "$lib/modifiers";
-import type { SelectInputModifiers } from "./modifiers";
+import type { ModifierFamily } from "$lib/modifier-families";
 
 type BaseProps = Omit<HTMLSelectAttributes, "value">;
 
-export interface SelectProps
-  extends BaseProps,
-    ModifiedBy<SelectInputModifiers> {
+export interface SelectProps extends BaseProps, ModifierFamily<"severity"> {
   /**
    * The value of the select.
    *
@@ -21,4 +18,5 @@ export interface SelectProps
    * @bindable
    */
   ref?: HTMLSelectElement;
+  density?: "dense" | "medium";
 }

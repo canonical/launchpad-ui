@@ -1,7 +1,6 @@
 <!-- @canonical/generator-ds 0.10.0-experimental.3 -->
 
 <script lang="ts">
-  import { modifiersValues } from "$lib/modifiers/utils.js";
   import { Icon } from "../Icon/index.js";
   import type { SelectProps } from "./types.js";
 
@@ -12,13 +11,14 @@
     ref = $bindable(),
     value = $bindable(),
     children,
-    modifiers,
+    severity,
+    density,
     ...rest
   }: SelectProps = $props();
 </script>
 
 <div
-  class={[componentCssClassName, className, modifiersValues(modifiers)]}
+  class={[componentCssClassName, className, severity, density]}
   data-testid="select"
 >
   <select bind:value bind:this={ref} {...rest}>

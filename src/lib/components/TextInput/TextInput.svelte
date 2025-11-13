@@ -2,7 +2,6 @@
 
 <script lang="ts">
   import { TextInputPrimitive } from "$lib/components/common/index.js";
-  import { modifiersValues } from "$lib/modifiers/utils.js";
   import type { TextInputProps } from "./types.js";
 
   const componentCssClassName = "ds text-input";
@@ -10,14 +9,15 @@
   let {
     class: className,
     type = "text",
-    modifiers,
+    severity,
+    density,
     value = $bindable(),
     ...rest
   }: TextInputProps = $props();
 </script>
 
 <TextInputPrimitive
-  class={[componentCssClassName, className, modifiersValues(modifiers)]}
+  class={[componentCssClassName, className, severity, density]}
   {type}
   bind:value
   {...rest}
