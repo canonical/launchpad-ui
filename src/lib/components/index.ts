@@ -11,7 +11,6 @@ export * from "./IconText/index.js";
 export * from "./Link/index.js";
 export * from "./Modal/index.js";
 export * from "./ModalContent/index.js";
-export * from "./MulticolorIcon/index.js";
 export * from "./Popover/index.js";
 export * from "./Radio/index.js";
 export * from "./SearchBox/index.js";
