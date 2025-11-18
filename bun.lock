@@ -4,6 +4,7 @@
     "": {
       "name": "launchpad-ui",
       "dependencies": {
+        "@canonical/ds-assets": "^0.10.0-experimental.5",
         "@canonical/launchpad-design-tokens": "^1.0.20",
         "@floating-ui/dom": "^1.7.4",
         "markdown-actions": "^1.1.2",
@@ -62,6 +63,8 @@
     "@babel/helper-validator-identifier": ["@babel/helper-validator-identifier@7.27.1", "", {}, "sha512-D2hP9eA+Sqx1kBZgzxZh0y1trbuU+JoDkiEwqhQ36nodYqJwyEIhPSdMNd7lOm/4io72luTPWH20Yda0xOuUow=="],
 
     "@babel/runtime": ["@babel/runtime@7.27.6", "", {}, "sha512-vbavdySgbTTrmFE+EsiqUTzlOr5bzlnJtUv9PynGCAKvfQqjIXbvFdumPM/GxMDfyuGMJaJAU6TO4zc1Jf1i8Q=="],
+
+    "@canonical/ds-assets": ["@canonical/ds-assets@0.10.0-experimental.5", "", {}, "sha512-d8QvlP5v+YcuxZz03JmFzzMT2v3tLNU8zeQWr+OgrqT+vHlSuPo0aueJ3dlF+Y8khJuRnhwzTLFGhG8aRHAQbQ=="],
 
     "@canonical/launchpad-design-tokens": ["@canonical/launchpad-design-tokens@1.0.20", "", {}, "sha512-NtpswanM70SCV/m8Ju9RBDofQaDURF1uBoFrqcZwD+6Kt/gEG+wYCCVmXU1ZZfGZNhcJtboOGfh1crsWZbml3A=="],
 
