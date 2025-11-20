@@ -9,19 +9,15 @@
 
   let {
     class: className,
-    modifiers: modifiersProp,
+    severity: _severity,
     ...rest
   }: CloseButtonProps = $props();
-  const modifiers = $derived({
-    severity: "base",
-    ...modifiersProp,
-  } as const);
 </script>
 
 <Button
   class={[componentCssClassName, className]}
-  {modifiers}
   aria-label="Close"
+  severity="base"
   {...rest}
 >
   {#snippet iconLeft()}

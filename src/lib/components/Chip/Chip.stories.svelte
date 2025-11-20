@@ -3,17 +3,13 @@
   import { fn } from "storybook/test";
   import { Badge } from "$lib/components/Badge/index.js";
   import { Icon } from "$lib/components/Icon/index.js";
-  import { SEMANTIC_MODIFIERS, modifiersControl } from "$lib/modifiers";
+  import { SEMANTIC_MODIFIERS } from "$lib/modifiers";
   import Chip from "./Chip.svelte";
-  import { chipModifiers } from "./modifiers";
 
   const { Story } = defineMeta({
     title: "Components/Chip",
     tags: ["autodocs"],
     component: Chip,
-    argTypes: {
-      ...modifiersControl(chipModifiers),
-    },
   });
 </script>
 
@@ -32,7 +28,7 @@
         {...args}
         lead="Severity"
         value={severity}
-        modifiers={{ ...(args.modifiers || {}), severity }}
+        {severity}
         onclick={fn()}
       />
       <br />
@@ -46,7 +42,7 @@
   args={{
     lead: "Lead",
     value: "Value",
-    modifiers: { severity: "caution" },
+    severity: "caution",
   }}
 >
   {#snippet template(args)}
@@ -90,11 +86,8 @@
         {...args}
         lead="Severity"
         value={severity || "default"}
-        modifiers={{
-          ...(args.modifiers || {}),
-          readMode: "readonly",
-          severity,
-        }}
+        readonly
+        {severity}
       >
         {#snippet badge()}
           <Badge value={420} />

@@ -1,15 +1,14 @@
 /* @canonical/generator-ds 0.10.0-experimental.0 */
 
 import type { SvelteHTMLElements } from "svelte/elements";
-import type { ModifiedBy } from "$lib/modifiers";
+import type { ModifierFamily } from "$lib/modifier-families";
 import type { WithoutChildren } from "$lib/type-utils.js";
-import type { BadgeModifiers } from "./modifiers.js";
 
 type BaseProps = SvelteHTMLElements["span"];
 
 export interface BadgeProps
   extends WithoutChildren<BaseProps>,
-    ModifiedBy<BadgeModifiers> {
+    ModifierFamily<"severity"> {
   /**
    * The non-negative integer value displayed within the badge. Negative values will be clamped to 0. Floats will be rounded.
    */

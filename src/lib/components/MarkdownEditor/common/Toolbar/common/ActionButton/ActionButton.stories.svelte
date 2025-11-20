@@ -1,8 +1,6 @@
 <script module lang="ts">
   import { defineMeta } from "@storybook/addon-svelte-csf";
-  import { buttonModifiers } from "$lib/components/Button/modifiers/index.js";
   import { Icon } from "$lib/components/index.js";
-  import { modifiersControl } from "$lib/modifiers/storybook.js";
   import { MarkdownEditor } from "../../../../index.js";
 
   const { Story } = defineMeta({
@@ -30,7 +28,6 @@
       children: {
         control: false,
       },
-      ...modifiersControl(buttonModifiers),
     },
   });
 </script>

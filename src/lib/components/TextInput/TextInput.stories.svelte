@@ -1,8 +1,6 @@
 <script module lang="ts">
   import { defineMeta } from "@storybook/addon-svelte-csf";
-  import { modifiersControl } from "$lib/modifiers/index.js";
   import TextInput from "./TextInput.svelte";
-  import { textInputModifiers } from "./modifiers.js";
 
   const { Story } = defineMeta({
     title: "Components/TextInput",
@@ -24,7 +22,6 @@
           category: "properties",
         },
       },
-      ...modifiersControl(textInputModifiers),
     },
     args: {
       placeholder: "Enter text...",
@@ -40,8 +37,6 @@
     "positive",
   ] as const;
 
-  const densities = [undefined, "dense"] as const;
-
   let value = $state("Hello world");
 </script>
 
@@ -55,11 +50,7 @@
       style="display: flex; flex-direction: column; gap: 0.5rem; align-items: flex-start;"
     >
       {#each severityModifiers as severity (severity)}
-        <TextInput
-          {...args}
-          modifiers={{ ...(args.modifiers || {}), severity }}
-          placeholder={severity || "default"}
-        />
+        <TextInput {...args} {severity} placeholder={severity || "default"} />
       {/each}
     </div>
   {/snippet}
@@ -70,12 +61,8 @@
     <div
       style="display: flex; flex-direction: column; gap: 0.5rem; align-items: flex-start;"
     >
-      {#each densities as density (density)}
-        <TextInput
-          {...args}
-          modifiers={{ ...(args.modifiers || {}), density }}
-          placeholder={density || "default"}
-        />
+      {#each ["dense", "medium"] as const as density (density)}
+        <TextInput {...args} {density} placeholder={density} />
       {/each}
     </div>
   {/snippet}

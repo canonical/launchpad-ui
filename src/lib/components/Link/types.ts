@@ -1,9 +1,10 @@
 /* @canonical/generator-ds 0.10.0-experimental.4 */
 
 import type { HTMLAnchorAttributes } from "svelte/elements";
-import type { ModifiedBy } from "$lib/modifiers/index.js";
-import type { LinkModifiers } from "./modifiers/index.js";
 
-export interface LinkProps
-  extends HTMLAnchorAttributes,
-    ModifiedBy<LinkModifiers> {}
+export interface LinkProps extends HTMLAnchorAttributes {
+  /**
+   * Whether the link should be styled as a soft link.
+   */
+  soft?: boolean;
+}

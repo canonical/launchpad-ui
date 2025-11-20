@@ -22,7 +22,7 @@
     </ModalContent.Body>
     <ModalContent.Footer>
       <Button>Keep review</Button>
-      <Button modifiers={{ severity: "negative" }}>Discard review</Button>
+      <Button severity="negative">Discard review</Button>
     </ModalContent.Footer>
   </ModalContent>
 </Story>

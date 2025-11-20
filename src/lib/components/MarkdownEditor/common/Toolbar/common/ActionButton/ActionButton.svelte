@@ -16,7 +16,6 @@
     onfocus: onfocusProp,
     children,
     shortcut,
-    modifiers,
     label,
     ...rest
   }: ActionButtonProps = $props();
@@ -59,7 +58,8 @@
       bind:ref={actionElement}
       class={[componentCssClassName, className]}
       tabindex={isInTabOrder ? 0 : -1}
-      modifiers={{ density: "dense", severity: "base", ...(modifiers || {}) }}
+      density="dense"
+      severity="base"
       {onfocus}
       {disabled}
       aria-keyshortcuts={shortcut?.toAriaLabel()}

@@ -109,7 +109,7 @@ describe("UserChip SSR", () => {
         props: {
           ...baseProps,
           userName: "John Doe",
-          modifiers: { size: "small" },
+          size: "small",
         },
       });
       const element = componentLocator(page);

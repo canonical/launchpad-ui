@@ -19,14 +19,12 @@
         description: "Whether the button is disabled",
         type: { name: "boolean", required: false },
       },
-      ...modifiersControl(buttonModifiers),
     },
   });
 </script>
 
 <script lang="ts">
-  import { SEMANTIC_MODIFIERS, modifiersControl } from "$lib/modifiers";
-  import { buttonModifiers } from "./modifiers";
+  import { SEMANTIC_MODIFIERS } from "$lib/modifiers";
 
   const severityModifiers = [
     "base",
@@ -50,7 +48,7 @@
   {#snippet template(args)}
     <div class="row">
       {#each severityModifiers as severity (severity)}
-        <Button {...args} modifiers={{ ...(args.modifiers || {}), severity }}>
+        <Button {...args} {severity}>
           {severity || "default"}
         </Button>
       {/each}
@@ -62,25 +60,18 @@
   {#snippet template(args)}
     {#each [undefined, ...SEMANTIC_MODIFIERS.density] as density (density)}
       <div class="row">
-        <Button
-          {...args}
-          modifiers={{
-            ...(args.modifiers || {}),
-            density,
-            severity: "positive",
-          }}
-        >
+        <Button {...args} {density} severity="positive">
           {#snippet iconLeft()}
             <Icon name="success-filled" />
           {/snippet}
         </Button>
-        <Button {...args} modifiers={{ ...(args.modifiers || {}), density }}>
+        <Button {...args} {density}>
           Icon before text
           {#snippet iconLeft()}
             <Icon name="plus" />
           {/snippet}
         </Button>
-        <Button {...args} modifiers={{ ...(args.modifiers || {}), density }}>
+        <Button {...args} {density}>
           {density || "default"} icon after
           {#snippet iconRight()}
             <Icon name="success-filled" />
@@ -97,11 +88,8 @@
   {#snippet template(args)}
     <div class="row">
       {#each severityModifiers as severity (severity)}
-        <Button
-          {...args}
-          modifiers={{ ...(args.modifiers || {}), severity }}
-          onclick={toggleLoading}
-          {loading}>{severity || "default"}</Button
+        <Button {...args} {severity} onclick={toggleLoading} {loading}
+          >{severity || "default"}</Button
         >
       {/each}
       <Button {...args} loading>Default</Button>
@@ -138,10 +126,7 @@
 
 <Story name="Icon only">
   {#snippet template(args)}
-    <Button
-      {...args}
-      modifiers={{ ...(args.modifiers || {}), severity: "positive" }}
-    >
+    <Button {...args} severity="positive">
       {#snippet iconLeft()}
         <Icon name="fork" />
       {/snippet}

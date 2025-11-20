@@ -1,8 +1,7 @@
 /* @canonical/generator-ds 0.9.1-experimental.0 */
 import type { Snippet } from "svelte";
 import type { HTMLAttributes } from "svelte/elements";
-import type { ModifiedBy } from "$lib/modifiers";
-import type { ChipModifiers } from "./modifiers";
+import type { ModifierFamily } from "$lib/modifier-families";
 
 /** Either the chip can be clicked or the dismiss button can be clicked.
  * We cannot have both click and dismiss events at the same time.
@@ -16,7 +15,7 @@ type ChipClickOptions = {
 
 export interface ChipProps
   extends Omit<HTMLAttributes<HTMLElement>, "onclick" | "children">,
-    ModifiedBy<ChipModifiers>,
+    ModifierFamily<["density", "severity"]>,
     ChipClickOptions {
   /** The value of the chip */
   value: string;
@@ -33,4 +32,7 @@ export interface ChipProps
 
   /** The badge to be displayed on the Chip */
   badge?: Snippet | undefined | null;
+
+  /** Whether the Chip is read-only */
+  readonly?: boolean;
 }

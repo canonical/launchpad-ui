@@ -13,7 +13,7 @@
 
 <Story name="Default" asChild>
   <Combobox.Footer>
-    <Button modifiers={{ severity: "base", density: "dense" }}>Cancel</Button>
-    <Button modifiers={{ density: "dense" }}>Save</Button>
+    <Button severity="base" density="dense">Cancel</Button>
+    <Button density="dense">Save</Button>
   </Combobox.Footer>
 </Story>

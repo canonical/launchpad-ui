@@ -129,7 +129,7 @@ describe("UserAvatar component", () => {
     it.each(sizeModifiers)("applies %s modifier", async (size) => {
       const page = render(Component, {
         ...baseProps,
-        modifiers: { size },
+        size,
       });
       const element = page.getByTestId("user-avatar");
       const classList = element.element().classList;

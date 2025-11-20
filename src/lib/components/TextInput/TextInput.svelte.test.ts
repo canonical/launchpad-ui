@@ -3,10 +3,9 @@
 import type { Locator } from "@vitest/browser/context";
 import type { ComponentProps } from "svelte";
 import { describe, expect, it } from "vitest";
-import { render } from "vitest-browser-svelte";
 import type { RenderResult } from "vitest-browser-svelte";
+import { render } from "vitest-browser-svelte";
 import Component from "./TextInput.svelte";
-import { textInputModifiers } from "./modifiers.js";
 
 describe("TextInput component", () => {
   const baseProps = {} satisfies ComponentProps<typeof Component>;
@@ -132,30 +131,6 @@ describe("TextInput component", () => {
       await input.fill("12345");
       await expect.element(input).toBeValid();
     });
-  });
-
-  describe("Modifiers", () => {
-    it.each(textInputModifiers["severity"])(
-      "applies %s severity modifier",
-      async (modifier) => {
-        const page = render(Component, {
-          ...baseProps,
-          modifiers: { severity: modifier },
-        });
-        await expect.element(componentLocator(page)).toHaveClass(modifier);
-      },
-    );
-
-    it.each(textInputModifiers["density"])(
-      "applies %s density modifier",
-      async (modifier) => {
-        const page = render(Component, {
-          ...baseProps,
-          modifiers: { density: modifier },
-        });
-        await expect.element(componentLocator(page)).toHaveClass(modifier);
-      },
-    );
   });
 });
 

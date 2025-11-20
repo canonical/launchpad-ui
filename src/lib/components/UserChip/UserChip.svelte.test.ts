@@ -94,7 +94,7 @@ describe("UserChip component", () => {
       const { container } = render(Component, {
         ...baseProps,
         userName: "John Doe",
-        modifiers: { size },
+        size,
       });
       const chip = container.querySelector(".ds.user-chip");
 

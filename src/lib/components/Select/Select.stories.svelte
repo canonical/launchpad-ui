@@ -1,8 +1,6 @@
 <script module lang="ts">
   import { defineMeta } from "@storybook/addon-svelte-csf";
-  import { modifiersControl } from "$lib/modifiers";
   import Select from "./Select.svelte";
-  import { selectInputModifiers } from "./modifiers";
 
   const { Story } = defineMeta({
     title: "Components/Select",
@@ -40,7 +38,6 @@
           category: "properties",
         },
       },
-      ...modifiersControl(selectInputModifiers),
     },
   });
 
