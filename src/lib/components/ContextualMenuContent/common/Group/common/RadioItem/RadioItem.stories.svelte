@@ -56,7 +56,7 @@
   {#snippet template(args)}
     <RadioItem {...args}>
       {#snippet icon()}
-        <Icon name="edit" />
+        <Edit />
       {/snippet}
     </RadioItem>
   {/snippet}
@@ -72,7 +72,7 @@
   {#snippet template(args)}
     <RadioItem {...args}>
       {#snippet icon()}
-        <Icon name="edit" />
+        <Edit />
       {/snippet}
     </RadioItem>
   {/snippet}
@@ -89,7 +89,7 @@
   {#snippet template(args)}
     <RadioItem {...args}>
       {#snippet icon()}
-        <Icon name="edit" />
+        <Edit />
       {/snippet}
     </RadioItem>
   {/snippet}

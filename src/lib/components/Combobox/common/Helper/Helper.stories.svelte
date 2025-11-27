@@ -32,7 +32,7 @@
   {#snippet template({ children: _, ...args })}
     <Combobox.Helper {...args}>
       {#snippet icon()}
-        <Icon name="information" />
+        <Information />
       {/snippet}
       Helper text
     </Combobox.Helper>

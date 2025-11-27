@@ -41,7 +41,7 @@
   {#snippet template(args)}
     <Combobox.RadioOption {...args}>
       {#snippet icon()}
-        <Icon name="edit" />
+        <Edit />
       {/snippet}
     </Combobox.RadioOption>
   {/snippet}
@@ -57,7 +57,7 @@
   {#snippet template(args)}
     <Combobox.RadioOption {...args}>
       {#snippet icon()}
-        <Icon name="edit" />
+        <Edit />
       {/snippet}
     </Combobox.RadioOption>
   {/snippet}

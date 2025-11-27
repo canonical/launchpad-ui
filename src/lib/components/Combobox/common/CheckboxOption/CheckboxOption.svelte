@@ -69,7 +69,7 @@
 <Combobox.CheckboxOption text="Option 2" secondaryText="Additional info" onchange={handleChange} />
 <Combobox.CheckboxOption text="Option 3" >
   {#snippet icon()}
-    <Icon name="check" />
+    <Check />
   {/snippet}
 </Combobox.CheckboxOption>
 ```

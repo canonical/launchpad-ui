@@ -63,7 +63,7 @@ The following Contextual Menu example can be assembled using:
         {#snippet helper(id)}
           <ContextualMenuContent.Helper {id}>
             {#snippet icon()}
-              <Icon name="information" />
+              <Information />
             {/snippet}
             Use the options above to customize the view
           </ContextualMenuContent.Helper>

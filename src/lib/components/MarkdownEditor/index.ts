@@ -36,7 +36,7 @@ const MarkdownEditor = MarkdownEditorRoot as typeof MarkdownEditorRoot & {
    *  <MarkdownEditor.Header>
    *    <MarkdownEditor.Toolbar>
    *      <MarkdownEditor.Toolbar.ActionButton label="Bold">
-   *         <Icon name="bold" />
+   *        <Bold />
    *      </MarkdownEditor.Toolbar.ActionButton>
    *    </MarkdownEditor.Toolbar>
    *    {#snippet controls()}
@@ -59,7 +59,7 @@ const MarkdownEditor = MarkdownEditorRoot as typeof MarkdownEditorRoot & {
    *  <MarkdownEditor.Header>
    *    <MarkdownEditor.Toolbar>
    *      <MarkdownEditor.Toolbar.ActionButton label="Bold">
-   *        <Icon name="bold" />
+   *        <Bold />
    *      </MarkdownEditor.Toolbar.ActionButton>
    *    </MarkdownEditor.Toolbar>
    *    <MarkdownEditor.Controls>

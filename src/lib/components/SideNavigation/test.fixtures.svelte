@@ -26,7 +26,7 @@
   <ButtonItem>
     Button in nav
     {#snippet icon()}
-      <Icon name="settings" />
+      <Settings />
     {/snippet}
   </ButtonItem>
 {/snippet}

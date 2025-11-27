@@ -46,7 +46,7 @@
   {#snippet template(args)}
     <CheckboxItem {...args}>
       {#snippet icon()}
-        <Icon name="edit" />
+        <Edit />
       {/snippet}
     </CheckboxItem>
   {/snippet}
@@ -62,7 +62,7 @@
   {#snippet template(args)}
     <CheckboxItem {...args}>
       {#snippet icon()}
-        <Icon name="edit" />
+        <Edit />
       {/snippet}
     </CheckboxItem>
   {/snippet}
@@ -79,7 +79,7 @@
   {#snippet template(args)}
     <CheckboxItem {...args}>
       {#snippet icon()}
-        <Icon name="edit" />
+        <Edit />
       {/snippet}
     </CheckboxItem>
   {/snippet}

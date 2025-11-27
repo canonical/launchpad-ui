@@ -1,4 +1,5 @@
 <script module lang="ts">
+  import { Edit } from "@canonical/svelte-icons";
   import { defineMeta } from "@storybook/addon-svelte-csf";
   import { Icon } from "$lib/components/Icon/index.js";
   import { Combobox } from "../../../index.js";
@@ -41,7 +42,7 @@
   {#snippet template(args)}
     <Combobox.CheckboxOption {...args}>
       {#snippet icon()}
-        <Icon name="edit" />
+        <Edit />
       {/snippet}
     </Combobox.CheckboxOption>
   {/snippet}
@@ -57,7 +58,7 @@
   {#snippet template(args)}
     <Combobox.CheckboxOption {...args}>
       {#snippet icon()}
-        <Icon name="edit" />
+        <Edit />
       {/snippet}
     </Combobox.CheckboxOption>
   {/snippet}

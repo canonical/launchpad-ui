@@ -35,7 +35,7 @@
 ```svelte
 <IconText modifiers={{ size: "small", approval: "approved" }}>
   {#snippet icon()}
-    <Icon name="success" />
+    <Success />
   {/snippet}
   Approved
 </IconText>

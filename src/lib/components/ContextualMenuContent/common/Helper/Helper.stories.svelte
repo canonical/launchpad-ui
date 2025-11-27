@@ -26,7 +26,7 @@
   {#snippet template({ children, ...args })}
     <ContextualMenuContent.Helper {...args}>
       {#snippet icon()}
-        <Icon name="information" />
+        <Information />
       {/snippet}
       Helper text
     </ContextualMenuContent.Helper>

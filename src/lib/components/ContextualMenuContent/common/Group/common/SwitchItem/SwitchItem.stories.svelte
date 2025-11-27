@@ -49,7 +49,7 @@
   {#snippet template(args)}
     <SwitchItem {...args}>
       {#snippet icon()}
-        <Icon name="edit" />
+        <Edit />
       {/snippet}
     </SwitchItem>
   {/snippet}
@@ -66,7 +66,7 @@
   {#snippet template(args)}
     <SwitchItem {...args}>
       {#snippet icon()}
-        <Icon name="edit" />
+        <Edit />
       {/snippet}
     </SwitchItem>
   {/snippet}
@@ -84,7 +84,7 @@
   {#snippet template(args)}
     <SwitchItem {...args}>
       {#snippet icon()}
-        <Icon name="edit" />
+        <Edit />
       {/snippet}
     </SwitchItem>
   {/snippet}

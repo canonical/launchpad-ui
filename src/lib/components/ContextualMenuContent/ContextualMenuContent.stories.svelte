@@ -45,7 +45,7 @@
         text="Wrap overflowing code lines"
       >
         {#snippet icon()}
-          <Icon name="back-to-top" />
+          <BackToTop />
         {/snippet}
       </ContextualMenuContent.CheckboxItem>
     </ContextualMenuContent.Group>
@@ -58,7 +58,7 @@
         secondaryText="They are loud!"
       >
         {#snippet icon()}
-          <Icon name="notifications" />
+          <Notifications />
         {/snippet}
       </ContextualMenuContent.SwitchItem>
       <ContextualMenuContent.SwitchItem
@@ -67,7 +67,7 @@
         text="Auto-save changes"
       >
         {#snippet icon()}
-          <Icon name="archive" />
+          <Archive />
         {/snippet}
       </ContextualMenuContent.SwitchItem>
       <ContextualMenuContent.SwitchItem
@@ -76,7 +76,7 @@
         trailingText="(beta)"
       >
         {#snippet icon()}
-          <Icon name="settings" />
+          <Settings />
         {/snippet}
       </ContextualMenuContent.SwitchItem>
     </ContextualMenuContent.Group>
@@ -88,7 +88,7 @@
         text="View in Launchpad Classic"
       >
         {#snippet icon()}
-          <Icon name="external-link" />
+          <ExternalLink />
         {/snippet}
       </ContextualMenuContent.LinkItem>
       <ContextualMenuContent.LinkItem
@@ -108,7 +108,7 @@
       <ContextualMenuContent.Helper {id}>
         Use the options above to customize the view
         {#snippet icon()}
-          <Icon name="information" />
+          <Information />
         {/snippet}
       </ContextualMenuContent.Helper>
     {/snippet}

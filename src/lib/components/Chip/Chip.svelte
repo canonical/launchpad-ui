@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Icon } from "../Icon";
+  import { Close } from "@canonical/svelte-icons";
   import type { ChipProps } from "./types.js";
 
   const componentCssClassName = "ds chip";
@@ -59,7 +59,7 @@
       aria-label="Dismiss"
       type="button"
     >
-      <Icon name="close" />
+      <Close />
     </button>
   {/if}
 </svelte:element>

@@ -38,7 +38,7 @@
   {#snippet template(args)}
     <ButtonItem {...args}>
       {#snippet icon()}
-        <Icon name="edit" />
+        <Edit />
       {/snippet}
     </ButtonItem>
   {/snippet}
@@ -54,7 +54,7 @@
   {#snippet template(args)}
     <ButtonItem {...args}>
       {#snippet icon()}
-        <Icon name="edit" />
+        <Edit />
       {/snippet}
     </ButtonItem>
   {/snippet}
@@ -71,7 +71,7 @@
   {#snippet template(args)}
     <ButtonItem {...args}>
       {#snippet icon()}
-        <Icon name="edit" />
+        <Edit />
       {/snippet}
     </ButtonItem>
   {/snippet}
