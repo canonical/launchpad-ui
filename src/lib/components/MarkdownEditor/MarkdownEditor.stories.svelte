@@ -1,7 +1,14 @@
 <script module lang="ts">
+  import {
+    Fork,
+    Revisions,
+    SelectAdd,
+    StarredOff,
+  } from "@canonical/svelte-icons";
   import { defineMeta } from "@storybook/addon-svelte-csf";
+  import { BranchMerge, BranchMerged } from "$lib/components/icons/index.js";
   import Switch from "../Switch/Switch.svelte";
-  import { Button, Icon } from "../index.js";
+  import { Button } from "../index.js";
   import { MarkdownEditor } from "./index.js";
 
   const { Story } = defineMeta({
@@ -110,7 +117,7 @@
               label="Magic"
               onclick={() => insertText("wow what happened?!")}
             >
-              <Icon name="unstarred" />
+              <StarredOff />
             </MarkdownEditor.Toolbar.ActionButton>
           </MarkdownEditor.Toolbar.Group>
 
@@ -119,19 +126,19 @@
               onclick={() => insertText("merge branch")}
               label="Merge"
             >
-              <Icon name="branch-merge" />
+              <BranchMerge />
             </MarkdownEditor.Toolbar.ActionButton>
             <MarkdownEditor.Toolbar.ActionButton
               onclick={() => insertText("branch merged")}
               label="Merged"
             >
-              <Icon name="branch-merged" />
+              <BranchMerged />
             </MarkdownEditor.Toolbar.ActionButton>
             <MarkdownEditor.Toolbar.ActionButton
               onclick={() => insertText("fork repository")}
               label="Fork"
             >
-              <Icon name="fork" />
+              <Fork />
             </MarkdownEditor.Toolbar.ActionButton>
           </MarkdownEditor.Toolbar.Group>
         </MarkdownEditor.Toolbar>
@@ -152,14 +159,14 @@
           {#if !hideExistingActions}
             <MarkdownEditor.Toolbar.Group aria-label="Dynamic actions">
               <MarkdownEditor.Toolbar.ActionButton label="Revisions">
-                <Icon name="revisions" />
+                <Revisions />
               </MarkdownEditor.Toolbar.ActionButton>
             </MarkdownEditor.Toolbar.Group>
           {/if}
           {#if showNewActions}
             <MarkdownEditor.Toolbar.Group aria-label="Dynamic actions">
               <MarkdownEditor.Toolbar.ActionButton label="Select Add">
-                <Icon name="select-add" />
+                <SelectAdd />
               </MarkdownEditor.Toolbar.ActionButton>
             </MarkdownEditor.Toolbar.Group>
           {/if}
@@ -194,7 +201,7 @@
               disabled={disableDynamicActions}
               label="Revisions"
             >
-              <Icon name="revisions" />
+              <Revisions />
             </MarkdownEditor.Toolbar.ActionButton>
           </MarkdownEditor.Toolbar.Group>
         </MarkdownEditor.Toolbar>

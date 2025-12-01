@@ -1,6 +1,6 @@
 <script module lang="ts">
+  import { Edit } from "@canonical/svelte-icons";
   import { defineMeta } from "@storybook/addon-svelte-csf";
-  import { Icon } from "$lib/components/Icon/index.js";
   import LinkItem from "./LinkItem.svelte";
 
   const { Story } = defineMeta({
@@ -43,7 +43,7 @@
   {#snippet template(args)}
     <LinkItem {...args}>
       {#snippet icon()}
-        <Icon name="edit" />
+        <Edit />
       {/snippet}
     </LinkItem>
   {/snippet}
@@ -59,7 +59,7 @@
   {#snippet template(args)}
     <LinkItem {...args}>
       {#snippet icon()}
-        <Icon name="edit" />
+        <Edit />
       {/snippet}
     </LinkItem>
   {/snippet}
@@ -77,7 +77,7 @@
   {#snippet template(args)}
     <LinkItem {...args}>
       {#snippet icon()}
-        <Icon name="edit" />
+        <Edit />
       {/snippet}
     </LinkItem>
   {/snippet}

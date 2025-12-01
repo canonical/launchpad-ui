@@ -1,6 +1,6 @@
 <script module lang="ts">
+  import { Information } from "@canonical/svelte-icons";
   import { defineMeta } from "@storybook/addon-svelte-csf";
-  import { Icon } from "$lib/components/Icon/index.js";
   import { Combobox } from "../../index.js";
   import { Helper } from "./index.js";
 
@@ -32,7 +32,7 @@
   {#snippet template({ children: _, ...args })}
     <Combobox.Helper {...args}>
       {#snippet icon()}
-        <Icon name="information" />
+        <Information />
       {/snippet}
       Helper text
     </Combobox.Helper>

@@ -1,8 +1,16 @@
 <script module lang="ts">
+  import {
+    Home,
+    Link,
+    LogOut,
+    Mount,
+    Notifications,
+    Pods,
+    User,
+  } from "@canonical/svelte-icons";
   import { defineMeta } from "@storybook/addon-svelte-csf";
-  import { Icon } from "$lib/components/Icon/index.js";
+  import { ColorPalette } from "$lib/components/icons/index.js";
   import { cssControlledFade } from "$lib/transitions/cssControlledFade.js";
-  import { iconNames } from "../Icon/iconNames.js";
   import LaunchpadLogo from "../LaunchpadLogo.svelte";
   import LaunchpadLogoText from "../LaunchpadLogoText.svelte";
   import { SideNavigation } from "./index.js";
@@ -21,7 +29,7 @@
 
   let expandedState = $state(true);
 
-  const icons = Array.from(iconNames);
+  const icons = [Home, User, LogOut, Link, Notifications, Pods, Mount];
 </script>
 
 <Story name="Default">
@@ -64,18 +72,19 @@
         />
       {/snippet}
       {#each { length: 60 }, i (i)}
+        {@const Icon = icons[i % icons.length]}
         {#if i % 2}
           <SideNavigation.LinkItem href={`/item${i}`} selected={i === 1}>
             Link Item {i}
             {#snippet icon()}
-              <Icon name={icons[i % icons.length]} />
+              <Icon />
             {/snippet}
           </SideNavigation.LinkItem>
         {:else}
           <SideNavigation.ButtonItem>
             Button Item {i}
             {#snippet icon()}
-              <Icon name={icons[i % icons.length]} />
+              <Icon />
             {/snippet}
           </SideNavigation.ButtonItem>
         {/if}
@@ -83,19 +92,19 @@
       {#snippet footer()}
         <SideNavigation.ButtonItem>
           {#snippet icon()}
-            <Icon name="color-palette" />
+            <ColorPalette />
           {/snippet}
           Theme: Light
         </SideNavigation.ButtonItem>
         <SideNavigation.LinkItem href="/">
           {#snippet icon()}
-            <Icon name="user" />
+            <User />
           {/snippet}
           $username
         </SideNavigation.LinkItem>
         <SideNavigation.ButtonItem>
           {#snippet icon()}
-            <Icon name="log-out" />
+            <LogOut />
           {/snippet}
           Logout
         </SideNavigation.ButtonItem>

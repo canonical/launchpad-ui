@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Icon } from "../Icon";
+  import { Close } from "@canonical/svelte-icons";
   import type { ChipProps } from "./types.js";
 
   const componentCssClassName = "ds chip";
@@ -59,7 +59,7 @@
       aria-label="Dismiss"
       type="button"
     >
-      <Icon name="close" />
+      <Close class="dismiss-icon" />
     </button>
   {/if}
 </svelte:element>
@@ -184,7 +184,7 @@
       margin-left: var(--dimension-gap-inline-chip);
       border: var(--dimension-stroke-thickness-default) solid transparent;
 
-      :global(.ds.icon) {
+      :global(.dismiss-icon) {
         --dimension-size-icon: 100%;
       }
     }

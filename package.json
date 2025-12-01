@@ -65,9 +65,10 @@
     "markdown-actions@1.1.2": "patches/markdown-actions@1.1.2.patch"
   },
   "dependencies": {
-    "markdown-actions": "^1.1.2",
-    "normalize.css": "^8.0.1",
     "@canonical/launchpad-design-tokens": "^1.0.20",
-    "@floating-ui/dom": "^1.7.4"
+    "@canonical/svelte-icons": "^0.0.4",
+    "@floating-ui/dom": "^1.7.4",
+    "markdown-actions": "^1.1.2",
+    "normalize.css": "^8.0.1"
   }
 }

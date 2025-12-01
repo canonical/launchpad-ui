@@ -1,6 +1,8 @@
 <script module lang="ts">
+  import { Settings } from "@canonical/svelte-icons";
   import { defineMeta } from "@storybook/addon-svelte-csf";
   import { DateTime } from "$lib/components/DateTime/index.js";
+  import { Flag, Text } from "$lib/components/icons/index.js";
   import { Timeline } from "./index.js";
 
   const { Story } = defineMeta({
@@ -31,7 +33,7 @@
       {/snippet}
       Implementation of a new feature for Launchpad bug templates
     </Timeline.Event>
-    <Timeline.Event marker="text">
+    <Timeline.Event marker={Text}>
       {#snippet titleRow()}
         <Timeline.Event.TitleRow leadingText={user.userName}>
           did things that are really complex and will probably take a while to
@@ -66,7 +68,7 @@
         </Timeline.Event.TitleRow>
       {/snippet}
     </Timeline.Event>
-    <Timeline.Event marker="flag" markerSize="small">
+    <Timeline.Event marker={Flag} markerSize="small">
       {#snippet titleRow()}
         <Timeline.Event.TitleRow leadingText={user.userName}>
           raised a flag
@@ -78,7 +80,7 @@
       The flag was raised
     </Timeline.Event>
     <Timeline.HiddenEvents numHidden={3} showAllHref="?show-all" />
-    <Timeline.Event marker="settings" markerSize="large">
+    <Timeline.Event marker={Settings} markerSize="large">
       {#snippet titleRow()}
         <Timeline.Event.TitleRow>
           The MP was <span style="color: var(--tmp-color-text-default)"

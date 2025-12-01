@@ -1,10 +1,12 @@
 {
   "lockfileVersion": 1,
+  "configVersion": 0,
   "workspaces": {
     "": {
       "name": "launchpad-ui",
       "dependencies": {
         "@canonical/launchpad-design-tokens": "^1.0.20",
+        "@canonical/svelte-icons": "^0.0.4",
         "@floating-ui/dom": "^1.7.4",
         "markdown-actions": "^1.1.2",
         "normalize.css": "^8.0.1",
@@ -64,6 +66,8 @@
     "@babel/runtime": ["@babel/runtime@7.27.6", "", {}, "sha512-vbavdySgbTTrmFE+EsiqUTzlOr5bzlnJtUv9PynGCAKvfQqjIXbvFdumPM/GxMDfyuGMJaJAU6TO4zc1Jf1i8Q=="],
 
     "@canonical/launchpad-design-tokens": ["@canonical/launchpad-design-tokens@1.0.20", "", {}, "sha512-NtpswanM70SCV/m8Ju9RBDofQaDURF1uBoFrqcZwD+6Kt/gEG+wYCCVmXU1ZZfGZNhcJtboOGfh1crsWZbml3A=="],
+
+    "@canonical/svelte-icons": ["@canonical/svelte-icons@0.0.4", "", { "peerDependencies": { "svelte": "^5.0.0" } }, "sha512-X3yGiy88EKn651edmUzlkwU99knNpXhPYcO013Te2YRnycZSKtqKAcPpoF0S3JgeQSgy1dctbEyd4H8NKuJyOw=="],
 
     "@canonical/svelte-ssr-test": ["@canonical/svelte-ssr-test@0.10.0-experimental.5", "", { "dependencies": { "@testing-library/dom": "^10.4.1", "jsdom": "^27.0.0" }, "peerDependencies": { "svelte": "^5.38.2" } }, "sha512-25vo3chChzi/XMxCTF101lESAkViK5/DRFa9iQH8PiZbQa1B9Kg+sv7HCtqyyk8O84qCafzD4s/TyQC2KWlEAg=="],
 

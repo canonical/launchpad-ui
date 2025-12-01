@@ -12,13 +12,13 @@ const Toolbar = ToolbarRoot as typeof ToolbarRoot & {
    *  <MarkdownEditor.Toolbar>
    *    <MarkdownEditor.Toolbar.Group>
    *      <MarkdownEditor.Toolbar.ActionButton label="Bold">
-   *        <Icon name="bold" />
+   *        <Bold />
    *      </MarkdownEditor.Toolbar.ActionButton>
    *      <MarkdownEditor.Toolbar.ActionButton label="Italic">
-   *        <Icon name="italic" />
+   *        <Italic />
    *      </MarkdownEditor.Toolbar.ActionButton>
    *      <MarkdownEditor.Toolbar.ActionButton label="Heading">
-   *        <Icon name="heading" />
+   *        <Heading />
    *      </MarkdownEditor.Toolbar.ActionButton>
    *    </MarkdownEditor.Toolbar.Group>
    *  </MarkdownEditor.Toolbar>
@@ -34,7 +34,7 @@ const Toolbar = ToolbarRoot as typeof ToolbarRoot & {
    * <MarkdownEditor>
    *  <MarkdownEditor.Toolbar>
    *   <MarkdownEditor.Toolbar.ActionButton label="Bold">
-   *     <Icon name="bold" />
+   *     <Bold />
    *   </MarkdownEditor.Toolbar.ActionButton>
    *  </MarkdownEditor.Toolbar>
    * </MarkdownEditor>

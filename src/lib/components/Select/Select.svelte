@@ -1,7 +1,7 @@
 <!-- @canonical/generator-ds 0.10.0-experimental.3 -->
 
 <script lang="ts">
-  import { Icon } from "../Icon/index.js";
+  import { ChevronDown } from "@canonical/svelte-icons";
   import type { SelectProps } from "./types.js";
 
   const componentCssClassName = "ds select";
@@ -25,7 +25,7 @@
     {@render children?.()}
   </select>
   {#if !rest.multiple}
-    <Icon name="chevron-down" />
+    <ChevronDown class="chevron" />
   {/if}
 </div>
 
@@ -165,7 +165,7 @@
       }
     }
 
-    > :global(.ds.icon) {
+    > :global(.chevron) {
       --dimension-size-icon: var(--dimension-icon-size-select-input);
       justify-self: end;
       align-self: center;
@@ -199,7 +199,7 @@
       }
     }
 
-    > select[disabled] + :global(.ds.icon) {
+    > select[disabled] + :global(.chevron) {
       opacity: var(--opacity-select-input-disabled);
     }
   }
