@@ -1,18 +1,23 @@
 <script lang="ts">
-  import type { Snippet } from "svelte";
+  import {
+    Comments,
+    Desktop,
+    Home,
+    LogOut,
+    Search,
+    User,
+  } from "@canonical/svelte-icons";
+  import type { Component, Snippet } from "svelte";
   import LaunchpadLogo from "$lib/components/LaunchpadLogo.svelte";
   import LaunchpadLogoText from "$lib/components/LaunchpadLogoText.svelte";
+  import { ColorPalette, Moon, Sun } from "$lib/components/icons/index.js";
   import {
     ContextualMenuContent,
-    Icon,
     Popover,
     ShortcutsHelpSidePanel,
     SideNavigation,
   } from "$lib/components/index.js";
-  import type {
-    IconName,
-    ShortcutsHelpSidePanelMethods,
-  } from "$lib/components/index.js";
+  import type { ShortcutsHelpSidePanelMethods } from "$lib/components/index.js";
   import {
     GlobalShortcutsProvider,
     Shortcut,
@@ -32,10 +37,10 @@
 
   let expanded = $derived(data.sideNavigation);
 
-  const themesDisplay: Record<Theme, { icon: IconName; label: string }> = {
-    light: { icon: "sun", label: "Light" },
-    dark: { icon: "moon", label: "Dark" },
-    system: { icon: "desktop", label: "Follow system" },
+  const themesDisplay: Record<Theme, { Icon: Component; label: string }> = {
+    light: { Icon: Sun, label: "Light" },
+    dark: { Icon: Moon, label: "Dark" },
+    system: { Icon: Desktop, label: "Follow system" },
   };
 
   let modalMethods = $state<ShortcutsHelpSidePanelMethods>();
@@ -109,20 +114,20 @@
       <SideNavigation.LinkItem href="/">
         Home
         {#snippet icon()}
-          <Icon name="home" />
+          <Home />
         {/snippet}
       </SideNavigation.LinkItem>
       <!-- TODO: Placeholder links -->
       <SideNavigation.LinkItem disabled>
         View another MP
         {#snippet icon()}
-          <Icon name="search" />
+          <Search />
         {/snippet}
       </SideNavigation.LinkItem>
       <SideNavigation.LinkItem disabled>
         Give feedback
         {#snippet icon()}
-          <Icon name="comments" />
+          <Comments />
         {/snippet}
       </SideNavigation.LinkItem>
       {#snippet footer()}
@@ -130,7 +135,7 @@
           {#snippet trigger(triggerProps)}
             <SideNavigation.ButtonItem {...triggerProps}>
               {#snippet icon()}
-                <Icon name="color-palette" />
+                <ColorPalette />
               {/snippet}
               Theme: {theme[0].toUpperCase() + theme.slice(1)}
             </SideNavigation.ButtonItem>
@@ -146,8 +151,7 @@
             >
               <ContextualMenuContent.Group style="min-width: 280px">
                 {#each themes as themeOption (themeOption)}
-                  {@const { icon: iconName, label } =
-                    themesDisplay[themeOption]}
+                  {@const { Icon, label } = themesDisplay[themeOption]}
                   <ContextualMenuContent.ButtonItem
                     text={label}
                     name="theme"
@@ -155,7 +159,7 @@
                     type="submit"
                   >
                     {#snippet icon()}
-                      <Icon name={iconName} />
+                      <Icon />
                     {/snippet}
                   </ContextualMenuContent.ButtonItem>
                 {/each}
@@ -167,13 +171,13 @@
         <SideNavigation.LinkItem disabled>
           $username
           {#snippet icon()}
-            <Icon name="user" />
+            <User />
           {/snippet}
         </SideNavigation.LinkItem>
         <SideNavigation.LinkItem disabled>
           Log out
           {#snippet icon()}
-            <Icon name="log-out" />
+            <LogOut />
           {/snippet}
         </SideNavigation.LinkItem>
       {/snippet}

@@ -1,8 +1,13 @@
 <script module lang="ts">
+  import { Error, Spinner, Success, Warning } from "@canonical/svelte-icons";
   import { defineMeta } from "@storybook/addon-svelte-csf";
+  import type { Component } from "svelte";
+  import {
+    LoadingSteps,
+    Skip,
+    UnitPending,
+  } from "$lib/components/icons/index.js";
   import { SEMANTIC_MODIFIERS, modifiersControl } from "$lib/modifiers";
-  import type { IconName } from "../Icon/iconNames";
-  import { Icon, MulticolorIcon } from "../index.js";
   import IconText from "./IconText.svelte";
   import { iconTextModifiers } from "./modifiers";
 
@@ -21,18 +26,18 @@
   });
 
   const mpReviewIcons = {
-    approved: "success",
-    disapproved: "error",
-    "changes-requested": "warning",
-    reviewing: "spinner",
-  } satisfies Record<(typeof iconTextModifiers.approval)[number], IconName>;
+    approved: Success,
+    disapproved: Error,
+    "changes-requested": Warning,
+    reviewing: Spinner,
+  } satisfies Record<(typeof iconTextModifiers.approval)[number], Component>;
 </script>
 
 <Story name="Default">
   {#snippet template(args)}
     <IconText {...args}>
       {#snippet icon()}
-        <Icon name="success" />
+        <Success />
       {/snippet}
       CI runs passed (medium)
     </IconText>
@@ -44,7 +49,7 @@
     {#each SEMANTIC_MODIFIERS.size as size (size)}
       <IconText {...args} modifiers={{ ...(args.modifiers || {}), size }}>
         {#snippet icon()}
-          <MulticolorIcon name="success" />
+          <Success />
         {/snippet}
         CI runs passed ({size})
       </IconText>
@@ -58,7 +63,8 @@
     {#each iconTextModifiers.approval as approval (approval)}
       <IconText {...args} modifiers={{ ...(args.modifiers || {}), approval }}>
         {#snippet icon()}
-          <Icon name={mpReviewIcons[approval]} />
+          {@const Icon = mpReviewIcons[approval]}
+          <Icon />
         {/snippet}
         {approval}
       </IconText>
@@ -74,7 +80,7 @@
       modifiers={{ ...(args.modifiers || {}), lifecycle: "completed" }}
     >
       {#snippet icon()}
-        <Icon name="success" />
+        <Success />
       {/snippet}
       Success
     </IconText><br />
@@ -83,7 +89,7 @@
       modifiers={{ ...(args.modifiers || {}), lifecycle: "failed" }}
     >
       {#snippet icon()}
-        <Icon name="error" />
+        <Error />
       {/snippet}
       Failed
     </IconText><br />
@@ -92,7 +98,7 @@
       modifiers={{ ...(args.modifiers || {}), lifecycle: "pending" }}
     >
       {#snippet icon()}
-        <Icon name="skip" />
+        <Skip />
       {/snippet}
       Skipped
     </IconText><br />
@@ -101,7 +107,7 @@
       modifiers={{ ...(args.modifiers || {}), lifecycle: "suspended" }}
     >
       {#snippet icon()}
-        <Icon name="loading-steps" />
+        <LoadingSteps />
       {/snippet}
       Pending
     </IconText><br />
@@ -110,7 +116,7 @@
       modifiers={{ ...(args.modifiers || {}), lifecycle: "pending" }}
     >
       {#snippet icon()}
-        <Icon name="unit-pending" />
+        <UnitPending />
       {/snippet}
       Queued
     </IconText><br />
@@ -119,7 +125,7 @@
       modifiers={{ ...(args.modifiers || {}), lifecycle: "pending" }}
     >
       {#snippet icon()}
-        <Icon name="spinner" />
+        <Spinner />
       {/snippet}
       Skipped
     </IconText>

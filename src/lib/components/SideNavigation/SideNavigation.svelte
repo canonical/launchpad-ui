@@ -85,32 +85,32 @@ The component has two sections:
   {/snippet}
   <SideNavigation.LinkItem href="/dashboard">
     {#snippet icon()}
-      <Icon name="dashboard" />
+      <Dashboard />
     {/snippet}
     Dashboard
   </SideNavigation.LinkItem>
   <SideNavigation.LinkItem href="/projects">
     {#snippet icon()}
-      <Icon name="folder" />
+      <Folder />
     {/snippet}
     Projects
   </SideNavigation.LinkItem>
   {#snippet footer()}
     <SideNavigation.ButtonItem onclick={doSomething}>
       {#snippet icon()}
-        <Icon name="color-palette" />
+        <ColorPalette />
       {/snippet}
       Theme
     </SideNavigation.ButtonItem>
     <SideNavigation.LinkItem href="/profile">
       {#snippet icon()}
-        <Icon name="user" />
+        <User />
       {/snippet}
       John Doe
     </SideNavigation.LinkItem>
     <SideNavigation.ButtonItem onclick={doSomethingElse}>
       {#snippet icon()}
-        <Icon name="log-out" />
+        <LogOut />
       {/snippet}
       Logout
     </SideNavigation.ButtonItem>
@@ -231,7 +231,7 @@ The component has two sections:
 
         margin-block-start: var(--tmp-dimension-spacing-block-m);
 
-        .ds.icon {
+        .expand-icon {
           grid-column: logo;
         }
       }

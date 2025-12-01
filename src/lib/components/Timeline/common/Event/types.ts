@@ -1,8 +1,7 @@
 /* @canonical/generator-ds 0.10.0-experimental.2 */
 
-import type { Snippet } from "svelte";
+import type { Component, Snippet } from "svelte";
 import type { SvelteHTMLElements } from "svelte/elements";
-import type { IconName } from "$lib/components/Icon/index.js";
 import type { UserOptions } from "$lib/components/UserAvatar/index.js";
 
 type BaseProps = SvelteHTMLElements["li"];
@@ -11,7 +10,7 @@ export interface EventProps extends BaseProps {
   /**
    * The marker to be displayed over the timeline's line. Can be a user avatar or an icon. If not specified, an "empty" marker will be used.
    */
-  marker?: UserOptions | IconName;
+  marker?: UserOptions | Component;
   /**
    * The size of the marker. Has no effect if `marker` is not specified.
    *

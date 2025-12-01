@@ -1,7 +1,7 @@
 <script module lang="ts">
+  import { Information } from "@canonical/svelte-icons";
   import { defineMeta } from "@storybook/addon-svelte-csf";
   import { Button } from "$lib/components/Button/index.js";
-  import { Icon } from "$lib/components/Icon/index.js";
   import { Popover } from "$lib/components/Popover/index.js";
   import { UserAvatar } from "$lib/components/UserAvatar/index.js";
   import { Combobox } from "./index.js";
@@ -232,7 +232,7 @@
       {#snippet helper(id)}
         <Combobox.Helper {id}>
           {#snippet icon()}
-            <Icon name="information" />
+            <Information />
           {/snippet}
           Select reviewers for the project
         </Combobox.Helper>
@@ -321,7 +321,7 @@
       {#snippet helper(id)}
         <Combobox.Helper {id}>
           {#snippet icon()}
-            <Icon name="information" />
+            <Information />
           {/snippet}
           Select the owner for the project
         </Combobox.Helper>
@@ -417,7 +417,7 @@
             {#snippet helper(id)}
               <Combobox.Helper {id}>
                 {#snippet icon()}
-                  <Icon name="information" />
+                  <Information />
                 {/snippet}
                 Select reviewers for the project
               </Combobox.Helper>

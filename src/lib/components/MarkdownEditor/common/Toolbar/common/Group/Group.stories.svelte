@@ -1,6 +1,6 @@
 <script module lang="ts">
   import { defineMeta } from "@storybook/addon-svelte-csf";
-  import { Icon } from "$lib/components/index.js";
+  import { Bold } from "$lib/components/icons/index.js";
   import { MarkdownEditor } from "../../../../index.js";
 
   const { Story } = defineMeta({
@@ -16,7 +16,7 @@
       <MarkdownEditor.Toolbar>
         <MarkdownEditor.Toolbar.Group {...args}>
           <MarkdownEditor.Toolbar.ActionButton label="Bold">
-            <Icon name="bold" />
+            <Bold />
           </MarkdownEditor.Toolbar.ActionButton>
         </MarkdownEditor.Toolbar.Group>
       </MarkdownEditor.Toolbar>

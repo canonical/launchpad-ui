@@ -1,6 +1,6 @@
 <script module lang="ts">
+  import { Edit } from "@canonical/svelte-icons";
   import { defineMeta } from "@storybook/addon-svelte-csf";
-  import { Icon } from "$lib/components/Icon/index.js";
   import RadioItem from "./RadioItem.svelte";
 
   const { Story } = defineMeta({
@@ -56,7 +56,7 @@
   {#snippet template(args)}
     <RadioItem {...args}>
       {#snippet icon()}
-        <Icon name="edit" />
+        <Edit />
       {/snippet}
     </RadioItem>
   {/snippet}
@@ -72,7 +72,7 @@
   {#snippet template(args)}
     <RadioItem {...args}>
       {#snippet icon()}
-        <Icon name="edit" />
+        <Edit />
       {/snippet}
     </RadioItem>
   {/snippet}
@@ -89,7 +89,7 @@
   {#snippet template(args)}
     <RadioItem {...args}>
       {#snippet icon()}
-        <Icon name="edit" />
+        <Edit />
       {/snippet}
     </RadioItem>
   {/snippet}

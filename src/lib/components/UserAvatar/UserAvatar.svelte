@@ -1,6 +1,6 @@
 <script lang="ts">
+  import { User } from "@canonical/svelte-icons";
   /* @canonical/generator-ds 0.9.0-experimental.22 */
-  import { Icon } from "$lib/components/Icon/index.js";
   import type { UserAvatarProps } from "./types.js";
 
   const componentCssClassName = "ds user-avatar";
@@ -52,13 +52,7 @@
         .join("")}</abbr
     >
   {:else}
-    <Icon
-      name="user"
-      role="img"
-      aria-label="User avatar"
-      aria-hidden={ariaHidden}
-      title={undefined}
-    />
+    <User aria-label="User avatar" aria-hidden={ariaHidden} />
   {/if}
 {/snippet}
 

@@ -1,9 +1,9 @@
 <script module lang="ts">
+  import { ChevronDown, ChevronUp } from "@canonical/svelte-icons";
   import { defineMeta } from "@storybook/addon-svelte-csf";
   import type { Snippet } from "svelte";
   import type { ToggleEventHandler } from "svelte/elements";
   import { Button } from "$lib/components/Button/index.js";
-  import { Icon } from "$lib/components/Icon/index.js";
   import Popover from "./Popover.svelte";
   import type { PopoverMethods } from "./types.js";
 
@@ -44,7 +44,11 @@
         <Button {...triggerProps}>
           {open ? "Close Popover" : "Open Popover"}
           {#snippet iconRight()}
-            <Icon name={open ? "chevron-down" : "chevron-up"} />
+            {#if open}
+              <ChevronDown />
+            {:else}
+              <ChevronUp />
+            {/if}
           {/snippet}
         </Button>
       {/snippet}
@@ -86,7 +90,11 @@
         <Button {...triggerProps} disabled={open}>
           Open Popover
           {#snippet iconRight()}
-            <Icon name={open ? "chevron-down" : "chevron-up"} />
+            {#if open}
+              <ChevronDown />
+            {:else}
+              <ChevronUp />
+            {/if}
           {/snippet}
         </Button>
       {/snippet}

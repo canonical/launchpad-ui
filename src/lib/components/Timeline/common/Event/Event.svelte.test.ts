@@ -1,5 +1,6 @@
 /* @canonical/generator-ds 0.10.0-experimental.5 */
 
+import { Anchor } from "@canonical/svelte-icons";
 import type { Locator } from "@vitest/browser/context";
 import { createRawSnippet } from "svelte";
 import type { ComponentProps } from "svelte";
@@ -80,7 +81,7 @@ describe("Event component", () => {
       it("small", async () => {
         const page = render(Component, {
           ...baseProps,
-          marker: "anchor",
+          marker: Anchor,
           markerSize: "small",
         });
         const element = componentLocator(page);

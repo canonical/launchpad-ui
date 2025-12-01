@@ -1,6 +1,6 @@
 <script module lang="ts">
+  import { Edit } from "@canonical/svelte-icons";
   import { defineMeta } from "@storybook/addon-svelte-csf";
-  import { Icon } from "$lib/components/Icon/index.js";
   import SwitchItem from "./SwitchItem.svelte";
 
   const { Story } = defineMeta({
@@ -49,7 +49,7 @@
   {#snippet template(args)}
     <SwitchItem {...args}>
       {#snippet icon()}
-        <Icon name="edit" />
+        <Edit />
       {/snippet}
     </SwitchItem>
   {/snippet}
@@ -66,7 +66,7 @@
   {#snippet template(args)}
     <SwitchItem {...args}>
       {#snippet icon()}
-        <Icon name="edit" />
+        <Edit />
       {/snippet}
     </SwitchItem>
   {/snippet}
@@ -84,7 +84,7 @@
   {#snippet template(args)}
     <SwitchItem {...args}>
       {#snippet icon()}
-        <Icon name="edit" />
+        <Edit />
       {/snippet}
     </SwitchItem>
   {/snippet}

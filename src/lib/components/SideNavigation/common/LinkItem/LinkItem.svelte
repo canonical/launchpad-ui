@@ -23,7 +23,11 @@
   aria-labelledby={labelId}
   {...rest}
 >
-  {@render icon?.()}
+  {#if icon}
+    <div class="icon">
+      {@render icon()}
+    </div>
+  {/if}
   <!-- using labeled-by exposes the contents to a11y tree even if the label is visually hidden -->
   <div id={labelId} class="label">
     {@render children()}
@@ -54,7 +58,7 @@
 
       grid-template-columns: subgrid;
 
-      > .ds.icon {
+      > .icon {
         grid-column: logo;
         place-self: center;
       }

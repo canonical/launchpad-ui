@@ -1,8 +1,8 @@
 <!-- @canonical/generator-ds 0.10.0-experimental.3 -->
 
 <script lang="ts">
-  import { Icon } from "$lib/components/Icon/index.js";
   import { ButtonPrimitive } from "$lib/components/common/index.js";
+  import { ExpandRight } from "$lib/components/icons/index.js";
   import type { ExpandToggleProps } from "./types.js";
 
   const componentCssClassName = "ds side-navigation-expand-toggle";
@@ -15,7 +15,7 @@
   class={[componentCssClassName, className]}
   {...rest}
 >
-  <Icon name="expand-right" class="expand-icon" />
+  <ExpandRight class="expand-icon" />
 </ButtonPrimitive>
 
 <style>
@@ -26,7 +26,7 @@
       box-sizing: content-box;
 
       &[aria-expanded="true"] {
-        .ds.icon {
+        .expand-icon {
           transform: rotate(180deg);
         }
       }

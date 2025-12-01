@@ -1,8 +1,8 @@
 <!-- @canonical/generator-ds 0.10.0-experimental.2 -->
 
 <script lang="ts">
+  import { Close } from "@canonical/svelte-icons";
   import { Button } from "$lib/components/Button/index.js";
-  import { Icon } from "$lib/components/Icon/index.js";
   import type { CloseButtonProps } from "./types.js";
 
   const componentCssClassName = "ds modal-content-close-button";
@@ -21,7 +21,7 @@
   {...rest}
 >
   {#snippet iconLeft()}
-    <Icon name="close" />
+    <Close />
   {/snippet}
 </Button>
 

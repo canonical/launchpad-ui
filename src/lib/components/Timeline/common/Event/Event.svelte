@@ -1,7 +1,6 @@
 <!-- @canonical/generator-ds 0.10.0-experimental.2 -->
 
 <script lang="ts">
-  import { Icon } from "$lib/components/Icon/index.js";
   import { UserAvatar } from "$lib/components/UserAvatar/index.js";
   import type { EventProps } from "./types.js";
 
@@ -31,8 +30,9 @@
   {...rest}
 >
   <div class="marker" aria-hidden="true">
-    {#if typeof marker === "string"}
-      <Icon name={marker} />
+    {#if typeof marker === "function"}
+      {@const Icon = marker}
+      <Icon />
     {:else if marker}
       <UserAvatar {...marker} />
     {/if}

@@ -1,6 +1,6 @@
 <script module lang="ts">
+  import { Edit } from "@canonical/svelte-icons";
   import { defineMeta } from "@storybook/addon-svelte-csf";
-  import { Icon } from "$lib/components/Icon/index.js";
   import CheckboxItem from "./CheckboxItem.svelte";
 
   const { Story } = defineMeta({
@@ -46,7 +46,7 @@
   {#snippet template(args)}
     <CheckboxItem {...args}>
       {#snippet icon()}
-        <Icon name="edit" />
+        <Edit />
       {/snippet}
     </CheckboxItem>
   {/snippet}
@@ -62,7 +62,7 @@
   {#snippet template(args)}
     <CheckboxItem {...args}>
       {#snippet icon()}
-        <Icon name="edit" />
+        <Edit />
       {/snippet}
     </CheckboxItem>
   {/snippet}
@@ -79,7 +79,7 @@
   {#snippet template(args)}
     <CheckboxItem {...args}>
       {#snippet icon()}
-        <Icon name="edit" />
+        <Edit />
       {/snippet}
     </CheckboxItem>
   {/snippet}

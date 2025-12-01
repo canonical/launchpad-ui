@@ -54,11 +54,11 @@
 ```svelte
 <Button density="dense" severity="brand">
   {#snippet iconLeft()}
-    <Icon name="check" />
+    <Check />
   {/snippet}
   Button Text
   {#snippet iconRight()}
-    <Icon name="arrow-right" />
+    <ArrowRight />
   {/snippet}
 </Button>
 ```
