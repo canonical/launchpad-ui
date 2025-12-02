@@ -1,11 +1,11 @@
 <script lang="ts">
-  import { BaseIcon } from "@canonical/svelte-icons";
+  import { IconBase } from "@canonical/svelte-icons";
   import type { IconProps } from "@canonical/svelte-icons";
 
   const props: IconProps = $props();
 </script>
 
-<BaseIcon iconName="text" {...props}>
+<IconBase iconName="text" {...props}>
   <svg
     width="16"
     height="16"
@@ -18,4 +18,4 @@
     <path d="M14 7.5H6.75V9H14V7.5Z" fill="currentColor"></path>
     <path d="M14 12V13.5H3V12H14Z" fill="currentColor"></path>
   </svg>
-</BaseIcon>
+</IconBase>

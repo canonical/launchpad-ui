@@ -1,10 +1,10 @@
 <script module lang="ts">
   import {
-    Applications,
-    ChevronDown,
-    Fork,
-    Plus,
-    SuccessFill,
+    ApplicationsIcon,
+    ChevronDownIcon,
+    ForkIcon,
+    PlusIcon,
+    SuccessFillIcon,
   } from "@canonical/svelte-icons";
   import { defineMeta } from "@storybook/addon-svelte-csf";
   import Button from "./Button.svelte";
@@ -68,19 +68,19 @@
       <div class="row">
         <Button {...args} {density} severity="positive">
           {#snippet iconLeft()}
-            <SuccessFill />
+            <SuccessFillIcon />
           {/snippet}
         </Button>
         <Button {...args} {density}>
           Icon before text
           {#snippet iconLeft()}
-            <Plus />
+            <PlusIcon />
           {/snippet}
         </Button>
         <Button {...args} {density}>
           {density || "default"} icon after
           {#snippet iconRight()}
-            <SuccessFill />
+            <SuccessFillIcon />
           {/snippet}
         </Button>
         <br />
@@ -113,7 +113,7 @@
     <Button {...args}>
       Default
       {#snippet iconLeft()}
-        <Applications />
+        <ApplicationsIcon />
       {/snippet}
     </Button>
   {/snippet}
@@ -124,7 +124,7 @@
     <Button {...args}>
       Default
       {#snippet iconRight()}
-        <ChevronDown />
+        <ChevronDownIcon />
       {/snippet}
     </Button>
   {/snippet}
@@ -134,7 +134,7 @@
   {#snippet template(args)}
     <Button {...args} severity="positive">
       {#snippet iconLeft()}
-        <Fork />
+        <ForkIcon />
       {/snippet}
     </Button>
   {/snippet}
@@ -156,11 +156,11 @@
   {#snippet template(args)}
     <Button {...args}>
       {#snippet iconLeft()}
-        <Fork />
+        <ForkIcon />
       {/snippet}
       Default
       {#snippet iconRight()}
-        <ChevronDown />
+        <ChevronDownIcon />
       {/snippet}
     </Button>
   {/snippet}
@@ -170,10 +170,10 @@
   {#snippet template(args)}
     <Button {...args}>
       {#snippet iconLeft()}
-        <Fork />
+        <ForkIcon />
       {/snippet}
       {#snippet iconRight()}
-        <ChevronDown />
+        <ChevronDownIcon />
       {/snippet}
     </Button>
   {/snippet}

@@ -1,11 +1,11 @@
 <script lang="ts">
-  import { BaseIcon } from "@canonical/svelte-icons";
+  import { IconBase } from "@canonical/svelte-icons";
   import type { IconProps } from "@canonical/svelte-icons";
 
   const props: IconProps = $props();
 </script>
 
-<BaseIcon iconName="emoji-smile" {...props}>
+<IconBase iconName="emoji-smile" {...props}>
   <svg
     width="16"
     height="16"
@@ -26,4 +26,4 @@
     <path d="M5.5 6H7V7.5H5.5V6Z" fill="currentColor"></path>
     <path d="M9 6H10.5V7.5H9V6Z" fill="currentColor"></path>
   </svg>
-</BaseIcon>
+</IconBase>

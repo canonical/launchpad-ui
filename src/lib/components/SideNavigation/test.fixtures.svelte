@@ -3,7 +3,7 @@
 </script>
 
 <script lang="ts">
-  import { Home, Settings, User } from "@canonical/svelte-icons";
+  import { HomeIcon, SettingsIcon, UserIcon } from "@canonical/svelte-icons";
   import { ColorPalette } from "$lib/components/icons/index.js";
   import { ButtonItem, ExpandToggle, LinkItem } from "./common/index.js";
   import type { ExpandToggleProps } from "./types.js";
@@ -21,13 +21,13 @@
   <LinkItem href="/">
     Link in nav
     {#snippet icon()}
-      <Home />
+      <HomeIcon />
     {/snippet}
   </LinkItem>
   <ButtonItem>
     Button in nav
     {#snippet icon()}
-      <Settings />
+      <SettingsIcon />
     {/snippet}
   </ButtonItem>
 {/snippet}
@@ -42,7 +42,7 @@
   <LinkItem href="/profile">
     Link in footer
     {#snippet icon()}
-      <User />
+      <UserIcon />
     {/snippet}
   </LinkItem>
 {/snippet}

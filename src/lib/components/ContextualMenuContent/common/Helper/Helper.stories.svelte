@@ -1,5 +1,5 @@
 <script module lang="ts">
-  import { Information } from "@canonical/svelte-icons";
+  import { InformationIcon } from "@canonical/svelte-icons";
   import { defineMeta } from "@storybook/addon-svelte-csf";
   import { ContextualMenuContent } from "../../index.js";
   import { Helper } from "./index.js";
@@ -26,7 +26,7 @@
   {#snippet template({ children, ...args })}
     <ContextualMenuContent.Helper {...args}>
       {#snippet icon()}
-        <Information />
+        <InformationIcon />
       {/snippet}
       Helper text
     </ContextualMenuContent.Helper>

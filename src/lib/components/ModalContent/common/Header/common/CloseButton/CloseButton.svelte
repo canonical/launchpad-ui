@@ -1,7 +1,7 @@
 <!-- @canonical/generator-ds 0.10.0-experimental.2 -->
 
 <script lang="ts">
-  import { Close } from "@canonical/svelte-icons";
+  import { CloseIcon } from "@canonical/svelte-icons";
   import { Button } from "$lib/components/Button/index.js";
   import type { CloseButtonProps } from "./types.js";
 
@@ -20,8 +20,8 @@
   severity="base"
   {...rest}
 >
-  {#snippet iconLeft()}
-    <Close />
+  > {#snippet iconLeft()}
+    <CloseIcon />
   {/snippet}
 </Button>
 

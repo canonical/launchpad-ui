@@ -1,5 +1,5 @@
 <script module lang="ts">
-  import { Edit } from "@canonical/svelte-icons";
+  import { EditIcon } from "@canonical/svelte-icons";
   import { defineMeta } from "@storybook/addon-svelte-csf";
   import ButtonItem from "./ButtonItem.svelte";
 
@@ -38,7 +38,7 @@
   {#snippet template(args)}
     <ButtonItem {...args}>
       {#snippet icon()}
-        <Edit />
+        <EditIcon />
       {/snippet}
     </ButtonItem>
   {/snippet}
@@ -54,7 +54,7 @@
   {#snippet template(args)}
     <ButtonItem {...args}>
       {#snippet icon()}
-        <Edit />
+        <EditIcon />
       {/snippet}
     </ButtonItem>
   {/snippet}
@@ -71,7 +71,7 @@
   {#snippet template(args)}
     <ButtonItem {...args}>
       {#snippet icon()}
-        <Edit />
+        <EditIcon />
       {/snippet}
     </ButtonItem>
   {/snippet}

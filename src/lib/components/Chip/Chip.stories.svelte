@@ -1,5 +1,5 @@
 <script module lang="ts">
-  import { Archive } from "@canonical/svelte-icons";
+  import { ArchiveIcon } from "@canonical/svelte-icons";
   import { defineMeta } from "@storybook/addon-svelte-csf";
   import { fn } from "storybook/test";
   import { Badge } from "$lib/components/Badge/index.js";
@@ -48,7 +48,7 @@
   {#snippet template(args)}
     <Chip {...args}>
       {#snippet icon()}
-        <Archive />
+        <ArchiveIcon />
       {/snippet}
     </Chip>
   {/snippet}
@@ -112,7 +112,7 @@
   {#snippet template(args)}
     <Chip {...args}>
       {#snippet icon()}
-        <Archive />
+        <ArchiveIcon />
       {/snippet}
       {#snippet badge()}
         <Badge value={420} />

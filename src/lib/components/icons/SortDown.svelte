@@ -1,11 +1,11 @@
 <script lang="ts">
-  import { BaseIcon } from "@canonical/svelte-icons";
+  import { IconBase } from "@canonical/svelte-icons";
   import type { IconProps } from "@canonical/svelte-icons";
 
   const props: IconProps = $props();
 </script>
 
-<BaseIcon iconName="sort-down" {...props}>
+<IconBase iconName="sort-down" {...props}>
   <svg
     width="16"
     height="16"
@@ -16,4 +16,4 @@
     <path d="M7.99999 14L4.66699 9H11.333L7.99999 14Z" fill="currentColor"
     ></path>
   </svg>
-</BaseIcon>
+</IconBase>

@@ -1,5 +1,5 @@
 <script module lang="ts">
-  import { Settings } from "@canonical/svelte-icons";
+  import { SettingsIcon } from "@canonical/svelte-icons";
   import { defineMeta } from "@storybook/addon-svelte-csf";
   import { DateTime } from "$lib/components/DateTime/index.js";
   import { Flag, Text } from "$lib/components/icons/index.js";
@@ -80,7 +80,7 @@
       The flag was raised
     </Timeline.Event>
     <Timeline.HiddenEvents numHidden={3} showAllHref="?show-all" />
-    <Timeline.Event marker={Settings} markerSize="large">
+    <Timeline.Event marker={SettingsIcon} markerSize="large">
       {#snippet titleRow()}
         <Timeline.Event.TitleRow>
           The MP was <span style="color: var(--tmp-color-text-default)"

@@ -1,11 +1,11 @@
 <script lang="ts">
-  import { BaseIcon } from "@canonical/svelte-icons";
+  import { IconBase } from "@canonical/svelte-icons";
   import type { IconProps } from "@canonical/svelte-icons";
 
   const props: IconProps = $props();
 </script>
 
-<BaseIcon iconName="git-commit" {...props}>
+<IconBase iconName="git-commit" {...props}>
   <svg
     width="16"
     height="16"
@@ -20,4 +20,4 @@
       fill="currentColor"
     ></path>
   </svg>
-</BaseIcon>
+</IconBase>

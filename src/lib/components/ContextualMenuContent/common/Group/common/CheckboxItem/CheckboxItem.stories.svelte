@@ -1,5 +1,5 @@
 <script module lang="ts">
-  import { Edit } from "@canonical/svelte-icons";
+  import { EditIcon } from "@canonical/svelte-icons";
   import { defineMeta } from "@storybook/addon-svelte-csf";
   import CheckboxItem from "./CheckboxItem.svelte";
 
@@ -46,7 +46,7 @@
   {#snippet template(args)}
     <CheckboxItem {...args}>
       {#snippet icon()}
-        <Edit />
+        <EditIcon />
       {/snippet}
     </CheckboxItem>
   {/snippet}
@@ -62,7 +62,7 @@
   {#snippet template(args)}
     <CheckboxItem {...args}>
       {#snippet icon()}
-        <Edit />
+        <EditIcon />
       {/snippet}
     </CheckboxItem>
   {/snippet}
@@ -79,7 +79,7 @@
   {#snippet template(args)}
     <CheckboxItem {...args}>
       {#snippet icon()}
-        <Edit />
+        <EditIcon />
       {/snippet}
     </CheckboxItem>
   {/snippet}

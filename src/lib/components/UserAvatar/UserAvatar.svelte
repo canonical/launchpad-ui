@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { User } from "@canonical/svelte-icons";
+  import { UserIcon } from "@canonical/svelte-icons";
   /* @canonical/generator-ds 0.9.0-experimental.22 */
   import type { UserAvatarProps } from "./types.js";
 
@@ -52,7 +52,7 @@
         .join("")}</abbr
     >
   {:else}
-    <User aria-label="User avatar" aria-hidden={ariaHidden} />
+    <UserIcon aria-label="User avatar" aria-hidden={ariaHidden} />
   {/if}
 {/snippet}
 

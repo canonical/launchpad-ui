@@ -1,11 +1,11 @@
 <script lang="ts">
-  import { BaseIcon } from "@canonical/svelte-icons";
+  import { IconBase } from "@canonical/svelte-icons";
   import type { IconProps } from "@canonical/svelte-icons";
 
   const props: IconProps = $props();
 </script>
 
-<BaseIcon iconName="skip-circle" {...props}>
+<IconBase iconName="skip-circle" {...props}>
   <svg
     width="16"
     height="16"
@@ -30,4 +30,4 @@
       </clipPath>
     </defs>
   </svg>
-</BaseIcon>
+</IconBase>

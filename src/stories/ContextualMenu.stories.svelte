@@ -1,5 +1,5 @@
 <script module lang="ts">
-  import { ChevronUp, Information } from "@canonical/svelte-icons";
+  import { ChevronUpIcon, InformationIcon } from "@canonical/svelte-icons";
   import { defineMeta } from "@storybook/addon-svelte-csf";
   import {
     Button,
@@ -28,7 +28,9 @@ The following Contextual Menu example can be assembled using:
           Options
           {#snippet iconRight()}
             <!-- TODO: Replace with <Chevron /> -->
-            <ChevronUp style="transform: rotate({open ? '180deg' : '0deg'});" />
+            <ChevronUpIcon
+              style="transform: rotate({open ? '180deg' : '0deg'});"
+            />
           {/snippet}
         </Button>
       {/snippet}
@@ -60,7 +62,7 @@ The following Contextual Menu example can be assembled using:
         {#snippet helper(id)}
           <ContextualMenuContent.Helper {id}>
             {#snippet icon()}
-              <Information />
+              <InformationIcon />
             {/snippet}
             Use the options above to customize the view
           </ContextualMenuContent.Helper>

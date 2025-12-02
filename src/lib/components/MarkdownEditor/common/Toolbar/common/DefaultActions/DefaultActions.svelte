@@ -1,7 +1,7 @@
 <!-- @canonical/generator-ds 0.10.0-experimental.3 -->
 
 <script lang="ts">
-  import { Help, Link } from "@canonical/svelte-icons";
+  import { HelpIcon, LinkIcon } from "@canonical/svelte-icons";
   import ShortcutsHelpSidePanel from "$lib/components/ShortcutsHelpSidePanel/ShortcutsHelpSidePanel.svelte";
   import type { ShortcutsHelpSidePanelMethods } from "$lib/components/ShortcutsHelpSidePanel/types.js";
   import {
@@ -118,7 +118,7 @@
     shortcut={defaultActions.insertLink.shortcut}
     label="Add link"
   >
-    <Link />
+    <LinkIcon />
   </ActionButton>
   <ActionButton
     onclick={() => defaultActions.unorderedList.action()}
@@ -155,7 +155,7 @@
     shortcut={helpShortcut}
     label="Help"
   >
-    <Help />
+    <HelpIcon />
   </ActionButton>
   <ShortcutsHelpSidePanel
     bind:this={modalMethods}

@@ -1,5 +1,10 @@
 <script module lang="ts">
-  import { Error, Spinner, Success, Warning } from "@canonical/svelte-icons";
+  import {
+    ErrorIcon,
+    SpinnerIcon,
+    SuccessIcon,
+    WarningIcon,
+  } from "@canonical/svelte-icons";
   import { defineMeta } from "@storybook/addon-svelte-csf";
   import type { Component } from "svelte";
   import {
@@ -26,10 +31,10 @@
   });
 
   const mpReviewIcons = {
-    approved: Success,
-    disapproved: Error,
-    "changes-requested": Warning,
-    reviewing: Spinner,
+    approved: SuccessIcon,
+    disapproved: ErrorIcon,
+    "changes-requested": WarningIcon,
+    reviewing: SpinnerIcon,
   } satisfies Record<(typeof iconTextModifiers.approval)[number], Component>;
 </script>
 
@@ -37,7 +42,7 @@
   {#snippet template(args)}
     <IconText {...args}>
       {#snippet icon()}
-        <Success />
+        <SuccessIcon />
       {/snippet}
       CI runs passed (medium)
     </IconText>
@@ -49,7 +54,7 @@
     {#each SEMANTIC_MODIFIERS.size as size (size)}
       <IconText {...args} modifiers={{ ...(args.modifiers || {}), size }}>
         {#snippet icon()}
-          <Success />
+          <SuccessIcon />
         {/snippet}
         CI runs passed ({size})
       </IconText>
@@ -80,7 +85,7 @@
       modifiers={{ ...(args.modifiers || {}), lifecycle: "completed" }}
     >
       {#snippet icon()}
-        <Success />
+        <SuccessIcon />
       {/snippet}
       Success
     </IconText><br />
@@ -89,7 +94,7 @@
       modifiers={{ ...(args.modifiers || {}), lifecycle: "failed" }}
     >
       {#snippet icon()}
-        <Error />
+        <ErrorIcon />
       {/snippet}
       Failed
     </IconText><br />
@@ -125,7 +130,7 @@
       modifiers={{ ...(args.modifiers || {}), lifecycle: "pending" }}
     >
       {#snippet icon()}
-        <Spinner />
+        <SpinnerIcon />
       {/snippet}
       Skipped
     </IconText>

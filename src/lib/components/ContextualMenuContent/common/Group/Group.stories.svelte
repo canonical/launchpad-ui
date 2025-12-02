@@ -1,9 +1,9 @@
 <script module lang="ts">
   import {
-    Archive,
-    BackToTop,
-    Notifications,
-    Settings,
+    ArchiveIcon,
+    BackToTopIcon,
+    NotificationsIcon,
+    SettingsIcon,
   } from "@canonical/svelte-icons";
   import { defineMeta } from "@storybook/addon-svelte-csf";
   import { ContextualMenuContent } from "../../index.js";
@@ -46,7 +46,7 @@
       <ContextualMenuContent.CheckboxItem text="Show file at a time" />
       <ContextualMenuContent.CheckboxItem text="Wrap overflowing code lines"
         >{#snippet icon()}
-          <BackToTop />
+          <BackToTopIcon />
         {/snippet}
       </ContextualMenuContent.CheckboxItem>
     </ContextualMenuContent.Group>
@@ -91,7 +91,7 @@
         value="notifications"
       >
         {#snippet icon()}
-          <Notifications />
+          <NotificationsIcon />
         {/snippet}
       </ContextualMenuContent.SwitchItem>
       <ContextualMenuContent.SwitchItem
@@ -99,7 +99,7 @@
         value="auto-save"
       >
         {#snippet icon()}
-          <Archive />
+          <ArchiveIcon />
         {/snippet}
       </ContextualMenuContent.SwitchItem>
       <ContextualMenuContent.SwitchItem
@@ -108,7 +108,7 @@
         value="advanced-options"
       >
         {#snippet icon()}
-          <Settings />
+          <SettingsIcon />
         {/snippet}
       </ContextualMenuContent.SwitchItem>
     </ContextualMenuContent.Group>

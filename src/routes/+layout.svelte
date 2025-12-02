@@ -1,12 +1,12 @@
 <script lang="ts">
   import {
-    Comments,
-    Desktop,
-    Home,
+    CommentsIcon,
+    DesktopIcon,
+    HomeIcon,
     IconsOptimizationProvider,
-    LogOut,
-    Search,
-    User,
+    LogOutIcon,
+    SearchIcon,
+    UserIcon,
   } from "@canonical/svelte-icons";
   import type { Component, Snippet } from "svelte";
   import LaunchpadLogo from "$lib/components/LaunchpadLogo.svelte";
@@ -41,7 +41,7 @@
   const themesDisplay: Record<Theme, { Icon: Component; label: string }> = {
     light: { Icon: Sun, label: "Light" },
     dark: { Icon: Moon, label: "Dark" },
-    system: { Icon: Desktop, label: "Follow system" },
+    system: { Icon: DesktopIcon, label: "Follow system" },
   };
 
   let modalMethods = $state<ShortcutsHelpSidePanelMethods>();
@@ -116,20 +116,20 @@
         <SideNavigation.LinkItem href="/">
           Home
           {#snippet icon()}
-            <Home />
+            <HomeIcon />
           {/snippet}
         </SideNavigation.LinkItem>
         <!-- TODO: Placeholder links -->
         <SideNavigation.LinkItem disabled>
           View another MP
           {#snippet icon()}
-            <Search />
+            <SearchIcon />
           {/snippet}
         </SideNavigation.LinkItem>
         <SideNavigation.LinkItem disabled>
           Give feedback
           {#snippet icon()}
-            <Comments />
+            <CommentsIcon />
           {/snippet}
         </SideNavigation.LinkItem>
         {#snippet footer()}
@@ -173,13 +173,13 @@
           <SideNavigation.LinkItem disabled>
             $username
             {#snippet icon()}
-              <User />
+              <UserIcon />
             {/snippet}
           </SideNavigation.LinkItem>
           <SideNavigation.LinkItem disabled>
             Log out
             {#snippet icon()}
-              <LogOut />
+              <LogOutIcon />
             {/snippet}
           </SideNavigation.LinkItem>
         {/snippet}

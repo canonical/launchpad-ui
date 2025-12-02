@@ -1,9 +1,9 @@
 <script module lang="ts">
   import {
-    Fork,
-    Revisions,
-    SelectAdd,
-    StarredOff,
+    ForkIcon,
+    RevisionsIcon,
+    SelectAddIcon,
+    StarredOffIcon,
   } from "@canonical/svelte-icons";
   import { defineMeta } from "@storybook/addon-svelte-csf";
   import { BranchMerge, BranchMerged } from "$lib/components/icons/index.js";
@@ -117,7 +117,7 @@
               label="Magic"
               onclick={() => insertText("wow what happened?!")}
             >
-              <StarredOff />
+              <StarredOffIcon />
             </MarkdownEditor.Toolbar.ActionButton>
           </MarkdownEditor.Toolbar.Group>
 
@@ -138,7 +138,7 @@
               onclick={() => insertText("fork repository")}
               label="Fork"
             >
-              <Fork />
+              <ForkIcon />
             </MarkdownEditor.Toolbar.ActionButton>
           </MarkdownEditor.Toolbar.Group>
         </MarkdownEditor.Toolbar>
@@ -159,14 +159,14 @@
           {#if !hideExistingActions}
             <MarkdownEditor.Toolbar.Group aria-label="Dynamic actions">
               <MarkdownEditor.Toolbar.ActionButton label="Revisions">
-                <Revisions />
+                <RevisionsIcon />
               </MarkdownEditor.Toolbar.ActionButton>
             </MarkdownEditor.Toolbar.Group>
           {/if}
           {#if showNewActions}
             <MarkdownEditor.Toolbar.Group aria-label="Dynamic actions">
               <MarkdownEditor.Toolbar.ActionButton label="Select Add">
-                <SelectAdd />
+                <SelectAddIcon />
               </MarkdownEditor.Toolbar.ActionButton>
             </MarkdownEditor.Toolbar.Group>
           {/if}
@@ -201,7 +201,7 @@
               disabled={disableDynamicActions}
               label="Revisions"
             >
-              <Revisions />
+              <RevisionsIcon />
             </MarkdownEditor.Toolbar.ActionButton>
           </MarkdownEditor.Toolbar.Group>
         </MarkdownEditor.Toolbar>
