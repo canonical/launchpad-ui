@@ -8,9 +8,9 @@
   import { defineMeta } from "@storybook/addon-svelte-csf";
   import type { Component } from "svelte";
   import {
-    LoadingSteps,
-    Skip,
-    UnitPending,
+    LoadingStepsIcon,
+    SkipIcon,
+    UnitPendingIcon,
   } from "$lib/components/icons/index.js";
   import { SEMANTIC_MODIFIERS, modifiersControl } from "$lib/modifiers";
   import IconText from "./IconText.svelte";
@@ -103,7 +103,7 @@
       modifiers={{ ...(args.modifiers || {}), lifecycle: "pending" }}
     >
       {#snippet icon()}
-        <Skip />
+        <SkipIcon />
       {/snippet}
       Skipped
     </IconText><br />
@@ -112,7 +112,7 @@
       modifiers={{ ...(args.modifiers || {}), lifecycle: "suspended" }}
     >
       {#snippet icon()}
-        <LoadingSteps />
+        <LoadingStepsIcon />
       {/snippet}
       Pending
     </IconText><br />
@@ -121,7 +121,7 @@
       modifiers={{ ...(args.modifiers || {}), lifecycle: "pending" }}
     >
       {#snippet icon()}
-        <UnitPending />
+        <UnitPendingIcon />
       {/snippet}
       Queued
     </IconText><br />

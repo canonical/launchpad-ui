@@ -6,7 +6,10 @@
     StarredOffIcon,
   } from "@canonical/svelte-icons";
   import { defineMeta } from "@storybook/addon-svelte-csf";
-  import { BranchMerge, BranchMerged } from "$lib/components/icons/index.js";
+  import {
+    BranchMergeIcon,
+    BranchMergedIcon,
+  } from "$lib/components/icons/index.js";
   import Switch from "../Switch/Switch.svelte";
   import { Button } from "../index.js";
   import { MarkdownEditor } from "./index.js";
@@ -126,13 +129,13 @@
               onclick={() => insertText("merge branch")}
               label="Merge"
             >
-              <BranchMerge />
+              <BranchMergeIcon />
             </MarkdownEditor.Toolbar.ActionButton>
             <MarkdownEditor.Toolbar.ActionButton
               onclick={() => insertText("branch merged")}
               label="Merged"
             >
-              <BranchMerged />
+              <BranchMergedIcon />
             </MarkdownEditor.Toolbar.ActionButton>
             <MarkdownEditor.Toolbar.ActionButton
               onclick={() => insertText("fork repository")}

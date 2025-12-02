@@ -4,7 +4,7 @@
 
 <script lang="ts">
   import { HomeIcon, SettingsIcon, UserIcon } from "@canonical/svelte-icons";
-  import { ColorPalette } from "$lib/components/icons/index.js";
+  import { ColorPaletteIcon } from "$lib/components/icons/index.js";
   import { ButtonItem, ExpandToggle, LinkItem } from "./common/index.js";
   import type { ExpandToggleProps } from "./types.js";
 </script>
@@ -36,7 +36,7 @@
   <ButtonItem>
     Button in footer
     {#snippet icon()}
-      <ColorPalette />
+      <ColorPaletteIcon />
     {/snippet}
   </ButtonItem>
   <LinkItem href="/profile">

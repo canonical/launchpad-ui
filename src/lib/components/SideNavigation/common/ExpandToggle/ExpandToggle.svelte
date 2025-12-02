@@ -2,7 +2,7 @@
 
 <script lang="ts">
   import { ButtonPrimitive } from "$lib/components/common/index.js";
-  import { ExpandRight } from "$lib/components/icons/index.js";
+  import { ExpandRightIcon } from "$lib/components/icons/index.js";
   import type { ExpandToggleProps } from "./types.js";
 
   const componentCssClassName = "ds side-navigation-expand-toggle";
@@ -15,7 +15,7 @@
   class={[componentCssClassName, className]}
   {...rest}
 >
-  <ExpandRight class="expand-icon" />
+  <ExpandRightIcon class="expand-icon" />
 </ButtonPrimitive>
 
 <style>

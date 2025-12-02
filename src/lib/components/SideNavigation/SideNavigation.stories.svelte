@@ -9,7 +9,7 @@
     UserIcon,
   } from "@canonical/svelte-icons";
   import { defineMeta } from "@storybook/addon-svelte-csf";
-  import { ColorPalette } from "$lib/components/icons/index.js";
+  import { ColorPaletteIcon } from "$lib/components/icons/index.js";
   import { cssControlledFade } from "$lib/transitions/cssControlledFade.js";
   import LaunchpadLogo from "../LaunchpadLogo.svelte";
   import LaunchpadLogoText from "../LaunchpadLogoText.svelte";
@@ -100,7 +100,7 @@
       {#snippet footer()}
         <SideNavigation.ButtonItem>
           {#snippet icon()}
-            <ColorPalette />
+            <ColorPaletteIcon />
           {/snippet}
           Theme: Light
         </SideNavigation.ButtonItem>

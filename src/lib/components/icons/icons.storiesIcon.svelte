@@ -1,12 +1,12 @@
 <script module lang="ts">
   import { defineMeta } from "@storybook/addon-svelte-csf";
-  import Bot from "./Bot.svelte";
+  import BotIcon from "./BotIcon.svelte";
   import * as icons from "./index.js";
 
   const { Story } = defineMeta({
     title: "Components/Icons",
     tags: ["autodocs"],
-    component: Bot,
+    component: BotIcon,
   });
 </script>
 
@@ -15,7 +15,7 @@
 <Story name="Of different sizes" asChild>
   <div style="display: flex; align-items: center; gap: 8px;">
     {#each { length: 10 }, i (i)}
-      <Bot style="font-size: {(i + 1) * 0.2}rem;" />
+      <BotIcon style="font-size: {(i + 1) * 0.2}rem;" />
     {/each}
   </div>
 </Story>

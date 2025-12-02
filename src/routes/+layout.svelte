@@ -11,7 +11,11 @@
   import type { Component, Snippet } from "svelte";
   import LaunchpadLogo from "$lib/components/LaunchpadLogo.svelte";
   import LaunchpadLogoText from "$lib/components/LaunchpadLogoText.svelte";
-  import { ColorPalette, Moon, Sun } from "$lib/components/icons/index.js";
+  import {
+    ColorPaletteIcon,
+    MoonIcon,
+    SunIcon,
+  } from "$lib/components/icons/index.js";
   import {
     ContextualMenuContent,
     Popover,
@@ -39,8 +43,8 @@
   let expanded = $derived(data.sideNavigation);
 
   const themesDisplay: Record<Theme, { Icon: Component; label: string }> = {
-    light: { Icon: Sun, label: "Light" },
-    dark: { Icon: Moon, label: "Dark" },
+    light: { Icon: SunIcon, label: "Light" },
+    dark: { Icon: MoonIcon, label: "Dark" },
     system: { Icon: DesktopIcon, label: "Follow system" },
   };
 
@@ -137,7 +141,7 @@
             {#snippet trigger(triggerProps)}
               <SideNavigation.ButtonItem {...triggerProps}>
                 {#snippet icon()}
-                  <ColorPalette />
+                  <ColorPaletteIcon />
                 {/snippet}
                 Theme: {theme[0].toUpperCase() + theme.slice(1)}
               </SideNavigation.ButtonItem>

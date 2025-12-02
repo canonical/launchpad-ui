@@ -1,7 +1,7 @@
 <script module lang="ts">
   import { defineMeta } from "@storybook/addon-svelte-csf";
   import { DateTime } from "$lib/components/DateTime/index.js";
-  import { Flag } from "$lib/components/icons/index.js";
+  import { FlagIcon } from "$lib/components/icons/index.js";
   import { Timeline } from "../../index.js";
   import Event from "./Event.svelte";
 
@@ -50,7 +50,7 @@
       control: false,
     },
   }}
-  args={{ marker: Flag }}
+  args={{ marker: FlagIcon }}
 >
   {#snippet template({ children: _, titleRow: __, ...args })}
     <Timeline>
