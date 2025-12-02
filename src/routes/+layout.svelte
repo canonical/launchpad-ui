@@ -1,17 +1,21 @@
 <script lang="ts">
   import {
-    Comments,
-    Desktop,
-    Home,
+    CommentsIcon,
+    DesktopIcon,
+    HomeIcon,
     IconsOptimizationProvider,
-    LogOut,
-    Search,
-    User,
+    LogOutIcon,
+    SearchIcon,
+    UserIcon,
   } from "@canonical/svelte-icons";
   import type { Component, Snippet } from "svelte";
   import LaunchpadLogo from "$lib/components/LaunchpadLogo.svelte";
   import LaunchpadLogoText from "$lib/components/LaunchpadLogoText.svelte";
-  import { ColorPalette, Moon, Sun } from "$lib/components/icons/index.js";
+  import {
+    ColorPaletteIcon,
+    MoonIcon,
+    SunIcon,
+  } from "$lib/components/icons/index.js";
   import {
     ContextualMenuContent,
     Popover,
@@ -39,9 +43,9 @@
   let expanded = $derived(data.sideNavigation);
 
   const themesDisplay: Record<Theme, { Icon: Component; label: string }> = {
-    light: { Icon: Sun, label: "Light" },
-    dark: { Icon: Moon, label: "Dark" },
-    system: { Icon: Desktop, label: "Follow system" },
+    light: { Icon: SunIcon, label: "Light" },
+    dark: { Icon: MoonIcon, label: "Dark" },
+    system: { Icon: DesktopIcon, label: "Follow system" },
   };
 
   let modalMethods = $state<ShortcutsHelpSidePanelMethods>();
@@ -116,20 +120,20 @@
         <SideNavigation.LinkItem href="/">
           Home
           {#snippet icon()}
-            <Home />
+            <HomeIcon />
           {/snippet}
         </SideNavigation.LinkItem>
         <!-- TODO: Placeholder links -->
         <SideNavigation.LinkItem disabled>
           View another MP
           {#snippet icon()}
-            <Search />
+            <SearchIcon />
           {/snippet}
         </SideNavigation.LinkItem>
         <SideNavigation.LinkItem disabled>
           Give feedback
           {#snippet icon()}
-            <Comments />
+            <CommentsIcon />
           {/snippet}
         </SideNavigation.LinkItem>
         {#snippet footer()}
@@ -137,7 +141,7 @@
             {#snippet trigger(triggerProps)}
               <SideNavigation.ButtonItem {...triggerProps}>
                 {#snippet icon()}
-                  <ColorPalette />
+                  <ColorPaletteIcon />
                 {/snippet}
                 Theme: {theme[0].toUpperCase() + theme.slice(1)}
               </SideNavigation.ButtonItem>
@@ -173,13 +177,13 @@
           <SideNavigation.LinkItem disabled>
             $username
             {#snippet icon()}
-              <User />
+              <UserIcon />
             {/snippet}
           </SideNavigation.LinkItem>
           <SideNavigation.LinkItem disabled>
             Log out
             {#snippet icon()}
-              <LogOut />
+              <LogOutIcon />
             {/snippet}
           </SideNavigation.LinkItem>
         {/snippet}

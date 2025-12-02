@@ -1,7 +1,7 @@
 <!-- @canonical/generator-ds 0.10.0-experimental.2 -->
 
 <script lang="ts">
-  import { Spinner } from "@canonical/svelte-icons";
+  import { SpinnerIcon } from "@canonical/svelte-icons";
   import type { SpinnerProps } from "./types.js";
 
   const componentCssClassName = "ds spinner";
@@ -9,7 +9,7 @@
   let { class: className, ...rest }: SpinnerProps = $props();
 </script>
 
-<Spinner
+<SpinnerIcon
   name="spinner"
   class={[componentCssClassName, className]}
   aria-label="Loading"

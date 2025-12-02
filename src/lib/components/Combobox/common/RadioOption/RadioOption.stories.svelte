@@ -1,5 +1,5 @@
 <script module lang="ts">
-  import { Edit } from "@canonical/svelte-icons";
+  import { EditIcon } from "@canonical/svelte-icons";
   import { defineMeta } from "@storybook/addon-svelte-csf";
   import { Combobox } from "../../../index.js";
   import RadioOption from "./RadioOption.svelte";
@@ -41,7 +41,7 @@
   {#snippet template(args)}
     <Combobox.RadioOption {...args}>
       {#snippet icon()}
-        <Edit />
+        <EditIcon />
       {/snippet}
     </Combobox.RadioOption>
   {/snippet}
@@ -57,7 +57,7 @@
   {#snippet template(args)}
     <Combobox.RadioOption {...args}>
       {#snippet icon()}
-        <Edit />
+        <EditIcon />
       {/snippet}
     </Combobox.RadioOption>
   {/snippet}

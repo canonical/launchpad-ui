@@ -1,5 +1,5 @@
 <script module lang="ts">
-  import { ChevronDown, ChevronUp } from "@canonical/svelte-icons";
+  import { ChevronDownIcon, ChevronUpIcon } from "@canonical/svelte-icons";
   import { defineMeta } from "@storybook/addon-svelte-csf";
   import type { Snippet } from "svelte";
   import type { ToggleEventHandler } from "svelte/elements";
@@ -45,9 +45,9 @@
           {open ? "Close Popover" : "Open Popover"}
           {#snippet iconRight()}
             {#if open}
-              <ChevronDown />
+              <ChevronDownIcon />
             {:else}
-              <ChevronUp />
+              <ChevronUpIcon />
             {/if}
           {/snippet}
         </Button>
@@ -91,9 +91,9 @@
           Open Popover
           {#snippet iconRight()}
             {#if open}
-              <ChevronDown />
+              <ChevronDownIcon />
             {:else}
-              <ChevronUp />
+              <ChevronUpIcon />
             {/if}
           {/snippet}
         </Button>

@@ -1,11 +1,11 @@
 <script module lang="ts">
   import {
-    Archive,
-    BackToTop,
-    ExternalLink,
-    Information,
-    Notifications,
-    Settings,
+    ArchiveIcon,
+    BackToTopIcon,
+    ExternalLinkIcon,
+    InformationIcon,
+    NotificationsIcon,
+    SettingsIcon,
   } from "@canonical/svelte-icons";
   import { defineMeta } from "@storybook/addon-svelte-csf";
   import { ContextualMenuContent } from "./index.js";
@@ -52,7 +52,7 @@
         text="Wrap overflowing code lines"
       >
         {#snippet icon()}
-          <BackToTop />
+          <BackToTopIcon />
         {/snippet}
       </ContextualMenuContent.CheckboxItem>
     </ContextualMenuContent.Group>
@@ -65,7 +65,7 @@
         secondaryText="They are loud!"
       >
         {#snippet icon()}
-          <Notifications />
+          <NotificationsIcon />
         {/snippet}
       </ContextualMenuContent.SwitchItem>
       <ContextualMenuContent.SwitchItem
@@ -74,7 +74,7 @@
         text="Auto-save changes"
       >
         {#snippet icon()}
-          <Archive />
+          <ArchiveIcon />
         {/snippet}
       </ContextualMenuContent.SwitchItem>
       <ContextualMenuContent.SwitchItem
@@ -83,7 +83,7 @@
         trailingText="(beta)"
       >
         {#snippet icon()}
-          <Settings />
+          <SettingsIcon />
         {/snippet}
       </ContextualMenuContent.SwitchItem>
     </ContextualMenuContent.Group>
@@ -95,7 +95,7 @@
         text="View in Launchpad Classic"
       >
         {#snippet icon()}
-          <ExternalLink />
+          <ExternalLinkIcon />
         {/snippet}
       </ContextualMenuContent.LinkItem>
       <ContextualMenuContent.LinkItem
@@ -115,7 +115,7 @@
       <ContextualMenuContent.Helper {id}>
         Use the options above to customize the view
         {#snippet icon()}
-          <Information />
+          <InformationIcon />
         {/snippet}
       </ContextualMenuContent.Helper>
     {/snippet}

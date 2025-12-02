@@ -1,18 +1,18 @@
 <!-- @canonical/generator-ds 0.10.0-experimental.3 -->
 
 <script lang="ts">
-  import { Help, Link } from "@canonical/svelte-icons";
+  import { HelpIcon, LinkIcon } from "@canonical/svelte-icons";
   import ShortcutsHelpSidePanel from "$lib/components/ShortcutsHelpSidePanel/ShortcutsHelpSidePanel.svelte";
   import type { ShortcutsHelpSidePanelMethods } from "$lib/components/ShortcutsHelpSidePanel/types.js";
   import {
-    Bold,
-    BulletedList,
-    CodeTag,
-    Heading,
-    Italic,
-    NumberedList,
-    Quote,
-    TaskList,
+    BoldIcon,
+    BulletedListIcon,
+    CodeTagIcon,
+    HeadingIcon,
+    ItalicIcon,
+    NumberedListIcon,
+    QuoteIcon,
+    TaskListIcon,
   } from "$lib/components/icons/index.js";
   import { Shortcut, useShortcuts } from "$lib/shortcuts";
   import { getMarkdownEditorContext } from "../../../../context.js";
@@ -81,21 +81,21 @@
     shortcut={defaultActions.h1.shortcut}
     label="Add heading 1"
   >
-    <Heading />
+    <HeadingIcon />
   </ActionButton>
   <ActionButton
     onclick={() => defaultActions.bold.action()}
     shortcut={defaultActions.bold.shortcut}
     label="Add bold"
   >
-    <Bold />
+    <BoldIcon />
   </ActionButton>
   <ActionButton
     onclick={() => defaultActions.italic.action()}
     shortcut={defaultActions.italic.shortcut}
     label="Add italic"
   >
-    <Italic />
+    <ItalicIcon />
   </ActionButton>
 </Group>
 <Group aria-label="Block elements">
@@ -104,49 +104,49 @@
     shortcut={defaultActions.quote.shortcut}
     label="Add quote"
   >
-    <Quote />
+    <QuoteIcon />
   </ActionButton>
   <ActionButton
     onclick={() => defaultActions.code.action()}
     shortcut={defaultActions.code.shortcut}
     label="Add code"
   >
-    <CodeTag />
+    <CodeTagIcon />
   </ActionButton>
   <ActionButton
     onclick={() => defaultActions.insertLink.action()}
     shortcut={defaultActions.insertLink.shortcut}
     label="Add link"
   >
-    <Link />
+    <LinkIcon />
   </ActionButton>
   <ActionButton
     onclick={() => defaultActions.unorderedList.action()}
     shortcut={defaultActions.unorderedList.shortcut}
     label="Add bullet list"
   >
-    <BulletedList />
+    <BulletedListIcon />
   </ActionButton>
   <ActionButton
     onclick={() => defaultActions.numberedList.action()}
     shortcut={defaultActions.numberedList.shortcut}
     label="Add numbered list"
   >
-    <NumberedList />
+    <NumberedListIcon />
   </ActionButton>
   <ActionButton
     onclick={() => defaultActions.numberedList.action()}
     shortcut={defaultActions.numberedList.shortcut}
     label="Add numbered list"
   >
-    <NumberedList />
+    <NumberedListIcon />
   </ActionButton>
   <ActionButton
     onclick={() => defaultActions.taskList.action()}
     shortcut={defaultActions.taskList.shortcut}
     label="Add task list"
   >
-    <TaskList />
+    <TaskListIcon />
   </ActionButton>
 </Group>
 <Group aria-label="Miscellaneous">
@@ -155,7 +155,7 @@
     shortcut={helpShortcut}
     label="Help"
   >
-    <Help />
+    <HelpIcon />
   </ActionButton>
   <ShortcutsHelpSidePanel
     bind:this={modalMethods}

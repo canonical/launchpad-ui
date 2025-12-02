@@ -1,7 +1,7 @@
 <!-- @canonical/generator-ds 0.10.0-experimental.3 -->
 
 <script lang="ts">
-  import { ChevronDown } from "@canonical/svelte-icons";
+  import { ChevronDownIcon } from "@canonical/svelte-icons";
   import type { SelectProps } from "./types.js";
 
   const componentCssClassName = "ds select";
@@ -25,7 +25,7 @@
     {@render children?.()}
   </select>
   {#if !rest.multiple}
-    <ChevronDown class="chevron" />
+    <ChevronDownIcon class="chevron" />
   {/if}
 </div>
 

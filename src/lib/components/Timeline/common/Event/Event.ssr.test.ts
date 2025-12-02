@@ -5,7 +5,7 @@ import type { RenderResult } from "@canonical/svelte-ssr-test";
 import { createRawSnippet } from "svelte";
 import type { ComponentProps } from "svelte";
 import { describe, expect, it } from "vitest";
-import { Flag } from "$lib/components/icons/index.js";
+import { FlagIcon } from "$lib/components/icons/index.js";
 import Component from "./Event.svelte";
 
 describe("Event SSR", () => {
@@ -104,7 +104,7 @@ describe("Event SSR", () => {
           props: {
             ...baseProps,
             markerSize: "small",
-            marker: Flag,
+            marker: FlagIcon,
           },
         });
         const element = componentLocator(page);
@@ -116,7 +116,7 @@ describe("Event SSR", () => {
           props: {
             ...baseProps,
             markerSize: "large",
-            marker: Flag,
+            marker: FlagIcon,
           },
         });
         const element = componentLocator(page);

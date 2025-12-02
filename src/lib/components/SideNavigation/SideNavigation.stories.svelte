@@ -1,15 +1,15 @@
 <script module lang="ts">
   import {
-    Home,
-    Link,
-    LogOut,
-    Mount,
-    Notifications,
-    Pods,
-    User,
+    HomeIcon,
+    LinkIcon,
+    LogOutIcon,
+    MountIcon,
+    NotificationsIcon,
+    PodsIcon,
+    UserIcon,
   } from "@canonical/svelte-icons";
   import { defineMeta } from "@storybook/addon-svelte-csf";
-  import { ColorPalette } from "$lib/components/icons/index.js";
+  import { ColorPaletteIcon } from "$lib/components/icons/index.js";
   import { cssControlledFade } from "$lib/transitions/cssControlledFade.js";
   import LaunchpadLogo from "../LaunchpadLogo.svelte";
   import LaunchpadLogoText from "../LaunchpadLogoText.svelte";
@@ -29,7 +29,15 @@
 
   let expandedState = $state(true);
 
-  const icons = [Home, User, LogOut, Link, Notifications, Pods, Mount];
+  const icons = [
+    HomeIcon,
+    UserIcon,
+    LogOutIcon,
+    LinkIcon,
+    NotificationsIcon,
+    PodsIcon,
+    MountIcon,
+  ];
 </script>
 
 <Story name="Default">
@@ -92,19 +100,19 @@
       {#snippet footer()}
         <SideNavigation.ButtonItem>
           {#snippet icon()}
-            <ColorPalette />
+            <ColorPaletteIcon />
           {/snippet}
           Theme: Light
         </SideNavigation.ButtonItem>
         <SideNavigation.LinkItem href="/">
           {#snippet icon()}
-            <User />
+            <UserIcon />
           {/snippet}
           $username
         </SideNavigation.LinkItem>
         <SideNavigation.ButtonItem>
           {#snippet icon()}
-            <LogOut />
+            <LogOutIcon />
           {/snippet}
           Logout
         </SideNavigation.ButtonItem>

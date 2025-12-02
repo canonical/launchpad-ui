@@ -1,7 +1,7 @@
 <!-- @canonical/generator-ds 0.10.0-experimental.4 -->
 
 <script lang="ts">
-  import { Search } from "@canonical/svelte-icons";
+  import { SearchIcon } from "@canonical/svelte-icons";
   import {
     ButtonPrimitive,
     TextInputPrimitive,
@@ -37,7 +37,7 @@
     {disabled}
     {onclick}
   >
-    <Search />
+    <SearchIcon />
   </ButtonPrimitive>
 </div>
 
