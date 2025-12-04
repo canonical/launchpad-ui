@@ -6,6 +6,7 @@ export * from "./Chip/index.js";
 export * from "./Combobox/index.js";
 export * from "./ContextualMenuContent/index.js";
 export * from "./DateTime/index.js";
+export * from "./DescriptionList/index.js";
 export * from "./IconText/index.js";
 export * from "./Link/index.js";
 export * from "./Modal/index.js";
