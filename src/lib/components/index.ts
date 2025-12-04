@@ -9,6 +9,7 @@ export * from "./DateTime/index.js";
 export * from "./DescriptionList/index.js";
 export * from "./IconText/index.js";
 export * from "./Link/index.js";
+export * from "./Log/index.js";
 export * from "./Modal/index.js";
 export * from "./ModalContent/index.js";
 export * from "./Popover/index.js";
