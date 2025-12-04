@@ -8,7 +8,7 @@
   let {
     class: className,
     orientation = "horizontal",
-    term,
+    name,
     children,
     ...rest
   }: ItemProps = $props();
@@ -19,7 +19,7 @@
   data-testid="description-list-item"
   {...rest}
 >
-  <dt>{term}</dt>
+  <dt>{name}</dt>
   <dd>{@render children()}</dd>
 </div>
 

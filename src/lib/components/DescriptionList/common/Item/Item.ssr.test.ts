@@ -12,7 +12,7 @@ describe("Item SSR", () => {
     children: createRawSnippet(() => ({
       render: () => `<span>Description</span>`,
     })),
-    term: "Term",
+    name: "Term",
   } satisfies ComponentProps<typeof Component>;
 
   describe("basics", () => {

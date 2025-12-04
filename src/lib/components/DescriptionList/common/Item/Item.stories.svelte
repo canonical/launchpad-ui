@@ -9,7 +9,7 @@
     tags: ["autodocs"],
     component: Item,
     args: {
-      term: "Example term",
+      name: "Example term",
       children: "Example description" as unknown as Snippet,
     },
   });

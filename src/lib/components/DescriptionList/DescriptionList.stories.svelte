@@ -15,14 +15,14 @@
 <Story name="Default">
   {#snippet template()}
     <DescriptionList>
-      <DescriptionList.Item term="ID">134</DescriptionList.Item>
-      <DescriptionList.Item term="Requested by">
+      <DescriptionList.Item name="ID">134</DescriptionList.Item>
+      <DescriptionList.Item name="Requested by">
         <UserChip userName="Jane Doe" />
       </DescriptionList.Item>
-      <DescriptionList.Item term="Created">
+      <DescriptionList.Item name="Created">
         <DateTime date="2023-10-01T12:00:00Z" absolute={true} />
       </DescriptionList.Item>
-      <DescriptionList.Item term="Status">
+      <DescriptionList.Item name="Status">
         <Chip value="Active" readonly severity="positive" />
       </DescriptionList.Item>
     </DescriptionList>
@@ -32,16 +32,16 @@
 <Story name="With vertical items">
   {#snippet template()}
     <DescriptionList>
-      <DescriptionList.Item term="ID" orientation="vertical"
+      <DescriptionList.Item name="ID" orientation="vertical"
         >134</DescriptionList.Item
       >
-      <DescriptionList.Item term="Requested by" orientation="vertical">
+      <DescriptionList.Item name="Requested by" orientation="vertical">
         <UserChip userName="Jane Doe" />
       </DescriptionList.Item>
-      <DescriptionList.Item term="Created" orientation="vertical">
+      <DescriptionList.Item name="Created" orientation="vertical">
         <DateTime date="2023-10-01T12:00:00Z" absolute={true} />
       </DescriptionList.Item>
-      <DescriptionList.Item term="Status" orientation="vertical">
+      <DescriptionList.Item name="Status" orientation="vertical">
         <Chip value="Active" readonly severity="positive" />
       </DescriptionList.Item>
     </DescriptionList>
@@ -51,14 +51,14 @@
 <Story name="With mixed orientations" tags={["!autodocs"]}>
   {#snippet template()}
     <DescriptionList>
-      <DescriptionList.Item term="ID">134</DescriptionList.Item>
-      <DescriptionList.Item term="Requested by" orientation="vertical">
+      <DescriptionList.Item name="ID">134</DescriptionList.Item>
+      <DescriptionList.Item name="Requested by" orientation="vertical">
         <UserChip userName="Jane Doe" />
       </DescriptionList.Item>
-      <DescriptionList.Item term="Created">
+      <DescriptionList.Item name="Created">
         <DateTime date="2023-10-01T12:00:00Z" absolute={true} />
       </DescriptionList.Item>
-      <DescriptionList.Item term="Status" orientation="vertical">
+      <DescriptionList.Item name="Status" orientation="vertical">
         <Chip value="Active" readonly severity="positive" />
       </DescriptionList.Item>
     </DescriptionList>

@@ -13,7 +13,7 @@ describe("Item component", () => {
     children: createRawSnippet(() => ({
       render: () => `<span>Description</span>`,
     })),
-    term: "Term",
+    name: "Term",
   } satisfies ComponentProps<typeof Component>;
 
   it("renders", async () => {
