@@ -2,4 +2,17 @@
 
 import type { SvelteHTMLElements } from "svelte/elements";
 
-export type DescriptionListProps = SvelteHTMLElements["dl"];
+export type BaseProps = SvelteHTMLElements["dl"];
+export interface DescriptionListProps extends BaseProps {
+  /**
+   * The orientation of the list's items.
+   * @default "horizontal"
+   */
+  orientation?: Orientation;
+}
+
+export interface DescriptionListContext {
+  orientation: Orientation;
+}
+
+type Orientation = "horizontal" | "vertical";

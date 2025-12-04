@@ -22,11 +22,3 @@
     </DescriptionList>
   {/snippet}
 </Story>
-
-<Story name="Vertical" args={{ orientation: "vertical" }}>
-  {#snippet template(args)}
-    <DescriptionList>
-      <DescriptionList.Item {...args} />
-    </DescriptionList>
-  {/snippet}
-</Story>

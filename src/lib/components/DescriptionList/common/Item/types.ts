@@ -7,10 +7,6 @@ type BaseProps = SvelteHTMLElements["div"];
 
 export interface ItemProps extends BaseProps {
   /**
-   * Orientation of the item
-   */
-  orientation?: "horizontal" | "vertical";
-  /**
    * Term/name of the item
    */
   name: string;

@@ -11,9 +11,6 @@ const DescriptionList = DescriptionListRoot as typeof DescriptionListRoot & {
    * ```svelte
    * <DescriptionList>
    *   <DescriptionList.Item term="ID">134</DescriptionList.Item>
-   *   <DescriptionList.Item term="Requested by" orientation="vertical">
-   *     John Smith
-   *   </DescriptionList.Item>
    * </DescriptionList>
    */
   Item: typeof Item;
@@ -21,5 +18,5 @@ const DescriptionList = DescriptionListRoot as typeof DescriptionListRoot & {
 DescriptionList.Item = Item;
 
 export { DescriptionList };
-export * from "./types.js";
+export { type DescriptionListProps } from "./types.js";
 export type { ItemProps as DescriptionListItemProps } from "./common/index.js";

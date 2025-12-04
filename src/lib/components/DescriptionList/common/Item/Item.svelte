@@ -1,17 +1,17 @@
 <!-- @canonical/generator-ds 0.10.0-experimental.5 -->
 
 <script lang="ts">
+  import { getDescriptionListContext } from "../../context.js";
   import type { ItemProps } from "./types.js";
 
   const componentCssClassName = "ds description-list-item";
 
-  let {
-    class: className,
-    orientation = "horizontal",
-    name,
-    children,
-    ...rest
-  }: ItemProps = $props();
+  let { class: className, name, children, ...rest }: ItemProps = $props();
+
+  const descriptionListContext = getDescriptionListContext();
+  const orientation = $derived(
+    descriptionListContext?.orientation ?? "horizontal",
+  );
 </script>
 
 <div
