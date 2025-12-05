@@ -20,7 +20,7 @@
   severity="base"
   {...rest}
 >
-  > {#snippet iconLeft()}
+  {#snippet iconLeft()}
     <CloseIcon />
   {/snippet}
 </Button>
