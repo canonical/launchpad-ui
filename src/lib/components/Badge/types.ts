@@ -7,8 +7,7 @@ import type { WithoutChildren } from "$lib/type-utils.js";
 type BaseProps = SvelteHTMLElements["span"];
 
 export interface BadgeProps
-  extends WithoutChildren<BaseProps>,
-    ModifierFamily<"severity"> {
+  extends WithoutChildren<BaseProps>, ModifierFamily<"severity"> {
   /**
    * The non-negative integer value displayed within the badge. Negative values will be clamped to 0. Floats will be rounded.
    */

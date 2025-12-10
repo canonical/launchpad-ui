@@ -12,7 +12,6 @@ export type UserOptions = {
 };
 
 export interface UserAvatarProps
-  extends WithoutChildren<HTMLAttributes<HTMLElement>>,
-    UserOptions {
+  extends WithoutChildren<HTMLAttributes<HTMLElement>>, UserOptions {
   size?: ModifierFamilyValues["size"];
 }

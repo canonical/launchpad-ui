@@ -20,6 +20,7 @@
 
   // We need to track if expanded has changed from its initial value to avoid animating on first render
   let expandedChanged = $state(false);
+  // svelte-ignore state_referenced_locally
   const initialExpanded = expanded;
   $effect.pre(() => {
     if (expanded !== initialExpanded) expandedChanged = true;

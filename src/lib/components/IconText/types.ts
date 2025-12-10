@@ -8,7 +8,6 @@ import type { IconTextModifiers } from "./modifiers";
 type BaseProps = SvelteHTMLElements["span"];
 
 export interface IconTextProps
-  extends BaseProps,
-    ModifiedBy<IconTextModifiers> {
+  extends BaseProps, ModifiedBy<IconTextModifiers> {
   icon: Snippet;
 }
