@@ -28,24 +28,38 @@
     Shortcut,
     UseShortcuts,
   } from "$lib/shortcuts";
-  import { themes } from "$lib/theme";
-  import type { Theme } from "$lib/theme.js";
-  import { cssControlledFade } from "$lib/transitions/cssControlledFade.js";
   import "../app.css";
-  import type { LayoutData } from "./$types";
-  import { ThemeSetter } from "./(common)/ThemeSetter";
-  import { enhance } from "$app/forms";
+  import type { Theme } from "$lib/theme.js";
+  import { themeCookieName, themes } from "$lib/theme.js";
+  import { cssControlledFade } from "$lib/transitions/cssControlledFade.js";
+  import { ThemeSetter } from "./(common)/ThemeSetter/index.js";
+  import { sideNavigationStateCookieName } from "./(common)/side-navigation-state.js";
+  import {
+    getSideNavigationState,
+    setSideNavigationStateForm,
+  } from "./(common)/side-navigation-state.remote.js";
+  import {
+    getTheme,
+    setThemeCommand,
+    setThemeForm,
+  } from "./(common)/theme.remote.js";
 
-  let { children, data }: { children: Snippet; data: LayoutData } = $props();
-
-  let theme = $derived(data.theme);
-
-  let expanded = $derived(data.sideNavigation);
+  let { children }: { children: Snippet } = $props();
 
   const themesDisplay: Record<Theme, { Icon: Component; label: string }> = {
     light: { Icon: SunIcon, label: "Light" },
     dark: { Icon: MoonIcon, label: "Dark" },
     system: { Icon: DesktopIcon, label: "Follow system" },
+  };
+
+  const clientSideSetTheme = async (theme: Theme) => {
+    await cookieStore.set({
+      name: themeCookieName,
+      value: theme,
+      expires: Date.now() + 1000 * 60 * 60 * 24 * 365,
+      sameSite: "lax",
+    });
+    getTheme().set(theme);
   };
 
   let modalMethods = $state<ShortcutsHelpSidePanelMethods>();
@@ -54,9 +68,7 @@
     {
       label: "Open command guide",
     },
-    () => {
-      modalMethods?.showModal();
-    },
+    () => modalMethods?.showModal(),
   );
 
   const toggleThemeShortcut = new Shortcut(
@@ -64,11 +76,26 @@
     {
       label: "Cycle theme option",
     },
-    () => (theme = themes[(themes.indexOf(theme) + 1) % themes.length]),
+    async () => {
+      const newTheme =
+        themes[(themes.indexOf(await getTheme()) + 1) % themes.length];
+
+      try {
+        await clientSideSetTheme(newTheme);
+      } catch (e) {
+        console.error(e);
+        await setThemeCommand(newTheme);
+      }
+    },
+  );
+
+  const sideNavigationStatePromise = $derived(getSideNavigationState());
+  const isSideNavigationExpanded = $derived(
+    (await sideNavigationStatePromise) === "expanded",
   );
 </script>
 
-<ThemeSetter {theme} />
+<ThemeSetter theme={await getTheme()} />
 
 <IconsOptimizationProvider>
   <GlobalShortcutsProvider>
@@ -76,10 +103,10 @@
     <ShortcutsHelpSidePanel bind:this={modalMethods} />
 
     <div class="app-layout">
-      <SideNavigation {expanded}>
+      <SideNavigation expanded={isSideNavigationExpanded}>
         {#snippet logo()}
           <a href="/" aria-label="Launchpad Home" class="logo-link">
-            {#if expanded}
+            {#if isSideNavigationExpanded}
               <div
                 aria-hidden="true"
                 transition:cssControlledFade={{
@@ -97,23 +124,31 @@
         {/snippet}
         {#snippet expandToggle(toggleProps)}
           <form
-            method="POST"
-            action="/?/toggleSideNavigation"
+            {...setSideNavigationStateForm.enhance(
+              async ({ data: { state: newState }, submit }) => {
+                try {
+                  // If we have JS, try not to bother the server at all
+                  await cookieStore.set({
+                    name: sideNavigationStateCookieName,
+                    value: newState,
+                    expires: Date.now() + 1000 * 60 * 60 * 24 * 365,
+                    sameSite: "lax",
+                  });
+                  getSideNavigationState().set(newState);
+                } catch (e) {
+                  console.error(e);
+                  await submit();
+                }
+              },
+            )}
             style="display: contents;"
-            use:enhance={({ cancel }) => {
-              // If we have JS, abort the submission and don't bother the server
-              cancel();
-              expanded = !expanded;
-              // TODO: Use cookie parsing library. Kit uses: https://github.com/jshttp/cookie
-              document.cookie = `side-navigation-expanded=${expanded}; path=/; expires=${new Date(
-                Date.now() + 1000 * 60 * 60 * 24 * 365,
-              ).toUTCString()}`;
-            }}
           >
             <SideNavigation.ExpandToggle
               {...toggleProps}
-              name="expanded"
-              value={String(!expanded)}
+              {...setSideNavigationStateForm.fields.state.as(
+                "submit",
+                isSideNavigationExpanded ? "collapsed" : "expanded",
+              )}
             />
           </form>
         {/snippet}
@@ -143,16 +178,27 @@
                 {#snippet icon()}
                   <ColorPaletteIcon />
                 {/snippet}
-                Theme: {theme[0].toUpperCase() + theme.slice(1)}
+                Theme:
+                <span style="text-transform: capitalize;"
+                  >{await getTheme()}</span
+                >
               </SideNavigation.ButtonItem>
             {/snippet}
             <ContextualMenuContent
               style="margin-inline-start: var(--tmp-dimension-spacing-inline-xxs);"
             >
               <form
-                method="POST"
-                action="/?/changeTheme"
-                use:enhance
+                {...setThemeForm.enhance(
+                  async ({ data: { theme }, submit }) => {
+                    try {
+                      // If we have JS, try not to bother the server at all
+                      await clientSideSetTheme(theme);
+                    } catch (e) {
+                      console.error(e);
+                      await submit();
+                    }
+                  },
+                )}
                 style="display: contents;"
               >
                 <ContextualMenuContent.Group style="min-width: 280px">
@@ -160,9 +206,7 @@
                     {@const { Icon, label } = themesDisplay[themeOption]}
                     <ContextualMenuContent.ButtonItem
                       text={label}
-                      name="theme"
-                      value={themeOption}
-                      type="submit"
+                      {...setThemeForm.fields.theme.as("submit", themeOption)}
                     >
                       {#snippet icon()}
                         <Icon />

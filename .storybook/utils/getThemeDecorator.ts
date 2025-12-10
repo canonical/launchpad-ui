@@ -1,7 +1,7 @@
 import { DecoratorHelpers } from "@storybook/addon-themes";
 import type { Decorator } from "@storybook/sveltekit";
-import type { Theme } from "../../src/lib/theme";
-import { themes } from "../../src/lib/theme";
+import { themes } from "../../src/lib/theme.js";
+import type { Theme } from "../../src/lib/theme.js";
 import ThemeProvider from "./ThemeProvider.svelte";
 
 const { pluckThemeFromContext, initializeThemeState } = DecoratorHelpers;
