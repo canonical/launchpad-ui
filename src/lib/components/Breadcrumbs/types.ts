@@ -8,8 +8,9 @@ export interface Segment {
   href?: string;
 }
 
-export interface BreadcrumbsProps
-  extends WithoutChildren<HTMLAttributes<HTMLElement>> {
+export interface BreadcrumbsProps extends WithoutChildren<
+  HTMLAttributes<HTMLElement>
+> {
   /**
    * Breadcrumb segments.
    */

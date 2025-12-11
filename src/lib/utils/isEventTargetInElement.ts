@@ -11,8 +11,8 @@ export function isEventTargetInElement(
 ) {
   return Boolean(
     element &&
-      eventTarget &&
-      eventTarget instanceof Node &&
-      (eventTarget === element || element.contains(eventTarget)),
+    eventTarget &&
+    eventTarget instanceof Node &&
+    (eventTarget === element || element.contains(eventTarget)),
   );
 }

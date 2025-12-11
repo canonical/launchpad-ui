@@ -5,8 +5,7 @@ import type { ModifierFamily } from "$lib/modifier-families/types.js";
 import type { WithoutChildren } from "$lib/type-utils.js";
 
 export interface TextInputProps
-  extends WithoutChildren<HTMLInputAttributes>,
-    ModifierFamily<"severity"> {
+  extends WithoutChildren<HTMLInputAttributes>, ModifierFamily<"severity"> {
   /**
    * The type of input control to display.
    */

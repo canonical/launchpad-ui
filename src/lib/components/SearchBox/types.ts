@@ -2,8 +2,10 @@
 
 import type { HTMLInputAttributes, MouseEventHandler } from "svelte/elements";
 
-export interface SearchBoxProps
-  extends Omit<HTMLInputAttributes, "type" | "children" | "onclick"> {
+export interface SearchBoxProps extends Omit<
+  HTMLInputAttributes,
+  "type" | "children" | "onclick"
+> {
   /**
    * The value of the search input.
    *

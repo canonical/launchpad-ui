@@ -2,8 +2,10 @@
 
 import type { HTMLTextareaAttributes } from "svelte/elements";
 
-export interface TextareaProps
-  extends Omit<HTMLTextareaAttributes, "children" | "rows"> {
+export interface TextareaProps extends Omit<
+  HTMLTextareaAttributes,
+  "children" | "rows"
+> {
   /**
    * The value of the textarea.
    *
