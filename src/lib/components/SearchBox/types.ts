@@ -4,14 +4,18 @@ import type { HTMLInputAttributes, MouseEventHandler } from "svelte/elements";
 
 export interface SearchBoxProps extends Omit<
   HTMLInputAttributes,
-  "type" | "children" | "onclick"
+  "children" | "onclick"
 > {
+  /**
+   * The type of input control to display.
+   */
+  type?: "search";
   /**
    * The value of the search input.
    *
    * **@bindable**
    */
-  value?: string;
+  value?: string | number;
   /**
    * The accessible name for the input.
    *

@@ -2,15 +2,12 @@
 
 import type { HTMLInputAttributes } from "svelte/elements";
 
-type BaseProps = Omit<
+interface BaseProps extends Omit<
   HTMLInputAttributes,
-  | "type"
-  | "children"
-  | "role"
-  | "indeterminate"
-  | "aria-checked"
-  | "aria-readonly"
->;
+  "children" | "role" | "indeterminate" | "aria-checked" | "aria-readonly"
+> {
+  type?: "checkbox";
+}
 
 interface CheckedControlledSwitchProps<T> extends BaseProps {
   value?: T;

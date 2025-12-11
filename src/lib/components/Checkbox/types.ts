@@ -1,8 +1,11 @@
 /* @canonical/generator-ds 0.10.0-experimental.0 */
 
 import type { HTMLInputAttributes } from "svelte/elements";
+import type { WithoutChildren } from "$lib/type-utils.js";
 
-type BaseProps = Omit<HTMLInputAttributes, "type" | "children">;
+interface BaseProps extends WithoutChildren<HTMLInputAttributes> {
+  type?: "checkbox";
+}
 
 export interface CheckedControlledCheckboxProps<T> extends BaseProps {
   value?: T;

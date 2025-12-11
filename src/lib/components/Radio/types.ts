@@ -2,10 +2,12 @@
 
 import type { HTMLInputAttributes } from "svelte/elements";
 
-type BaseProps = Omit<
+interface BaseProps extends Omit<
   HTMLInputAttributes,
-  "type" | "children" | "indeterminate"
->;
+  "children" | "indeterminate"
+> {
+  type?: "radio";
+}
 
 export interface CheckedControlledRadioProps<T> extends BaseProps {
   value?: T;
