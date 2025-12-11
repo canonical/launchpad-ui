@@ -15,7 +15,7 @@ export interface TextInputProps
    *
    * **@bindable**
    */
-  value?: string;
+  value?: string | number;
 
   density?: "dense" | "medium";
 }
