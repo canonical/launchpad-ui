@@ -5,8 +5,6 @@ import type { CheckedControlledCheckboxProps } from "$lib/components/Checkbox/ty
 import type { OptionContentProps } from "$lib/components/common/index.js";
 
 export interface CheckboxOptionProps<T = HTMLInputAttributes["value"]>
-  extends Omit<
-      CheckedControlledCheckboxProps<T>,
-      "disabled" | "name" | "group"
-    >,
+  extends
+    Omit<CheckedControlledCheckboxProps<T>, "disabled" | "name" | "group">,
     OptionContentProps {}

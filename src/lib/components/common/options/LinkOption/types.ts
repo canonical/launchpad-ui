@@ -5,7 +5,6 @@ import type { WithoutChildren } from "$lib/type-utils.js";
 import type { OptionContentProps } from "../common/index.js";
 
 export interface LinkOptionProps
-  extends WithoutChildren<HTMLAnchorAttributes>,
-    OptionContentProps {
+  extends WithoutChildren<HTMLAnchorAttributes>, OptionContentProps {
   disabled?: boolean;
 }
