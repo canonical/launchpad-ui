@@ -26,3 +26,4 @@ export * from "./Timeline/index.js";
 export * from "./Tooltip/index.js";
 export * from "./UserAvatar/index.js";
 export * from "./UserChip/index.js";
+export { default as Woops } from "./Woops.svelte";
