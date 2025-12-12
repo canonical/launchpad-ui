@@ -4,6 +4,7 @@
     DesktopIcon,
     HomeIcon,
     IconsOptimizationProvider,
+    IsoIcon,
     LogOutIcon,
     SearchIcon,
     UserIcon,
@@ -43,6 +44,7 @@
     setThemeCommand,
     setThemeForm,
   } from "./(common)/theme.remote.js";
+  import { page } from "$app/state";
 
   let { children }: { children: Snippet } = $props();
 
@@ -152,10 +154,26 @@
             />
           </form>
         {/snippet}
-        <SideNavigation.LinkItem href="/">
+        <SideNavigation.LinkItem
+          href="/"
+          selected={page.url.pathname === "/"}
+          aria-current={page.url.pathname === "/" ? "page" : undefined}
+        >
           Home
           {#snippet icon()}
             <HomeIcon />
+          {/snippet}
+        </SideNavigation.LinkItem>
+        <SideNavigation.LinkItem
+          href="/jobs"
+          selected={page.url.pathname.startsWith("/jobs")}
+          aria-current={page.url.pathname.startsWith("/jobs")
+            ? "page"
+            : undefined}
+        >
+          Jobs
+          {#snippet icon()}
+            <IsoIcon />
           {/snippet}
         </SideNavigation.LinkItem>
         <!-- TODO: Placeholder links -->
