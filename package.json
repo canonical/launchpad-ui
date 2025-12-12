@@ -25,7 +25,8 @@
     "test:client:webkit": "bun run test --project=client --browser=webkit",
     "test:watch:client": "bun run test:watch --project=client --browser.headless=false",
     "storybook": "storybook dev -p 6006 --no-open",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "generate-types": "openapi-typescript  https://git.launchpad.net/job-manager/plain/openapi/openapi.yaml -o src/lib/api/job-manager/types.ts --root-types --root-types-no-schema-prefix"
   },
   "devDependencies": {
     "@canonical/svelte-ssr-test": "^0.10.0-experimental.5",
@@ -48,6 +49,7 @@
     "eslint-plugin-storybook": "^10.1.6",
     "eslint-plugin-svelte": "^3.13.1",
     "globals": "^16.5.0",
+    "openapi-typescript": "^7.10.1",
     "playwright": "^1.57.0",
     "prettier": "^3.7.4",
     "prettier-plugin-svelte": "^3.4.0",
@@ -70,6 +72,7 @@
     "@floating-ui/dom": "^1.7.4",
     "markdown-actions": "^1.1.2",
     "normalize.css": "^8.0.1",
+    "openapi-fetch": "^0.15.0",
     "valibot": "^1.2.0"
   }
 }
