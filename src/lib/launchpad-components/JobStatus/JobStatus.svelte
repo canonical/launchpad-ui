@@ -39,7 +39,7 @@
   });
 </script>
 
-<IconText modifiers={{ lifecycle: modifier }} {...rest}>
+<IconText modifiers={{ lifecycle: modifier, size: "small" }} {...rest}>
   {#snippet icon()}
     <Icon />
   {/snippet}

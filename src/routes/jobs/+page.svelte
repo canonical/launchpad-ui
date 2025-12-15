@@ -1,9 +1,10 @@
 <script lang="ts">
-  import { DateTime, Spinner, UserChip } from "$lib/components/index.js";
+  import { DateTime, Link, Spinner, UserChip } from "$lib/components/index.js";
   import type { DateTimeProps } from "$lib/components/index.js";
   import { JobStatus, Whoops } from "$lib/launchpad-components/index.js";
   import type { PageProps } from "./$types";
   import { browser } from "$app/environment";
+  import { resolve } from "$app/paths";
 
   let { data }: PageProps = $props();
 
@@ -18,13 +19,9 @@
   If the <svelte:boundary> has a pending snippet, the inner async work won't be awaited before the render result is returned. So, if we condition the presence of the `pending` snippet on `browser`, we can provide a snippet only if the component is being rendered on the client.
     
   TODO: Is this the correct way to do that?
+
+  NOTE: If we want to have the pending state being displayed during page/subpage navigation, the boundary has to exist in the +page.svelte file itself, as boundaries in +layout.svelte will not be recreated during navigation (see: https://svelte.dev/docs/svelte/svelte-boundary#Properties-pending).
 -->
-{#snippet pending()}
-  <!-- TODO(@Enzo): Replace with some skeleton loaders? -->
-  <div style="display: flex; align-items: center; gap: 0.5rem;">
-    <Spinner /> loading jobs...
-  </div>
-{/snippet}
 <svelte:boundary
   pending={browser ? pending : undefined}
   onerror={(e) => console.error(e)}
@@ -32,10 +29,10 @@
   {#snippet failed()}
     <Whoops status={500} message="Failed to load jobs" />
   {/snippet}
-  <!-- TODO: Replace with a proper table components -->
   <table>
     <thead>
       <tr>
+        <th>ID</th>
         <th>Title</th>
         <th>Architecture</th>
         <th>Status</th>
@@ -49,6 +46,11 @@
     <tbody>
       {#each await jobsPromise as job (job.id)}
         <tr>
+          <td>
+            <Link href={resolve("/jobs/[id]", { id: job.id.toString() })}>
+              {job.id}
+            </Link>
+          </td>
           <td>-</td>
           <td>{job.architecture}</td>
           <td>
@@ -85,6 +87,12 @@
   {:else}
     <DateTime {date} />
   {/if}
+{/snippet}
+
+{#snippet pending()}
+  <div style="display: flex; align-items: center; gap: 0.5rem;">
+    <Spinner /> loading jobs...
+  </div>
 {/snippet}
 
 <style>
