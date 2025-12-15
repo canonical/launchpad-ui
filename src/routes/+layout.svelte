@@ -10,8 +10,6 @@
     UserIcon,
   } from "@canonical/svelte-icons";
   import type { Component, Snippet } from "svelte";
-  import LaunchpadLogo from "$lib/components/LaunchpadLogo.svelte";
-  import LaunchpadLogoText from "$lib/components/LaunchpadLogoText.svelte";
   import {
     ColorPaletteIcon,
     MoonIcon,
@@ -24,6 +22,10 @@
     SideNavigation,
   } from "$lib/components/index.js";
   import type { ShortcutsHelpSidePanelMethods } from "$lib/components/index.js";
+  import {
+    LaunchpadLogo,
+    LaunchpadLogoText,
+  } from "$lib/launchpad-components/index.js";
   import {
     GlobalShortcutsProvider,
     Shortcut,
