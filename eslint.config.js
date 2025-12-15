@@ -25,13 +25,6 @@ export default ts.config(
       "no-undef": "off",
       "svelte/no-target-blank": "warn",
       "svelte/prefer-const": "warn",
-      "svelte/no-navigation-without-resolve": [
-        "error",
-        {
-          // We have to ignore links, because our components can't depend on kit's `resolve` (see: https://sveltejs.github.io/eslint-plugin-svelte/rules/no-navigation-without-resolve/).
-          ignoreLinks: true,
-        },
-      ],
       "import/no-empty-named-blocks": "error",
       "import/order": [
         "error",
@@ -87,6 +80,19 @@ export default ts.config(
         {
           argsIgnorePattern: "^_",
           varsIgnorePattern: "^_",
+        },
+      ],
+    },
+  },
+  {
+    files: ["src/lib/components/**"],
+    rules: {
+      "svelte/no-navigation-without-resolve": [
+        "error",
+        {
+          // We have to ignore links, because our meant-to-be-upstreamed components can't depend on kit and its `resolve` (see: https://sveltejs.github.io/eslint-plugin-svelte/rules/no-navigation-without-resolve/).
+          // On our side, we should still enforce the rule
+          ignoreLinks: true,
         },
       ],
     },

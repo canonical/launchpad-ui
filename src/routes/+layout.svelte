@@ -44,6 +44,7 @@
     setThemeCommand,
     setThemeForm,
   } from "./(common)/theme.remote.js";
+  import { resolve } from "$app/paths";
   import { page } from "$app/state";
 
   let { children }: { children: Snippet } = $props();
@@ -107,7 +108,7 @@
     <div class="app-layout">
       <SideNavigation expanded={isSideNavigationExpanded}>
         {#snippet logo()}
-          <a href="/" aria-label="Launchpad Home" class="logo-link">
+          <a href={resolve("/")} aria-label="Launchpad Home" class="logo-link">
             {#if isSideNavigationExpanded}
               <div
                 aria-hidden="true"
@@ -155,7 +156,7 @@
           </form>
         {/snippet}
         <SideNavigation.LinkItem
-          href="/"
+          href={resolve("/")}
           selected={page.url.pathname === "/"}
           aria-current={page.url.pathname === "/" ? "page" : undefined}
         >
@@ -165,7 +166,7 @@
           {/snippet}
         </SideNavigation.LinkItem>
         <SideNavigation.LinkItem
-          href="/jobs"
+          href={resolve("/jobs")}
           selected={page.url.pathname.startsWith("/jobs")}
           aria-current={page.url.pathname.startsWith("/jobs")
             ? "page"
