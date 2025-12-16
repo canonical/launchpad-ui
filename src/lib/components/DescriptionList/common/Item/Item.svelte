@@ -31,7 +31,7 @@
 
     dt {
       order: 1;
-      font: var(--tmp-typography-paragraph-default-small-caps);
+      font: var(--tmp-typography-paragraph-s-strong);
       color: var(--tmp-color-text-muted);
     }
 
@@ -43,7 +43,7 @@
 
     &.horizontal {
       flex-direction: row;
-      align-items: center;
+      align-items: baseline;
       gap: var(--tmp-dimension-spacing-inline-xs);
 
       &::before {
