@@ -51,7 +51,6 @@
 
     display: inline-flex;
     align-items: center;
-    font-weight: var(--tmp-typography-weight-bold);
     font-size: var(--typography-font-size-user-chip);
     gap: var(--dimension-gap-user-chip);
   }
