@@ -4,13 +4,12 @@
     DesktopIcon,
     HomeIcon,
     IconsOptimizationProvider,
+    IsoIcon,
     LogOutIcon,
     SearchIcon,
     UserIcon,
   } from "@canonical/svelte-icons";
   import type { Component, Snippet } from "svelte";
-  import LaunchpadLogo from "$lib/components/LaunchpadLogo.svelte";
-  import LaunchpadLogoText from "$lib/components/LaunchpadLogoText.svelte";
   import {
     ColorPaletteIcon,
     MoonIcon,
@@ -23,6 +22,10 @@
     SideNavigation,
   } from "$lib/components/index.js";
   import type { ShortcutsHelpSidePanelMethods } from "$lib/components/index.js";
+  import {
+    LaunchpadLogo,
+    LaunchpadLogoText,
+  } from "$lib/launchpad-components/index.js";
   import {
     GlobalShortcutsProvider,
     Shortcut,
@@ -43,6 +46,8 @@
     setThemeCommand,
     setThemeForm,
   } from "./(common)/theme.remote.js";
+  import { resolve } from "$app/paths";
+  import { page } from "$app/state";
 
   let { children }: { children: Snippet } = $props();
 
@@ -105,7 +110,7 @@
     <div class="app-layout">
       <SideNavigation expanded={isSideNavigationExpanded}>
         {#snippet logo()}
-          <a href="/" aria-label="Launchpad Home" class="logo-link">
+          <a href={resolve("/")} aria-label="Launchpad Home" class="logo-link">
             {#if isSideNavigationExpanded}
               <div
                 aria-hidden="true"
@@ -152,10 +157,26 @@
             />
           </form>
         {/snippet}
-        <SideNavigation.LinkItem href="/">
+        <SideNavigation.LinkItem
+          href={resolve("/")}
+          selected={page.url.pathname === "/"}
+          aria-current={page.url.pathname === "/" ? "page" : undefined}
+        >
           Home
           {#snippet icon()}
             <HomeIcon />
+          {/snippet}
+        </SideNavigation.LinkItem>
+        <SideNavigation.LinkItem
+          href={resolve("/jobs")}
+          selected={page.url.pathname.startsWith("/jobs")}
+          aria-current={page.url.pathname.startsWith("/jobs")
+            ? "page"
+            : undefined}
+        >
+          Jobs
+          {#snippet icon()}
+            <IsoIcon />
           {/snippet}
         </SideNavigation.LinkItem>
         <!-- TODO: Placeholder links -->

@@ -11,8 +11,8 @@
   import { defineMeta } from "@storybook/addon-svelte-csf";
   import { ColorPaletteIcon } from "$lib/components/icons/index.js";
   import { cssControlledFade } from "$lib/transitions/cssControlledFade.js";
-  import LaunchpadLogo from "../LaunchpadLogo.svelte";
-  import LaunchpadLogoText from "../LaunchpadLogoText.svelte";
+  import LaunchpadLogo from "../../launchpad-components/LaunchpadLogo.svelte";
+  import LaunchpadLogoText from "../../launchpad-components/LaunchpadLogoText.svelte";
   import { SideNavigation } from "./index.js";
 
   const { Story } = defineMeta({

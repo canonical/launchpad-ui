@@ -73,6 +73,7 @@
 
     .icon {
       display: inline-flex;
+      flex-shrink: 0;
       color: var(--color-icon-icon-text);
     }
 
