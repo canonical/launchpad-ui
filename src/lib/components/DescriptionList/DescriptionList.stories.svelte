@@ -17,7 +17,7 @@
     <DescriptionList>
       <DescriptionList.Item name="ID">134</DescriptionList.Item>
       <DescriptionList.Item name="Requested by">
-        <UserChip userName="Jane Doe" />
+        <UserChip userName="Jane Doe" size="small" />
       </DescriptionList.Item>
       <DescriptionList.Item name="Created">
         <DateTime date="2023-10-01T12:00:00Z" absolute={true} />
@@ -34,7 +34,7 @@
     <DescriptionList {...args}>
       <DescriptionList.Item name="ID">134</DescriptionList.Item>
       <DescriptionList.Item name="Requested by">
-        <UserChip userName="Jane Doe" />
+        <UserChip userName="Jane Doe" size="small" />
       </DescriptionList.Item>
       <DescriptionList.Item name="Created">
         <DateTime date="2023-10-01T12:00:00Z" absolute={true} />

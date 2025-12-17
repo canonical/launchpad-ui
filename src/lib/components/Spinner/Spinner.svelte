@@ -27,6 +27,7 @@
 
 <style>
   :global(.ds.spinner) {
+    transform-origin: center center;
     animation: loading-spinner var(--tmp-transition-duration-sleepy) infinite
       linear;
   }

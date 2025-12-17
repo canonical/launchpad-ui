@@ -254,7 +254,7 @@
         {/snippet}
       </SideNavigation>
 
-      <main style:padding="1rem">
+      <main>
         {@render children()}
       </main>
     </div>

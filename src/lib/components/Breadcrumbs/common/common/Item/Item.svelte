@@ -1,6 +1,7 @@
 <!-- @canonical/generator-ds 0.9.1-experimental.0 -->
 
 <script lang="ts">
+  import { Link } from "$lib/components/Link/index.js";
   import type { ItemProps } from "./types.js";
 
   const componentCssClassName = "ds item";
@@ -14,26 +15,11 @@
 </script>
 
 {#if segment.href}
-  <a href={segment.href} {...itemProps}>
+  <Link href={segment.href} {...itemProps}>
     {segment.label}
-  </a>
+  </Link>
 {:else}
   <span {...itemProps}>
     {segment.label}
   </span>
 {/if}
-
-<style>
-  a.ds.item {
-    text-decoration: none;
-    color: var(--color-text-link-breadcrumbs-link-default);
-
-    &:hover {
-      text-decoration: underline;
-    }
-
-    &:visited {
-      color: var(--color-text-link-breadcrumbs-link-visited);
-    }
-  }
-</style>

@@ -51,6 +51,7 @@
     li {
       display: inline-block;
       max-width: 100%;
+      vertical-align: middle;
     }
 
     li {
