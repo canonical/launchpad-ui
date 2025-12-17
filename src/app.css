@@ -1,4 +1,4 @@
-@import "normalize.css";
+@import "normalize.css" layer(normalize);
 @import "$lib/styles/reset.css";
 @import "$lib/styles/font-faces.css";
 @import "@canonical/launchpad-design-tokens/dist/css/dimension/responsive.css";
