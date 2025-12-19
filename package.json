@@ -26,7 +26,9 @@
     "test:watch:client": "bun run test:watch --project=client --browser.headless=false",
     "storybook": "storybook dev -p 6006 --no-open",
     "build-storybook": "storybook build",
-    "generate-types": "openapi-typescript  https://git.launchpad.net/job-manager/plain/openapi/openapi.yaml -o src/lib/api/job-manager/types.ts --root-types --root-types-no-schema-prefix"
+    "openapi:update": "bun run openapi:update-schema && bun run openapi:generate-types",
+    "openapi:update-schema": "sha=$(git ls-remote https://git.launchpad.net/job-manager refs/heads/main | cut -f1) && curl \"https://git.launchpad.net/job-manager/plain/openapi/openapi.yaml?h=$sha\" | { echo \"# Source commit: $sha\"; cat; } > .api-spec/job-manager.yaml && echo \"Saved .api-spec/job-manager.yaml @ $sha\"",
+    "openapi:generate-types": "openapi-typescript .api-spec/job-manager.yaml -o src/lib/api/job-manager/types.ts --root-types --root-types-no-schema-prefix"
   },
   "devDependencies": {
     "@canonical/svelte-ssr-test": "^0.10.0-experimental.5",
