@@ -50,7 +50,9 @@
             {data.job.architecture}
           </DescriptionList.Item>
           <DescriptionList.Item name="Requested by">
-            <UserChip userName={data.job.requested_by} />
+            {#if data.job.requested_by}
+              <UserChip userName={data.job.requested_by} />
+            {/if}
           </DescriptionList.Item>
           <DescriptionList.Item name="Created at">
             {@render nullableDateTime(data.job.created_at)}

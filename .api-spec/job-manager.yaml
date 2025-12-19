@@ -1,0 +1,1107 @@
+# Source commit: d7a021eaed039b046fc4a1038b3f6a395eadf1e8
+openapi: 3.1.0
+info:
+  title: Job Manager API
+  description: A modern job management system
+  version: 2.0.0
+paths:
+  /v1/jobs:
+    post:
+      tags:
+        - jobs
+      summary: Create Job
+      description: |-
+        Create a new job in the system.
+
+        Args:
+            job_in: Job creation model containing all required job parameters
+            db: Database session dependency
+            token: API access token for authorization
+
+        Returns:
+            dict: Contains the status_url for the created job
+
+        Raises:
+            HTTPException 400: If invalid tag format is provided
+      operationId: create_job_v1_jobs_post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JobCreate'
+      responses:
+        "201":
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    get:
+      tags:
+        - jobs
+      summary: Get Jobs
+      description: |-
+        Retrieve a list of all jobs in the system.
+
+        Args:
+            tags: Optional list of tags to filter jobs by (AND logic)
+            architecture: Optional architecture to filter jobs by
+            requested_by: Optional user identity to filter jobs by
+            base_series: Optional base series to filter jobs by
+            status: Optional job status to filter jobs by
+            private: Optional flag to filter by privacy status
+            repository_url: Optional repository URL to filter jobs by
+            db: Database session dependency
+            token: API access token for authorization
+
+        Returns:
+            List[JobRead]: List of all jobs matching the criteria
+      operationId: get_jobs_v1_jobs_get
+      parameters:
+        - name: tags
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: array
+                items:
+                  type: string
+              - type: "null"
+            description: Filter jobs by tags (comma-separated)
+            title: Tags
+          description: Filter jobs by tags (comma-separated)
+        - name: architecture
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+              - type: "null"
+            title: Architecture
+        - name: requested_by
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+              - type: "null"
+            title: Requested By
+        - name: base_series
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+              - type: "null"
+            title: Base Series
+        - name: status
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+              - type: "null"
+            title: Status
+        - name: private
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: boolean
+              - type: "null"
+            title: Private
+        - name: repository_url
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: string
+              - type: "null"
+            title: Repository Url
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/JobRead'
+                title: Response Get Jobs V1 Jobs Get
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/jobs/{job_id}:
+    get:
+      tags:
+        - jobs
+      summary: Get Job
+      description: |-
+        Retrieve a specific job by its ID.
+
+        Args:
+            job_id: Unique identifier of the job
+            db: Database session dependency
+            token: Optional API access token for authorization (required for
+            private jobs)
+
+        Returns:
+            JobRead: The requested job object
+
+        Raises:
+            HTTPException 404: If job is not found
+            HTTPException 401: If job is private and no valid token is provided
+      operationId: get_job_v1_jobs__job_id__get
+      parameters:
+        - name: job_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            title: Job Id
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobRead'
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    put:
+      tags:
+        - jobs
+      summary: Update Job
+      description: |-
+        Update an existing job's information.
+
+        Args:
+            job_id: Unique identifier of the job to update
+            job_in: Job update model containing fields to update
+            db: Database session dependency
+            token: API access token for authorization
+
+        Returns:
+            JobRead: The updated job object
+
+        Raises:
+            HTTPException 404: If job is not found
+            HTTPException 400: If invalid tag format is provided
+      operationId: update_job_v1_jobs__job_id__put
+      parameters:
+        - name: job_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            title: Job Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/JobUpdate'
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/JobRead'
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/jobs/{job_id}/health:
+    put:
+      tags:
+        - jobs
+      summary: Update Health
+      description: |-
+        Update the health status of a running job.
+
+        Args:
+            job_id: Unique identifier of the job
+            db: Database session dependency
+            token: Builder token for authorization
+            request: FastAPI request object containing health data
+
+        Returns:
+            dict: The updated health status data
+
+        Raises:
+            HTTPException 404: If job is not found
+      operationId: update_health_v1_jobs__job_id__health_put
+      parameters:
+        - name: job_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            title: Job Id
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    get:
+      tags:
+        - jobs
+      summary: Get Health
+      description: |-
+        Retrieve the current health status of a job.
+
+        Args:
+            job_id: Unique identifier of the job
+            db: Database session dependency
+
+        Returns:
+            dict: Health status information including CPU, RAM, disk usage, and job
+                status
+
+        Raises:
+            HTTPException 404: If job is not found
+      operationId: get_health_v1_jobs__job_id__health_get
+      parameters:
+        - name: job_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            title: Job Id
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/jobs/{job_id}/cancel:
+    put:
+      tags:
+        - jobs
+      summary: Cancel Job
+      description: |-
+        Cancel a running job.
+
+        Args:
+            job_id: Unique identifier of the job to cancel
+            db: Database session dependency
+            token: API access token for authorization
+
+        Returns:
+            dict: Confirmation message of job cancellation
+
+        Raises:
+            HTTPException 404: If job is not found
+            HTTPException 400: If job cannot be cancelled
+      operationId: cancel_job_v1_jobs__job_id__cancel_put
+      parameters:
+        - name: job_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            title: Job Id
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/jobs/{job_id}/object/{object_name}:
+    get:
+      tags:
+        - jobs
+      summary: Download Object
+      description: |-
+        Download an artifact or object associated with a job.
+
+        Args:
+            job_id: Unique identifier of the job
+            object_name: Name of the object/artifact to download
+            db: Database session dependency
+
+        Returns:
+            StreamingResponse: Stream of the requested object data with appropriate
+                headers
+
+        Raises:
+            HTTPException 404: If job is not found
+      operationId: download_object_v1_jobs__job_id__object__object_name__get
+      parameters:
+        - name: job_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            title: Job Id
+        - name: object_name
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Object Name
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/jobs/{job_id}/token:
+    post:
+      tags:
+        - jobs
+      summary: Generate Token
+      description: |-
+        Generate a JWT token for job authentication and set up SSH keys.
+
+        Args:
+            job_id: Unique identifier of the job
+            request: FastAPI request object potentially containing SSH keys
+            db: Database session dependency
+            token: API access token for authorization
+
+        Returns:
+            dict: Contains the generated JWT token
+
+        Raises:
+            HTTPException 404: If job is not found
+            HTTPException 500: If SSH key generation fails
+      operationId: generate_token_v1_jobs__job_id__token_post
+      parameters:
+        - name: job_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            title: Job Id
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/api_access_token:
+    post:
+      tags:
+        - tokens
+      summary: Create Api Access Token
+      description: |-
+        Create a new API access token for service authentication.
+
+        Args:
+            request: FastAPI request object with identity and optional expiration
+            db: Database session dependency
+            _: Internal-only access check dependency
+
+        Returns:
+            JSONResponse: Contains the generated token and identity
+
+        Raises:
+            HTTPException 400: If identity is missing from request
+            HTTPException 403: If request is not from internal network
+      operationId: create_api_access_token_v1_api_access_token_post
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+    delete:
+      tags:
+        - tokens
+      summary: Revoke Api Access Token
+      description: |-
+        Revoke an existing API access token.
+
+        Args:
+            identity: Service identity associated with the token
+            token: The token value to revoke
+            db: Database session dependency
+            _: Internal-only access check dependency
+
+        Returns:
+            dict: Contains the revoked token and identity
+
+        Raises:
+            HTTPException 403: If request is not from internal network
+            HTTPException 404: If token is not found
+      operationId: revoke_api_access_token_v1_api_access_token_delete
+      parameters:
+        - name: identity
+          in: query
+          required: true
+          schema:
+            type: string
+            title: Identity
+        - name: token
+          in: query
+          required: true
+          schema:
+            type: string
+            title: Token
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/runners/register:
+    post:
+      tags:
+        - runners
+      summary: Register Runner
+      description: |-
+        Register a new runner.
+
+        Args:
+            runner_in: Runner registration data including name and labels
+            db: Database session dependency
+
+        Returns:
+            dict: Contains the runner ID and its authentication token
+
+        Raises:
+            HTTPException 500: If token generation fails
+      operationId: register_runner_v1_runners_register_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RunnerCreate'
+        required: true
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RunnerRegisterResponse'
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/runners/{runner_id}/health:
+    get:
+      tags:
+        - runners
+      summary: Get Runner Health
+      description: |-
+        Get runner health status.
+
+        Args:
+            runner_id: Unique identifier of the runner
+            db: Database session dependency
+
+        Returns:
+            dict: Runner health metrics including CPU, RAM, disk usage and status
+
+        Raises:
+            HTTPException 404: If runner is not found
+      operationId: get_runner_health_v1_runners__runner_id__health_get
+      parameters:
+        - name: runner_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            title: Runner Id
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RunnerHealthResponse'
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    put:
+      tags:
+        - runners
+      summary: Update Runner Health
+      description: |-
+        Update runner health metrics.
+
+        Args:
+            runner_id: Unique identifier of the runner
+            request: FastAPI request object containing health metrics
+            db: Database session dependency
+            token: Runner token for authorization
+
+        Returns:
+            dict: Success indicator
+
+        Raises:
+            HTTPException 404: If runner is not found
+      operationId: update_runner_health_v1_runners__runner_id__health_put
+      parameters:
+        - name: runner_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            title: Runner Id
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RunnerHealthUpdateResponse'
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /metrics:
+    get:
+      summary: Metrics
+      description: Endpoint that serves Prometheus metrics.
+      operationId: metrics_metrics_get
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /:
+    get:
+      summary: Root
+      description: |-
+        Root endpoint providing basic API information.
+
+        Returns:
+            dict: Basic API information including:
+                - message: API identification
+                - version: Current API version
+                - status: Running status
+      operationId: root__get
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+  /health:
+    get:
+      summary: Health Check
+      description: |-
+        Health check endpoint for monitoring service status.
+
+        This endpoint can be used by monitoring tools and load balancers to
+        verify the service is operational.
+
+        Returns:
+            dict: Contains status indicating service health
+      operationId: health_check_health_get
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+components:
+  schemas:
+    Architecture:
+      type: string
+      enum:
+        - amd64
+        - arm64
+        - armel
+        - armhf
+        - ppc64el
+        - s390x
+        - riscv64
+        - amd64v3
+        - i386
+      title: Architecture
+      description: Supported CPU architectures.
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    JobCreate:
+      properties:
+        title:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Title
+        description:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Description
+        repository_url:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Repository Url
+        repository_ref:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Repository Ref
+        architecture:
+          $ref: '#/components/schemas/Architecture'
+          default: amd64
+        base_series:
+          $ref: '#/components/schemas/Series'
+          default: noble
+        commands:
+          anyOf:
+            - items: {}
+              type: array
+            - type: "null"
+          title: Commands
+        proxy_settings:
+          anyOf:
+            - additionalProperties: true
+              type: object
+            - type: "null"
+          title: Proxy Settings
+        secrets:
+          anyOf:
+            - additionalProperties: true
+              type: object
+            - type: "null"
+          title: Secrets
+        environment:
+          anyOf:
+            - additionalProperties: true
+              type: object
+            - type: "null"
+          title: Environment
+        artifact_path:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Artifact Path
+        topology:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Topology
+        vm_ip:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Vm Ip
+        vm_size:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Vm Size
+        private:
+          anyOf:
+            - type: boolean
+            - type: "null"
+          title: Private
+        status:
+          anyOf:
+            - $ref: '#/components/schemas/JobStatus'
+            - type: "null"
+          default: PENDING
+        artifact_urls:
+          anyOf:
+            - items: {}
+              type: array
+            - type: "null"
+          title: Artifact Urls
+        log_urls:
+          anyOf:
+            - items: {}
+              type: array
+            - type: "null"
+          title: Log Urls
+        tags:
+          anyOf:
+            - items:
+                type: string
+              type: array
+            - type: "null"
+          title: Tags
+      type: object
+      title: JobCreate
+      description: Job creation model.
+    JobRead:
+      properties:
+        title:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Title
+        description:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Description
+        repository_url:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Repository Url
+        repository_ref:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Repository Ref
+        architecture:
+          $ref: '#/components/schemas/Architecture'
+          default: amd64
+        base_series:
+          $ref: '#/components/schemas/Series'
+          default: noble
+        commands:
+          anyOf:
+            - items: {}
+              type: array
+            - type: "null"
+          title: Commands
+        proxy_settings:
+          anyOf:
+            - additionalProperties: true
+              type: object
+            - type: "null"
+          title: Proxy Settings
+        secrets:
+          anyOf:
+            - additionalProperties: true
+              type: object
+            - type: "null"
+          title: Secrets
+        environment:
+          anyOf:
+            - additionalProperties: true
+              type: object
+            - type: "null"
+          title: Environment
+        artifact_path:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Artifact Path
+        topology:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Topology
+        vm_ip:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Vm Ip
+        vm_size:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Vm Size
+        private:
+          anyOf:
+            - type: boolean
+            - type: "null"
+          title: Private
+        status:
+          anyOf:
+            - $ref: '#/components/schemas/JobStatus'
+            - type: "null"
+          default: PENDING
+        artifact_urls:
+          anyOf:
+            - items: {}
+              type: array
+            - type: "null"
+          title: Artifact Urls
+        log_urls:
+          anyOf:
+            - items: {}
+              type: array
+            - type: "null"
+          title: Log Urls
+        tags:
+          anyOf:
+            - items:
+                type: string
+              type: array
+            - type: "null"
+          title: Tags
+        id:
+          type: integer
+          title: Id
+        requested_by:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Requested By
+        created_at:
+          anyOf:
+            - type: string
+              format: date-time
+            - type: "null"
+          title: Created At
+        updated_at:
+          anyOf:
+            - type: string
+              format: date-time
+            - type: "null"
+          title: Updated At
+        started_at:
+          anyOf:
+            - type: string
+              format: date-time
+            - type: "null"
+          title: Started At
+        completed_at:
+          anyOf:
+            - type: string
+              format: date-time
+            - type: "null"
+          title: Completed At
+      type: object
+      required:
+        - id
+      title: JobRead
+      description: Job read model with all fields.
+    JobStatus:
+      type: string
+      enum:
+        - PENDING
+        - EXECUTING
+        - IDLE
+        - FINISHED
+        - FAILED
+        - CANCELLED
+      title: JobStatus
+      description: Job status values.
+    JobUpdate:
+      properties:
+        requested_by:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Requested By
+        status:
+          anyOf:
+            - $ref: '#/components/schemas/JobStatus'
+            - type: "null"
+        vm_ip:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Vm Ip
+        artifact_urls:
+          anyOf:
+            - items: {}
+              type: array
+            - type: "null"
+          title: Artifact Urls
+        log_urls:
+          anyOf:
+            - items: {}
+              type: array
+            - type: "null"
+          title: Log Urls
+        started_at:
+          anyOf:
+            - type: string
+              format: date-time
+            - type: "null"
+          title: Started At
+        completed_at:
+          anyOf:
+            - type: string
+              format: date-time
+            - type: "null"
+          title: Completed At
+        title:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Title
+        description:
+          anyOf:
+            - type: string
+            - type: "null"
+          title: Description
+        tags:
+          anyOf:
+            - items:
+                type: string
+              type: array
+            - type: "null"
+          title: Tags
+      type: object
+      title: JobUpdate
+      description: Job update model.
+    RunnerCreate:
+      properties:
+        name:
+          type: string
+          title: Name
+        labels:
+          items:
+            type: string
+          type: array
+          title: Labels
+        cloud_name:
+          type: string
+          title: Cloud Name
+          default: amd64
+      type: object
+      required:
+        - name
+        - labels
+      title: RunnerCreate
+      description: Runner creation model.
+    RunnerHealthResponse:
+      properties:
+        label:
+          type: string
+          title: Label
+        cpu_usage:
+          type: string
+          title: Cpu Usage
+        ram_usage:
+          type: string
+          title: Ram Usage
+        disk_usage:
+          type: string
+          title: Disk Usage
+        status:
+          type: string
+          title: Status
+        deletable:
+          type: boolean
+          title: Deletable
+      type: object
+      required:
+        - label
+        - cpu_usage
+        - ram_usage
+        - disk_usage
+        - status
+        - deletable
+      title: RunnerHealthResponse
+    RunnerHealthUpdateResponse:
+      properties:
+        message:
+          type: string
+          title: Message
+      type: object
+      required:
+        - message
+      title: RunnerHealthUpdateResponse
+    RunnerRegisterResponse:
+      properties:
+        id:
+          type: integer
+          title: Id
+        token:
+          type: string
+          title: Token
+        proxy:
+          anyOf:
+            - additionalProperties: true
+              type: object
+            - type: "null"
+          title: Proxy
+      type: object
+      required:
+        - id
+        - token
+      title: RunnerRegisterResponse
+    Series:
+      type: string
+      enum:
+        - noble
+        - mantic
+        - jammy
+        - focal
+        - bionic
+      title: Series
+      description: Supported Ubuntu series.
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+              - type: string
+              - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+      type: object
+      required:
+        - loc
+        - msg
+        - type
+      title: ValidationError

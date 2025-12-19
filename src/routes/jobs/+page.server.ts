@@ -1,3 +1,4 @@
+import { error } from "@sveltejs/kit";
 import { jobManager } from "$lib/api/job-manager/client.js";
 import type { PageServerLoad } from "./$types";
 
@@ -9,7 +10,13 @@ export const load = (async ({ fetch, setHeaders }) => {
     .GET("/v1/jobs", {
       fetch,
     })
-    .then((response) => response.data);
+    .then((response) => {
+      if (response.error) {
+        console.error(response.error);
+        error(500, "Failed to fetch jobs");
+      }
+      return response.data;
+    });
 
   // We don't have pagination yet and this can get quite heavy.
   // TODO: Reevaluate once we have pagination in place.

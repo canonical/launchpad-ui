@@ -47,22 +47,11 @@
       {#each await jobsPromise as job (job.id)}
         <tr>
           <td>
-            <!--
-              For some unknown reason, preloading the link (sometimes) causes the page's data coming from its server load function to be undefined if read in a reactive context.
-
-              Likely the issue will be resolved by: https://github.com/sveltejs/svelte/pull/17335.
-
-              TODO: Re-enable preloading when the above is fixed. If the above PR does not help - file a new issue.
-            -->
-            <Link
-              href={resolve("/jobs/[id]", { id: job.id.toString() })}
-              data-sveltekit-preload-data="off"
-            >
+            <Link href={resolve("/jobs/[id]", { id: job.id.toString() })}>
               {job.id}
             </Link>
           </td>
-          <!-- TODO: We don't have the title yet -->
-          <td>-</td>
+          <td>{job.title}</td>
           <td>{job.architecture}</td>
           <td>
             {#if job.status}
@@ -71,11 +60,19 @@
               -
             {/if}
           </td>
-          <td><UserChip userName={job.requested_by} /></td>
           <td>
-            <!-- TODO: We don't have tags yet -->
-            <!-- {job.tags.join(", ")} -->
-            -
+            {#if job.requested_by}
+              <UserChip userName={job.requested_by} />
+            {:else}
+              -
+            {/if}
+          </td>
+          <td>
+            {#if job.tags}
+              {job.tags.join(", ")}
+            {:else}
+              -
+            {/if}
           </td>
           <td>
             {@render nullableDateTime(job.created_at)}

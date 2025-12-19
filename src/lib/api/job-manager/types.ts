@@ -16,11 +16,18 @@ export interface paths {
          * @description Retrieve a list of all jobs in the system.
          *
          *     Args:
+         *         tags: Optional list of tags to filter jobs by (AND logic)
+         *         architecture: Optional architecture to filter jobs by
+         *         requested_by: Optional user identity to filter jobs by
+         *         base_series: Optional base series to filter jobs by
+         *         status: Optional job status to filter jobs by
+         *         private: Optional flag to filter by privacy status
+         *         repository_url: Optional repository URL to filter jobs by
          *         db: Database session dependency
          *         token: API access token for authorization
          *
          *     Returns:
-         *         List[JobRead]: List of all jobs
+         *         List[JobRead]: List of all jobs matching the criteria
          */
         get: operations["get_jobs_v1_jobs_get"];
         put?: never;
@@ -34,10 +41,10 @@ export interface paths {
          *         token: API access token for authorization
          *
          *     Returns:
-         *         JobRead: The created job object
+         *         dict: Contains the status_url for the created job
          *
          *     Raises:
-         *         HTTPException 502: If webhook notification fails
+         *         HTTPException 400: If invalid tag format is provided
          */
         post: operations["create_job_v1_jobs_post"];
         delete?: never;
@@ -60,12 +67,15 @@ export interface paths {
          *     Args:
          *         job_id: Unique identifier of the job
          *         db: Database session dependency
+         *         token: Optional API access token for authorization (required for
+         *         private jobs)
          *
          *     Returns:
          *         JobRead: The requested job object
          *
          *     Raises:
          *         HTTPException 404: If job is not found
+         *         HTTPException 401: If job is private and no valid token is provided
          */
         get: operations["get_job_v1_jobs__job_id__get"];
         /**
@@ -83,6 +93,7 @@ export interface paths {
          *
          *     Raises:
          *         HTTPException 404: If job is not found
+         *         HTTPException 400: If invalid tag format is provided
          */
         put: operations["update_job_v1_jobs__job_id__put"];
         post?: never;
@@ -301,7 +312,6 @@ export interface paths {
          *     Args:
          *         runner_in: Runner registration data including name and labels
          *         db: Database session dependency
-         *         token: API access token for authorization
          *
          *     Returns:
          *         dict: Contains the runner ID and its authentication token
@@ -355,6 +365,26 @@ export interface paths {
          *         HTTPException 404: If runner is not found
          */
         put: operations["update_runner_health_v1_runners__runner_id__health_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/metrics": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Metrics
+         * @description Endpoint that serves Prometheus metrics.
+         */
+        get: operations["metrics_metrics_get"];
+        put?: never;
         post?: never;
         delete?: never;
         options?: never;
@@ -418,6 +448,12 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /**
+         * Architecture
+         * @description Supported CPU architectures.
+         * @enum {string}
+         */
+        Architecture: "amd64" | "arm64" | "armel" | "armhf" | "ppc64el" | "s390x" | "riscv64" | "amd64v3" | "i386";
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
@@ -428,16 +464,24 @@ export interface components {
          * @description Job creation model.
          */
         JobCreate: {
+            /** Title */
+            title?: string | null;
+            /** Description */
+            description?: string | null;
             /** Repository Url */
             repository_url?: string | null;
             /** Repository Ref */
             repository_ref?: string | null;
-            /** Architecture */
-            architecture: string;
-            /** Base Series */
-            base_series?: string;
+            /** @default amd64 */
+            architecture: components["schemas"]["Architecture"];
+            /** @default noble */
+            base_series: components["schemas"]["Series"];
             /** Commands */
             commands?: unknown[] | null;
+            /** Proxy Settings */
+            proxy_settings?: {
+                [key: string]: unknown;
+            } | null;
             /** Secrets */
             secrets?: {
                 [key: string]: unknown;
@@ -456,33 +500,38 @@ export interface components {
             vm_size?: string | null;
             /** Private */
             private?: boolean | null;
-            /**
-             * Status
-             * @default PENDING
-             */
-            status: string | null;
+            /** @default PENDING */
+            status: components["schemas"]["JobStatus"] | null;
             /** Artifact Urls */
             artifact_urls?: unknown[] | null;
             /** Log Urls */
             log_urls?: unknown[] | null;
+            /** Tags */
+            tags?: string[] | null;
         };
         /**
          * JobRead
          * @description Job read model with all fields.
          */
         JobRead: {
-            /** Requested By */
-            requested_by: string;
+            /** Title */
+            title?: string | null;
+            /** Description */
+            description?: string | null;
             /** Repository Url */
             repository_url?: string | null;
             /** Repository Ref */
             repository_ref?: string | null;
-            /** Architecture */
-            architecture: string;
-            /** Base Series */
-            base_series: string;
+            /** @default amd64 */
+            architecture: components["schemas"]["Architecture"];
+            /** @default noble */
+            base_series: components["schemas"]["Series"];
             /** Commands */
             commands?: unknown[] | null;
+            /** Proxy Settings */
+            proxy_settings?: {
+                [key: string]: unknown;
+            } | null;
             /** Secrets */
             secrets?: {
                 [key: string]: unknown;
@@ -500,18 +549,19 @@ export interface components {
             /** Vm Size */
             vm_size?: string | null;
             /** Private */
-            private?: boolean;
-            /**
-             * Status
-             * @default PENDING
-             */
-            status: string | null;
+            private?: boolean | null;
+            /** @default PENDING */
+            status: components["schemas"]["JobStatus"] | null;
             /** Artifact Urls */
             artifact_urls?: unknown[] | null;
             /** Log Urls */
             log_urls?: unknown[] | null;
+            /** Tags */
+            tags?: string[] | null;
             /** Id */
             id: number;
+            /** Requested By */
+            requested_by?: string | null;
             /** Created At */
             created_at?: string | null;
             /** Updated At */
@@ -522,14 +572,19 @@ export interface components {
             completed_at?: string | null;
         };
         /**
+         * JobStatus
+         * @description Job status values.
+         * @enum {string}
+         */
+        JobStatus: "PENDING" | "EXECUTING" | "IDLE" | "FINISHED" | "FAILED" | "CANCELLED";
+        /**
          * JobUpdate
          * @description Job update model.
          */
         JobUpdate: {
             /** Requested By */
-            requested_by?: string;
-            /** Status */
-            status?: string | null;
+            requested_by?: string | null;
+            status?: components["schemas"]["JobStatus"] | null;
             /** Vm Ip */
             vm_ip?: string | null;
             /** Artifact Urls */
@@ -540,6 +595,12 @@ export interface components {
             started_at?: string | null;
             /** Completed At */
             completed_at?: string | null;
+            /** Title */
+            title?: string | null;
+            /** Description */
+            description?: string | null;
+            /** Tags */
+            tags?: string[] | null;
         };
         /**
          * RunnerCreate
@@ -550,6 +611,11 @@ export interface components {
             name: string;
             /** Labels */
             labels: string[];
+            /**
+             * Cloud Name
+             * @default amd64
+             */
+            cloud_name: string;
         };
         /** RunnerHealthResponse */
         RunnerHealthResponse: {
@@ -577,7 +643,17 @@ export interface components {
             id: number;
             /** Token */
             token: string;
+            /** Proxy */
+            proxy?: {
+                [key: string]: unknown;
+            } | null;
         };
+        /**
+         * Series
+         * @description Supported Ubuntu series.
+         * @enum {string}
+         */
+        Series: "noble" | "mantic" | "jammy" | "focal" | "bionic";
         /** ValidationError */
         ValidationError: {
             /** Location */
@@ -594,20 +670,32 @@ export interface components {
     headers: never;
     pathItems: never;
 }
+export type Architecture = components['schemas']['Architecture'];
 export type HttpValidationError = components['schemas']['HTTPValidationError'];
 export type JobCreate = components['schemas']['JobCreate'];
 export type JobRead = components['schemas']['JobRead'];
+export type JobStatus = components['schemas']['JobStatus'];
 export type JobUpdate = components['schemas']['JobUpdate'];
 export type RunnerCreate = components['schemas']['RunnerCreate'];
 export type RunnerHealthResponse = components['schemas']['RunnerHealthResponse'];
 export type RunnerHealthUpdateResponse = components['schemas']['RunnerHealthUpdateResponse'];
 export type RunnerRegisterResponse = components['schemas']['RunnerRegisterResponse'];
+export type Series = components['schemas']['Series'];
 export type ValidationError = components['schemas']['ValidationError'];
 export type $defs = Record<string, never>;
 export interface operations {
     get_jobs_v1_jobs_get: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description Filter jobs by tags (comma-separated) */
+                tags?: string[] | null;
+                architecture?: string | null;
+                requested_by?: string | null;
+                base_series?: string | null;
+                status?: string | null;
+                private?: boolean | null;
+                repository_url?: string | null;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -621,6 +709,15 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["JobRead"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };
@@ -644,7 +741,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["JobRead"];
+                    "application/json": unknown;
                 };
             };
             /** @description Validation Error */
@@ -1023,6 +1120,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    metrics_metrics_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
                 };
             };
         };
