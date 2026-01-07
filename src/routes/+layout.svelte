@@ -32,20 +32,21 @@
     UseShortcuts,
   } from "$lib/shortcuts";
   import "../app.css";
-  import type { Theme } from "$lib/theme.js";
-  import { themeCookieName, themes } from "$lib/theme.js";
   import { cssControlledFade } from "$lib/transitions/cssControlledFade.js";
   import { ThemeSetter } from "./(common)/ThemeSetter/index.js";
-  import { sideNavigationStateCookieName } from "./(common)/side-navigation-state.js";
-  import {
-    getSideNavigationState,
-    setSideNavigationStateForm,
-  } from "./(common)/side-navigation-state.remote.js";
   import {
     getTheme,
     setThemeCommand,
     setThemeForm,
   } from "./(common)/theme.remote.js";
+  import type { SideNavigationState } from "./(cookies)/side-navigation-state.js";
+  import { sideNavigationStateCookie } from "./(cookies)/side-navigation-state.js";
+  import {
+    
+    themeCookie,
+    themes
+  } from "./(cookies)/theme.js";
+import type {Theme} from "./(cookies)/theme.js";
   import { resolve } from "$app/paths";
   import { page } from "$app/state";
 
@@ -59,7 +60,7 @@
 
   const clientSideSetTheme = async (theme: Theme) => {
     await cookieStore.set({
-      name: themeCookieName,
+      name: themeCookie.name,
       value: theme,
       expires: Date.now() + 1000 * 60 * 60 * 24 * 365,
       sameSite: "lax",
@@ -94,10 +95,11 @@
     },
   );
 
-  const sideNavigationStatePromise = $derived(getSideNavigationState());
-  const isSideNavigationExpanded = $derived(
-    (await sideNavigationStatePromise) === "expanded",
+  const sideNavigationState = $state<SideNavigationState>(
+    sideNavigationStateCookie.defaultValue,
   );
+  const isSideNavigationExpanded = $derived(sideNavigationState === "expanded");
+
 </script>
 
 <ThemeSetter theme={await getTheme()} />
@@ -128,34 +130,13 @@
           </a>
         {/snippet}
         {#snippet expandToggle(toggleProps)}
-          <form
-            {...setSideNavigationStateForm.enhance(
-              async ({ data: { state: newState }, submit }) => {
-                try {
-                  // If we have JS, try not to bother the server at all
-                  await cookieStore.set({
-                    name: sideNavigationStateCookieName,
-                    value: newState,
-                    expires: Date.now() + 1000 * 60 * 60 * 24 * 365,
-                    sameSite: "lax",
-                  });
-                  getSideNavigationState().set(newState);
-                } catch (e) {
-                  console.error(e);
-                  await submit();
-                }
-              },
-            )}
-            style="display: contents;"
-          >
-            <SideNavigation.ExpandToggle
-              {...toggleProps}
-              {...setSideNavigationStateForm.fields.state.as(
-                "submit",
+          <SideNavigation.ExpandToggle
+            {...toggleProps}
+            onclick={() =>
+              setSideNavigationState(
                 isSideNavigationExpanded ? "collapsed" : "expanded",
               )}
-            />
-          </form>
+          />
         {/snippet}
         <SideNavigation.LinkItem
           href={resolve("/")}
