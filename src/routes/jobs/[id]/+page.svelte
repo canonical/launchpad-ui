@@ -28,8 +28,8 @@
   <div class="details">
     <div class="content-wrapper">
       <div>
-        <!-- TODO: We don't have the title yet -->
-        <h1>Job {data.job.id}</h1>
+        <h1>Job {data.job.title}</h1>
+        <p>{data.job.description}</p>
         {#if data.job.status}
           <!-- TODO: Job status chips -->
           <JobStatus status={data.job.status} />

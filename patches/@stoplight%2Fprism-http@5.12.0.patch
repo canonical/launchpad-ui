@@ -1,0 +1,17 @@
+diff --git a/dist/mocker/generator/JSONSchema.js b/dist/mocker/generator/JSONSchema.js
+index e3dce31be26bc4e854a06040c6a5f6e135e01808..9da417963ddac2546bd82a822f84284bc454c3d3 100644
+
+This patch is a fix to https://github.com/stoplightio/prism/issues/2726.
+If the patch is no longer needed, remove `openapi-sampler` from the package.json dependencies.
+
+--- a/dist/mocker/generator/JSONSchema.js
++++ b/dist/mocker/generator/JSONSchema.js
+@@ -4,7 +4,7 @@ exports.SchemaTooComplexGeneratorError = exports.GeneratorError = exports.genera
+ const faker_1 = require("@faker-js/faker");
+ const lodash_1 = require("lodash");
+ const json_schema_faker_1 = require("json-schema-faker");
+-const sampler = require("@stoplight/json-schema-sampler");
++const sampler = require("openapi-sampler");
+ const Either_1 = require("fp-ts/Either");
+ const function_1 = require("fp-ts/function");
+ const E = require("fp-ts/lib/Either");
