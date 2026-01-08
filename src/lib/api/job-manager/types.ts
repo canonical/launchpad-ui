@@ -464,49 +464,132 @@ export interface components {
          * @description Job creation model.
          */
         JobCreate: {
-            /** Title */
+            /**
+             * Title
+             * @example Build Ubuntu 24.04 image
+             */
             title?: string | null;
-            /** Description */
+            /**
+             * Description
+             * @example Build a hardened Ubuntu image with security patches
+             */
             description?: string | null;
-            /** Repository Url */
+            /**
+             * Repository Url
+             * @example https://example.com/org/secure-images
+             */
             repository_url?: string | null;
-            /** Repository Ref */
+            /**
+             * Repository Ref
+             * @example main
+             */
             repository_ref?: string | null;
-            /** @default amd64 */
+            /**
+             * @default amd64
+             * @example amd64
+             */
             architecture: components["schemas"]["Architecture"];
-            /** @default noble */
+            /**
+             * @default noble
+             * @example noble
+             */
             base_series: components["schemas"]["Series"];
-            /** Commands */
+            /**
+             * Commands
+             * @example [
+             *       "sudo apt-get update",
+             *       "sudo apt-get install -y curl jq",
+             *       "make build",
+             *       "./scripts/build.sh --release"
+             *     ]
+             */
             commands?: unknown[] | null;
-            /** Proxy Settings */
+            /**
+             * Proxy Settings
+             * @example {
+             *       "policy": "permissive"
+             *     }
+             */
             proxy_settings?: {
                 [key: string]: unknown;
             } | null;
-            /** Secrets */
+            /**
+             * Secrets
+             * @example {
+             *       "SECRET_TOKEN": "s3cr3t_v4lu3"
+             *     }
+             */
             secrets?: {
                 [key: string]: unknown;
             } | null;
-            /** Environment */
+            /**
+             * Environment
+             * @example {
+             *       "BUILD_MODE": "hardened"
+             *     }
+             */
             environment?: {
                 [key: string]: unknown;
             } | null;
-            /** Artifact Path */
+            /**
+             * Artifact Path
+             * @example build/artifacts/*.tar.gz
+             */
             artifact_path?: string | null;
-            /** Topology */
+            /**
+             * Topology
+             * @example single-node
+             */
             topology?: string | null;
-            /** Vm Ip */
+            /**
+             * Vm Ip
+             * @example 192.0.2.15
+             */
             vm_ip?: string | null;
-            /** Vm Size */
+            /**
+             * Vm Size
+             * @example large
+             */
             vm_size?: string | null;
-            /** Private */
+            /**
+             * Private
+             * @example true
+             */
             private?: boolean | null;
-            /** @default PENDING */
+            /**
+             * @default PENDING
+             * @example FINISHED
+             */
             status: components["schemas"]["JobStatus"] | null;
-            /** Artifact Urls */
+            /**
+             * Priority
+             * @default 0
+             * @example 4
+             */
+            priority: number;
+            /**
+             * Artifact Urls
+             * @example [
+             *       "https://example.com/jobs/123/output.tar.gz",
+             *       "https://example.com/jobs/123/metadata.json"
+             *     ]
+             */
             artifact_urls?: unknown[] | null;
-            /** Log Urls */
+            /**
+             * Log Urls
+             * @example [
+             *       "https://example.com/jobs/123/object/default.log",
+             *       "https://example.com/jobs/123/object/job-agent.log"
+             *     ]
+             */
             log_urls?: unknown[] | null;
-            /** Tags */
+            /**
+             * Tags
+             * @example [
+             *       "security",
+             *       "production"
+             *     ]
+             */
             tags?: string[] | null;
         };
         /**
@@ -514,61 +597,162 @@ export interface components {
          * @description Job read model with all fields.
          */
         JobRead: {
-            /** Title */
+            /**
+             * Title
+             * @example Build Ubuntu 24.04 image
+             */
             title?: string | null;
-            /** Description */
+            /**
+             * Description
+             * @example Build a hardened Ubuntu image with security patches
+             */
             description?: string | null;
-            /** Repository Url */
+            /**
+             * Repository Url
+             * @example https://example.com/org/secure-images
+             */
             repository_url?: string | null;
-            /** Repository Ref */
+            /**
+             * Repository Ref
+             * @example main
+             */
             repository_ref?: string | null;
-            /** @default amd64 */
+            /**
+             * @default amd64
+             * @example amd64
+             */
             architecture: components["schemas"]["Architecture"];
-            /** @default noble */
+            /**
+             * @default noble
+             * @example noble
+             */
             base_series: components["schemas"]["Series"];
-            /** Commands */
+            /**
+             * Commands
+             * @example [
+             *       "sudo apt-get update",
+             *       "sudo apt-get install -y curl jq",
+             *       "make build",
+             *       "./scripts/build.sh --release"
+             *     ]
+             */
             commands?: unknown[] | null;
-            /** Proxy Settings */
+            /**
+             * Proxy Settings
+             * @example {
+             *       "policy": "permissive"
+             *     }
+             */
             proxy_settings?: {
                 [key: string]: unknown;
             } | null;
-            /** Secrets */
+            /**
+             * Secrets
+             * @example {
+             *       "SECRET_TOKEN": "s3cr3t_v4lu3"
+             *     }
+             */
             secrets?: {
                 [key: string]: unknown;
             } | null;
-            /** Environment */
+            /**
+             * Environment
+             * @example {
+             *       "BUILD_MODE": "hardened"
+             *     }
+             */
             environment?: {
                 [key: string]: unknown;
             } | null;
-            /** Artifact Path */
+            /**
+             * Artifact Path
+             * @example build/artifacts/*.tar.gz
+             */
             artifact_path?: string | null;
-            /** Topology */
+            /**
+             * Topology
+             * @example single-node
+             */
             topology?: string | null;
-            /** Vm Ip */
+            /**
+             * Vm Ip
+             * @example 192.0.2.15
+             */
             vm_ip?: string | null;
-            /** Vm Size */
+            /**
+             * Vm Size
+             * @example large
+             */
             vm_size?: string | null;
-            /** Private */
+            /**
+             * Private
+             * @example true
+             */
             private?: boolean | null;
-            /** @default PENDING */
+            /**
+             * @default PENDING
+             * @example FINISHED
+             */
             status: components["schemas"]["JobStatus"] | null;
-            /** Artifact Urls */
+            /**
+             * Priority
+             * @default 0
+             * @example 4
+             */
+            priority: number;
+            /**
+             * Artifact Urls
+             * @example [
+             *       "https://example.com/jobs/123/output.tar.gz",
+             *       "https://example.com/jobs/123/metadata.json"
+             *     ]
+             */
             artifact_urls?: unknown[] | null;
-            /** Log Urls */
+            /**
+             * Log Urls
+             * @example [
+             *       "https://example.com/jobs/123/object/default.log",
+             *       "https://example.com/jobs/123/object/job-agent.log"
+             *     ]
+             */
             log_urls?: unknown[] | null;
-            /** Tags */
+            /**
+             * Tags
+             * @example [
+             *       "security",
+             *       "production"
+             *     ]
+             */
             tags?: string[] | null;
-            /** Id */
+            /**
+             * Id
+             * @example 123
+             */
             id: number;
-            /** Requested By */
+            /**
+             * Requested By
+             * @example user
+             */
             requested_by?: string | null;
-            /** Created At */
+            /**
+             * Created At
+             * @example 2025-01-15T09:15:30.123456Z
+             */
             created_at?: string | null;
-            /** Updated At */
+            /**
+             * Updated At
+             * @example 2025-01-15T10:45:23.456789Z
+             */
             updated_at?: string | null;
-            /** Started At */
+            /**
+             * Started At
+             * @example 2025-01-15T09:20:11.987654Z
+             */
             started_at?: string | null;
-            /** Completed At */
+            /**
+             * Completed At
+             * @example 2025-01-15T10:45:23.456789Z
+             */
             completed_at?: string | null;
         };
         /**
@@ -582,24 +766,61 @@ export interface components {
          * @description Job update model.
          */
         JobUpdate: {
-            /** Requested By */
+            /**
+             * Requested By
+             * @example user
+             */
             requested_by?: string | null;
+            /** @example FINISHED */
             status?: components["schemas"]["JobStatus"] | null;
-            /** Vm Ip */
+            /**
+             * Vm Ip
+             * @example 192.0.2.15
+             */
             vm_ip?: string | null;
-            /** Artifact Urls */
+            /**
+             * Artifact Urls
+             * @example [
+             *       "https://example.com/jobs/123/output.tar.gz",
+             *       "https://example.com/jobs/123/metadata.json"
+             *     ]
+             */
             artifact_urls?: unknown[] | null;
-            /** Log Urls */
+            /**
+             * Log Urls
+             * @example [
+             *       "https://example.com/jobs/123/object/default.log",
+             *       "https://example.com/jobs/123/object/job-agent.log"
+             *     ]
+             */
             log_urls?: unknown[] | null;
-            /** Started At */
+            /**
+             * Started At
+             * @example 2025-01-15T09:20:11.987654Z
+             */
             started_at?: string | null;
-            /** Completed At */
+            /**
+             * Completed At
+             * @example 2025-01-15T10:45:23.456789Z
+             */
             completed_at?: string | null;
-            /** Title */
+            /**
+             * Title
+             * @example Build Ubuntu 24.04 image
+             */
             title?: string | null;
-            /** Description */
+            /**
+             * Description
+             * @example Build a hardened Ubuntu image with security patches
+             */
             description?: string | null;
-            /** Tags */
+            /**
+             * Tags
+             * @example [
+             *       "security",
+             *       "production"
+             *     ]
+             */
             tags?: string[] | null;
         };
         /**
@@ -613,7 +834,7 @@ export interface components {
             labels: string[];
             /**
              * Cloud Name
-             * @default amd64
+             * @default local
              */
             cloud_name: string;
         };
