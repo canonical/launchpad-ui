@@ -30,7 +30,8 @@
     "openapi:update": "bun run openapi:update-schema && bun run openapi:generate-types",
     "openapi:update-schema": "sha=$(git ls-remote https://git.launchpad.net/job-manager refs/heads/main | cut -f1) && curl \"https://git.launchpad.net/job-manager/plain/openapi/openapi.yaml?h=$sha\" | { echo \"# Source commit: $sha\"; cat; } > .api-spec/job-manager.yaml && echo \"Saved .api-spec/job-manager.yaml @ $sha\"",
     "openapi:generate-types": "openapi-typescript .api-spec/job-manager.yaml -o src/lib/api/job-manager/types.ts --root-types --root-types-no-schema-prefix",
-    "mock-server": "prism mock -d --errors .api-spec/job-manager.yaml --port 4010"
+    "mock-server": "prism mock --errors .api-spec/job-manager.yaml --port 4010",
+    "mock-server:dynamic": "bun run mock-server -d"
   },
   "devDependencies": {
     "@canonical/svelte-ssr-test": "^0.10.0-experimental.5",
@@ -54,6 +55,7 @@
     "eslint-plugin-storybook": "^10.1.6",
     "eslint-plugin-svelte": "^3.13.1",
     "globals": "^16.5.0",
+    "openapi-sampler": "^1.6.2",
     "openapi-typescript": "^7.10.1",
     "playwright": "^1.57.0",
     "prettier": "^3.7.4",
@@ -69,7 +71,8 @@
     "vitest-browser-svelte": "^1.1.0"
   },
   "patchedDependencies": {
-    "markdown-actions@1.1.2": "patches/markdown-actions@1.1.2.patch"
+    "markdown-actions@1.1.2": "patches/markdown-actions@1.1.2.patch",
+    "@stoplight/prism-http@5.12.0": "patches/@stoplight%2Fprism-http@5.12.0.patch"
   },
   "dependencies": {
     "@canonical/launchpad-design-tokens": "^1.0.20",

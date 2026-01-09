@@ -1,4 +1,4 @@
-# Source commit: d7a021eaed039b046fc4a1038b3f6a395eadf1e8
+# Source commit: 673594791d1a8104ac34658a0771ec72fb20313a
 openapi: 3.1.0
 info:
   title: Job Manager API
@@ -691,93 +691,140 @@ components:
             - type: string
             - type: "null"
           title: Title
+          examples:
+            - Build Ubuntu 24.04 image
         description:
           anyOf:
             - type: string
             - type: "null"
           title: Description
+          examples:
+            - Build a hardened Ubuntu image with security patches
         repository_url:
           anyOf:
             - type: string
             - type: "null"
           title: Repository Url
+          examples:
+            - https://example.com/org/secure-images
         repository_ref:
           anyOf:
             - type: string
             - type: "null"
           title: Repository Ref
+          examples:
+            - main
         architecture:
           $ref: '#/components/schemas/Architecture'
           default: amd64
+          examples:
+            - amd64
         base_series:
           $ref: '#/components/schemas/Series'
           default: noble
+          examples:
+            - noble
         commands:
           anyOf:
             - items: {}
               type: array
             - type: "null"
           title: Commands
+          examples:
+            - - sudo apt-get update
+              - sudo apt-get install -y curl jq
+              - make build
+              - ./scripts/build.sh --release
         proxy_settings:
           anyOf:
             - additionalProperties: true
               type: object
             - type: "null"
           title: Proxy Settings
+          examples:
+            - policy: permissive
         secrets:
           anyOf:
             - additionalProperties: true
               type: object
             - type: "null"
           title: Secrets
+          examples:
+            - SECRET_TOKEN: s3cr3t_v4lu3
         environment:
           anyOf:
             - additionalProperties: true
               type: object
             - type: "null"
           title: Environment
+          examples:
+            - BUILD_MODE: hardened
         artifact_path:
           anyOf:
             - type: string
             - type: "null"
           title: Artifact Path
+          examples:
+            - build/artifacts/*.tar.gz
         topology:
           anyOf:
             - type: string
             - type: "null"
           title: Topology
+          examples:
+            - single-node
         vm_ip:
           anyOf:
             - type: string
             - type: "null"
           title: Vm Ip
+          examples:
+            - 192.0.2.15
         vm_size:
           anyOf:
             - type: string
             - type: "null"
           title: Vm Size
+          examples:
+            - large
         private:
           anyOf:
             - type: boolean
             - type: "null"
           title: Private
+          examples:
+            - true
         status:
           anyOf:
             - $ref: '#/components/schemas/JobStatus'
             - type: "null"
           default: PENDING
+          examples:
+            - FINISHED
+        priority:
+          type: integer
+          title: Priority
+          default: 0
+          examples:
+            - 4
         artifact_urls:
           anyOf:
             - items: {}
               type: array
             - type: "null"
           title: Artifact Urls
+          examples:
+            - - https://example.com/jobs/123/output.tar.gz
+              - https://example.com/jobs/123/metadata.json
         log_urls:
           anyOf:
             - items: {}
               type: array
             - type: "null"
           title: Log Urls
+          examples:
+            - - https://example.com/jobs/123/object/default.log
+              - https://example.com/jobs/123/object/job-agent.log
         tags:
           anyOf:
             - items:
@@ -785,6 +832,9 @@ components:
               type: array
             - type: "null"
           title: Tags
+          examples:
+            - - security
+              - production
       type: object
       title: JobCreate
       description: Job creation model.
@@ -795,93 +845,140 @@ components:
             - type: string
             - type: "null"
           title: Title
+          examples:
+            - Build Ubuntu 24.04 image
         description:
           anyOf:
             - type: string
             - type: "null"
           title: Description
+          examples:
+            - Build a hardened Ubuntu image with security patches
         repository_url:
           anyOf:
             - type: string
             - type: "null"
           title: Repository Url
+          examples:
+            - https://example.com/org/secure-images
         repository_ref:
           anyOf:
             - type: string
             - type: "null"
           title: Repository Ref
+          examples:
+            - main
         architecture:
           $ref: '#/components/schemas/Architecture'
           default: amd64
+          examples:
+            - amd64
         base_series:
           $ref: '#/components/schemas/Series'
           default: noble
+          examples:
+            - noble
         commands:
           anyOf:
             - items: {}
               type: array
             - type: "null"
           title: Commands
+          examples:
+            - - sudo apt-get update
+              - sudo apt-get install -y curl jq
+              - make build
+              - ./scripts/build.sh --release
         proxy_settings:
           anyOf:
             - additionalProperties: true
               type: object
             - type: "null"
           title: Proxy Settings
+          examples:
+            - policy: permissive
         secrets:
           anyOf:
             - additionalProperties: true
               type: object
             - type: "null"
           title: Secrets
+          examples:
+            - SECRET_TOKEN: s3cr3t_v4lu3
         environment:
           anyOf:
             - additionalProperties: true
               type: object
             - type: "null"
           title: Environment
+          examples:
+            - BUILD_MODE: hardened
         artifact_path:
           anyOf:
             - type: string
             - type: "null"
           title: Artifact Path
+          examples:
+            - build/artifacts/*.tar.gz
         topology:
           anyOf:
             - type: string
             - type: "null"
           title: Topology
+          examples:
+            - single-node
         vm_ip:
           anyOf:
             - type: string
             - type: "null"
           title: Vm Ip
+          examples:
+            - 192.0.2.15
         vm_size:
           anyOf:
             - type: string
             - type: "null"
           title: Vm Size
+          examples:
+            - large
         private:
           anyOf:
             - type: boolean
             - type: "null"
           title: Private
+          examples:
+            - true
         status:
           anyOf:
             - $ref: '#/components/schemas/JobStatus'
             - type: "null"
           default: PENDING
+          examples:
+            - FINISHED
+        priority:
+          type: integer
+          title: Priority
+          default: 0
+          examples:
+            - 4
         artifact_urls:
           anyOf:
             - items: {}
               type: array
             - type: "null"
           title: Artifact Urls
+          examples:
+            - - https://example.com/jobs/123/output.tar.gz
+              - https://example.com/jobs/123/metadata.json
         log_urls:
           anyOf:
             - items: {}
               type: array
             - type: "null"
           title: Log Urls
+          examples:
+            - - https://example.com/jobs/123/object/default.log
+              - https://example.com/jobs/123/object/job-agent.log
         tags:
           anyOf:
             - items:
@@ -889,38 +986,53 @@ components:
               type: array
             - type: "null"
           title: Tags
+          examples:
+            - - security
+              - production
         id:
           type: integer
           title: Id
+          examples:
+            - 123
         requested_by:
           anyOf:
             - type: string
             - type: "null"
           title: Requested By
+          examples:
+            - user
         created_at:
           anyOf:
             - type: string
               format: date-time
             - type: "null"
           title: Created At
+          examples:
+            - "2025-01-15T09:15:30.123456Z"
         updated_at:
           anyOf:
             - type: string
               format: date-time
             - type: "null"
           title: Updated At
+          examples:
+            - "2025-01-15T10:45:23.456789Z"
         started_at:
           anyOf:
             - type: string
               format: date-time
             - type: "null"
           title: Started At
+          examples:
+            - "2025-01-15T09:20:11.987654Z"
         completed_at:
           anyOf:
             - type: string
               format: date-time
             - type: "null"
           title: Completed At
+          examples:
+            - "2025-01-15T10:45:23.456789Z"
       type: object
       required:
         - id
@@ -944,49 +1056,69 @@ components:
             - type: string
             - type: "null"
           title: Requested By
+          examples:
+            - user
         status:
           anyOf:
             - $ref: '#/components/schemas/JobStatus'
             - type: "null"
+          examples:
+            - FINISHED
         vm_ip:
           anyOf:
             - type: string
             - type: "null"
           title: Vm Ip
+          examples:
+            - 192.0.2.15
         artifact_urls:
           anyOf:
             - items: {}
               type: array
             - type: "null"
           title: Artifact Urls
+          examples:
+            - - https://example.com/jobs/123/output.tar.gz
+              - https://example.com/jobs/123/metadata.json
         log_urls:
           anyOf:
             - items: {}
               type: array
             - type: "null"
           title: Log Urls
+          examples:
+            - - https://example.com/jobs/123/object/default.log
+              - https://example.com/jobs/123/object/job-agent.log
         started_at:
           anyOf:
             - type: string
               format: date-time
             - type: "null"
           title: Started At
+          examples:
+            - "2025-01-15T09:20:11.987654Z"
         completed_at:
           anyOf:
             - type: string
               format: date-time
             - type: "null"
           title: Completed At
+          examples:
+            - "2025-01-15T10:45:23.456789Z"
         title:
           anyOf:
             - type: string
             - type: "null"
           title: Title
+          examples:
+            - Build Ubuntu 24.04 image
         description:
           anyOf:
             - type: string
             - type: "null"
           title: Description
+          examples:
+            - Build a hardened Ubuntu image with security patches
         tags:
           anyOf:
             - items:
@@ -994,6 +1126,9 @@ components:
               type: array
             - type: "null"
           title: Tags
+          examples:
+            - - security
+              - production
       type: object
       title: JobUpdate
       description: Job update model.
@@ -1010,7 +1145,7 @@ components:
         cloud_name:
           type: string
           title: Cloud Name
-          default: amd64
+          default: local
       type: object
       required:
         - name
