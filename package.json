@@ -76,7 +76,7 @@
   },
   "dependencies": {
     "@canonical/launchpad-design-tokens": "^1.0.20",
-    "@canonical/svelte-icons": "^0.0.8",
+    "@canonical/svelte-icons": "^0.0.9",
     "@floating-ui/dom": "^1.7.4",
     "markdown-actions": "^1.1.2",
     "normalize.css": "^8.0.1",
