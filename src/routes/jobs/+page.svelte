@@ -56,7 +56,7 @@
           <td
             style="display: flex; align-items: center; gap: var(--tmp-dimension-spacing-inline-s)"
           >
-            <JobStatusIcon status={job.status} />
+            <JobStatusIcon status={job.status} aria-hidden="true" />
             <span>
               {job.status ?? "UNKNOWN"}
             </span>

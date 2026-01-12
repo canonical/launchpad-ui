@@ -45,6 +45,7 @@
             {#snippet icon()}
               <JobStatusIcon
                 status={job.status}
+                aria-hidden="true"
                 --job-status-icon-color="currentColor"
               />
             {/snippet}
