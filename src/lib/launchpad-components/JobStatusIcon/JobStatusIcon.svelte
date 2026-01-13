@@ -2,6 +2,7 @@
 
 <script lang="ts">
   import { ErrorIcon, HelpIcon, SuccessIcon } from "@canonical/svelte-icons";
+  import type { Component } from "svelte";
   import { LoadingStepsIcon, SkipIcon } from "$lib/components/icons/index.js";
   import { Spinner } from "$lib/components/index.js";
   import { safeAssertUnreachable } from "$lib/utils/index.js";
@@ -9,7 +10,7 @@
 
   let { status, role = "img", ...rest }: JobStatusIconProps = $props();
 
-  const [Component, colorCssVar] = $derived.by(() => {
+  const [Icon, colorCssVar] = $derived.by((): [Component, `--${string}`] => {
     switch (status) {
       case "FINISHED":
         return [SuccessIcon, "--tmp-color-icon-positive"];
@@ -31,7 +32,7 @@
   });
 </script>
 
-<Component
+<Icon
   {role}
   aria-label="Status: {status ?? 'Unknown'}"
   style="color: var(--job-status-icon-color, var({colorCssVar}));"
