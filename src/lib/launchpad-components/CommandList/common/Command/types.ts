@@ -1,9 +1,9 @@
 /* @canonical/generator-ds 0.10.0-experimental.5 */
 
-import type { JobStatus } from "$lib/api/job-manager/types.js";
+import type { JobStatusIconProps } from "$lib/launchpad-components/JobStatusIcon/index.js";
 
 export interface CommandProps {
-  status: JobStatus | null;
+  status: JobStatusIconProps["status"];
   command: string;
   href?: string;
 }

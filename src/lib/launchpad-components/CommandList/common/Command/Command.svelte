@@ -14,7 +14,6 @@
     <div class="icon-aligner">
       <JobStatusIcon {status} />
     </div>
-    <!-- TODO: Syntax highlighting for command -->
     <code>{command}</code>
   </div>
   <ButtonPrimitive
@@ -23,7 +22,6 @@
     {href}
     disabled={!href}
     aria-label="Jump to command"
-    style="padding-block: var(--tmp-dimension-spacing-block-xs); flex-shrink: 0;"
   >
     <JumpToElementIcon />
   </ButtonPrimitive>

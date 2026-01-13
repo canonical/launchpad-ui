@@ -98,6 +98,8 @@
               - pass command status
               - command not as `unknown` but proper type
               - link command to log entry
+            
+            TODO: Syntax highlighting for command
           -->
           <CommandList.Command
             status={null}
