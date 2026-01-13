@@ -4,7 +4,7 @@
   import { ErrorIcon, HelpIcon, SuccessIcon } from "@canonical/svelte-icons";
   import { LoadingStepsIcon, SkipIcon } from "$lib/components/icons/index.js";
   import { Spinner } from "$lib/components/index.js";
-  import { safeAssertNever } from "$lib/utils/index.js";
+  import { safeAssertUnreachable } from "$lib/utils/index.js";
   import type { JobStatusIconProps } from "./types.js";
 
   let { status, role = "img", ...rest }: JobStatusIconProps = $props();
@@ -25,7 +25,7 @@
       case null:
         return [HelpIcon, "--tmp-color-icon-default"];
       default:
-        safeAssertNever(status, `Unhandled job status: ${status}`);
+        safeAssertUnreachable(status, `Unhandled job status: ${status}`);
         return [HelpIcon, "--tmp-color-icon-default"];
     }
   });

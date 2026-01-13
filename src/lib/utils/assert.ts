@@ -18,17 +18,17 @@ export function assertDefined<T>(
  * @param message The message to include in the error.
  * @throws Error always throws an error with the provided message.
  */
-export function assertNever(value: never, message: string): never {
+export function assertUnreachable(value: never, message: string): never {
   throw new Error(message, value);
 }
 
 /**
- * A safe version of assertNever that logs the value instead of throwing.
+ * A safe version of assertUnreachable that logs the value instead of throwing.
  * Used for exhaustive checks where throwing is not desired.
  *
  * @param value The value that should never occur.
  * @param message The message to log.
  */
-export function safeAssertNever(value: never, message: string): void {
+export function safeAssertUnreachable(value: never, message: string): void {
   console.error(message, value);
 }
