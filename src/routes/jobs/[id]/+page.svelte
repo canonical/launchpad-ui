@@ -9,7 +9,10 @@
     UserChip,
   } from "$lib/components/index.js";
   import type { DateTimeProps } from "$lib/components/index.js";
-  import { JobStatusIcon } from "$lib/launchpad-components/index.js";
+  import {
+    CommandList,
+    JobStatusIcon,
+  } from "$lib/launchpad-components/index.js";
   import type { PageProps } from "./$types";
   import { resolve } from "$app/paths";
 
@@ -81,24 +84,33 @@
         <DescriptionList.Item name="Started at">
           {@render nullableDateTime(job.started_at)}
         </DescriptionList.Item>
-        {#if job.completed_at}
-          <DescriptionList.Item name="Completed at">
-            {@render nullableDateTime(job.completed_at)}
-          </DescriptionList.Item>
-        {/if}
+        <DescriptionList.Item name="Completed at">
+          {@render nullableDateTime(job.completed_at)}
+        </DescriptionList.Item>
       </DescriptionList>
     </section>
     <section>
-      <h2>Commands</h2>
-      <!-- TODO: Commands component -->
-      <ol>
-        {#each job.commands as command (command)}
-          <li>{command}</li>
+      <h2 class="section-header">Commands</h2>
+      <CommandList>
+        {#each job.commands as command, i (i)}
+          <!-- 
+            TODO(job-manager):
+              - pass command status
+              - command not as `unknown` but proper type
+              - link command to log entry
+            
+            TODO: Syntax highlighting for command
+          -->
+          <CommandList.Command
+            status={null}
+            command={command as string}
+            href={undefined}
+          />
         {/each}
-      </ol>
+      </CommandList>
     </section>
     <section>
-      <h2>Artifacts</h2>
+      <h2 class="section-header">Artifacts</h2>
       <!-- TODO: Artifacts component -->
       <ul>
         {#each job.artifact_urls as artifact (artifact)}
@@ -189,7 +201,10 @@
       border-block-start: var(--border-section-separator);
     }
 
-    ol,
+    .section-header {
+      margin-block-end: var(--tmp-dimension-spacing-block-m);
+    }
+
     ul {
       list-style-position: inside;
     }

@@ -27,6 +27,7 @@ export { default as HeadingIcon } from "./HeadingIcon.svelte";
 export { default as HistoryIcon } from "./HistoryIcon.svelte";
 export { default as InspectorDebugIcon } from "./InspectorDebugIcon.svelte";
 export { default as ItalicIcon } from "./ItalicIcon.svelte";
+export { default as JumpToElementIcon } from "./JumpToElementIcon.svelte";
 export { default as LoadingStepsIcon } from "./LoadingStepsIcon.svelte";
 export { default as MaximiseBarIcon } from "./MaximiseBarIcon.svelte";
 export { default as MinimiseBarIcon } from "./MinimiseBarIcon.svelte";
