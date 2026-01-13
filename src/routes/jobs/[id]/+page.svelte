@@ -9,11 +9,13 @@
     UserChip,
   } from "$lib/components/index.js";
   import type { DateTimeProps } from "$lib/components/index.js";
-  import { JobStatus } from "$lib/launchpad-components/index.js";
+  import { JobStatusIcon } from "$lib/launchpad-components/index.js";
   import type { PageProps } from "./$types";
   import { resolve } from "$app/paths";
 
   let { data }: PageProps = $props();
+
+  const job = $derived(data.job);
 </script>
 
 <div class="page">
@@ -21,50 +23,67 @@
     <Breadcrumbs
       segments={[
         { label: "Build farm", href: resolve("/jobs") },
-        { label: data.job.id.toString() },
+        { label: job.id.toString() },
       ]}
     />
   </div>
   <div class="details">
     <div>
-      <h1>Job {data.job.title}</h1>
-      <p>{data.job.description}</p>
-      {#if data.job.status}
-        <!-- TODO: Job status chips -->
-        <JobStatus status={data.job.status} />
-      {/if}
-      <Chip
-        value={data.job.private ? "Private" : "Public"}
-        severity="information"
-        readonly
-      />
+      <h1>{job.title || job.id}</h1>
+      <p>{job.description}</p>
+      <div class="chips">
+        {#if job.status}
+          <Chip
+            value={job.status}
+            readonly
+            severity={job.status === "FAILED"
+              ? "negative"
+              : job.status === "FINISHED"
+                ? "positive"
+                : "neutral"}
+          >
+            {#snippet icon()}
+              <JobStatusIcon
+                status={job.status}
+                aria-hidden="true"
+                --job-status-icon-color="currentColor"
+              />
+            {/snippet}
+          </Chip>
+        {/if}
+        <Chip
+          value={job.private ? "Private" : "Public"}
+          severity="information"
+          readonly
+        />
+      </div>
     </div>
     <section>
       <h2 class="visually-hidden">Details</h2>
       <DescriptionList>
         <DescriptionList.Item name="ID">
-          {data.job.id}
+          {job.id}
         </DescriptionList.Item>
         <DescriptionList.Item name="Architecture">
-          {data.job.architecture}
+          {job.architecture}
         </DescriptionList.Item>
         <DescriptionList.Item name="Requested by">
-          {#if data.job.requested_by}
-            <UserChip userName={data.job.requested_by} />
+          {#if job.requested_by}
+            <UserChip userName={job.requested_by} />
           {/if}
         </DescriptionList.Item>
         <DescriptionList.Item name="Created at">
-          {@render nullableDateTime(data.job.created_at)}
+          {@render nullableDateTime(job.created_at)}
         </DescriptionList.Item>
         <DescriptionList.Item name="Updated at">
-          {@render nullableDateTime(data.job.updated_at)}
+          {@render nullableDateTime(job.updated_at)}
         </DescriptionList.Item>
         <DescriptionList.Item name="Started at">
-          {@render nullableDateTime(data.job.started_at)}
+          {@render nullableDateTime(job.started_at)}
         </DescriptionList.Item>
-        {#if data.job.completed_at}
+        {#if job.completed_at}
           <DescriptionList.Item name="Completed at">
-            {@render nullableDateTime(data.job.completed_at)}
+            {@render nullableDateTime(job.completed_at)}
           </DescriptionList.Item>
         {/if}
       </DescriptionList>
@@ -73,7 +92,7 @@
       <h2>Commands</h2>
       <!-- TODO: Commands component -->
       <ol>
-        {#each data.job.commands as command (command)}
+        {#each job.commands as command (command)}
           <li>{command}</li>
         {/each}
       </ol>
@@ -82,7 +101,7 @@
       <h2>Artifacts</h2>
       <!-- TODO: Artifacts component -->
       <ul>
-        {#each data.job.artifact_urls as artifact (artifact)}
+        {#each job.artifact_urls as artifact (artifact)}
           <li style="word-break: break-word;">
             {artifact}
           </li>
@@ -152,6 +171,16 @@
 
     h2 {
       font: var(--tmp-typography-h5);
+    }
+
+    .chips {
+      display: flex;
+      gap: var(--tmp-dimension-spacing-inline-xxs);
+      margin-block-start: var(--tmp-dimension-spacing-block-xs);
+    }
+
+    section:first-of-type {
+      margin-block-start: var(--tmp-dimension-spacing-block-l);
     }
 
     section + section {

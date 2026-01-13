@@ -1,7 +1,7 @@
 <script lang="ts">
   import { DateTime, Link, Spinner, UserChip } from "$lib/components/index.js";
   import type { DateTimeProps } from "$lib/components/index.js";
-  import { JobStatus, Whoops } from "$lib/launchpad-components/index.js";
+  import { JobStatusIcon, Whoops } from "$lib/launchpad-components/index.js";
   import type { PageProps } from "./$types";
   import { browser } from "$app/environment";
   import { resolve } from "$app/paths";
@@ -53,9 +53,17 @@
           </td>
           <td>{job.title}</td>
           <td>{job.architecture}</td>
+          <td
+            style="display: flex; align-items: center; gap: var(--tmp-dimension-spacing-inline-s)"
+          >
+            <JobStatusIcon status={job.status} aria-hidden="true" />
+            <span>
+              {job.status ?? "UNKNOWN"}
+            </span>
+          </td>
           <td>
-            {#if job.status}
-              <JobStatus status={job.status} />
+            {#if job.requested_by}
+              <UserChip userName={job.requested_by} />
             {:else}
               -
             {/if}
