@@ -9,51 +9,34 @@
 
   let { status, role = "img", ...rest }: JobStatusIconProps = $props();
 
-  const commonProps = $derived({
-    role,
-    "aria-label": `Status: ${status ?? "Unknown"}`,
-    ...rest,
+  const [Component, colorCssVar] = $derived.by(() => {
+    switch (status) {
+      case "FINISHED":
+        return [SuccessIcon, "--tmp-color-icon-positive"];
+      case "FAILED":
+        return [ErrorIcon, "--tmp-color-icon-negative"];
+      case "EXECUTING":
+        return [Spinner, "--tmp-color-icon-default"];
+      case "IDLE":
+      case "PENDING":
+        return [LoadingStepsIcon, "--tmp-color-icon-default"];
+      case "CANCELLED":
+        return [SkipIcon, "--tmp-color-icon-muted"];
+      case null:
+        return [HelpIcon, "--tmp-color-icon-default"];
+      default:
+        safeAssertNever(status, `Unhandled job status: ${status}`);
+        return [HelpIcon, "--tmp-color-icon-default"];
+    }
   });
 </script>
 
-{#if status === "FINISHED"}
-  <SuccessIcon
-    style="color: var(--job-status-icon-color, var(--tmp-color-icon-positive))"
-    {...commonProps}
-  />
-{:else if status === "FAILED"}
-  <ErrorIcon
-    style="color: var(--job-status-icon-color, var(--tmp-color-icon-negative))"
-    {...commonProps}
-  />
-{:else if status === "EXECUTING"}
-  <Spinner
-    style="color: var(--job-status-icon-color, var(--tmp-color-icon-default))"
-    {...commonProps}
-  />
-{:else if status === "IDLE" || status === "PENDING"}
-  <LoadingStepsIcon
-    style="color: var(--job-status-icon-color, var(--tmp-color-icon-default))"
-    {...commonProps}
-  />
-{:else if status === "CANCELLED"}
-  <SkipIcon
-    style="color: var(--job-status-icon-color, var(--tmp-color-icon-muted))"
-    {...commonProps}
-  />
-{:else if status === null}
-  <HelpIcon
-    style="color: var(--job-status-icon-color, var(--tmp-color-icon-default))"
-    {...commonProps}
-  />
-{:else}
-  <!-- Make TS unhappy with unhandled job statuses, while displaying a fallback icon -->
-  <HelpIcon
-    style="color: var(--job-status-icon-color, var(--tmp-color-icon-default))"
-    {...commonProps}
-  />
-  {safeAssertNever(status, `Unhandled job status: ${status}`)}
-{/if}
+<Component
+  {role}
+  aria-label="Status: {status ?? 'Unknown'}"
+  style="color: var(--job-status-icon-color, var({colorCssVar}));"
+  {...rest}
+/>
 
 <!-- @component
 `JobStatusIcon` is an icon component that represents the status of a job.
