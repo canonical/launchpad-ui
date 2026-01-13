@@ -1,4 +1,4 @@
-# Source commit: 673594791d1a8104ac34658a0771ec72fb20313a
+# Source commit: 4f33b256ca8612aa39ba59542f77fee1302d4996 (job-manager:main)
 openapi: 3.1.0
 info:
   title: Job Manager API
@@ -23,6 +23,7 @@ paths:
 
         Raises:
             HTTPException 400: If invalid tag format is provided
+            HTTPException 401: If authorization token is invalid or missing
       operationId: create_job_v1_jobs_post
       requestBody:
         required: true
@@ -62,6 +63,9 @@ paths:
 
         Returns:
             List[JobRead]: List of all jobs matching the criteria
+
+        Raises:
+            HTTPException 401: If authorization token is invalid or missing
       operationId: get_jobs_v1_jobs_get
       parameters:
         - name: tags
@@ -160,6 +164,7 @@ paths:
         Raises:
             HTTPException 404: If job is not found
             HTTPException 401: If job is private and no valid token is provided
+            HTTPException 403: If user doesn't have permission to view private job
       operationId: get_job_v1_jobs__job_id__get
       parameters:
         - name: job_id
@@ -198,8 +203,9 @@ paths:
             JobRead: The updated job object
 
         Raises:
-            HTTPException 404: If job is not found
             HTTPException 400: If invalid tag format is provided
+            HTTPException 401: If authorization token is invalid or missing
+            HTTPException 404: If job is not found
       operationId: update_job_v1_jobs__job_id__put
       parameters:
         - name: job_id
@@ -245,6 +251,7 @@ paths:
             dict: The updated health status data
 
         Raises:
+            HTTPException 401: If builder token is invalid or missing
             HTTPException 404: If job is not found
       operationId: update_health_v1_jobs__job_id__health_put
       parameters:
@@ -282,7 +289,8 @@ paths:
                 status
 
         Raises:
-            HTTPException 404: If job is not found
+            HTTPException 401: If authorization token is invalid or missing
+            HTTPException 404: If job is not found or not active/executing
       operationId: get_health_v1_jobs__job_id__health_get
       parameters:
         - name: job_id
@@ -320,8 +328,12 @@ paths:
             dict: Confirmation message of job cancellation
 
         Raises:
+            HTTPException 400: If job cannot be cancelled or is already in final
+                state
+            HTTPException 401: If job is private and no valid token is provided
+            HTTPException 403: If user doesn't have permission to cancel private
+                job
             HTTPException 404: If job is not found
-            HTTPException 400: If job cannot be cancelled
       operationId: cancel_job_v1_jobs__job_id__cancel_put
       parameters:
         - name: job_id
@@ -360,8 +372,61 @@ paths:
                 headers
 
         Raises:
+            HTTPException 401: If job is private and no valid token is provided
+            HTTPException 403: If user doesn't have permission to view private job
             HTTPException 404: If job is not found
+            HTTPException 500: If object cannot be accessed or S3 error occurs
       operationId: download_object_v1_jobs__job_id__object__object_name__get
+      parameters:
+        - name: job_id
+          in: path
+          required: true
+          schema:
+            type: integer
+            title: Job Id
+        - name: object_name
+          in: path
+          required: true
+          schema:
+            type: string
+            title: Object Name
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        "422":
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    head:
+      tags:
+        - jobs
+      summary: Get Object Metadata
+      description: |-
+        Get metadata (headers only) for an artifact or object associated with a
+        job.
+
+        Args:
+            job_id: Unique identifier of the job
+            object_name: Name of the object/artifact to get metadata for
+            db: Database session dependency
+            token: Optional API access token for authorization (required for
+                private jobs)
+
+        Returns:
+            JSONResponse: Empty response with Content-Type and Content-Length
+                headers
+
+        Raises:
+            HTTPException 404: If job is not found
+            HTTPException 401: If job is private and no valid token is provided
+            HTTPException 403: If user doesn't have permission to view private job
+            HTTPException 500: If object cannot be accessed
+      operationId: get_object_metadata_v1_jobs__job_id__object__object_name__head
       parameters:
         - name: job_id
           in: path
@@ -405,6 +470,7 @@ paths:
             dict: Contains the generated JWT token
 
         Raises:
+            HTTPException 401: If authorization token is invalid or missing
             HTTPException 404: If job is not found
             HTTPException 500: If SSH key generation fails
       operationId: generate_token_v1_jobs__job_id__token_post
@@ -445,7 +511,8 @@ paths:
 
         Raises:
             HTTPException 400: If identity is missing from request
-            HTTPException 403: If request is not from internal network
+            HTTPException 403: If request is not from internal network or token is
+                invalid
       operationId: create_api_access_token_v1_api_access_token_post
       responses:
         "200":
@@ -470,7 +537,8 @@ paths:
             dict: Contains the revoked token and identity
 
         Raises:
-            HTTPException 403: If request is not from internal network
+            HTTPException 403: If request is not from internal network or token is
+                invalid
             HTTPException 404: If token is not found
       operationId: revoke_api_access_token_v1_api_access_token_delete
       parameters:
@@ -629,12 +697,35 @@ paths:
       description: |-
         Root endpoint providing basic API information.
 
+        Supports both GET and HEAD requests. HEAD requests are commonly
+        used by monitoring tools and curl -I to check service status.
+
         Returns:
             dict: Basic API information including:
                 - message: API identification
                 - version: Current API version
                 - status: Running status
       operationId: root__get
+      responses:
+        "200":
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+    head:
+      summary: Root
+      description: |-
+        Root endpoint providing basic API information.
+
+        Supports both GET and HEAD requests. HEAD requests are commonly
+        used by monitoring tools and curl -I to check service status.
+
+        Returns:
+            dict: Basic API information including:
+                - message: API identification
+                - version: Current API version
+                - status: Running status
+      operationId: root__head
       responses:
         "200":
           description: Successful Response
@@ -675,6 +766,30 @@ components:
         - i386
       title: Architecture
       description: Supported CPU architectures.
+    ArtifactMetadata:
+      properties:
+        url:
+          type: string
+          title: Url
+        type:
+          type: string
+          title: Type
+        size:
+          type: integer
+          title: Size
+      type: object
+      required:
+        - url
+        - type
+        - size
+      title: ArtifactMetadata
+      description: |-
+        Metadata for a job artifact stored in S3.
+
+        Attributes:
+            url: Full URL to download the artifact
+            type: MIME type of the artifact (e.g., 'application/gzip')
+            size: Size of the artifact in bytes
     HTTPValidationError:
       properties:
         detail:
@@ -1033,9 +1148,27 @@ components:
           title: Completed At
           examples:
             - "2025-01-15T10:45:23.456789Z"
+        artifacts:
+          anyOf:
+            - items:
+                $ref: '#/components/schemas/ArtifactMetadata'
+              type: array
+            - type: "null"
+          title: Artifacts
+          description: List of artifact metadata with URL, MIME type, and size. Returns None if no artifacts exist or S3 is unavailable.
+          readOnly: true
+          examples:
+            - - size: 2048576
+                type: application/gzip
+                url: https://example.com/v1/jobs/123/object/output.tar.gz
+              - size: 1024
+                type: application/json
+                url: https://example.com/v1/jobs/123/object/metadata.json
+            - null
       type: object
       required:
         - id
+        - artifacts
       title: JobRead
       description: Job read model with all fields.
     JobStatus:

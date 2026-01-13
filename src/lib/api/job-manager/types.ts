@@ -28,6 +28,9 @@ export interface paths {
          *
          *     Returns:
          *         List[JobRead]: List of all jobs matching the criteria
+         *
+         *     Raises:
+         *         HTTPException 401: If authorization token is invalid or missing
          */
         get: operations["get_jobs_v1_jobs_get"];
         put?: never;
@@ -45,6 +48,7 @@ export interface paths {
          *
          *     Raises:
          *         HTTPException 400: If invalid tag format is provided
+         *         HTTPException 401: If authorization token is invalid or missing
          */
         post: operations["create_job_v1_jobs_post"];
         delete?: never;
@@ -76,6 +80,7 @@ export interface paths {
          *     Raises:
          *         HTTPException 404: If job is not found
          *         HTTPException 401: If job is private and no valid token is provided
+         *         HTTPException 403: If user doesn't have permission to view private job
          */
         get: operations["get_job_v1_jobs__job_id__get"];
         /**
@@ -92,8 +97,9 @@ export interface paths {
          *         JobRead: The updated job object
          *
          *     Raises:
-         *         HTTPException 404: If job is not found
          *         HTTPException 400: If invalid tag format is provided
+         *         HTTPException 401: If authorization token is invalid or missing
+         *         HTTPException 404: If job is not found
          */
         put: operations["update_job_v1_jobs__job_id__put"];
         post?: never;
@@ -123,7 +129,8 @@ export interface paths {
          *             status
          *
          *     Raises:
-         *         HTTPException 404: If job is not found
+         *         HTTPException 401: If authorization token is invalid or missing
+         *         HTTPException 404: If job is not found or not active/executing
          */
         get: operations["get_health_v1_jobs__job_id__health_get"];
         /**
@@ -140,6 +147,7 @@ export interface paths {
          *         dict: The updated health status data
          *
          *     Raises:
+         *         HTTPException 401: If builder token is invalid or missing
          *         HTTPException 404: If job is not found
          */
         put: operations["update_health_v1_jobs__job_id__health_put"];
@@ -171,8 +179,12 @@ export interface paths {
          *         dict: Confirmation message of job cancellation
          *
          *     Raises:
+         *         HTTPException 400: If job cannot be cancelled or is already in final
+         *             state
+         *         HTTPException 401: If job is private and no valid token is provided
+         *         HTTPException 403: If user doesn't have permission to cancel private
+         *             job
          *         HTTPException 404: If job is not found
-         *         HTTPException 400: If job cannot be cancelled
          */
         put: operations["cancel_job_v1_jobs__job_id__cancel_put"];
         post?: never;
@@ -203,14 +215,39 @@ export interface paths {
          *             headers
          *
          *     Raises:
+         *         HTTPException 401: If job is private and no valid token is provided
+         *         HTTPException 403: If user doesn't have permission to view private job
          *         HTTPException 404: If job is not found
+         *         HTTPException 500: If object cannot be accessed or S3 error occurs
          */
         get: operations["download_object_v1_jobs__job_id__object__object_name__get"];
         put?: never;
         post?: never;
         delete?: never;
         options?: never;
-        head?: never;
+        /**
+         * Get Object Metadata
+         * @description Get metadata (headers only) for an artifact or object associated with a
+         *     job.
+         *
+         *     Args:
+         *         job_id: Unique identifier of the job
+         *         object_name: Name of the object/artifact to get metadata for
+         *         db: Database session dependency
+         *         token: Optional API access token for authorization (required for
+         *             private jobs)
+         *
+         *     Returns:
+         *         JSONResponse: Empty response with Content-Type and Content-Length
+         *             headers
+         *
+         *     Raises:
+         *         HTTPException 404: If job is not found
+         *         HTTPException 401: If job is private and no valid token is provided
+         *         HTTPException 403: If user doesn't have permission to view private job
+         *         HTTPException 500: If object cannot be accessed
+         */
+        head: operations["get_object_metadata_v1_jobs__job_id__object__object_name__head"];
         patch?: never;
         trace?: never;
     };
@@ -237,6 +274,7 @@ export interface paths {
          *         dict: Contains the generated JWT token
          *
          *     Raises:
+         *         HTTPException 401: If authorization token is invalid or missing
          *         HTTPException 404: If job is not found
          *         HTTPException 500: If SSH key generation fails
          */
@@ -270,7 +308,8 @@ export interface paths {
          *
          *     Raises:
          *         HTTPException 400: If identity is missing from request
-         *         HTTPException 403: If request is not from internal network
+         *         HTTPException 403: If request is not from internal network or token is
+         *             invalid
          */
         post: operations["create_api_access_token_v1_api_access_token_post"];
         /**
@@ -287,7 +326,8 @@ export interface paths {
          *         dict: Contains the revoked token and identity
          *
          *     Raises:
-         *         HTTPException 403: If request is not from internal network
+         *         HTTPException 403: If request is not from internal network or token is
+         *             invalid
          *         HTTPException 404: If token is not found
          */
         delete: operations["revoke_api_access_token_v1_api_access_token_delete"];
@@ -403,6 +443,9 @@ export interface paths {
          * Root
          * @description Root endpoint providing basic API information.
          *
+         *     Supports both GET and HEAD requests. HEAD requests are commonly
+         *     used by monitoring tools and curl -I to check service status.
+         *
          *     Returns:
          *         dict: Basic API information including:
          *             - message: API identification
@@ -414,7 +457,20 @@ export interface paths {
         post?: never;
         delete?: never;
         options?: never;
-        head?: never;
+        /**
+         * Root
+         * @description Root endpoint providing basic API information.
+         *
+         *     Supports both GET and HEAD requests. HEAD requests are commonly
+         *     used by monitoring tools and curl -I to check service status.
+         *
+         *     Returns:
+         *         dict: Basic API information including:
+         *             - message: API identification
+         *             - version: Current API version
+         *             - status: Running status
+         */
+        head: operations["root__head"];
         patch?: never;
         trace?: never;
     };
@@ -454,6 +510,23 @@ export interface components {
          * @enum {string}
          */
         Architecture: "amd64" | "arm64" | "armel" | "armhf" | "ppc64el" | "s390x" | "riscv64" | "amd64v3" | "i386";
+        /**
+         * ArtifactMetadata
+         * @description Metadata for a job artifact stored in S3.
+         *
+         *     Attributes:
+         *         url: Full URL to download the artifact
+         *         type: MIME type of the artifact (e.g., 'application/gzip')
+         *         size: Size of the artifact in bytes
+         */
+        ArtifactMetadata: {
+            /** Url */
+            url: string;
+            /** Type */
+            type: string;
+            /** Size */
+            size: number;
+        };
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
@@ -754,6 +827,24 @@ export interface components {
              * @example 2025-01-15T10:45:23.456789Z
              */
             completed_at?: string | null;
+            /**
+             * Artifacts
+             * @description List of artifact metadata with URL, MIME type, and size. Returns None if no artifacts exist or S3 is unavailable.
+             * @example [
+             *       {
+             *         "size": 2048576,
+             *         "type": "application/gzip",
+             *         "url": "https://example.com/v1/jobs/123/object/output.tar.gz"
+             *       },
+             *       {
+             *         "size": 1024,
+             *         "type": "application/json",
+             *         "url": "https://example.com/v1/jobs/123/object/metadata.json"
+             *       }
+             *     ]
+             * @example null
+             */
+            readonly artifacts: components["schemas"]["ArtifactMetadata"][] | null;
         };
         /**
          * JobStatus
@@ -892,6 +983,7 @@ export interface components {
     pathItems: never;
 }
 export type Architecture = components['schemas']['Architecture'];
+export type ArtifactMetadata = components['schemas']['ArtifactMetadata'];
 export type HttpValidationError = components['schemas']['HTTPValidationError'];
 export type JobCreate = components['schemas']['JobCreate'];
 export type JobRead = components['schemas']['JobRead'];
@@ -1167,6 +1259,38 @@ export interface operations {
             };
         };
     };
+    get_object_metadata_v1_jobs__job_id__object__object_name__head: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                job_id: number;
+                object_name: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     generate_token_v1_jobs__job_id__token_post: {
         parameters: {
             query?: never;
@@ -1366,6 +1490,26 @@ export interface operations {
         };
     };
     root__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+        };
+    };
+    root__head: {
         parameters: {
             query?: never;
             header?: never;
