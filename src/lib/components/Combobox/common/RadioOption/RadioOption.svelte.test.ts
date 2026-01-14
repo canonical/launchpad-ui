@@ -1,8 +1,8 @@
 /* @canonical/generator-ds 0.10.0-experimental.5 */
 
-import type { Locator } from "@vitest/browser/context";
 import type { ComponentProps } from "svelte";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import type { Locator } from "vitest/browser";
 import { render } from "vitest-browser-svelte";
 import type { RenderResult } from "vitest-browser-svelte";
 import type { ComboboxContext } from "../../types.js";
