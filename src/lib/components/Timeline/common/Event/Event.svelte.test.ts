@@ -1,10 +1,10 @@
 /* @canonical/generator-ds 0.10.0-experimental.5 */
 
 import { AnchorIcon } from "@canonical/svelte-icons";
-import type { Locator } from "@vitest/browser/context";
 import { createRawSnippet } from "svelte";
 import type { ComponentProps } from "svelte";
 import { describe, expect, it } from "vitest";
+import type { Locator } from "vitest/browser";
 import { render } from "vitest-browser-svelte";
 import type { RenderResult } from "vitest-browser-svelte";
 import Component from "./Event.svelte";

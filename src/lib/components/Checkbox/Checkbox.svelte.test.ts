@@ -1,7 +1,7 @@
 /* @canonical/generator-ds 0.10.0-experimental.5 */
 
-import type { Locator } from "@vitest/browser/context";
 import { describe, expect, it, vi } from "vitest";
+import type { Locator } from "vitest/browser";
 import { render } from "vitest-browser-svelte";
 import type { RenderResult } from "vitest-browser-svelte";
 import Component from "./Checkbox.svelte";
