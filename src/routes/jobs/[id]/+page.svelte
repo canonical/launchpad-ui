@@ -1,9 +1,12 @@
 <script lang="ts">
+  import { DownloadIcon, FileIcon } from "@canonical/svelte-icons";
+  import { ButtonPrimitive } from "$lib/components/common/index.js";
   import {
     Breadcrumbs,
     Chip,
     DateTime,
     DescriptionList,
+    Link,
     Log,
     Spinner,
     UserChip,
@@ -13,6 +16,7 @@
     CommandList,
     JobStatusIcon,
   } from "$lib/launchpad-components/index.js";
+  import { bytesToHumanReadable } from "$lib/utils/bytesToHumanReadable.js";
   import type { PageProps } from "./$types";
   import { resolve } from "$app/paths";
 
@@ -46,11 +50,7 @@
                 : "neutral"}
           >
             {#snippet icon()}
-              <JobStatusIcon
-                status={job.status}
-                aria-hidden="true"
-                --job-status-icon-color="currentColor"
-              />
+              <JobStatusIcon status={job.status} aria-hidden="true" />
             {/snippet}
           </Chip>
         {/if}
@@ -109,17 +109,42 @@
         {/each}
       </CommandList>
     </section>
-    <section>
-      <h2 class="section-header">Artifacts</h2>
-      <!-- TODO: Artifacts component -->
-      <ul>
-        {#each job.artifact_urls as artifact (artifact)}
-          <li style="word-break: break-word;">
-            {artifact}
-          </li>
-        {/each}
-      </ul>
-    </section>
+    {#if job.artifacts?.length}
+      <section>
+        <div
+          class="section-header"
+          style="display: flex; justify-content: space-between; align-items: center;"
+        >
+          <h2>Artifacts</h2>
+          <!--
+          TODO:
+            - Add href, when zip endpoint is available
+            - Replace with a proper Button component
+          -->
+          <ButtonPrimitive
+            as="a"
+            disabled
+            style="display: flex; gap: var(--tmp-dimension-spacing-inline-xs); align-items: center; padding: var(--tmp-dimension-spacing-block-minimum) var(--tmp-dimension-spacing-inline-xs);"
+          >
+            <DownloadIcon />Download All
+          </ButtonPrimitive>
+        </div>
+        <ul class="artifacts">
+          {#each job.artifacts as { url, size } (url)}
+            <li>
+              <Link href={url} download>
+                <span class="icon-aligner">
+                  <FileIcon aria-hidden="true" />
+                </span>
+                <span class="artifact-name">
+                  {url.split("/").at(-1)} ({bytesToHumanReadable(size)})
+                </span>
+              </Link>
+            </li>
+          {/each}
+        </ul>
+      </section>
+    {/if}
   </div>
   <section class="log-container">
     <h2 class="visually-hidden">Log</h2>
@@ -159,7 +184,7 @@
 
     grid-template:
       "breadcrumbs log-container" auto
-      "details log-container" minmax(0, 1fr) / minmax(300px, 1fr) 2fr;
+      "details log-container" minmax(0, 1fr) / minmax(300px, 3fr) 5fr;
 
     --border-section-separator: var(--dimension-stroke-thickness-default) solid
       var(--tmp-color-border-low-contrast);
@@ -205,8 +230,28 @@
       margin-block-end: var(--tmp-dimension-spacing-block-m);
     }
 
-    ul {
-      list-style-position: inside;
+    .artifacts {
+      list-style: none;
+      display: grid;
+      gap: var(--tmp-dimension-spacing-block-xs);
+
+      :global(a) {
+        display: flex;
+        align-items: start;
+        gap: var(--tmp-dimension-spacing-inline-xs);
+        color: var(--tmp-color-text-default);
+
+        > .icon-aligner {
+          height: 1lh;
+          flex-shrink: 0;
+          display: grid;
+          place-items: center;
+        }
+
+        > .artifact-name {
+          word-break: break-word;
+        }
+      }
     }
   }
 
