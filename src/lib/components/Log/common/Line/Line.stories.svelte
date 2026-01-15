@@ -1,6 +1,7 @@
 <script module lang="ts">
   import { defineMeta } from "@storybook/addon-svelte-csf";
   import type { Snippet } from "svelte";
+  import { setLogContext } from "../../context.js";
   import Line from "./Line.svelte";
 
   const { Story } = defineMeta({
@@ -13,6 +14,14 @@
       children: "Disconnecting..." as unknown as Snippet<[]>,
       line: 140,
     },
+  });
+</script>
+
+<script lang="ts">
+  setLogContext({
+    timeZone: "UTC",
+    hideTimestamp: false,
+    wrapLines: false,
   });
 </script>
 

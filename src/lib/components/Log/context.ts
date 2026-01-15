@@ -1,12 +1,4 @@
-import { getContext, setContext } from "svelte";
+import { createContext } from "svelte";
 import type { LogContext } from "./types.js";
 
-const key = Symbol("log");
-
-export function setLogContext(context: LogContext) {
-  return setContext<LogContext>(key, context);
-}
-
-export function getLogContext() {
-  return getContext<LogContext | undefined>(key);
-}
+export const [getLogContext, setLogContext] = createContext<LogContext>();

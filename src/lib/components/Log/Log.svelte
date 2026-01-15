@@ -10,6 +10,7 @@
     class: className,
     children,
     hideTimestamp = false,
+    wrapLines = false,
     timeZone = "UTC",
     caption,
     ...rest
@@ -21,6 +22,9 @@
     },
     get hideTimestamp() {
       return hideTimestamp;
+    },
+    get wrapLines() {
+      return wrapLines;
     },
   });
 </script>

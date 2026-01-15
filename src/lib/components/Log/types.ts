@@ -14,6 +14,10 @@ export interface LogProps extends BaseProps {
    */
   timeZone?: TimeZone;
   /**
+   * If true, long lines will wrap onto multiple lines.
+   */
+  wrapLines?: boolean;
+  /**
    * An optional caption for the log table to provide additional context for assistive technologies. Not visually displayed.
    */
   caption?: string;
@@ -22,6 +26,7 @@ export interface LogProps extends BaseProps {
 export type LogContext = {
   timeZone: TimeZone;
   hideTimestamp: boolean;
+  wrapLines: boolean;
 };
 
 export type TimeZone = "UTC" | "local";
