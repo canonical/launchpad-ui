@@ -137,14 +137,18 @@ export interface paths {
          * Update Health
          * @description Update the health status of a running job.
          *
+         *     This endpoint accepts health data and immediately returns 200 OK.
+         *     All processing is done asynchronously in a background task.
+         *
          *     Args:
          *         job_id: Unique identifier of the job
+         *         request: FastAPI request object containing health data
+         *         background_tasks: FastAPI background tasks for async operations
          *         db: Database session dependency
          *         token: Builder token for authorization
-         *         request: FastAPI request object containing health data
          *
          *     Returns:
-         *         dict: The updated health status data
+         *         dict: Acknowledgment of health update receipt
          *
          *     Raises:
          *         HTTPException 401: If builder token is invalid or missing
@@ -392,14 +396,18 @@ export interface paths {
          * Update Runner Health
          * @description Update runner health metrics.
          *
+         *     This endpoint accepts health data and immediately returns 200 OK.
+         *     All processing is done asynchronously in a background task.
+         *
          *     Args:
          *         runner_id: Unique identifier of the runner
          *         request: FastAPI request object containing health metrics
+         *         background_tasks: FastAPI background tasks for async operations
          *         db: Database session dependency
-         *         token: Runner token for authorization
+         *         _: Runner token for authorization
          *
          *     Returns:
-         *         dict: Success indicator
+         *         dict: Acknowledgment of health update receipt
          *
          *     Raises:
          *         HTTPException 404: If runner is not found
@@ -539,24 +547,28 @@ export interface components {
         JobCreate: {
             /**
              * Title
+             * @default
              * @example Build Ubuntu 24.04 image
              */
-            title?: string | null;
+            title: string;
             /**
              * Description
+             * @default
              * @example Build a hardened Ubuntu image with security patches
              */
-            description?: string | null;
+            description: string;
             /**
              * Repository Url
+             * @default
              * @example https://example.com/org/secure-images
              */
-            repository_url?: string | null;
+            repository_url: string;
             /**
              * Repository Ref
+             * @default
              * @example main
              */
-            repository_ref?: string | null;
+            repository_ref: string;
             /**
              * @default amd64
              * @example amd64
@@ -569,6 +581,7 @@ export interface components {
             base_series: components["schemas"]["Series"];
             /**
              * Commands
+             * @default []
              * @example [
              *       "sudo apt-get update",
              *       "sudo apt-get install -y curl jq",
@@ -576,64 +589,66 @@ export interface components {
              *       "./scripts/build.sh --release"
              *     ]
              */
-            commands?: unknown[] | null;
+            commands: unknown[];
             /**
              * Proxy Settings
+             * @default {}
              * @example {
              *       "policy": "permissive"
              *     }
              */
-            proxy_settings?: {
+            proxy_settings: {
                 [key: string]: unknown;
-            } | null;
+            };
             /**
              * Secrets
+             * @default {}
              * @example {
              *       "SECRET_TOKEN": "s3cr3t_v4lu3"
              *     }
              */
-            secrets?: {
+            secrets: {
                 [key: string]: unknown;
-            } | null;
+            };
             /**
              * Environment
+             * @default {}
              * @example {
              *       "BUILD_MODE": "hardened"
              *     }
              */
-            environment?: {
+            environment: {
                 [key: string]: unknown;
-            } | null;
+            };
             /**
              * Artifact Path
+             * @default
              * @example build/artifacts/*.tar.gz
              */
-            artifact_path?: string | null;
+            artifact_path: string;
             /**
              * Topology
+             * @default
              * @example single-node
              */
-            topology?: string | null;
-            /**
-             * Vm Ip
-             * @example 192.0.2.15
-             */
-            vm_ip?: string | null;
+            topology: string;
             /**
              * Vm Size
+             * @default
              * @example large
              */
-            vm_size?: string | null;
+            vm_size: string;
             /**
              * Private
+             * @default false
              * @example true
              */
-            private?: boolean | null;
+            private: boolean;
             /**
              * @default PENDING
              * @example FINISHED
              */
-            status: components["schemas"]["JobStatus"] | null;
+            status: components["schemas"]["JobStatus"];
             /**
              * Priority
              * @default 0
@@ -642,28 +657,31 @@ export interface components {
             priority: number;
             /**
              * Artifact Urls
+             * @default []
              * @example [
              *       "https://example.com/jobs/123/output.tar.gz",
              *       "https://example.com/jobs/123/metadata.json"
              *     ]
              */
-            artifact_urls?: unknown[] | null;
+            artifact_urls: unknown[];
             /**
              * Log Urls
+             * @default []
              * @example [
              *       "https://example.com/jobs/123/object/default.log",
              *       "https://example.com/jobs/123/object/job-agent.log"
              *     ]
              */
-            log_urls?: unknown[] | null;
+            log_urls: unknown[];
             /**
              * Tags
+             * @default []
              * @example [
              *       "security",
              *       "production"
              *     ]
              */
-            tags?: string[] | null;
+            tags: string[];
         };
         /**
          * JobRead
@@ -672,24 +690,28 @@ export interface components {
         JobRead: {
             /**
              * Title
+             * @default
              * @example Build Ubuntu 24.04 image
              */
-            title?: string | null;
+            title: string;
             /**
              * Description
+             * @default
              * @example Build a hardened Ubuntu image with security patches
              */
-            description?: string | null;
+            description: string;
             /**
              * Repository Url
+             * @default
              * @example https://example.com/org/secure-images
              */
-            repository_url?: string | null;
+            repository_url: string;
             /**
              * Repository Ref
+             * @default
              * @example main
              */
-            repository_ref?: string | null;
+            repository_ref: string;
             /**
              * @default amd64
              * @example amd64
@@ -702,6 +724,7 @@ export interface components {
             base_series: components["schemas"]["Series"];
             /**
              * Commands
+             * @default []
              * @example [
              *       "sudo apt-get update",
              *       "sudo apt-get install -y curl jq",
@@ -709,64 +732,66 @@ export interface components {
              *       "./scripts/build.sh --release"
              *     ]
              */
-            commands?: unknown[] | null;
+            commands: unknown[];
             /**
              * Proxy Settings
+             * @default {}
              * @example {
              *       "policy": "permissive"
              *     }
              */
-            proxy_settings?: {
+            proxy_settings: {
                 [key: string]: unknown;
-            } | null;
+            };
             /**
              * Secrets
+             * @default {}
              * @example {
              *       "SECRET_TOKEN": "s3cr3t_v4lu3"
              *     }
              */
-            secrets?: {
+            secrets: {
                 [key: string]: unknown;
-            } | null;
+            };
             /**
              * Environment
+             * @default {}
              * @example {
              *       "BUILD_MODE": "hardened"
              *     }
              */
-            environment?: {
+            environment: {
                 [key: string]: unknown;
-            } | null;
+            };
             /**
              * Artifact Path
+             * @default
              * @example build/artifacts/*.tar.gz
              */
-            artifact_path?: string | null;
+            artifact_path: string;
             /**
              * Topology
+             * @default
              * @example single-node
              */
-            topology?: string | null;
-            /**
-             * Vm Ip
-             * @example 192.0.2.15
-             */
-            vm_ip?: string | null;
+            topology: string;
             /**
              * Vm Size
+             * @default
              * @example large
              */
-            vm_size?: string | null;
+            vm_size: string;
             /**
              * Private
+             * @default false
              * @example true
              */
-            private?: boolean | null;
+            private: boolean;
             /**
              * @default PENDING
              * @example FINISHED
              */
-            status: components["schemas"]["JobStatus"] | null;
+            status: components["schemas"]["JobStatus"];
             /**
              * Priority
              * @default 0
@@ -775,28 +800,31 @@ export interface components {
             priority: number;
             /**
              * Artifact Urls
+             * @default []
              * @example [
              *       "https://example.com/jobs/123/output.tar.gz",
              *       "https://example.com/jobs/123/metadata.json"
              *     ]
              */
-            artifact_urls?: unknown[] | null;
+            artifact_urls: unknown[];
             /**
              * Log Urls
+             * @default []
              * @example [
              *       "https://example.com/jobs/123/object/default.log",
              *       "https://example.com/jobs/123/object/job-agent.log"
              *     ]
              */
-            log_urls?: unknown[] | null;
+            log_urls: unknown[];
             /**
              * Tags
+             * @default []
              * @example [
              *       "security",
              *       "production"
              *     ]
              */
-            tags?: string[] | null;
+            tags: string[];
             /**
              * Id
              * @example 123
@@ -806,17 +834,19 @@ export interface components {
              * Requested By
              * @example user
              */
-            requested_by?: string | null;
+            requested_by: string;
             /**
              * Created At
+             * Format: date-time
              * @example 2025-01-15T09:15:30.123456Z
              */
-            created_at?: string | null;
+            created_at: string;
             /**
              * Updated At
+             * Format: date-time
              * @example 2025-01-15T10:45:23.456789Z
              */
-            updated_at?: string | null;
+            updated_at: string;
             /**
              * Started At
              * @example 2025-01-15T09:20:11.987654Z
@@ -829,7 +859,7 @@ export interface components {
             completed_at?: string | null;
             /**
              * Artifacts
-             * @description List of artifact metadata with URL, MIME type, and size. Returns None if no artifacts exist or S3 is unavailable.
+             * @description List of artifact metadata with URL, MIME type, and size. Returns empty list if no artifacts exist or S3 is unavailable.
              * @example [
              *       {
              *         "size": 2048576,
@@ -842,9 +872,8 @@ export interface components {
              *         "url": "https://example.com/v1/jobs/123/object/metadata.json"
              *       }
              *     ]
-             * @example null
              */
-            readonly artifacts: components["schemas"]["ArtifactMetadata"][] | null;
+            readonly artifacts: components["schemas"]["ArtifactMetadata"][];
         };
         /**
          * JobStatus
@@ -864,11 +893,6 @@ export interface components {
             requested_by?: string | null;
             /** @example FINISHED */
             status?: components["schemas"]["JobStatus"] | null;
-            /**
-             * Vm Ip
-             * @example 192.0.2.15
-             */
-            vm_ip?: string | null;
             /**
              * Artifact Urls
              * @example [
