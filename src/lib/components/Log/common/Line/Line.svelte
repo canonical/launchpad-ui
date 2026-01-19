@@ -11,7 +11,7 @@
     class: className,
     line,
     timestamp,
-    level,
+    level = "info",
     children,
     ...rest
   }: LineProps = $props();

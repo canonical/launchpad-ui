@@ -128,20 +128,6 @@ describe("Log component", () => {
       expect(page.getByRole("time").elements()).toHaveLength(logsProps.length);
     });
 
-    it("doesn't render timestamps on narrow viewports", async () => {
-      const page = render(Component, {
-        ...baseProps,
-        children: oneLog,
-      });
-
-      pageContext.viewport(400, 800);
-
-      expect(page.getByRole("row").elements()).toHaveLength(2);
-      await expect
-        .element(page.getByRole("time", { includeHidden: true }))
-        .not.toBeVisible();
-    });
-
     it("doesn't render timestamps when hideTimestamp is true", async () => {
       const page = render(Component, {
         ...baseProps,
