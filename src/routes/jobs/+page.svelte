@@ -51,7 +51,7 @@
               {job.id}
             </Link>
           </td>
-          <td>{job.title}</td>
+          <td>{job.title || "-"}</td>
           <td>{job.architecture}</td>
           <td
             style="display: flex; align-items: center; gap: var(--tmp-dimension-spacing-inline-s)"
@@ -69,14 +69,7 @@
             {/if}
           </td>
           <td>
-            {#if job.requested_by}
-              <UserChip userName={job.requested_by} />
-            {:else}
-              -
-            {/if}
-          </td>
-          <td>
-            {#if job.tags}
+            {#if job.tags.length > 0}
               {job.tags.join(", ")}
             {:else}
               -
