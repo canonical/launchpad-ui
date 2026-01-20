@@ -9,6 +9,7 @@
     Link,
     Log,
     Spinner,
+    Switch,
     UserChip,
   } from "$lib/components/index.js";
   import type { DateTimeProps } from "$lib/components/index.js";
@@ -16,13 +17,16 @@
     CommandList,
     JobStatusIcon,
   } from "$lib/launchpad-components/index.js";
-  import { bytesToHumanReadable } from "$lib/utils/bytesToHumanReadable.js";
+  import { bytesToHumanReadable } from "$lib/utils/index.js";
   import type { PageProps } from "./$types";
   import { resolve } from "$app/paths";
 
   let { data }: PageProps = $props();
 
   const job = $derived(data.job);
+  const log = $derived(data.log);
+
+  let wrapLogs = $state(true);
 </script>
 
 <div class="page">
@@ -149,25 +153,39 @@
   <section class="log-container">
     <h2 class="visually-hidden">Log</h2>
     <!--
-      TODO: No logs component 
       TODO: Log header component
     -->
-    <div class="log-header">Log header</div>
-    <div class="log-contents">
-      <Log style="flex-grow: 1;">
-        {#each { length: 200 }, i (i)}
-          <Log.Line
-            line={i + 1}
-            timestamp={1765961090624 + i * 1000}
-            level="info">{`Bla bla`.repeat(i + 1)}</Log.Line
-          >
-        {/each}
-      </Log>
-      <div class="trailing-bar">
-        <!-- TODO: Trailing bar content -->
-        <Spinner /> Tailing for 42 minutes...
+    {#if log.length > 0}
+      <div class="log-header" style="display: flex; align-items: center;">
+        <label style="display: flex; align-items: center; gap: 4px;">
+          <Switch bind:checked={wrapLogs} /> Wrap lines
+        </label>
       </div>
-    </div>
+      <div class="log-contents">
+        <!-- FIXME(@Enzo): Without timestamp auto-hiding and with wrapLines, the layout degenerates on medium viewports -->
+        <Log style="flex-grow: 1;" wrapLines={wrapLogs}>
+          {#each log as { timestamp, message }, i (i)}
+            <Log.Line line={i + 1} {timestamp}>{message}</Log.Line>
+          {/each}
+        </Log>
+        <!-- TODO: Trailing bar content -->
+        <div class="trailing-bar">
+          <Spinner /> Tailing for 42 minutes...
+        </div>
+      </div>
+    {:else}
+      <div class="no-logs">
+        <!-- TODO: Can there be a case where the log is empty but the build has started? -->
+        <p class="message">
+          The log stream will appear here once the build starts.
+        </p>
+        <img
+          src="/brand-icons/screen-with-code.svg"
+          alt="A screen with code"
+          aria-hidden="true"
+        />
+      </div>
+    {/if}
   </section>
 </div>
 
@@ -274,6 +292,18 @@
       flex-direction: column;
     }
 
+    .no-logs {
+      grid-row: 1 / -1;
+      padding: var(--tmp-dimension-spacing-block-l)
+        var(--tmp-dimension-spacing-inline-l);
+      font: var(--tmp-typography-code-s);
+      background-color: var(--tmp-color-background-alt);
+
+      .message {
+        margin-block-end: var(--tmp-dimension-spacing-block-xs);
+      }
+    }
+
     .trailing-bar {
       display: flex;
       align-items: center;
@@ -287,14 +317,16 @@
   @media (max-width: 620px) {
     .page {
       height: auto;
+      min-height: 100vh;
       grid-template:
         "breadcrumbs" auto
         "details" auto
-        "log-container" auto / 1fr;
+        "log-container" 1fr / 1fr;
     }
 
     .log-container {
-      display: block;
+      display: flex;
+      flex-direction: column;
 
       border-inline-start: none;
       border-block-start: var(--border-section-separator);
@@ -302,6 +334,11 @@
       .log-header {
         position: sticky;
         top: 0;
+        z-index: 1;
+      }
+
+      .log-contents {
+        flex-grow: 1;
       }
 
       .trailing-bar {

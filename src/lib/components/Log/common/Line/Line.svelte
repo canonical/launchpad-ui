@@ -11,7 +11,7 @@
     class: className,
     line,
     timestamp,
-    level,
+    level = "info",
     children,
     ...rest
   }: LineProps = $props();
@@ -21,18 +21,20 @@
   const timestampDate = $derived(new Date(timestamp));
 
   const formattedTimestamp = $derived(
-    formatTimestamp(timestampDate, logContext?.timeZone),
+    formatTimestamp(timestampDate, logContext.timeZone),
   );
 </script>
 
 <tr class={[componentCssClassName, className]} {...rest}>
   <th class="line-number" scope="row">{line}</th>
-  {#if !logContext?.hideTimestamp}
+  {#if !logContext.hideTimestamp}
     <td class="timestamp">
       <time datetime={timestampDate.toISOString()}>{formattedTimestamp}</time>
     </td>
   {/if}
-  <td class={["content", `level-${level}`]}>{@render children()}</td>
+  <td class={["content", `level-${level}`, { wrap: logContext.wrapLines }]}
+    >{@render children()}</td
+  >
 </tr>
 
 <style>
@@ -65,6 +67,11 @@
       white-space: pre;
 
       padding-inline-start: var(--tmp-dimension-spacing-inline-m);
+
+      &.wrap {
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
     }
 
     /* TODO: Implement level-based styling when designs ready */

@@ -10,6 +10,7 @@
     class: className,
     children,
     hideTimestamp = false,
+    wrapLines = false,
     timeZone = "UTC",
     caption,
     ...rest
@@ -22,14 +23,13 @@
     get hideTimestamp() {
       return hideTimestamp;
     },
+    get wrapLines() {
+      return wrapLines;
+    },
   });
 </script>
 
-<table
-  class={[componentCssClassName, className]}
-  class:hide-timestamp={hideTimestamp}
-  {...rest}
->
+<table class={[componentCssClassName, className]} {...rest}>
   {#if caption}
     <caption class="visually-hidden">{caption}</caption>
   {/if}
@@ -74,7 +74,7 @@
 <style>
   .ds.log {
     display: block;
-    container: table / inline-size;
+    contain: inline-size layout paint;
     overflow: auto;
 
     background-color: var(--tmp-color-background-alt);
@@ -85,16 +85,6 @@
       display: grid;
       grid-template-columns: [line-number-start] auto [line-number-end timestamp-start] max-content [timestamp-end content-start] 1fr [content-end];
       row-gap: var(--tmp-dimension-spacing-block-xxxs);
-    }
-
-    :global(.timestamp) {
-      display: none;
-    }
-
-    @container table (min-width: 620px) {
-      :global(.timestamp) {
-        display: table-cell;
-      }
     }
   }
 </style>

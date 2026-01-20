@@ -16,8 +16,10 @@ export interface LineProps extends BaseProps {
   timestamp: Date | string | number;
   /**
    * The severity level of the log entry.
+   *
+   * @default "info"
    */
-  level: "info" | "warning" | "error" | "debug";
+  level?: "info" | "warning" | "error" | "debug";
   /**
    * The message content of the log entry.
    */
