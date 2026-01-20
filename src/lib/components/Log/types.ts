@@ -7,14 +7,20 @@ type BaseProps = SvelteHTMLElements["table"];
 export interface LogProps extends BaseProps {
   /**
    * If true, timestamps won't be shown in log lines.
+   *
+   * @default false
    */
   hideTimestamp?: boolean;
   /**
    * Allows for displaying timestamps in either UTC or local time.
+   *
+   * @default "UTC"
    */
   timeZone?: TimeZone;
   /**
    * If true, long lines will wrap onto multiple lines.
+   *
+   * @default false
    */
   wrapLines?: boolean;
   /**
