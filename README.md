@@ -2,50 +2,116 @@
 
 A new face for [launchpad.net](https://launchpad.net/) built with Svelte.
 
-## Getting Started
+## Quickstart
 
-1. **Clone the repository**
+### Prerequisites
 
-   ```bash
-   git clone git+ssh://<lp-user>@git.launchpad.net/launchpad-ui
-   cd launchpad-ui
-   ```
+- [Bun](https://bun.sh/) (version 1.3 or higher)
 
-2. **Install dependencies**
+### Clone and install dependencies
 
-   ```bash
-   bun install
-   ```
+```bash
+git clone https://git.launchpad.net/launchpad-ui
+cd launchpad-ui
+bun install
+```
 
-3. **Start development server**
-   ```bash
-   bun run dev
-   ```
+### Setup environment variables
 
-The application will be available at [http://localhost:5173](http://localhost:5173)
+Running the project against the real backend requires a populated `.env`.
 
-## Available Commands
+Create a `.env` file in the project root:
 
-| Command                      | Description                                      |
-| ---------------------------- | ------------------------------------------------ |
-| _Development_                |                                                  |
-| `bun run dev`                | **Start the development server with hot reload** |
-| `bun run storybook`          | **Launch Storybook for component development**   |
-| _Building_                   |                                                  |
-| `bun run build`              | Build the project for production                 |
-| `bun run preview`            | Preview the production build locally             |
-| `bun run build-storybook`    | Build Storybook for deployment                   |
-| _Code Quality_               |                                                  |
-| `bun run format`             | Format code                                      |
-| `bun run lint`               | Run formatting and linting checks                |
-| `bun run lint:fix`           | Auto-fix formatting and linting issues           |
-| `bun run check`              | **Run all checks**                               |
-| `bun run check:fix`          | **Run all checks and auto-fix**                  |
-| `bun run check:svelte`       | Run type checks                                  |
-| `bun run check:svelte:watch` | Run type checks in watch mode                    |
-| _Testing_                    |                                                  |
-| `bun run test`               | **Run all tests once**                           |
-| `bun run test:watch`         | **Run tests in interactive watch mode**          |
-| `bun run test:client`        | Run client-side tests                            |
-| `bun run test:server`        | Run server-side tests                            |
-| `bun run test:ssr`           | Run SSR tests                                    |
+```bash
+cp .env.mock .env
+```
+
+Then update the variables in `.env` as needed.
+
+### Previewing the production build
+
+```bash
+bun run build
+bun run preview
+```
+
+Launchpad UI will be available at [http://localhost:4173](http://localhost:4173).
+
+### Running the development server
+
+```bash
+bun run dev
+```
+
+Launchpad UI will be available at [http://localhost:5173](http://localhost:5173).
+
+## Job Manager mocking
+
+The app can be run against a local mock server based on the Job Manager OpenAPI schema.
+
+### Mock server workflow
+
+`bun run dev:mock` uses [`.env.mock`](.env.mock) instead of `.env` to point the UI at the local mock server.
+
+Terminal A (mock API):
+
+```bash
+bun run mock-server
+```
+
+Terminal B (UI):
+
+```bash
+bun run dev:mock
+```
+
+If you want the mock server to generate dynamic responses instead of always returning examples, use:
+
+```bash
+bun run mock-server:dynamic
+```
+
+The mock server reads the OpenAPI schema from [`.api-spec/job-manager.yaml`](.api-spec/job-manager.yaml).
+
+## Job Manager OpenAPI
+
+This repo keeps the Job Manager API contract in sync in two ways:
+
+- [`.api-spec/job-manager.yaml`](.api-spec/job-manager.yaml) is the OpenAPI schema used for mocking.
+- [`src/lib/api/job-manager/types.ts`](src/lib/api/job-manager/types.ts) is generated TypeScript types used by the client, based on the schema.
+
+### Updating schema + types
+
+Run this to download the latest schema from the Job Manager repo and regenerate types:
+
+```bash
+bun run openapi:update
+```
+
+The schema download step supports environment variable overrides:
+
+- `JOB_MANAGER_REPO` (default: `job-manager`)
+- `JOB_MANAGER_BRANCH` (default: `main`)
+
+Example: update schema/types from `my-branch` in fork `~lp-user/job-manager`:
+
+```bash
+JOB_MANAGER_REPO=~lp-user/job-manager JOB_MANAGER_BRANCH=my-branch bun run openapi:update
+```
+
+This is useful even when you want to validate and regenerate types against an API branch before it lands.
+
+## Storybook
+
+Use Storybook to develop and test UI components in isolation.
+
+```bash
+bun run storybook
+```
+
+Storybook will be available at [http://localhost:6006](http://localhost:6006).
+
+## Other useful commands
+
+- `bun run check` runs typechecks + lint.
+- `bun run test` runs all tests once.
