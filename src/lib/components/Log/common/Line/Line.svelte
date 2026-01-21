@@ -47,26 +47,29 @@
     td,
     th {
       font-weight: var(--tmp-typography-weight-regular);
+      background-color: var(--tmp-color-background-alt);
     }
 
     .line-number {
       grid-column: line-number;
       text-align: right;
       color: var(--tmp-color-text-muted);
+      position: sticky;
+      left: 0;
+      padding-inline-start: var(--log-padding-inline);
+      padding-inline-end: var(--tmp-dimension-spacing-inline-s);
     }
 
     .timestamp {
       grid-column: timestamp;
       white-space: nowrap;
 
-      padding-inline-start: var(--tmp-dimension-spacing-inline-s);
+      padding-inline-end: var(--tmp-dimension-spacing-inline-m);
     }
 
     .content {
       grid-column: content;
       white-space: pre;
-
-      padding-inline-start: var(--tmp-dimension-spacing-inline-m);
 
       &.wrap {
         white-space: pre-wrap;
