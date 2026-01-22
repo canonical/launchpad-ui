@@ -70,31 +70,33 @@
       </Button>
     {/snippet}
     <ContextualMenuContent>
-      <ContextualMenuContent.Group disabled={browser === false}>
-        <ContextualMenuContent.CheckboxItem
-          text="Show timestamps"
-          bind:checked={showTimestamps}
-        />
-        <ContextualMenuContent.CheckboxItem
-          text="Wrap lines"
-          bind:checked={wrapLines}
-        />
-      </ContextualMenuContent.Group>
-      <ContextualMenuContent.Group
-        groupTitle="Timezone"
-        disabled={browser === false}
-      >
-        <ContextualMenuContent.RadioItem
-          text="UTC"
-          value="UTC"
-          bind:group={timeZone}
-        />
-        <ContextualMenuContent.RadioItem
-          text="Local time"
-          value="Local"
-          bind:group={timeZone}
-        />
-      </ContextualMenuContent.Group>
+      {#if browser}
+        <ContextualMenuContent.Group>
+          <ContextualMenuContent.CheckboxItem
+            text="Show timestamps"
+            bind:checked={showTimestamps}
+          />
+          <ContextualMenuContent.CheckboxItem
+            text="Wrap lines"
+            bind:checked={wrapLines}
+          />
+        </ContextualMenuContent.Group>
+        <ContextualMenuContent.Group
+          groupTitle="Timezone"
+          disabled={!showTimestamps}
+        >
+          <ContextualMenuContent.RadioItem
+            text="UTC"
+            value="UTC"
+            bind:group={timeZone}
+          />
+          <ContextualMenuContent.RadioItem
+            text="Local time"
+            value="Local"
+            bind:group={timeZone}
+          />
+        </ContextualMenuContent.Group>
+      {/if}
       <ContextualMenuContent.Group>
         <ContextualMenuContent.LinkItem
           disabled={true}
