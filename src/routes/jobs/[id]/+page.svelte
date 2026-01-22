@@ -1,5 +1,6 @@
 <script lang="ts">
   import { DownloadIcon, FileIcon } from "@canonical/svelte-icons";
+  import { MediaQuery } from "svelte/reactivity";
   import { ButtonPrimitive } from "$lib/components/common/index.js";
   import {
     Breadcrumbs,
@@ -8,36 +9,60 @@
     DescriptionList,
     Link,
     Log,
-    Spinner,
-    Switch,
     UserChip,
   } from "$lib/components/index.js";
-  import type { DateTimeProps } from "$lib/components/index.js";
+  import type { DateTimeProps, TimeZone } from "$lib/components/index.js";
   import {
     CommandList,
     JobStatusIcon,
   } from "$lib/launchpad-components/index.js";
+  import {
+    LogHeader,
+    NoLogs,
+    TrailingBar,
+  } from "$lib/modules/job-manager/index.js";
   import { bytesToHumanReadable } from "$lib/utils/index.js";
   import type { PageProps } from "./$types";
+  import { browser } from "$app/environment";
   import { resolve } from "$app/paths";
 
   let { data }: PageProps = $props();
 
   const job = $derived(data.job);
-  const log = $derived(data.log);
 
-  let wrapLogs = $state(true);
+  let wrapLines = $state(false);
+  let timeZone = $state<TimeZone>("UTC");
+  let showTimestamps = $state(true);
+
+  const logTopId = "log-top";
+  const logBottomId = "log-bottom";
+
+  /* 
+  There is a bug in Chrome, that makes it ignore `scroll-margin` for global scroll on elements that have a parent with non-visible overflow. https://issues.chromium.org/issues/40074749
+  
+  This makes the first three lines of log hidden behind the sticky header when scrolling to top of log in mobile view with line wrapping disabled (log container overflow needed).
+
+  As a workaround, we detect this case and instead of scrolling to the top of the log, we scroll to the log header above it, which is outside of the overflow container.
+
+  TODO: This can be removed once the bug is fixed in Chrome.
+  */
+  const logHeaderId = "log-header";
+  const needsFallbackScrollMarginFix = $derived(
+    browser &&
+      (window as { chrome?: unknown })?.chrome &&
+      new MediaQuery("max-width: 1036px").current,
+  );
 </script>
 
 <div class="page">
-  <div class="breadcrumbs">
-    <Breadcrumbs
-      segments={[
-        { label: "Build farm", href: resolve("/jobs") },
-        { label: job.id.toString() },
-      ]}
-    />
-  </div>
+  <Breadcrumbs
+    segments={[
+      { label: "Build farm", href: resolve("/jobs") },
+      { label: job.id.toString() },
+    ]}
+    style="grid-area: breadcrumbs; border-block-end: var(--border-section-separator); align-self: stretch;"
+  />
+
   <div class="details">
     <div>
       <h1>{job.title || job.id}</h1>
@@ -151,40 +176,50 @@
     {/if}
   </div>
   <section class="log-container">
-    <h2 class="visually-hidden">Log</h2>
-    <!--
-      TODO: Log header component
-    -->
-    {#if log.length > 0}
-      <div class="log-header" style="display: flex; align-items: center;">
-        <label style="display: flex; align-items: center; gap: 4px;">
-          <Switch bind:checked={wrapLogs} /> Wrap lines
-        </label>
-      </div>
+    <h2 class="visually-hidden" id={logHeaderId}>Log</h2>
+    {#if data.log.length}
+      <LogHeader
+        bind:wrapLines
+        bind:timeZone
+        bind:showTimestamps
+        viewLogUrl={data.logUrl}
+        downloadLogUrl={data.logUrl}
+        scrollToTopHref={needsFallbackScrollMarginFix
+          ? `#${logHeaderId}`
+          : `#${logTopId}`}
+        scrollToBottomHref={`#${logBottomId}`}
+      />
       <div class="log-contents">
-        <!-- FIXME(@Enzo): Without timestamp auto-hiding and with wrapLines, the layout degenerates on medium viewports -->
-        <Log style="flex-grow: 1;" wrapLines={wrapLogs}>
-          {#each log as { timestamp, message }, i (i)}
-            <Log.Line line={i + 1} {timestamp}>{message}</Log.Line>
+        <Log
+          style="flex-grow: 1;"
+          {timeZone}
+          {wrapLines}
+          hideTimestamps={!showTimestamps}
+        >
+          {#each data.log as { timestamp, message }, i (i)}
+            <Log.Line
+              id={i === 0
+                ? logTopId
+                : i === data.log.length - 1
+                  ? logBottomId
+                  : undefined}
+              line={i + 1}
+              {timestamp}>{message}</Log.Line
+            >
           {/each}
         </Log>
-        <!-- TODO: Trailing bar content -->
-        <div class="trailing-bar">
-          <Spinner /> Tailing for 42 minutes...
-        </div>
+        {#if job.status === "EXECUTING" && job.started_at}
+          <TrailingBar
+            trailingMinutes={Math.floor(
+              (Date.now() - new Date(job.started_at).getTime()) / 60000,
+            )}
+          />
+        {/if}
       </div>
     {:else}
-      <div class="no-logs">
-        <!-- TODO: Can there be a case where the log is empty but the build has started? -->
-        <p class="message">
-          The log stream will appear here once the build starts.
-        </p>
-        <img
-          src="/brand-icons/screen-with-code.svg"
-          alt="A screen with code"
-          aria-hidden="true"
-        />
-      </div>
+      <NoLogs
+        message="The log stream will appear here once the build starts."
+      />
     {/if}
   </section>
 </div>
@@ -200,17 +235,15 @@
     display: grid;
     height: 100vh;
 
+    /* Defined height, to make sure scroll to log top is precise */
+    --header-height: calc(var(--tmp-dimension-spacing-block-xs) * 2 + 1lh);
+
     grid-template:
-      "breadcrumbs log-container" auto
+      "breadcrumbs log-container" var(--header-height)
       "details log-container" minmax(0, 1fr) / minmax(300px, 3fr) 5fr;
 
     --border-section-separator: var(--dimension-stroke-thickness-default) solid
       var(--tmp-color-border-low-contrast);
-  }
-
-  .breadcrumbs {
-    grid-area: breadcrumbs;
-    border-block-end: var(--border-section-separator);
   }
 
   .details {
@@ -281,45 +314,19 @@
     border-inline-start: var(--dimension-stroke-thickness-default) solid
       var(--tmp-color-border-default);
 
-    .log-header {
-      background-color: var(--tmp-color-background-default);
-      padding: var(--tmp-dimension-spacing-block-xs)
-        var(--tmp-dimension-spacing-inline-l);
-    }
-
     .log-contents {
       display: flex;
       flex-direction: column;
-    }
-
-    .no-logs {
-      grid-row: 1 / -1;
-      padding: var(--tmp-dimension-spacing-block-l)
-        var(--tmp-dimension-spacing-inline-l);
-      font: var(--tmp-typography-code-s);
-      background-color: var(--tmp-color-background-alt);
-
-      .message {
-        margin-block-end: var(--tmp-dimension-spacing-block-xs);
-      }
-    }
-
-    .trailing-bar {
-      display: flex;
-      align-items: center;
-      gap: var(--tmp-dimension-spacing-inline-xxs);
-      padding: var(--tmp-dimension-spacing-block-xs)
-        var(--tmp-dimension-spacing-inline-m);
-      background-color: var(--tmp-color-background-default);
+      flex-grow: 1;
     }
   }
 
-  @media (max-width: 620px) {
+  @media (max-width: 1036px) {
     .page {
       height: auto;
       min-height: 100vh;
       grid-template:
-        "breadcrumbs" auto
+        "breadcrumbs" var(--header-height)
         "details" auto
         "log-container" 1fr / 1fr;
     }
@@ -331,19 +338,10 @@
       border-inline-start: none;
       border-block-start: var(--border-section-separator);
 
-      .log-header {
-        position: sticky;
-        top: 0;
-        z-index: 1;
-      }
-
-      .log-contents {
-        flex-grow: 1;
-      }
-
-      .trailing-bar {
-        position: sticky;
-        bottom: 0;
+      :global {
+        #log-top {
+          scroll-margin-top: var(--header-height);
+        }
       }
     }
   }

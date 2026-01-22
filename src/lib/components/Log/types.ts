@@ -10,7 +10,7 @@ export interface LogProps extends BaseProps {
    *
    * @default false
    */
-  hideTimestamp?: boolean;
+  hideTimestamps?: boolean;
   /**
    * Allows for displaying timestamps in either UTC or local time.
    *

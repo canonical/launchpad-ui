@@ -1,7 +1,6 @@
 import * as v from "valibot";
 import {
   SideNavigationStateSchema,
-  defaultSideNavigationState,
   sideNavigationStateCookieName,
 } from "./side-navigation-state.js";
 import { form, getRequestEvent, query } from "$app/server";
@@ -10,9 +9,7 @@ export const getSideNavigationState = query(() => {
   const { cookies } = getRequestEvent();
   const sideNavigationCookie = cookies.get(sideNavigationStateCookieName);
 
-  return v.is(SideNavigationStateSchema, sideNavigationCookie)
-    ? sideNavigationCookie
-    : defaultSideNavigationState;
+  return v.parse(SideNavigationStateSchema, sideNavigationCookie);
 });
 
 export const setSideNavigationStateForm = form(

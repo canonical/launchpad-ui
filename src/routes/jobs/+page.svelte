@@ -41,6 +41,7 @@
         <th>Created</th>
         <th>Started</th>
         <th>Finished</th>
+        <th>Access</th>
       </tr>
     </thead>
     <tbody>
@@ -84,6 +85,7 @@
           <td>
             {@render nullableDateTime(job.completed_at)}
           </td>
+          <td>{job.private ? "Private" : "Public"}</td>
         </tr>
       {/each}
     </tbody>

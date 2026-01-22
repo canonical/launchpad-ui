@@ -40,7 +40,9 @@
 <style>
   .ds.log-line {
     vertical-align: top;
-    display: contents;
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: subgrid;
     font: var(--tmp-typography-code-s);
     color: var(--tmp-color-text-default);
 

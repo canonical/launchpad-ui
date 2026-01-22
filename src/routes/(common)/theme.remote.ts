@@ -1,13 +1,13 @@
 import * as v from "valibot";
 import type { Theme } from "$lib/theme.js";
-import { ThemeSchema, defaultTheme, themeCookieName } from "$lib/theme.js";
+import { ThemeSchema, themeCookieName } from "$lib/theme.js";
 import { command, form, getRequestEvent, query } from "$app/server";
 
 export const getTheme = query(() => {
   const { cookies } = getRequestEvent();
   const themeCookie = cookies.get(themeCookieName);
 
-  return v.is(ThemeSchema, themeCookie) ? themeCookie : defaultTheme;
+  return v.parse(ThemeSchema, themeCookie);
 });
 
 export const setThemeForm = form(
