@@ -9,7 +9,7 @@
   let {
     class: className,
     children,
-    hideTimestamp = false,
+    hideTimestamps = false,
     wrapLines = false,
     timeZone = "UTC",
     caption,
@@ -21,7 +21,7 @@
       return timeZone;
     },
     get hideTimestamp() {
-      return hideTimestamp;
+      return hideTimestamps;
     },
     get wrapLines() {
       return wrapLines;
@@ -37,7 +37,7 @@
   <thead class="visually-hidden">
     <tr>
       <th scope="col" class="line-number">Line</th>
-      {#if !hideTimestamp}
+      {#if !hideTimestamps}
         <th scope="col" class="timestamp">Timestamp</th>
       {/if}
       <th scope="col" class="content">Content</th>

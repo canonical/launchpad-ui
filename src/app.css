@@ -27,6 +27,12 @@ html {
   --focus-outline-offset: calc(var(--dimension-stroke-thickness-large) * -1);
 }
 
+@media (prefers-reduced-motion: no-preference) {
+  * {
+    scroll-behavior: smooth;
+  }
+}
+
 body {
   font: var(--tmp-typography-paragraph-s);
 }

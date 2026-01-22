@@ -30,10 +30,10 @@ describe("Log component", () => {
       },
     );
 
-    it("doesn't render timestamp column when hideTimestamp is true", async () => {
+    it("doesn't render timestamp column when hideTimestamps is true", async () => {
       const page = render(Component, {
         ...baseProps,
-        hideTimestamp: true,
+        hideTimestamps: true,
       });
       await expect
         .element(page.getByRole("columnheader", { name: "Timestamp" }).query())
@@ -128,11 +128,11 @@ describe("Log component", () => {
       expect(page.getByRole("time").elements()).toHaveLength(logsProps.length);
     });
 
-    it("doesn't render timestamps when hideTimestamp is true", async () => {
+    it("doesn't render timestamps when hideTimestamps is true", async () => {
       const page = render(Component, {
         ...baseProps,
         children: logs,
-        hideTimestamp: true,
+        hideTimestamps: true,
       });
 
       pageContext.viewport(1000, 800);

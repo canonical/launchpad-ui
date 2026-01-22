@@ -50,7 +50,7 @@ export const load = (async ({ params, fetch }) => {
   const logText = await logResponse.text();
   const log = logText.split("\n").map((line) => parseLogLine(line));
 
-  return { job, log };
+  return { job, log, logUrl: defaultLogUrl as string };
 }) satisfies PageServerLoad;
 
 function parseLogLine(rawLine: string) {
