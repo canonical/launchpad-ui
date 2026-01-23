@@ -5,3 +5,4 @@ export * from "./getFirstElement.js";
 export * from "./getSiblingElement.js";
 export * from "./isEventTargetInElement.js";
 export * from "./stripAnsi.js";
+export * from "./booleanSearchParam.js";

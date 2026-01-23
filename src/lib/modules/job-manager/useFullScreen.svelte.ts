@@ -1,3 +1,4 @@
+import { booleanSearchParam } from "$lib/utils/index.js";
 import { goto } from "$app/navigation";
 import { page } from "$app/state";
 
@@ -5,7 +6,7 @@ const queryParamName = "full-screen";
 
 export function useFullScreen() {
   const isEnabled = $derived(
-    page.url.searchParams.get(queryParamName) === "true",
+    booleanSearchParam(page.url.searchParams.get(queryParamName)),
   );
 
   const toggleHref = $derived.by(() => {
