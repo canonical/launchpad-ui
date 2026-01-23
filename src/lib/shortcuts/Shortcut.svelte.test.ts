@@ -224,13 +224,14 @@ describe("Shortcut class > match", () => {
   });
 
   it("doesn't match when disabled", () => {
-    const s = new Shortcut("a", { label: "Label" }, noop, {}, false);
+    let enabled = $state(false);
+    const s = new Shortcut("a", { label: "Label" }, noop, {}, () => enabled);
     const ev = new KeyboardEvent("keydown", {
       code: "KeyA",
     });
     expect(s.matches(ev)).toBe(false);
     // Matches again when enabled
-    s.enabled = true;
+    enabled = true;
     expect(s.matches(ev)).toBe(true);
   });
 
@@ -242,7 +243,7 @@ describe("Shortcut class > match", () => {
       {
         predicate: (e) => e.repeat,
       },
-      true,
+      () => true,
     );
     const ev = new KeyboardEvent("keydown", {
       code: "KeyA",

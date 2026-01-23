@@ -20,6 +20,7 @@
     LogHeader,
     NoLogs,
     TrailingBar,
+    useFullScreen,
   } from "$lib/modules/job-manager/index.js";
   import { bytesToHumanReadable } from "$lib/utils/index.js";
   import type { PageProps } from "./$types";
@@ -37,6 +38,8 @@
   const logTopId = "log-top";
   const logBottomId = "log-bottom";
 
+  const fullScreen = useFullScreen();
+
   /* 
   There is a bug in Chrome, that makes it ignore `scroll-margin` for global scroll on elements that have a parent with non-visible overflow. https://issues.chromium.org/issues/40074749
   
@@ -50,79 +53,80 @@
   const needsFallbackScrollMarginFix = $derived(
     browser &&
       (window as { chrome?: unknown })?.chrome &&
+      !fullScreen.isEnabled &&
       new MediaQuery("max-width: 1036px").current,
   );
 </script>
 
-<div class="page">
-  <Breadcrumbs
-    segments={[
-      { label: "Build farm", href: resolve("/jobs") },
-      { label: job.id.toString() },
-    ]}
-    style="grid-area: breadcrumbs; border-block-end: var(--border-section-separator); align-self: stretch;"
-  />
-
-  <div class="details">
-    <div>
-      <h1>{job.title || job.id}</h1>
-      <p>{job.description}</p>
-      <div class="chips">
-        {#if job.status}
-          <Chip
-            value={job.status}
-            readonly
-            severity={job.status === "FAILED"
-              ? "negative"
-              : job.status === "FINISHED"
-                ? "positive"
-                : "neutral"}
-          >
-            {#snippet icon()}
-              <JobStatusIcon status={job.status} aria-hidden="true" />
-            {/snippet}
-          </Chip>
-        {/if}
-        <Chip
-          value={job.private ? "Private" : "Public"}
-          severity="information"
-          readonly
-        />
-      </div>
-    </div>
-    <section>
-      <h2 class="visually-hidden">Details</h2>
-      <DescriptionList>
-        <DescriptionList.Item name="ID">
-          {job.id}
-        </DescriptionList.Item>
-        <DescriptionList.Item name="Architecture">
-          {job.architecture}
-        </DescriptionList.Item>
-        <DescriptionList.Item name="Requested by">
-          {#if job.requested_by}
-            <UserChip userName={job.requested_by} />
+<div class="page" class:log-full-screen={fullScreen.isEnabled}>
+  {#if !fullScreen.isEnabled}
+    <Breadcrumbs
+      segments={[
+        { label: "Build farm", href: resolve("/jobs") },
+        { label: job.id.toString() },
+      ]}
+      style="grid-area: breadcrumbs; border-block-end: var(--border-section-separator); align-self: stretch;"
+    />
+    <div class="details">
+      <div>
+        <h1>{job.title || job.id}</h1>
+        <p>{job.description}</p>
+        <div class="chips">
+          {#if job.status}
+            <Chip
+              value={job.status}
+              readonly
+              severity={job.status === "FAILED"
+                ? "negative"
+                : job.status === "FINISHED"
+                  ? "positive"
+                  : "neutral"}
+            >
+              {#snippet icon()}
+                <JobStatusIcon status={job.status} aria-hidden="true" />
+              {/snippet}
+            </Chip>
           {/if}
-        </DescriptionList.Item>
-        <DescriptionList.Item name="Created at">
-          {@render nullableDateTime(job.created_at)}
-        </DescriptionList.Item>
-        <DescriptionList.Item name="Updated at">
-          {@render nullableDateTime(job.updated_at)}
-        </DescriptionList.Item>
-        <DescriptionList.Item name="Started at">
-          {@render nullableDateTime(job.started_at)}
-        </DescriptionList.Item>
-        <DescriptionList.Item name="Completed at">
-          {@render nullableDateTime(job.completed_at)}
-        </DescriptionList.Item>
-      </DescriptionList>
-    </section>
-    <section>
-      <h2 class="section-header">Commands</h2>
-      <CommandList>
-        {#each job.commands as command, i (i)}
-          <!-- 
+          <Chip
+            value={job.private ? "Private" : "Public"}
+            severity="information"
+            readonly
+          />
+        </div>
+      </div>
+      <section>
+        <h2 class="visually-hidden">Details</h2>
+        <DescriptionList>
+          <DescriptionList.Item name="ID">
+            {job.id}
+          </DescriptionList.Item>
+          <DescriptionList.Item name="Architecture">
+            {job.architecture}
+          </DescriptionList.Item>
+          <DescriptionList.Item name="Requested by">
+            {#if job.requested_by}
+              <UserChip userName={job.requested_by} />
+            {/if}
+          </DescriptionList.Item>
+          <DescriptionList.Item name="Created at">
+            {@render nullableDateTime(job.created_at)}
+          </DescriptionList.Item>
+          <DescriptionList.Item name="Updated at">
+            {@render nullableDateTime(job.updated_at)}
+          </DescriptionList.Item>
+          <DescriptionList.Item name="Started at">
+            {@render nullableDateTime(job.started_at)}
+          </DescriptionList.Item>
+          <DescriptionList.Item name="Completed at">
+            {@render nullableDateTime(job.completed_at)}
+          </DescriptionList.Item>
+        </DescriptionList>
+      </section>
+      <section>
+        <h2 class="section-header">Commands</h2>
+        <CommandList>
+          {#each job.commands as command, i (i)}
+            <!-- 
             TODO(job-manager):
               - pass command status
               - command not as `unknown` but proper type
@@ -130,52 +134,53 @@
             
             TODO: Syntax highlighting for command
           -->
-          <CommandList.Command
-            status={null}
-            command={command as string}
-            href={undefined}
-          />
-        {/each}
-      </CommandList>
-    </section>
-    {#if job.artifacts?.length}
-      <section>
-        <div
-          class="section-header"
-          style="display: flex; justify-content: space-between; align-items: center;"
-        >
-          <h2>Artifacts</h2>
-          <!--
+            <CommandList.Command
+              status={null}
+              command={command as string}
+              href={undefined}
+            />
+          {/each}
+        </CommandList>
+      </section>
+      {#if job.artifacts?.length}
+        <section>
+          <div
+            class="section-header"
+            style="display: flex; justify-content: space-between; align-items: center;"
+          >
+            <h2>Artifacts</h2>
+            <!--
           TODO:
             - Add href, when zip endpoint is available
             - Replace with a proper Button component
           -->
-          <ButtonPrimitive
-            as="a"
-            disabled
-            style="display: flex; gap: var(--tmp-dimension-spacing-inline-xs); align-items: center; padding: var(--tmp-dimension-spacing-block-minimum) var(--tmp-dimension-spacing-inline-xs);"
-          >
-            <DownloadIcon />Download All
-          </ButtonPrimitive>
-        </div>
-        <ul class="artifacts">
-          {#each job.artifacts as { url, size } (url)}
-            <li>
-              <Link href={url} download>
-                <span class="icon-aligner">
-                  <FileIcon aria-hidden="true" />
-                </span>
-                <span class="artifact-name">
-                  {url.split("/").at(-1)} ({bytesToHumanReadable(size)})
-                </span>
-              </Link>
-            </li>
-          {/each}
-        </ul>
-      </section>
-    {/if}
-  </div>
-  <section class="log-container">
+            <ButtonPrimitive
+              as="a"
+              disabled
+              style="display: flex; gap: var(--tmp-dimension-spacing-inline-xs); align-items: center; padding: var(--tmp-dimension-spacing-block-minimum) var(--tmp-dimension-spacing-inline-xs);"
+            >
+              <DownloadIcon />Download All
+            </ButtonPrimitive>
+          </div>
+          <ul class="artifacts">
+            {#each job.artifacts as { url, size } (url)}
+              <li>
+                <Link href={url} download>
+                  <span class="icon-aligner">
+                    <FileIcon aria-hidden="true" />
+                  </span>
+                  <span class="artifact-name">
+                    {url.split("/").at(-1)} ({bytesToHumanReadable(size)})
+                  </span>
+                </Link>
+              </li>
+            {/each}
+          </ul>
+        </section>
+      {/if}
+    </div>
+  {/if}
+  <section class="log-container" class:log-full-screen={fullScreen.isEnabled}>
     <h2 class="visually-hidden" id={logHeaderId}>Log</h2>
     {#if data.log.length}
       <LogHeader
@@ -244,6 +249,12 @@
 
     --border-section-separator: var(--dimension-stroke-thickness-default) solid
       var(--tmp-color-border-low-contrast);
+
+    &.log-full-screen {
+      grid-template:
+        "log-container" var(--header-height)
+        "log-container" minmax(0, 1fr) / 1fr;
+    }
   }
 
   .details {
@@ -319,30 +330,36 @@
       flex-direction: column;
       flex-grow: 1;
     }
+
+    &.log-full-screen {
+      border-inline-start: none;
+    }
   }
 
   @media (max-width: 1036px) {
-    .page {
+    .page:not(.log-full-screen) {
       height: auto;
       min-height: 100vh;
       grid-template:
         "breadcrumbs" var(--header-height)
         "details" auto
         "log-container" 1fr / 1fr;
+
+      .log-container {
+        display: flex;
+        flex-direction: column;
+        border-block-start: var(--border-section-separator);
+
+        :global {
+          #log-top {
+            scroll-margin-top: var(--header-height);
+          }
+        }
+      }
     }
 
     .log-container {
-      display: flex;
-      flex-direction: column;
-
       border-inline-start: none;
-      border-block-start: var(--border-section-separator);
-
-      :global {
-        #log-top {
-          scroll-margin-top: var(--header-height);
-        }
-      }
     }
   }
 </style>

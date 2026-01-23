@@ -1,9 +1,10 @@
 <!-- @canonical/generator-ds 0.10.0-experimental.5 -->
 
 <script lang="ts">
-  import { MenuContextualIcon } from "@canonical/svelte-icons";
+  import { FullscreenIcon, MenuContextualIcon } from "@canonical/svelte-icons";
   import { ButtonPrimitive } from "$lib/components/common/index.js";
   import {
+    ChevronCollapseIcon,
     SkipToBottomIcon,
     SkipToTopIcon,
   } from "$lib/components/icons/index.js";
@@ -13,6 +14,8 @@
     Popover,
   } from "$lib/components/index.js";
   import type { TimeZone } from "$lib/components/index.js";
+  import { Shortcut, useShortcuts } from "$lib/shortcuts/index.js";
+  import { useFullScreen } from "./useFullScreen.svelte.js";
   import { browser } from "$app/environment";
 
   let {
@@ -32,6 +35,34 @@
     scrollToTopHref?: string;
     scrollToBottomHref?: string;
   } = $props();
+
+  const fullScreen = useFullScreen();
+  const fullScreenLinkLabel = $derived(
+    fullScreen.isEnabled ? "Exit full screen" : "View in full screen",
+  );
+
+  let isPopoverOpen = $state(false);
+
+  const toggleFullScreenShortcut = new Shortcut(
+    "f",
+    { label: "Toggle viewing log full screen" },
+    () => {
+      fullScreen.toggle();
+    },
+  );
+  const exitFullScreenShortcut = new Shortcut(
+    "escape",
+    { label: "Exit viewing log full screen" },
+    () => {
+      fullScreen.disable();
+    },
+    {
+      // If the popover is open, close it first instead of exiting full screen
+      predicate: () => !isPopoverOpen,
+    },
+    () => fullScreen.isEnabled,
+  );
+  useShortcuts(() => [toggleFullScreenShortcut, exitFullScreenShortcut]);
 </script>
 
 <div class="log-header">
@@ -58,7 +89,25 @@
       <SkipToBottomIcon />
     </ButtonPrimitive>
   {/if}
-  <Popover position="block-end span-inline-start">
+  <ButtonPrimitive
+    class="scroll-link header-button"
+    as="a"
+    href={fullScreen.toggleHref}
+    aria-label={fullScreenLinkLabel}
+  >
+    {#if fullScreen.isEnabled}
+      <!-- TODO(@Enzo): Correct icon -->
+      <ChevronCollapseIcon />
+    {:else}
+      <FullscreenIcon />
+    {/if}
+  </ButtonPrimitive>
+  <Popover
+    position="block-end span-inline-start"
+    ontoggle={(e) => {
+      isPopoverOpen = e.newState === "open";
+    }}
+  >
     {#snippet trigger(triggerProps)}
       <Button
         {...triggerProps}
@@ -99,8 +148,8 @@
       {/if}
       <ContextualMenuContent.Group>
         <ContextualMenuContent.LinkItem
-          disabled={true}
-          text="View in full screen"
+          href={fullScreen.toggleHref}
+          text={fullScreenLinkLabel}
         />
         {#if viewLogUrl}
           <!-- TODO: Revisit, when Content-Disposition header is correctly set -->
