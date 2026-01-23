@@ -118,6 +118,30 @@ describe("useShortcutProvider", () => {
       expect(stopPropagationSpy).toHaveBeenCalled();
       expect(preventDefaultSpy).toHaveBeenCalled();
     });
+
+    it("doesn't call callback for disabled shortcuts", () => {
+      let enabled = $state(false);
+      const { onkeydown } = useShortcutProvider(() => false);
+      const callback = vi.fn();
+      const shortcut = new Shortcut(
+        "a",
+        { label: "label" },
+        callback,
+        {},
+        () => enabled,
+      );
+      context?.registerShortcuts(shortcut);
+
+      const event = new KeyboardEvent("keydown", { code: "KeyA" });
+      onkeydown(event);
+
+      expect(callback).not.toHaveBeenCalled();
+
+      // Calls callback again when enabled
+      enabled = true;
+      onkeydown(event);
+      expect(callback).toHaveBeenCalledWith(event);
+    });
   });
 
   describe("ignoreIfTyping", () => {

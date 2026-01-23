@@ -37,7 +37,6 @@ export class Shortcut {
   private readonly _standardShortcut: StandardShortcut;
   private readonly _macShortcut?: MacShortcut;
   public readonly options: ShortcutOptions;
-  private _enabled: boolean;
   private readonly _isMacPlatform = isMacPlatform();
 
   constructor(
@@ -45,10 +44,8 @@ export class Shortcut {
     public readonly metadata: ShortcutMetadata,
     public readonly callback: (event: KeyboardEvent) => void,
     options: Partial<ShortcutOptions> = {},
-    enabled = true,
+    private readonly getEnabled = () => true,
   ) {
-    this._enabled = $state(enabled);
-
     if (Array.isArray(shortcut)) {
       [this._standardShortcut, this._macShortcut] = shortcut;
     } else {
@@ -66,11 +63,7 @@ export class Shortcut {
   }
 
   get enabled() {
-    return this._enabled;
-  }
-
-  set enabled(value: boolean) {
-    this._enabled = value;
+    return this.getEnabled();
   }
 
   /**
