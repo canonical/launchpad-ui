@@ -1,9 +1,10 @@
 <!-- @canonical/generator-ds 0.10.0-experimental.5 -->
 
 <script lang="ts">
-  import { MenuContextualIcon } from "@canonical/svelte-icons";
+  import { FullscreenIcon, MenuContextualIcon } from "@canonical/svelte-icons";
   import { ButtonPrimitive } from "$lib/components/common/index.js";
   import {
+    ChevronCollapseIcon,
     SkipToBottomIcon,
     SkipToTopIcon,
   } from "$lib/components/icons/index.js";
@@ -12,7 +13,8 @@
     ContextualMenuContent,
     Popover,
   } from "$lib/components/index.js";
-  import type { TimeZone } from "$lib/components/index.js";
+  import type { PopoverProps, TimeZone } from "$lib/components/index.js";
+  import { useFullScreen } from "./useFullScreen.svelte.js";
   import { browser } from "$app/environment";
 
   let {
@@ -23,6 +25,7 @@
     downloadLogUrl,
     scrollToTopHref,
     scrollToBottomHref,
+    onPopoverToggle,
   }: {
     timeZone: TimeZone;
     showTimestamps: boolean;
@@ -31,7 +34,13 @@
     downloadLogUrl?: string;
     scrollToTopHref?: string;
     scrollToBottomHref?: string;
+    onPopoverToggle: PopoverProps["ontoggle"];
   } = $props();
+
+  const fullScreen = useFullScreen();
+  const fullScreenLinkLabel = $derived(
+    fullScreen.isEnabled ? "Exit full screen" : "View in full screen",
+  );
 </script>
 
 <div class="log-header">
@@ -58,7 +67,20 @@
       <SkipToBottomIcon />
     </ButtonPrimitive>
   {/if}
-  <Popover position="block-end span-inline-start">
+  <ButtonPrimitive
+    class="scroll-link header-button"
+    as="a"
+    href={fullScreen.toggleHref}
+    aria-label={fullScreenLinkLabel}
+  >
+    {#if fullScreen.isEnabled}
+      <!-- TODO(@Enzo): Correct icon -->
+      <ChevronCollapseIcon />
+    {:else}
+      <FullscreenIcon />
+    {/if}
+  </ButtonPrimitive>
+  <Popover position="block-end span-inline-start" ontoggle={onPopoverToggle}>
     {#snippet trigger(triggerProps)}
       <Button
         {...triggerProps}
@@ -99,8 +121,8 @@
       {/if}
       <ContextualMenuContent.Group>
         <ContextualMenuContent.LinkItem
-          disabled={true}
-          text="View in full screen"
+          href={fullScreen.toggleHref}
+          text={fullScreenLinkLabel}
         />
         {#if viewLogUrl}
           <!-- TODO: Revisit, when Content-Disposition header is correctly set -->
