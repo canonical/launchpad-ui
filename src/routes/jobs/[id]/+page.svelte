@@ -22,7 +22,6 @@
     TrailingBar,
     useFullScreen,
   } from "$lib/modules/job-manager/index.js";
-  import { Shortcut, useShortcuts } from "$lib/shortcuts/index.js";
   import { bytesToHumanReadable } from "$lib/utils/index.js";
   import type { PageProps } from "./$types";
   import { browser } from "$app/environment";
@@ -39,29 +38,7 @@
   const logTopId = "log-top";
   const logBottomId = "log-bottom";
 
-  let isPopoverOpen = $state(false);
-
   const fullScreen = useFullScreen();
-  const toggleFullScreenShortcut = new Shortcut(
-    "f",
-    { label: "Toggle viewing log full screen" },
-    () => {
-      fullScreen.toggle();
-    },
-  );
-  const exitFullScreenShortcut = new Shortcut(
-    "escape",
-    { label: "Exit viewing log full screen" },
-    () => {
-      fullScreen.disable();
-    },
-    {
-      // If the popover is open, close it first instead of exiting full screen
-      predicate: () => !isPopoverOpen,
-    },
-    () => fullScreen.isEnabled,
-  );
-  useShortcuts(() => [toggleFullScreenShortcut, exitFullScreenShortcut]);
 
   /* 
   There is a bug in Chrome, that makes it ignore `scroll-margin` for global scroll on elements that have a parent with non-visible overflow. https://issues.chromium.org/issues/40074749
@@ -216,9 +193,6 @@
           ? `#${logHeaderId}`
           : `#${logTopId}`}
         scrollToBottomHref={`#${logBottomId}`}
-        onPopoverToggle={(e) => {
-          isPopoverOpen = e.newState === "open";
-        }}
       />
       <div class="log-contents">
         <Log

@@ -13,7 +13,8 @@
     ContextualMenuContent,
     Popover,
   } from "$lib/components/index.js";
-  import type { PopoverProps, TimeZone } from "$lib/components/index.js";
+  import type { TimeZone } from "$lib/components/index.js";
+  import { Shortcut, useShortcuts } from "$lib/shortcuts/index.js";
   import { useFullScreen } from "./useFullScreen.svelte.js";
   import { browser } from "$app/environment";
 
@@ -25,7 +26,6 @@
     downloadLogUrl,
     scrollToTopHref,
     scrollToBottomHref,
-    onPopoverToggle,
   }: {
     timeZone: TimeZone;
     showTimestamps: boolean;
@@ -34,13 +34,35 @@
     downloadLogUrl?: string;
     scrollToTopHref?: string;
     scrollToBottomHref?: string;
-    onPopoverToggle: PopoverProps["ontoggle"];
   } = $props();
 
   const fullScreen = useFullScreen();
   const fullScreenLinkLabel = $derived(
     fullScreen.isEnabled ? "Exit full screen" : "View in full screen",
   );
+
+  let isPopoverOpen = $state(false);
+
+  const toggleFullScreenShortcut = new Shortcut(
+    "f",
+    { label: "Toggle viewing log full screen" },
+    () => {
+      fullScreen.toggle();
+    },
+  );
+  const exitFullScreenShortcut = new Shortcut(
+    "escape",
+    { label: "Exit viewing log full screen" },
+    () => {
+      fullScreen.disable();
+    },
+    {
+      // If the popover is open, close it first instead of exiting full screen
+      predicate: () => !isPopoverOpen,
+    },
+    () => fullScreen.isEnabled,
+  );
+  useShortcuts(() => [toggleFullScreenShortcut, exitFullScreenShortcut]);
 </script>
 
 <div class="log-header">
@@ -80,7 +102,12 @@
       <FullscreenIcon />
     {/if}
   </ButtonPrimitive>
-  <Popover position="block-end span-inline-start" ontoggle={onPopoverToggle}>
+  <Popover
+    position="block-end span-inline-start"
+    ontoggle={(e) => {
+      isPopoverOpen = e.newState === "open";
+    }}
+  >
     {#snippet trigger(triggerProps)}
       <Button
         {...triggerProps}
