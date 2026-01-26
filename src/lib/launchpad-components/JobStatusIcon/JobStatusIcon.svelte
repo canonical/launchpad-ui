@@ -15,6 +15,7 @@
       case "FINISHED":
         return [SuccessIcon, "--tmp-color-icon-positive"];
       case "FAILED":
+      case "TERMINATED":
         return [ErrorIcon, "--tmp-color-icon-negative"];
       case "EXECUTING":
         return [Spinner, "--tmp-color-icon-default"];

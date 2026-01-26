@@ -1,4 +1,4 @@
-# Source commit: 1d6db39021f93a401adc93c92fa45ab64d430ded (job-manager:main)
+# Source commit: d99674acbf7d25902eb8b3c0ed6b33d93b2b6d79 (job-manager:main)
 openapi: 3.1.0
 info:
   title: Job Manager API
@@ -1134,6 +1134,7 @@ components:
       - FINISHED
       - FAILED
       - CANCELLED
+      - TERMINATED
       title: JobStatus
       description: Job status values.
     JobUpdate:
