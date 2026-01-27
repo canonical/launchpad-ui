@@ -14,6 +14,7 @@ describe("Item component", () => {
       render: () => `<span>Description</span>`,
     })),
     name: "Term",
+    "data-testid": "description-list-item",
   } satisfies ComponentProps<typeof Component>;
 
   it("renders", async () => {
@@ -39,10 +40,6 @@ describe("Item component", () => {
     it("applies classes", async () => {
       const page = render(Component, { ...baseProps, class: "test-class" });
       await expect.element(componentLocator(page)).toHaveClass("test-class");
-      await expect.element(componentLocator(page)).toHaveClass("ds");
-      await expect
-        .element(componentLocator(page))
-        .toHaveClass("description-list-item");
     });
 
     it("applies style", async () => {

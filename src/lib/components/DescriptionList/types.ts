@@ -6,7 +6,7 @@ export type BaseProps = SvelteHTMLElements["dl"];
 export interface DescriptionListProps extends BaseProps {
   /**
    * The orientation of the list's items.
-   * @default "horizontal"
+   * @default "auto"
    */
   orientation?: Orientation;
 }
@@ -15,4 +15,4 @@ export interface DescriptionListContext {
   orientation: Orientation;
 }
 
-type Orientation = "horizontal" | "vertical";
+type Orientation = "list" | "grid" | "auto";

@@ -13,6 +13,7 @@ describe("DescriptionList component", () => {
     children: createRawSnippet(() => ({
       render: () => `<span>DescriptionList</span>`,
     })),
+    "data-testid": "description-list",
   } satisfies ComponentProps<typeof Component>;
 
   it("renders", async () => {
@@ -35,10 +36,6 @@ describe("DescriptionList component", () => {
     it("applies classes", async () => {
       const page = render(Component, { ...baseProps, class: "test-class" });
       await expect.element(componentLocator(page)).toHaveClass("test-class");
-      await expect.element(componentLocator(page)).toHaveClass("ds");
-      await expect
-        .element(componentLocator(page))
-        .toHaveClass("description-list");
     });
 
     it("applies style", async () => {

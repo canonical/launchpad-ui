@@ -9,16 +9,10 @@
   let { class: className, name, children, ...rest }: ItemProps = $props();
 
   const descriptionListContext = getDescriptionListContext();
-  const orientation = $derived(
-    descriptionListContext?.orientation ?? "horizontal",
-  );
+  const orientation = $derived(descriptionListContext?.orientation ?? "auto");
 </script>
 
-<div
-  class={[componentCssClassName, className, orientation]}
-  data-testid="description-list-item"
-  {...rest}
->
+<div class={[componentCssClassName, className, orientation]} {...rest}>
   <dt>{name}</dt>
   <dd>{@render children()}</dd>
 </div>
@@ -41,25 +35,51 @@
       color: var(--tmp-color-text-default);
     }
 
-    &.horizontal {
+    --horizontal-line: repeating-linear-gradient(
+      to right,
+      var(--tmp-color-border-low-contrast) 0px 2px,
+      transparent 2px 4px
+    );
+
+    &::before {
+      content: "";
+      order: 2;
+      height: 1px;
+      flex-grow: 1;
+      background: var(--horizontal-line);
+      flex-basis: 10%;
+
+      display: none;
+    }
+
+    &.list {
       flex-direction: row;
       align-items: baseline;
       gap: var(--tmp-dimension-spacing-inline-xs);
 
       &::before {
-        content: "";
-        order: 2;
-        height: 1px;
-        flex-grow: 1;
-        background: repeating-linear-gradient(
-          to right,
-          var(--tmp-color-border-low-contrast) 0px 2px,
-          transparent 2px 4px
-        );
+        display: block;
       }
 
       dd {
         text-align: end;
+      }
+    }
+
+    &.auto {
+      /* Defined in DescriptionList.svelte */
+      @container description-list (width <= 573px) {
+        flex-direction: row;
+        align-items: baseline;
+        gap: var(--tmp-dimension-spacing-inline-xs);
+
+        &::before {
+          display: block;
+        }
+
+        dd {
+          text-align: end;
+        }
       }
     }
   }

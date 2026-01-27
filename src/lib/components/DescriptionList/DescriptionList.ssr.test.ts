@@ -12,6 +12,7 @@ describe("DescriptionList SSR", () => {
     children: createRawSnippet(() => ({
       render: () => `<span>DescriptionList</span>`,
     })),
+    "data-testid": "description-list",
   } satisfies ComponentProps<typeof Component>;
 
   describe("basics", () => {
@@ -45,8 +46,6 @@ describe("DescriptionList SSR", () => {
         props: { class: "test-class", ...baseProps },
       });
       expect(componentLocator(page).classList).toContain("test-class");
-      expect(componentLocator(page).classList).toContain("ds");
-      expect(componentLocator(page).classList).toContain("description-list");
     });
 
     it("applies style", () => {

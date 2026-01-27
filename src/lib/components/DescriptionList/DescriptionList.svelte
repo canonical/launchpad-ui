@@ -9,7 +9,7 @@
   let {
     class: className,
     children,
-    orientation = "horizontal",
+    orientation = "auto",
     ...rest
   }: DescriptionListProps = $props();
 
@@ -20,20 +20,19 @@
   });
 </script>
 
-<dl
-  class={[componentCssClassName, className, orientation]}
-  data-testid="description-list"
-  {...rest}
->
-  {@render children?.()}
-</dl>
+<!-- Container queries cannot target the same element they are defined on -->
+<div class="container">
+  <dl class={[componentCssClassName, className, orientation]} {...rest}>
+    {@render children?.()}
+  </dl>
+</div>
 
 <!-- @component
 `DescriptionList` represents a list of terms and their corresponding descriptions, typically used to display metadata or key-value pairs in a structured format.
 
 ## Example Usage
 ```svelte
-<DescriptionList orientation="vertical">
+<DescriptionList orientation="list">
   <DescriptionList.Item term="ID">134</DescriptionList.Item>
   <DescriptionList.Item term="Requested by">John Smith</DescriptionList.Item>
   <DescriptionList.Item term="Created">2023-10-01T12:00:00Z</DescriptionList.Item>
@@ -43,13 +42,32 @@
 -->
 
 <style>
-  .ds.description-list {
-    display: flex;
-    flex-direction: column;
-    gap: var(--tmp-dimension-spacing-block-l);
+  .container {
+    /* Also referenced in Item.svelte */
+    container: description-list / inline-size;
+  }
 
-    &.horizontal {
-      gap: var(--tmp-dimension-spacing-block-xxs);
+  .ds.description-list {
+    display: grid;
+    row-gap: var(--tmp-dimension-spacing-block-xs);
+    column-gap: var(--tmp-dimension-spacing-inline-xs);
+    --min-item-width: 160px;
+
+    &.grid {
+      grid-template-columns: repeat(
+        auto-fit,
+        minmax(var(--min-item-width), 1fr)
+      );
+    }
+
+    &.auto {
+      /* width > 621 - (2 * 24) = 573 */
+      @container description-list (width > 573px) {
+        grid-template-columns: repeat(
+          auto-fit,
+          minmax(var(--min-item-width), 1fr)
+        );
+      }
     }
   }
 </style>

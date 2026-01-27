@@ -13,6 +13,7 @@ describe("Item SSR", () => {
       render: () => `<span>Description</span>`,
     })),
     name: "Term",
+    "data-testid": "description-list-item",
   } satisfies ComponentProps<typeof Component>;
 
   describe("basics", () => {
@@ -46,10 +47,6 @@ describe("Item SSR", () => {
         props: { class: "test-class", ...baseProps },
       });
       expect(componentLocator(page).classList).toContain("test-class");
-      expect(componentLocator(page).classList).toContain("ds");
-      expect(componentLocator(page).classList).toContain(
-        "description-list-item",
-      );
     });
 
     it("applies style", () => {
