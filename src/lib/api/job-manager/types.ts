@@ -880,7 +880,7 @@ export interface components {
          * @description Job status values.
          * @enum {string}
          */
-        JobStatus: "PENDING" | "EXECUTING" | "IDLE" | "FINISHED" | "FAILED" | "CANCELLED";
+        JobStatus: "PENDING" | "EXECUTING" | "IDLE" | "FINISHED" | "FAILED" | "CANCELLED" | "TERMINATED";
         /**
          * JobUpdate
          * @description Job update model.

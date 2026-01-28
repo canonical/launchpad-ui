@@ -1,6 +1,7 @@
 <script module lang="ts">
   import { defineMeta } from "@storybook/addon-svelte-csf";
   import type { Snippet } from "svelte";
+  import { setDescriptionListContext } from "../../context.js";
   import { DescriptionList } from "../../index.js";
   import Item from "./Item.svelte";
 
@@ -12,6 +13,12 @@
       name: "Example term",
       children: "Example description" as unknown as Snippet,
     },
+  });
+</script>
+
+<script lang="ts">
+  setDescriptionListContext({
+    layout: "auto",
   });
 </script>
 

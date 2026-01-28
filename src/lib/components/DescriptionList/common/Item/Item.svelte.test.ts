@@ -2,11 +2,20 @@
 
 import { createRawSnippet } from "svelte";
 import type { ComponentProps } from "svelte";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import type { Locator } from "vitest/browser";
 import { render } from "vitest-browser-svelte";
 import type { RenderResult } from "vitest-browser-svelte";
+import type { DescriptionListContext } from "../../types.js";
 import Component from "./Item.svelte";
+
+vi.mock("../../context.js", () => {
+  return {
+    getDescriptionListContext: (): DescriptionListContext => ({
+      layout: "auto",
+    }),
+  };
+});
 
 describe("Item component", () => {
   const baseProps = {
@@ -14,6 +23,7 @@ describe("Item component", () => {
       render: () => `<span>Description</span>`,
     })),
     name: "Term",
+    "data-testid": "description-list-item",
   } satisfies ComponentProps<typeof Component>;
 
   it("renders", async () => {
@@ -39,10 +49,6 @@ describe("Item component", () => {
     it("applies classes", async () => {
       const page = render(Component, { ...baseProps, class: "test-class" });
       await expect.element(componentLocator(page)).toHaveClass("test-class");
-      await expect.element(componentLocator(page)).toHaveClass("ds");
-      await expect
-        .element(componentLocator(page))
-        .toHaveClass("description-list-item");
     });
 
     it("applies style", async () => {

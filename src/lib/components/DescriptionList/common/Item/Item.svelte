@@ -9,14 +9,10 @@
   let { class: className, name, children, ...rest }: ItemProps = $props();
 
   const descriptionListContext = getDescriptionListContext();
-  const orientation = $derived(
-    descriptionListContext?.orientation ?? "horizontal",
-  );
 </script>
 
 <div
-  class={[componentCssClassName, className, orientation]}
-  data-testid="description-list-item"
+  class={[componentCssClassName, className, descriptionListContext.layout]}
   {...rest}
 >
   <dt>{name}</dt>
@@ -41,25 +37,50 @@
       color: var(--tmp-color-text-default);
     }
 
-    &.horizontal {
+    /* Horizontal line for list layout */
+    &::before {
+      content: "";
+      order: 2;
+      height: 1px;
+      flex-grow: 1;
+      background: repeating-linear-gradient(
+        to right,
+        var(--tmp-color-border-low-contrast) 0px 2px,
+        transparent 2px 4px
+      );
+      flex-basis: 10%;
+
+      display: none;
+    }
+
+    &.list {
       flex-direction: row;
       align-items: baseline;
       gap: var(--tmp-dimension-spacing-inline-xs);
 
       &::before {
-        content: "";
-        order: 2;
-        height: 1px;
-        flex-grow: 1;
-        background: repeating-linear-gradient(
-          to right,
-          var(--tmp-color-border-low-contrast) 0px 2px,
-          transparent 2px 4px
-        );
+        display: block;
       }
 
       dd {
         text-align: end;
+      }
+    }
+
+    &.auto {
+      /* Defined in DescriptionList.svelte */
+      @container description-list (width <= 573px) {
+        flex-direction: row;
+        align-items: baseline;
+        gap: var(--tmp-dimension-spacing-inline-xs);
+
+        &::before {
+          display: block;
+        }
+
+        dd {
+          text-align: end;
+        }
       }
     }
   }

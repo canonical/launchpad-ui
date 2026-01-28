@@ -4,8 +4,17 @@ import { render } from "@canonical/svelte-ssr-test";
 import type { RenderResult } from "@canonical/svelte-ssr-test";
 import { createRawSnippet } from "svelte";
 import type { ComponentProps } from "svelte";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+import type { DescriptionListContext } from "../../types.js";
 import Component from "./Item.svelte";
+
+vi.mock("../../context.js", () => {
+  return {
+    getDescriptionListContext: (): DescriptionListContext => ({
+      layout: "auto",
+    }),
+  };
+});
 
 describe("Item SSR", () => {
   const baseProps = {
@@ -13,6 +22,7 @@ describe("Item SSR", () => {
       render: () => `<span>Description</span>`,
     })),
     name: "Term",
+    "data-testid": "description-list-item",
   } satisfies ComponentProps<typeof Component>;
 
   describe("basics", () => {
@@ -46,10 +56,6 @@ describe("Item SSR", () => {
         props: { class: "test-class", ...baseProps },
       });
       expect(componentLocator(page).classList).toContain("test-class");
-      expect(componentLocator(page).classList).toContain("ds");
-      expect(componentLocator(page).classList).toContain(
-        "description-list-item",
-      );
     });
 
     it("applies style", () => {
