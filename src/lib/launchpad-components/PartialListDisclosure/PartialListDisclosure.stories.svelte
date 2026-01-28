@@ -4,7 +4,7 @@
   import PartialListDisclosure from "./PartialListDisclosure.svelte";
 
   const { Story } = defineMeta({
-    title: "PartialListDisclosure",
+    title: "Launchpad Components/PartialListDisclosure",
     tags: ["autodocs"],
     component: PartialListDisclosure,
     argTypes: {
