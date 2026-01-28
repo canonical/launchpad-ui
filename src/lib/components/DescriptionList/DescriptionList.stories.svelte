@@ -38,6 +38,6 @@
 
 <Story name="Default" {template} />
 
-<Story name="With grid layout" args={{ orientation: "grid" }} {template} />
+<Story name="With grid layout" args={{ layout: "grid" }} {template} />
 
-<Story name="With list layout" args={{ orientation: "list" }} {template} />
+<Story name="With list layout" args={{ layout: "list" }} {template} />

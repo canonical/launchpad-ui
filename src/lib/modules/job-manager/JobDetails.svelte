@@ -47,7 +47,7 @@
   </div>
   <section>
     <h2 class="visually-hidden">Details</h2>
-    <DescriptionList orientation="auto">
+    <DescriptionList layout="auto">
       <DescriptionList.Item name="ID">
         {job.id}
       </DescriptionList.Item>

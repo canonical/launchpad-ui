@@ -9,20 +9,20 @@
   let {
     class: className,
     children,
-    orientation = "auto",
+    layout = "auto",
     ...rest
   }: DescriptionListProps = $props();
 
   setDescriptionListContext({
-    get orientation() {
-      return orientation;
+    get layout() {
+      return layout;
     },
   });
 </script>
 
 <!-- Container queries cannot target the same element they are defined on -->
 <div class="container">
-  <dl class={[componentCssClassName, className, orientation]} {...rest}>
+  <dl class={[componentCssClassName, className, layout]} {...rest}>
     {@render children?.()}
   </dl>
 </div>
@@ -32,7 +32,7 @@
 
 ## Example Usage
 ```svelte
-<DescriptionList orientation="list">
+<DescriptionList layout="list">
   <DescriptionList.Item term="ID">134</DescriptionList.Item>
   <DescriptionList.Item term="Requested by">John Smith</DescriptionList.Item>
   <DescriptionList.Item term="Created">2023-10-01T12:00:00Z</DescriptionList.Item>
@@ -43,7 +43,6 @@
 
 <style>
   .container {
-    /* Also referenced in Item.svelte */
     container: description-list / inline-size;
   }
 
@@ -51,21 +50,23 @@
     display: grid;
     row-gap: var(--tmp-dimension-spacing-block-xs);
     column-gap: var(--tmp-dimension-spacing-inline-xs);
-    --min-item-width: 160px;
+    --min-width-description-list-item: 160px;
 
     &.grid {
       grid-template-columns: repeat(
         auto-fit,
-        minmax(var(--min-item-width), 1fr)
+        minmax(var(--min-width-description-list-item), 1fr)
       );
     }
 
     &.auto {
-      /* width > 621 - (2 * 24) = 573 */
+      /* 
+        width > 621 - (2 * 24) = narrow breakpoint - (2 * padding) = 573px
+      */
       @container description-list (width > 573px) {
         grid-template-columns: repeat(
           auto-fit,
-          minmax(var(--min-item-width), 1fr)
+          minmax(var(--min-width-description-list-item), 1fr)
         );
       }
     }

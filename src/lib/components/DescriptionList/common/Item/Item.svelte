@@ -9,10 +9,12 @@
   let { class: className, name, children, ...rest }: ItemProps = $props();
 
   const descriptionListContext = getDescriptionListContext();
-  const orientation = $derived(descriptionListContext?.orientation ?? "auto");
 </script>
 
-<div class={[componentCssClassName, className, orientation]} {...rest}>
+<div
+  class={[componentCssClassName, className, descriptionListContext.layout]}
+  {...rest}
+>
   <dt>{name}</dt>
   <dd>{@render children()}</dd>
 </div>
@@ -35,18 +37,17 @@
       color: var(--tmp-color-text-default);
     }
 
-    --horizontal-line: repeating-linear-gradient(
-      to right,
-      var(--tmp-color-border-low-contrast) 0px 2px,
-      transparent 2px 4px
-    );
-
+    /* Horizontal line for list layout */
     &::before {
       content: "";
       order: 2;
       height: 1px;
       flex-grow: 1;
-      background: var(--horizontal-line);
+      background: repeating-linear-gradient(
+        to right,
+        var(--tmp-color-border-low-contrast) 0px 2px,
+        transparent 2px 4px
+      );
       flex-basis: 10%;
 
       display: none;

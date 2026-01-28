@@ -2,11 +2,20 @@
 
 import { createRawSnippet } from "svelte";
 import type { ComponentProps } from "svelte";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import type { Locator } from "vitest/browser";
 import { render } from "vitest-browser-svelte";
 import type { RenderResult } from "vitest-browser-svelte";
+import type { DescriptionListContext } from "../../types.js";
 import Component from "./Item.svelte";
+
+vi.mock("../../context.js", () => {
+  return {
+    getDescriptionListContext: (): DescriptionListContext => ({
+      layout: "auto",
+    }),
+  };
+});
 
 describe("Item component", () => {
   const baseProps = {

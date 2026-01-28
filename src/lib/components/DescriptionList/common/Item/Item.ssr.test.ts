@@ -4,8 +4,17 @@ import { render } from "@canonical/svelte-ssr-test";
 import type { RenderResult } from "@canonical/svelte-ssr-test";
 import { createRawSnippet } from "svelte";
 import type { ComponentProps } from "svelte";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
+import type { DescriptionListContext } from "../../types.js";
 import Component from "./Item.svelte";
+
+vi.mock("../../context.js", () => {
+  return {
+    getDescriptionListContext: (): DescriptionListContext => ({
+      layout: "auto",
+    }),
+  };
+});
 
 describe("Item SSR", () => {
   const baseProps = {

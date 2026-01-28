@@ -5,14 +5,14 @@ import type { SvelteHTMLElements } from "svelte/elements";
 export type BaseProps = SvelteHTMLElements["dl"];
 export interface DescriptionListProps extends BaseProps {
   /**
-   * The orientation of the list's items.
+   * The layout of the list's items.
    * @default "auto"
    */
-  orientation?: Orientation;
+  layout?: Layout;
 }
 
 export interface DescriptionListContext {
-  orientation: Orientation;
+  layout: Layout;
 }
 
-type Orientation = "list" | "grid" | "auto";
+type Layout = "list" | "grid" | "auto";
