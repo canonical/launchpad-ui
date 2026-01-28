@@ -12,10 +12,16 @@
   import {
     CommandList,
     JobStatusIcon,
+    PartialListDisclosure,
   } from "$lib/launchpad-components/index.js";
   import { bytesToHumanReadable } from "$lib/utils/bytesToHumanReadable.js";
 
   const { job }: { job: JobRead } = $props();
+
+  const jobManagerLog = $derived(
+    // TODO: Remove `as string[]` when API types are fixed
+    (job.log_urls as string[]).find((url) => url.endsWith("job_agent.log")),
+  );
 </script>
 
 <div class="details">
@@ -47,33 +53,77 @@
   </div>
   <section>
     <h2 class="visually-hidden">Details</h2>
-    <DescriptionList layout="auto">
-      <DescriptionList.Item name="ID">
-        {job.id}
-      </DescriptionList.Item>
-      <DescriptionList.Item name="Architecture">
-        {job.architecture}
-      </DescriptionList.Item>
-      <DescriptionList.Item name="Requested by">
-        <UserChip userName={job.requested_by} size="small" />
-      </DescriptionList.Item>
-      <DescriptionList.Item name="Created at">
-        <DateTime date={job.created_at} absolute />
-      </DescriptionList.Item>
-      <DescriptionList.Item name="Updated at">
-        <DateTime date={job.updated_at} absolute />
-      </DescriptionList.Item>
-      <DescriptionList.Item name="Started at">
-        {#if job.started_at}
-          <DateTime date={job.started_at} absolute />
-        {/if}
-      </DescriptionList.Item>
-      <DescriptionList.Item name="Completed at">
-        {#if job.completed_at}
-          <DateTime date={job.completed_at} absolute />
-        {/if}
-      </DescriptionList.Item>
-    </DescriptionList>
+    <PartialListDisclosure>
+      {#snippet children(
+        listProps,
+        hiddenItemProps,
+        toggleButtonProps,
+        isExpanded,
+      )}
+        <DescriptionList {...listProps} layout="auto">
+          <DescriptionList.Item name="ID">
+            {job.id}
+          </DescriptionList.Item>
+          <DescriptionList.Item name="Requested by">
+            <UserChip userName={job.requested_by} size="small" />
+          </DescriptionList.Item>
+          <DescriptionList.Item name="Created">
+            <DateTime date={job.created_at} absolute />
+          </DescriptionList.Item>
+          <DescriptionList.Item name="Updated">
+            <DateTime date={job.updated_at} absolute />
+          </DescriptionList.Item>
+          {#if job.started_at}
+            <DescriptionList.Item name="Started">
+              <DateTime date={job.started_at} absolute />
+            </DescriptionList.Item>
+          {/if}
+          {#if job.completed_at}
+            <DescriptionList.Item name="Finished">
+              <DateTime date={job.completed_at} absolute />
+            </DescriptionList.Item>
+          {/if}
+          <!-- TODO: Duration -->
+          <DescriptionList.Item {...hiddenItemProps} name="Repository">
+            <span style="overflow-wrap: anywhere">
+              {job.repository_url}
+            </span>
+          </DescriptionList.Item>
+          <DescriptionList.Item {...hiddenItemProps} name="Repository ref">
+            {job.repository_ref}
+          </DescriptionList.Item>
+          <DescriptionList.Item {...hiddenItemProps} name="Architecture">
+            {job.architecture}
+          </DescriptionList.Item>
+          <DescriptionList.Item {...hiddenItemProps} name="Base series">
+            {job.base_series}
+          </DescriptionList.Item>
+          {#if job.vm_size}
+            <DescriptionList.Item {...hiddenItemProps} name="VM size">
+              {job.vm_size}
+            </DescriptionList.Item>
+          {/if}
+          {#if jobManagerLog}
+            <DescriptionList.Item {...hiddenItemProps} name="Job manager log">
+              <Link
+                href={jobManagerLog}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Download
+              </Link>
+            </DescriptionList.Item>
+          {/if}
+        </DescriptionList>
+        <!-- TODO: Proper link-looking button -->
+        <button
+          {...toggleButtonProps}
+          style="margin-top: var(--tmp-dimension-spacing-block-xs);"
+        >
+          {isExpanded ? "Show less" : "Show more"}
+        </button>
+      {/snippet}
+    </PartialListDisclosure>
   </section>
   <section>
     <h2 class="section-header">Commands</h2>
