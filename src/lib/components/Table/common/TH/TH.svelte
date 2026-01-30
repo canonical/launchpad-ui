@@ -50,11 +50,14 @@
         opacity: 0;
       }
 
-      &:hover,
-      &:focus-within {
+      &:hover {
         :global(.ds.table-th-sort) {
           opacity: 1;
         }
+      }
+
+      :global(.ds.table-th-sort:focus-visible) {
+        opacity: 1;
       }
     }
   }

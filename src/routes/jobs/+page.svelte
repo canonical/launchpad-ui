@@ -1,14 +1,72 @@
 <script lang="ts">
-  import { DateTime, Link, Spinner, UserChip } from "$lib/components/index.js";
+  import type { JobRead } from "$lib/api/job-manager/types.js";
+  import {
+    DateTime,
+    Link,
+    Spinner,
+    Table,
+    UserChip,
+  } from "$lib/components/index.js";
   import type { DateTimeProps } from "$lib/components/index.js";
   import { JobStatusIcon, Whoops } from "$lib/launchpad-components/index.js";
   import type { PageProps } from "./$types";
   import { browser } from "$app/environment";
   import { resolve } from "$app/paths";
+  import { page } from "$app/state";
 
   let { data }: PageProps = $props();
 
   const jobsPromise = $derived(data.jobsPromise);
+
+  const sort = $derived.by(() => {
+    const sort = page.url.searchParams.get("sort") ?? "id";
+
+    if (sort.startsWith("-")) {
+      return { field: sort.slice(1), direction: "descending" as const };
+    }
+
+    return { field: sort, direction: "ascending" as const };
+  });
+
+  const sortLinkLabel = (key: keyof JobRead, column: string) => {
+    if (sort.field !== key) {
+      return `Sort by ${column} ascending`;
+    } else if (sort.direction === "ascending") {
+      return `Sort by ${column} descending`;
+    } else {
+      return `Remove sorting by ${column}`;
+    }
+  };
+
+  const sortLinkHref = (key: keyof JobRead) => {
+    const url = new URL(page.url);
+    let sortParam: string;
+
+    if (sort.field !== key) {
+      sortParam = key;
+    } else if (sort.direction === "ascending") {
+      sortParam = `-${key}`;
+    } else {
+      url.searchParams.delete("sort");
+      return url.pathname + url.search;
+    }
+
+    url.searchParams.set("sort", sortParam);
+    return url.pathname + url.search;
+  };
+
+  const headerCells = [
+    { key: "id", label: "ID" },
+    { key: "title", label: "Title" },
+    { key: "architecture", label: "Architecture" },
+    { key: "status", label: "Status" },
+    { key: "requested_by", label: "Requested by" },
+    { key: "tags", label: "Tags" },
+    { key: "created_at", label: "Created" },
+    { key: "started_at", label: "Started" },
+    { key: "completed_at", label: "Finished" },
+    { key: "private", label: "Access" },
+  ] satisfies { key: keyof JobRead; label: string }[];
 </script>
 
 <!--
@@ -29,23 +87,56 @@
   {#snippet failed()}
     <Whoops status={500} message="Failed to load jobs" />
   {/snippet}
-  <table>
+  <Table style="width: 100%;">
     <thead>
       <tr>
-        <th>ID</th>
-        <th>Title</th>
-        <th>Architecture</th>
-        <th>Status</th>
-        <th>Requested by</th>
-        <th>Tags</th>
-        <th>Created</th>
-        <th>Started</th>
-        <th>Finished</th>
-        <th>Access</th>
+        {#each headerCells as { key, label } (key)}
+          <Table.TH
+            sortDirection={sort.field === key ? sort.direction : undefined}
+          >
+            {label}
+            {#snippet action()}
+              <Table.TH.SortLink
+                aria-label={sortLinkLabel(key, label)}
+                href={sortLinkHref(key)}
+              />
+            {/snippet}
+          </Table.TH>
+        {/each}
       </tr>
     </thead>
     <tbody>
-      {#each await jobsPromise as job (job.id)}
+      {#each (await jobsPromise).toSorted((a, b) => {
+        const { field, direction } = sort;
+        const aValue = a[field as keyof JobRead];
+        const bValue = b[field as keyof JobRead];
+
+        if (aValue === bValue) {
+          return 0;
+        }
+
+        if (aValue === null || aValue === undefined) {
+          return direction === "ascending" ? -1 : 1;
+        }
+
+        if (bValue === null || bValue === undefined) {
+          return direction === "ascending" ? 1 : -1;
+        }
+
+        if (typeof aValue === "string" && typeof bValue === "string") {
+          return direction === "ascending" ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
+        }
+
+        if (typeof aValue === "number" && typeof bValue === "number") {
+          return direction === "ascending" ? aValue - bValue : bValue - aValue;
+        }
+
+        if (typeof aValue === "boolean" && typeof bValue === "boolean") {
+          return direction === "ascending" ? Number(aValue) - Number(bValue) : Number(bValue) - Number(aValue);
+        }
+
+        return 0;
+      }) as job (job.id)}
         <tr>
           <td>
             <Link href={resolve("/jobs/[id]", { id: job.id.toString() })}>
@@ -89,7 +180,7 @@
         </tr>
       {/each}
     </tbody>
-  </table>
+  </Table>
 </svelte:boundary>
 
 {#snippet nullableDateTime(date: DateTimeProps["date"] | null | undefined)}
@@ -105,30 +196,3 @@
     <Spinner /> loading jobs...
   </div>
 {/snippet}
-
-<style>
-  table {
-    width: 100%;
-    border-collapse: collapse;
-  }
-
-  th {
-    text-align: left;
-    font: var(--tmp-typography-paragraph-s-strong);
-  }
-
-  td {
-    font: var(--tmp-typography-paragraph-s);
-  }
-
-  th,
-  td {
-    padding: var(--tmp-dimension-spacing-block-xs, 8px)
-      var(--spacing-horizontal-small, 8px);
-    color: var(--tmp-color-text-default);
-  }
-
-  tbody tr {
-    border-top: 1px solid var(--tmp-color-border-low-contrast);
-  }
-</style>
