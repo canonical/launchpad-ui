@@ -14,7 +14,7 @@
 
 <button
   class={[componentCssClassName, className]}
-  class:sorted={thContext.ariaSort}
+  class:sorted={thContext.sortDirection}
   {...rest}
 >
   <SortIndicator />

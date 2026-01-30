@@ -8,9 +8,9 @@
   const thContext = getTHContext();
 </script>
 
-{#if thContext.ariaSort === "ascending"}
+{#if thContext.sortDirection === "ascending"}
   <ArrowUpIcon aria-hidden="true" />
-{:else if thContext.ariaSort === "descending"}
+{:else if thContext.sortDirection === "descending"}
   <ArrowDownIcon aria-hidden="true" />
 {:else}
   <SortIcon aria-hidden="true" />

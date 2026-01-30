@@ -9,24 +9,28 @@
   let {
     class: className,
     children,
-    "aria-sort": ariaSort,
-    sortSwitcher,
+    sortDirection,
+    action,
     ...rest
   }: THProps = $props();
 
   setTHContext({
-    get ariaSort() {
-      return ariaSort;
+    get sortDirection() {
+      return sortDirection;
     },
   });
 </script>
 
-<th aria-sort={ariaSort} class={[componentCssClassName, className]} {...rest}>
+<th
+  class={[componentCssClassName, className]}
+  aria-sort={sortDirection}
+  {...rest}
+>
   <div>
     <span>
       {@render children?.()}
     </span>
-    {@render sortSwitcher?.()}
+    {@render action?.()}
   </div>
 </th>
 
@@ -40,7 +44,8 @@
       gap: var(--tmp-dimension-spacing-inline-xxs);
     }
 
-    &:not([aria-sort]) {
+    &:not([aria-sort]),
+    &[aria-sort="none"] {
       :global(.ds.table-th-sort) {
         opacity: 0;
       }

@@ -26,9 +26,9 @@
   <caption>{caption}</caption>
   <thead>
     <tr>
-      <TH aria-sort={sortDirection} scope="col">
+      <TH {sortDirection} scope="col">
         {thText}
-        {#snippet sortSwitcher()}
+        {#snippet action()}
           <TH.SortButton aria-label={sortButtonText} />
         {/snippet}
       </TH>

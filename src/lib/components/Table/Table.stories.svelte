@@ -162,10 +162,10 @@
       <tr>
         <Table.TH
           scope="col"
-          aria-sort={sortKey === "name" ? sortDirection : undefined}
+          sortDirection={sortKey === "name" ? sortDirection : undefined}
         >
           User
-          {#snippet sortSwitcher()}
+          {#snippet action()}
             <Table.TH.SortButton
               onclick={() => changeSort("name")}
               aria-label={sortButtonLabel("name", "User")}
@@ -174,10 +174,10 @@
         </Table.TH>
         <Table.TH
           scope="col"
-          aria-sort={sortKey === "street" ? sortDirection : undefined}
+          sortDirection={sortKey === "street" ? sortDirection : undefined}
         >
           Address
-          {#snippet sortSwitcher()}
+          {#snippet action()}
             <Table.TH.SortButton
               onclick={() => changeSort("street")}
               aria-label={sortButtonLabel("street", "Address")}
@@ -186,10 +186,10 @@
         </Table.TH>
         <Table.TH
           scope="col"
-          aria-sort={sortKey === "birthday" ? sortDirection : undefined}
+          sortDirection={sortKey === "birthday" ? sortDirection : undefined}
         >
           Birthday
-          {#snippet sortSwitcher()}
+          {#snippet action()}
             <Table.TH.SortButton
               onclick={() => changeSort("birthday")}
               aria-label={sortButtonLabel("birthday", "Birthday")}
@@ -198,10 +198,10 @@
         </Table.TH>
         <Table.TH
           scope="col"
-          aria-sort={sortKey === "registered" ? sortDirection : undefined}
+          sortDirection={sortKey === "registered" ? sortDirection : undefined}
         >
           Registered
-          {#snippet sortSwitcher()}
+          {#snippet action()}
             <Table.TH.SortButton
               onclick={() => changeSort("registered")}
               aria-label={sortButtonLabel("registered", "Registered")}
@@ -210,10 +210,10 @@
         </Table.TH>
         <Table.TH
           scope="col"
-          aria-sort={sortKey === "balance" ? sortDirection : undefined}
+          sortDirection={sortKey === "balance" ? sortDirection : undefined}
         >
           Balance
-          {#snippet sortSwitcher()}
+          {#snippet action()}
             <Table.TH.SortButton
               onclick={() => changeSort("balance")}
               aria-label={sortButtonLabel("balance", "Balance")}

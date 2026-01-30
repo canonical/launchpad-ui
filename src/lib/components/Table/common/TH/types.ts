@@ -3,19 +3,19 @@
 import type { Snippet } from "svelte";
 import type { HTMLThAttributes } from "svelte/elements";
 
-type BaseProps = Omit<HTMLThAttributes, "aria-sort">;
+type BaseProps = HTMLThAttributes;
 
 export interface THProps extends BaseProps {
   /**
    * The sort direction of the column.
    */
-  "aria-sort"?: SortDirection;
+  sortDirection?: SortDirection;
   /**
-   * A button or a link that toggles the sort direction of the column.
+   * A button or link to be included in the header cell.
    *
    * Usually <Table.TH.SortButton> or <Table.TH.SortLink>.
    */
-  sortSwitcher?: Snippet<[]>;
+  action?: Snippet<[]>;
 }
 
 export type SortDirection = Extract<
@@ -24,5 +24,5 @@ export type SortDirection = Extract<
 >;
 
 export type THContext = {
-  ariaSort: SortDirection;
+  sortDirection: SortDirection;
 };

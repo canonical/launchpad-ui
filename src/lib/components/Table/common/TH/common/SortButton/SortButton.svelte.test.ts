@@ -5,12 +5,13 @@ import { describe, expect, it, vi } from "vitest";
 import type { Locator } from "vitest/browser";
 import { render } from "vitest-browser-svelte";
 import type { RenderResult } from "vitest-browser-svelte";
+import type { THContext } from "../../types.js";
 import Component from "./SortButton.svelte";
 
 vi.mock("../../context.js", () => {
   return {
-    getTHContext: () => ({
-      ariaSort: undefined,
+    getTHContext: (): THContext => ({
+      sortDirection: undefined,
     }),
   };
 });

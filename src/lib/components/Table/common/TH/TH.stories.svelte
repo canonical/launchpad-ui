@@ -8,19 +8,19 @@
     tags: ["autodocs"],
     component: TH,
     argTypes: {
-      sortSwitcher: { control: false },
+      action: { control: false },
     },
   });
 </script>
 
 <Story name="With Sort Button">
-  {#snippet template({ sortSwitcher: _, ...args })}
+  {#snippet template({ action: _, ...args })}
     <Table>
       <thead>
         <tr>
           <Table.TH {...args}>
             Header
-            {#snippet sortSwitcher()}
+            {#snippet action()}
               <Table.TH.SortButton aria-label="Sort" />
             {/snippet}
           </Table.TH>
@@ -31,13 +31,13 @@
 </Story>
 
 <Story name="With Sort Link">
-  {#snippet template({ sortSwitcher: _, ...args })}
+  {#snippet template({ action: _, ...args })}
     <Table>
       <thead>
         <tr>
           <Table.TH {...args}>
             Header
-            {#snippet sortSwitcher()}
+            {#snippet action()}
               <Table.TH.SortLink aria-label="Sort" href="#" />
             {/snippet}
           </Table.TH>

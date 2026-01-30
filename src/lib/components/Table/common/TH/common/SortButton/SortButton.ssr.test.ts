@@ -4,12 +4,13 @@ import { render } from "@canonical/svelte-ssr-test";
 import type { RenderResult } from "@canonical/svelte-ssr-test";
 import type { ComponentProps } from "svelte";
 import { describe, expect, it, vi } from "vitest";
+import type { THContext } from "../../types.js";
 import Component from "./SortButton.svelte";
 
 vi.mock("../../context.js", () => {
   return {
-    getTHContext: () => ({
-      ariaSort: undefined,
+    getTHContext: (): THContext => ({
+      sortDirection: undefined,
     }),
   };
 });
