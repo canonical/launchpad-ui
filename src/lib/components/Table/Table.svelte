@@ -13,12 +13,39 @@
 </table>
 
 <!-- @component
-`Table` [FIXME] (placeholder) A reusable UI component that renders content in a div container.
+`Table` is a styled table element.
 
 ## Example Usage
 ```svelte
-<Table class="custom-class" id="unique-id">
-  <p>Content goes here</p>
+<Table>
+  <caption>Sample Data</caption>
+  <thead>
+    <tr>
+      <Table.TH sortDirection="ascending" scope="col">
+        Sortable Column
+        {#snippet action()}
+          <Table.TH.SortButton onclick={handleSortClick} />
+        {/snippet}
+      </Table.TH>
+      <th scope="col">Non-Sortable Column</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Data 1</td>
+      <td>Data 2</td>
+    </tr>
+    <tr>
+      <td>Data 3</td>
+      <td>Data 4</td>
+    </tr>
+  </tbody>
+  <tfoot>
+    <tr>
+      <td>Footer 1</td>
+      <td>Footer 2</td>
+    </tr>
+  </tfoot>
 </Table>
 ```
 -->
