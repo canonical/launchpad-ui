@@ -56,17 +56,17 @@
   };
 
   const headerCells = [
-    { key: "id", label: "ID" },
-    { key: "title", label: "Title" },
-    { key: "architecture", label: "Architecture" },
-    { key: "status", label: "Status" },
-    { key: "requested_by", label: "Requested by" },
-    { key: "tags", label: "Tags" },
-    { key: "created_at", label: "Created" },
-    { key: "started_at", label: "Started" },
-    { key: "completed_at", label: "Finished" },
-    { key: "private", label: "Access" },
-  ] satisfies { key: keyof JobRead; label: string }[];
+    { key: "id", label: "ID", sortable: true },
+    { key: "title", label: "Title", sortable: true },
+    { key: "architecture", label: "Architecture", sortable: true },
+    { key: "status", label: "Status", sortable: true },
+    { key: "requested_by", label: "Requested by", sortable: true },
+    { key: "tags", label: "Tags", sortable: false },
+    { key: "created_at", label: "Created", sortable: true },
+    { key: "started_at", label: "Started", sortable: true },
+    { key: "completed_at", label: "Finished", sortable: true },
+    { key: "private", label: "Access", sortable: true },
+  ] satisfies { key: keyof JobRead; label: string; sortable: boolean }[];
 </script>
 
 <!--
@@ -90,18 +90,22 @@
   <Table style="width: 100%;">
     <thead>
       <tr>
-        {#each headerCells as { key, label } (key)}
-          <Table.TH
-            sortDirection={sort.field === key ? sort.direction : undefined}
-          >
-            {label}
-            {#snippet action()}
-              <Table.TH.SortLink
-                aria-label={sortLinkLabel(key, label)}
-                href={sortLinkHref(key)}
-              />
-            {/snippet}
-          </Table.TH>
+        {#each headerCells as { key, label, sortable } (key)}
+          {#if sortable}
+            <Table.TH
+              sortDirection={sort.field === key ? sort.direction : undefined}
+            >
+              {label}
+              {#snippet action()}
+                <Table.TH.SortLink
+                  aria-label={sortLinkLabel(key, label)}
+                  href={sortLinkHref(key)}
+                />
+              {/snippet}
+            </Table.TH>
+          {:else}
+            <th scope="col">{label}</th>
+          {/if}
         {/each}
       </tr>
     </thead>
