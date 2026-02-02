@@ -52,7 +52,6 @@
 
 <style>
   table {
-    width: 100%;
     border-collapse: collapse;
 
     --border-table-row: var(--dimension-stroke-thickness-default) solid

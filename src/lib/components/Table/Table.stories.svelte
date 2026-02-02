@@ -110,7 +110,7 @@
 </script>
 
 <Story name="Default" asChild>
-  <Table>
+  <Table style="width: 100%;">
     <caption>Static table</caption>
     <thead>
       <tr>
@@ -156,7 +156,7 @@
 </Story>
 
 <Story name="With sorting headers" asChild>
-  <Table>
+  <Table style="width: 100%;">
     <caption>Sortable table</caption>
     <thead>
       <tr>
