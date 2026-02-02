@@ -156,6 +156,34 @@
 </Story>
 
 <Story name="With sorting headers" asChild>
+  <!-- 
+    <script>
+      let sortKey = $state();
+      let sortDirection = $state();
+
+      const changeSort = (key) => {
+        if (sortKey !== key) {
+          sortKey = key;
+          sortDirection = "ascending";
+        } else if (sortDirection === "ascending") {
+          sortDirection = "descending";
+        } else {
+          sortKey = undefined;
+          sortDirection = undefined;
+        }
+      };
+
+      const sortButtonLabel = (key, column) => {
+        if (sortKey !== key) {
+          return `Sort by ${column} ascending`;
+        } else if (sortDirection === "ascending") {
+          return `Sort by ${column} descending`;
+        } else {
+          return `Remove sorting by ${column}`;
+        }
+      };
+    </script>
+  -->
   <Table style="width: 100%;">
     <caption>Sortable table</caption>
     <thead>
