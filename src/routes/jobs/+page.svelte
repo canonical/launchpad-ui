@@ -159,7 +159,7 @@
           </td>
           <td>
             {#if job.requested_by}
-              <UserChip userName={job.requested_by} />
+              <UserChip userName={job.requested_by} size="small" />
             {:else}
               -
             {/if}
