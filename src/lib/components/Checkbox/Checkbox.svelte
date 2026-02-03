@@ -76,16 +76,16 @@ If `bind:group` is used, the `checked` prop must be omitted, and each checkbox i
 
 <style>
   .ds.checkbox {
-    --color-background-checkbox-hover: var(--tmp-color-background-hover);
-    --color-background-checkbox: var(--tmp-color-background-default);
-    --color-background-checkbox-checked: var(--tmp-color-text-link-default);
-    --color-border-checkbox: var(--tmp-color-border-high-contrast);
+    --color-background-checkbox-hover: var(--lp-color-background-hover);
+    --color-background-checkbox: var(--lp-color-background-default);
+    --color-background-checkbox-checked: var(--lp-color-text-link-default);
+    --color-border-checkbox: var(--lp-color-border-high-contrast);
     --dimension-border-width-checkbox: var(
       --dimension-stroke-thickness-default
     );
-    --dimension-size-checkbox: var(--tmp-dimension-size-xs);
-    --opacity-checkbox-disabled: var(--tmp-opacity-muted);
-    --color-checkbox-checked-marker: var(--tmp-color-background-default);
+    --dimension-size-checkbox: var(--lp-dimension-size-xs);
+    --opacity-checkbox-disabled: var(--lp-opacity-muted);
+    --color-checkbox-checked-marker: var(--lp-color-background-default);
     --dimension-inset-checkbox-checked-marker: calc(
       var(--dimension-size-checkbox) * 0.1
     );
@@ -112,10 +112,10 @@ If `bind:group` is used, the `checked` prop must be omitted, and each checkbox i
       var(--color-border-checkbox);
     background-color: var(--color-background-checkbox);
     transition:
-      background-color var(--tmp-transition-duration-brisk)
-        var(--tmp-transition-timing-ease-out),
-      border-color var(--tmp-transition-duration-brisk)
-        var(--tmp-transition-timing-ease-out);
+      background-color var(--lp-transition-duration-brisk)
+        var(--lp-transition-timing-ease-out),
+      border-color var(--lp-transition-duration-brisk)
+        var(--lp-transition-timing-ease-out);
 
     &:after {
       content: "";

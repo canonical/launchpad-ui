@@ -22,20 +22,20 @@
 
 <style>
   .ds.table-th-sort {
-    padding: var(--tmp-dimension-spacing-block-xxxs)
-      var(--tmp-dimension-spacing-inline-xxxs);
+    padding: var(--lp-dimension-spacing-block-xxxs)
+      var(--lp-dimension-spacing-inline-xxxs);
     background: none;
     border: none;
     cursor: pointer;
     min-width: fit-content;
 
-    font-size: var(--tmp-typography-font-size-m);
-    color: var(--tmp-color-icon-status-queued);
+    font-size: var(--lp-typography-font-size-m);
+    color: var(--lp-color-icon-status-queued);
 
     &:hover,
     &:focus-visible,
     &.sorted {
-      color: var(--tmp-color-text-default);
+      color: var(--lp-color-text-default);
     }
   }
 </style>

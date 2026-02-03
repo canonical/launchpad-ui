@@ -150,7 +150,7 @@
           <td>{job.title || "-"}</td>
           <td>{job.architecture}</td>
           <td
-            style="display: flex; align-items: center; gap: var(--tmp-dimension-spacing-inline-s)"
+            style="display: flex; align-items: center; gap: var(--lp-dimension-spacing-inline-s)"
           >
             <JobStatusIcon status={job.status} aria-hidden="true" />
             <span>

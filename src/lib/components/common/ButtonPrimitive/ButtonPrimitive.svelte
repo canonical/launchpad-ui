@@ -42,21 +42,19 @@
   button,
   a {
     --border-style-button: solid;
-    --color-background-button-active: var(
-      --tmp-color-background-neutral-active
-    );
-    --color-background-button-hover: var(--tmp-color-background-neutral-hover);
+    --color-background-button-active: var(--lp-color-background-neutral-active);
+    --color-background-button-hover: var(--lp-color-background-neutral-hover);
     --color-background-button: transparent;
     --color-border-button-active: var(--color-border-button);
     --color-border-button-hover: var(--color-border-button);
     --color-border-button: transparent;
-    --color-text-button: var(--tmp-color-text-default);
+    --color-text-button: var(--lp-color-text-default);
     --dimension-border-width-button: var(--dimension-stroke-thickness-default);
-    --dimension-padding-block-button: var(--tmp-dimension-spacing-block-xxs);
-    --dimension-padding-inline-button: var(--tmp-dimension-spacing-inline-s);
-    --opacity-button-disabled: var(--tmp-opacity-muted);
+    --dimension-padding-block-button: var(--lp-dimension-spacing-block-xxs);
+    --dimension-padding-inline-button: var(--lp-dimension-spacing-inline-s);
+    --opacity-button-disabled: var(--lp-opacity-muted);
     --text-decoration-button: none;
-    --typography-button: var(--tmp-typography-paragraph-default);
+    --typography-button: var(--lp-typography-paragraph-default);
 
     cursor: pointer;
     display: inline-block;
@@ -70,9 +68,9 @@
     padding-inline: var(--dimension-padding-inline-button);
     padding-block: var(--dimension-padding-block-button);
 
-    transition-duration: var(--tmp-transition-duration-snap);
+    transition-duration: var(--lp-transition-duration-snap);
     transition-property: background-color, border-color;
-    transition-timing-function: var(--tmp-transition-timing-ease-in);
+    transition-timing-function: var(--lp-transition-timing-ease-in);
 
     &:not(:disabled):not([aria-disabled="true"]) {
       &:hover {

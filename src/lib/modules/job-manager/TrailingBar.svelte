@@ -16,9 +16,9 @@
     align-items: center;
     position: sticky;
     bottom: 0;
-    gap: var(--tmp-dimension-spacing-inline-xxs);
-    padding: var(--tmp-dimension-spacing-block-xs)
-      var(--tmp-dimension-spacing-inline-m);
-    background-color: var(--tmp-color-background-default);
+    gap: var(--lp-dimension-spacing-inline-xxs);
+    padding: var(--lp-dimension-spacing-block-xs)
+      var(--lp-dimension-spacing-inline-m);
+    background-color: var(--lp-color-background-default);
   }
 </style>

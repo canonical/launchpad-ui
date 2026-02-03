@@ -30,7 +30,7 @@
 
 <style>
   .ds.modal-content-footer {
-    --dimension-gap-modal-content-footer: var(--tmp-dimension-spacing-inline-m);
+    --dimension-gap-modal-content-footer: var(--lp-dimension-spacing-inline-m);
 
     display: flex;
     justify-content: flex-end;

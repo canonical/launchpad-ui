@@ -28,10 +28,10 @@
 <style>
   .ds.markdown-editor-header {
     --dimension-padding-block-markdown-editor-header: var(
-      --tmp-dimension-spacing-block-xxs
+      --lp-dimension-spacing-block-xxs
     );
     --dimension-padding-inline-markdown-editor-header: var(
-      --tmp-dimension-spacing-inline-xs
+      --lp-dimension-spacing-inline-xs
     );
     display: flex;
     align-items: center;

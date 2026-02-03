@@ -40,14 +40,14 @@
 <style>
   .ds.modal-content {
     --border-modal-content: var(--dimension-stroke-thickness-default) solid
-      var(--tmp-color-border-high-contrast);
-    --color-background-modal-content: var(--tmp-color-background-default);
-    --dimension-gap-modal-content: var(--tmp-dimension-spacing-block-m);
+      var(--lp-color-border-high-contrast);
+    --color-background-modal-content: var(--lp-color-background-default);
+    --dimension-gap-modal-content: var(--lp-dimension-spacing-block-m);
     --dimension-padding-block-modal-content: var(
-      --tmp-dimension-spacing-block-l
+      --lp-dimension-spacing-block-l
     );
     --dimension-padding-inline-modal-content: var(
-      --tmp-dimension-spacing-inline-l
+      --lp-dimension-spacing-inline-l
     );
 
     display: flex;

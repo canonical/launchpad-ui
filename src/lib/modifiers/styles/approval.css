@@ -1,15 +1,15 @@
 .reviewing {
-  --tmp-color-text-context: var(--tmp-color-text-default);
+  --lp-color-text-context: var(--lp-color-text-default);
 }
 
 .approved {
-  --tmp-color-text-context: var(--tmp-color-positive);
+  --lp-color-text-context: var(--lp-color-positive);
 }
 
 .changes-requested {
-  --tmp-color-text-context: var(--tmp-color-caution);
+  --lp-color-text-context: var(--lp-color-caution);
 }
 
 .disapproved {
-  --tmp-color-text-context: var(--tmp-color-negative);
+  --lp-color-text-context: var(--lp-color-negative);
 }

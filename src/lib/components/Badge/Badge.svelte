@@ -52,16 +52,16 @@
 <style>
   .ds.badge {
     --color-background-badge: var(
-      --tmp-color-background-context,
-      var(--tmp-color-text-default)
+      --lp-color-background-context,
+      var(--lp-color-text-default)
     );
     --color-text-badge: var(
-      --tmp-color-text-context,
-      var(--tmp-color-text-reversed)
+      --lp-color-text-context,
+      var(--lp-color-text-reversed)
     );
     --dimension-radius-badge: var(--dimension-radius-full);
-    --dimension-padding-inline-badge: var(--tmp-dimension-spacing-inline-xxs);
-    --typography-badge: var(--tmp-typography-paragraph-xs-strong);
+    --dimension-padding-inline-badge: var(--lp-dimension-spacing-inline-xxs);
+    --typography-badge: var(--lp-typography-paragraph-xs-strong);
 
     background-color: var(--color-background-badge);
     color: var(--color-text-badge);

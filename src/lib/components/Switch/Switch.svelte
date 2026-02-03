@@ -91,13 +91,13 @@ The presence of a Switch's `value` in the `group` array determines (and is refle
 
 <style>
   .ds.switch {
-    --color-background-switch: var(--tmp-color-border-high-contrast);
-    --color-background-switch-checked: var(--tmp-color-text-link-default);
-    --color-background-switch-knob: var(--tmp-color-background-default);
-    --opacity-switch-disabled: var(--tmp-opacity-muted);
+    --color-background-switch: var(--lp-color-border-high-contrast);
+    --color-background-switch-checked: var(--lp-color-text-link-default);
+    --color-background-switch-knob: var(--lp-color-background-default);
+    --opacity-switch-disabled: var(--lp-opacity-muted);
     --dimension-radius-switch: var(--dimension-radius-full);
-    --dimension-width-switch: var(--tmp-dimension-size-l);
-    --dimension-height-switch: var(--tmp-dimension-size-xs);
+    --dimension-width-switch: var(--lp-dimension-size-l);
+    --dimension-height-switch: var(--lp-dimension-size-xs);
     --dimension-padding-switch: var(--dimension-stroke-thickness-default);
 
     appearance: none;
@@ -122,8 +122,8 @@ The presence of a Switch's `value` in the `group` array determines (and is refle
       border-radius: var(--dimension-radius-switch);
       border: var(--dimension-padding-switch) solid
         var(--color-background-switch);
-      transition: transform var(--tmp-transition-duration-slow)
-        var(--tmp-transition-timing-ease-out);
+      transition: transform var(--lp-transition-duration-slow)
+        var(--lp-transition-timing-ease-out);
     }
 
     &:checked {

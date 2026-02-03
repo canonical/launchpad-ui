@@ -50,15 +50,15 @@
 
 <style>
   div {
-    padding: var(--tmp-dimension-spacing-block-l)
-      var(--tmp-dimension-spacing-inline-l);
-    font: var(--tmp-typography-code-s);
-    background-color: var(--tmp-color-background-alt);
+    padding: var(--lp-dimension-spacing-block-l)
+      var(--lp-dimension-spacing-inline-l);
+    font: var(--lp-typography-code-s);
+    background-color: var(--lp-color-background-alt);
     grid-row: 1 / -1;
-    color: var(--tmp-color-text-default);
+    color: var(--lp-color-text-default);
 
     .message {
-      margin-block-end: var(--tmp-dimension-spacing-block-xs);
+      margin-block-end: var(--lp-dimension-spacing-block-xs);
     }
   }
 </style>

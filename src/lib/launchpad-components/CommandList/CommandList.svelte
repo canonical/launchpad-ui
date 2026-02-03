@@ -38,6 +38,6 @@
   ol {
     display: flex;
     flex-direction: column;
-    gap: var(--tmp-dimension-spacing-block-xs);
+    gap: var(--lp-dimension-spacing-block-xs);
   }
 </style>

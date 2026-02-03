@@ -5,7 +5,7 @@
     "": {
       "name": "launchpad-ui",
       "dependencies": {
-        "@canonical/launchpad-design-tokens": "^1.0.20",
+        "@canonical/launchpad-design-tokens": "^1.0.21",
         "@canonical/svelte-icons": "^0.0.9",
         "@floating-ui/dom": "^1.7.4",
         "markdown-actions": "^1.1.2",
@@ -72,7 +72,7 @@
 
     "@babel/runtime": ["@babel/runtime@7.27.6", "", {}, "sha512-vbavdySgbTTrmFE+EsiqUTzlOr5bzlnJtUv9PynGCAKvfQqjIXbvFdumPM/GxMDfyuGMJaJAU6TO4zc1Jf1i8Q=="],
 
-    "@canonical/launchpad-design-tokens": ["@canonical/launchpad-design-tokens@1.0.20", "", {}, "sha512-NtpswanM70SCV/m8Ju9RBDofQaDURF1uBoFrqcZwD+6Kt/gEG+wYCCVmXU1ZZfGZNhcJtboOGfh1crsWZbml3A=="],
+    "@canonical/launchpad-design-tokens": ["@canonical/launchpad-design-tokens@1.0.21", "", {}, "sha512-/iiWD7e8DBasfSu5QMazDFp9EmwosVDH7BgPe8+UklbLKd/qANr5AQ7ZyiSWWPCD23dW7OLwylVpgSdVtT5VWg=="],
 
     "@canonical/svelte-icons": ["@canonical/svelte-icons@0.0.9", "", { "peerDependencies": { "svelte": "^5.0.0" } }, "sha512-gZqkM1oxYTe0QWGZt9dxvrVLLhjKI7Q41BCd2MzhdsF7XCBS9cMTUZOSnPe/U60GdciF8zbVLw8eCTRXclSgHw=="],
 

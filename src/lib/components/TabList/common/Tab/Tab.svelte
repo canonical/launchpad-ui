@@ -22,11 +22,11 @@
 
 <style>
   .ds.tab {
-    --color-accent-tab-active: var(--tmp-color-border-highlight);
-    --color-accent-tab-hover: var(--tmp-color-border-default);
-    --color-accent-tab: var(--tmp-color-border-default);
-    --dimension-padding-block-tab: var(--tmp-dimension-spacing-block-s);
-    --dimension-padding-inline-tab: var(--tmp-dimension-spacing-inline-m);
+    --color-accent-tab-active: var(--lp-color-border-highlight);
+    --color-accent-tab-hover: var(--lp-color-border-default);
+    --color-accent-tab: var(--lp-color-border-default);
+    --dimension-padding-block-tab: var(--lp-dimension-spacing-block-s);
+    --dimension-padding-inline-tab: var(--lp-dimension-spacing-inline-m);
     --dimension-stroke-thickness-accent-tab-active: var(
       --dimension-stroke-thickness-large
     );

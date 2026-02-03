@@ -40,28 +40,28 @@ As an input, it requires a `<label>` associated with it.
 <style>
   :global(.ds.text-input) {
     --color-background-text-input-active: var(
-      --tmp-color-background-secondary-active-context,
-      var(--tmp-color-background-active)
+      --lp-color-background-secondary-active-context,
+      var(--lp-color-background-active)
     );
     --color-background-text-input-hover: var(
-      --tmp-color-background-secondary-hover-context,
-      var(--tmp-color-background-hover)
+      --lp-color-background-secondary-hover-context,
+      var(--lp-color-background-hover)
     );
     --color-background-text-input: var(
-      --tmp-color-background-secondary-context,
-      var(--tmp-color-background-input)
+      --lp-color-background-secondary-context,
+      var(--lp-color-background-input)
     );
     --dimension-padding-block-text-input: var(
       --dimension-padding-block-context,
-      var(--tmp-dimension-spacing-block-xxs)
+      var(--lp-dimension-spacing-block-xxs)
     );
     --color-border-text-input: var(
-      --tmp-color-border-secondary-context,
-      var(--tmp-color-border-high-contrast)
+      --lp-color-border-secondary-context,
+      var(--lp-color-border-high-contrast)
     );
     --color-outline-text-input: var(
-      --tmp-color-border-secondary-context,
-      var(--tmp-color-border-focus)
+      --lp-color-border-secondary-context,
+      var(--lp-color-border-focus)
     );
   }
 </style>

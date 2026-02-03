@@ -85,43 +85,43 @@
 <style>
   .ds.chip {
     --color-background-chip-active: var(
-      --tmp-color-background-secondary-active-context,
-      var(--tmp-color-background-neutral-active)
+      --lp-color-background-secondary-active-context,
+      var(--lp-color-background-neutral-active)
     );
     --color-background-chip-hover: var(
-      --tmp-color-background-secondary-hover-context,
-      var(--tmp-color-background-neutral-hover)
+      --lp-color-background-secondary-hover-context,
+      var(--lp-color-background-neutral-hover)
     );
     --color-background-chip: var(
-      --tmp-color-background-secondary-context,
-      var(--tmp-color-background-neutral-default)
+      --lp-color-background-secondary-context,
+      var(--lp-color-background-neutral-default)
     );
     --border-style-chip: solid;
     --color-border-chip: var(
-      --tmp-color-border-secondary-context,
-      var(--tmp-color-border-default)
+      --lp-color-border-secondary-context,
+      var(--lp-color-border-default)
     );
     --dimension-size-chip-close-icon: 0.85rem;
-    --dimension-gap-inline-chip: var(--tmp-dimension-spacing-inline-xxs);
-    --dimension-gap-inline-chip-badge: var(--tmp-dimension-spacing-inline-xs)
-      var(--tmp-dimension-spacing-inline-minimum);
+    --dimension-gap-inline-chip: var(--lp-dimension-spacing-inline-xxs);
+    --dimension-gap-inline-chip-badge: var(--lp-dimension-spacing-inline-xs)
+      var(--lp-dimension-spacing-inline-minimum);
     --dimension-padding-block-chip: var(
       --dimension-padding-block-context,
-      var(--tmp-dimension-spacing-block-xxxs)
+      var(--lp-dimension-spacing-block-xxxs)
     );
     --dimension-padding-inline-chip: var(
       --dimension-padding-inline-context,
-      var(--tmp-dimension-spacing-inline-s)
+      var(--lp-dimension-spacing-inline-s)
     );
     --dimension-radius-chip: var(--dimension-radius-full);
     --dimension-border-width-chip: var(--dimension-stroke-thickness-default);
-    --typography-chip: var(--tmp-typography-paragraph-s);
+    --typography-chip: var(--lp-typography-paragraph-s);
     --typography-letter-spacing-chip-leader: var(
-      --tmp-typography-letter-spacing-l
+      --lp-typography-letter-spacing-l
     );
     --color-text-chip: var(
-      --tmp-color-text-secondary-context,
-      var(--tmp-color-text-default)
+      --lp-color-text-secondary-context,
+      var(--lp-color-text-default)
     );
 
     display: inline-flex;
@@ -134,9 +134,9 @@
     background-color: var(--color-background-chip);
     padding-block: var(--dimension-padding-block-chip);
     padding-inline: var(--dimension-padding-inline-chip);
-    transition-duration: var(--tmp-transition-duration-snap);
+    transition-duration: var(--lp-transition-duration-snap);
     transition-property: background-color, border-color;
-    transition-timing-function: var(--tmp-transition-timing-ease-in);
+    transition-timing-function: var(--lp-transition-timing-ease-in);
 
     &:is(button),
     .dismiss {
@@ -192,7 +192,7 @@
     /* TODO: Consider splitting the chip component into two separate components */
     /* Where the read-only local modifier won't be needed anymore. */
     &.readonly {
-      --tmp-color-border-secondary-context: var(--tmp-color-background-default);
+      --lp-color-border-secondary-context: var(--lp-color-background-default);
     }
   }
 </style>

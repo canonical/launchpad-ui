@@ -1,24 +1,20 @@
 .ds.option {
-  --color-background-option: var(--tmp-color-background-default);
-  --color-background-option-hover: var(--tmp-color-background-hover);
-  --color-background-option-active: var(--tmp-color-background-active);
-  --opacity-option-disabled: var(--tmp-opacity-muted);
-  --dimension-padding-inline-option: var(--tmp-dimension-spacing-inline-m);
-  --dimension-padding-block-option: var(--tmp-dimension-spacing-block-xxs);
-  --typography-font-option: var(--tmp-typography-paragraph-default);
-  --typography-font-option-secondary: var(--tmp-typography-paragraph-xs);
-  --color-text-option: var(--tmp-color-text-default);
-  --color-text-option-secondary: var(--tmp-color-text-muted);
-  --dimension-margin-end-option-checkable: var(
-    --tmp-dimension-spacing-inline-m
-  );
-  --dimension-margin-end-option-icon: var(--tmp-dimension-spacing-inline-xs);
+  --color-background-option: var(--lp-color-background-default);
+  --color-background-option-hover: var(--lp-color-background-hover);
+  --color-background-option-active: var(--lp-color-background-active);
+  --opacity-option-disabled: var(--lp-opacity-muted);
+  --dimension-padding-inline-option: var(--lp-dimension-spacing-inline-m);
+  --dimension-padding-block-option: var(--lp-dimension-spacing-block-xxs);
+  --typography-font-option: var(--lp-typography-paragraph-default);
+  --typography-font-option-secondary: var(--lp-typography-paragraph-xs);
+  --color-text-option: var(--lp-color-text-default);
+  --color-text-option-secondary: var(--lp-color-text-muted);
+  --dimension-margin-end-option-checkable: var(--lp-dimension-spacing-inline-m);
+  --dimension-margin-end-option-icon: var(--lp-dimension-spacing-inline-xs);
   --dimension-margin-start-option-trailing-text: var(
-    --tmp-dimension-spacing-inline-xs
+    --lp-dimension-spacing-inline-xs
   );
-  --dimension-margin-start-option-switch: var(
-    --tmp-dimension-spacing-inline-xs
-  );
+  --dimension-margin-start-option-switch: var(--lp-dimension-spacing-inline-xs);
 
   text-align: left;
   display: grid;
@@ -33,8 +29,8 @@
   padding-block: var(--dimension-padding-block-option);
   font: var(--typography-font-option);
   color: var(--color-text-option);
-  transition: background-color var(--tmp-transition-duration-snap)
-    var(--tmp-transition-timing-ease-in);
+  transition: background-color var(--lp-transition-duration-snap)
+    var(--lp-transition-timing-ease-in);
 
   &:hover:not(.disabled) {
     background-color: var(--color-background-option-hover);

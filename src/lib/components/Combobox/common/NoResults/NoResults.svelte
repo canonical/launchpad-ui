@@ -35,15 +35,15 @@
 <style>
   .ds.combobox-no-results {
     --dimension-padding-inline-combobox-no-results: var(
-      --tmp-dimension-spacing-inline-m
+      --lp-dimension-spacing-inline-m
     );
     --dimension-padding-block-combobox-no-results: var(
-      --tmp-dimension-spacing-block-xs
+      --lp-dimension-spacing-block-xs
     );
     --typography-font-combobox-no-results: var(
-      --tmp-typography-paragraph-default
+      --lp-typography-paragraph-default
     );
-    --color-text-combobox-no-results: var(--tmp-color-text-muted);
+    --color-text-combobox-no-results: var(--lp-color-text-muted);
     --font-style-combobox-no-results: italic;
 
     padding-inline: var(--dimension-padding-inline-combobox-no-results);

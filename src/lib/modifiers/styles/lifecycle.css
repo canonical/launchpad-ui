@@ -1,14 +1,14 @@
 .completed {
-  --tmp-color-icon-context: var(--tmp-color-positive);
-  --tmp-color-text-context: var(--tmp-color-text-default);
+  --lp-color-icon-context: var(--lp-color-positive);
+  --lp-color-text-context: var(--lp-color-text-default);
 }
 
 .failed {
-  --tmp-color-icon-context: var(--tmp-color-negative);
-  --tmp-color-text-context: var(--tmp-color-text-default);
+  --lp-color-icon-context: var(--lp-color-negative);
+  --lp-color-text-context: var(--lp-color-text-default);
 }
 
 .suspended {
-  --tmp-color-icon-context: var(--tmp-color-text-muted);
-  --tmp-color-text-context: var(--tmp-color-text-default);
+  --lp-color-icon-context: var(--lp-color-text-muted);
+  --lp-color-text-context: var(--lp-color-text-default);
 }

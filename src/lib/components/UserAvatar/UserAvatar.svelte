@@ -69,18 +69,18 @@ The avatar will display the user's image if available and able to be loaded, oth
 
 <style>
   .ds.user-avatar {
-    --color-background-user-avatar: var(--tmp-color-background-alt);
-    --color-border-user-avatar: var(--tmp-color-border-default);
+    --color-background-user-avatar: var(--lp-color-background-alt);
+    --color-border-user-avatar: var(--lp-color-border-default);
     --dimension-border-width-user-avatar: var(
       --dimension-stroke-thickness-default
     );
     --dimension-size-user-avatar: var(
       --dimension-size-context,
-      var(--tmp-dimension-size-m)
+      var(--lp-dimension-size-m)
     );
     --typography-font-size-user-avatar: var(
       --typography-font-size-context,
-      var(--tmp-typography-font-size-m)
+      var(--lp-typography-font-size-m)
     );
 
     display: inline-grid;
@@ -93,7 +93,7 @@ The avatar will display the user's image if available and able to be loaded, oth
     border: var(--dimension-border-width-user-avatar) solid
       var(--color-border-user-avatar);
     background-color: var(--color-background-user-avatar);
-    font-weight: var(--tmp-typography-weight-bold);
+    font-weight: var(--lp-typography-weight-bold);
 
     width: var(--dimension-size-user-avatar);
     height: var(--dimension-size-user-avatar);

@@ -133,7 +133,7 @@ If JavaScript is disabled, Modal can be controlled as a popover with declarative
 
 <style>
   .ds.modal {
-    --color-background-modal-backdrop: var(--tmp-color-background-overlay);
+    --color-background-modal-backdrop: var(--lp-color-background-overlay);
     /* TODO(@Enzo): Replace with a token */
     --dimension-width-modal: 38rem;
 
@@ -173,7 +173,7 @@ If JavaScript is disabled, Modal can be controlled as a popover with declarative
     opacity: 0;
     transition-behavior: allow-discrete;
     transition-property: display, opacity, overlay;
-    transition-duration: var(--tmp-transition-duration-fast);
+    transition-duration: var(--lp-transition-duration-fast);
   }
 
   @starting-style {

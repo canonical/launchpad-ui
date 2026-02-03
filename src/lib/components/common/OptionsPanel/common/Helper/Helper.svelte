@@ -16,14 +16,12 @@
 <style>
   .ds.options-panel-helper {
     --dimension-padding-inline-options-panel-helper: var(
-      --tmp-dimension-spacing-inline-m
+      --lp-dimension-spacing-inline-m
     );
     --dimension-padding-block-options-panel-helper: var(
-      --tmp-dimension-spacing-block-xs
+      --lp-dimension-spacing-block-xs
     );
-    --dimension-gap-options-panel-helper: var(
-      --tmp-dimension-spacing-inline-xs
-    );
+    --dimension-gap-options-panel-helper: var(--lp-dimension-spacing-inline-xs);
 
     display: flex;
     justify-content: flex-start;

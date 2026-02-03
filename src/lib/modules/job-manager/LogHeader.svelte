@@ -179,15 +179,15 @@
     top: 0;
     z-index: 1;
     height: var(--header-height);
-    background-color: var(--tmp-color-background-default);
-    padding-inline-end: var(--tmp-dimension-spacing-inline-s);
+    background-color: var(--lp-color-background-default);
+    padding-inline-end: var(--lp-dimension-spacing-inline-s);
 
     .time-zone {
-      padding-inline: var(--tmp-dimension-spacing-inline-m);
-      padding-block: var(--tmp-dimension-spacing-block-xs);
-      font: var(--tmp-typography-paragraph-s);
-      color: var(--tmp-color-text-muted);
-      margin-inline-end: var(--tmp-dimension-spacing-inline-m);
+      padding-inline: var(--lp-dimension-spacing-inline-m);
+      padding-block: var(--lp-dimension-spacing-block-xs);
+      font: var(--lp-typography-paragraph-s);
+      color: var(--lp-color-text-muted);
+      margin-inline-end: var(--lp-dimension-spacing-inline-m);
     }
 
     :global(> .scroll-link) {

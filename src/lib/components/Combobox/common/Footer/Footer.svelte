@@ -33,14 +33,14 @@
 <style>
   .ds.combobox-footer {
     --dimension-padding-inline-combobox-footer: var(
-      --tmp-dimension-spacing-inline-xs
+      --lp-dimension-spacing-inline-xs
     );
     --dimension-padding-block-combobox-footer: var(
-      --tmp-dimension-spacing-block-xs
+      --lp-dimension-spacing-block-xs
     );
-    --dimension-gap-combobox-footer: var(--tmp-dimension-spacing-inline-xs);
+    --dimension-gap-combobox-footer: var(--lp-dimension-spacing-inline-xs);
     --border-top-combobox-footer: var(--dimension-stroke-thickness-default)
-      solid var(--tmp-color-border-default);
+      solid var(--lp-color-border-default);
 
     display: flex;
     flex-flow: row wrap;

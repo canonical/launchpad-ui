@@ -43,30 +43,30 @@
     display: grid;
     grid-column: 1 / -1;
     grid-template-columns: subgrid;
-    font: var(--tmp-typography-code-s);
-    color: var(--tmp-color-text-default);
+    font: var(--lp-typography-code-s);
+    color: var(--lp-color-text-default);
 
     td,
     th {
-      font-weight: var(--tmp-typography-weight-regular);
-      background-color: var(--tmp-color-background-alt);
+      font-weight: var(--lp-typography-weight-regular);
+      background-color: var(--lp-color-background-alt);
     }
 
     .line-number {
       grid-column: line-number;
       text-align: right;
-      color: var(--tmp-color-text-muted);
+      color: var(--lp-color-text-muted);
       position: sticky;
       left: 0;
       padding-inline-start: var(--log-padding-inline);
-      padding-inline-end: var(--tmp-dimension-spacing-inline-s);
+      padding-inline-end: var(--lp-dimension-spacing-inline-s);
     }
 
     .timestamp {
       grid-column: timestamp;
       white-space: nowrap;
 
-      padding-inline-end: var(--tmp-dimension-spacing-inline-m);
+      padding-inline-end: var(--lp-dimension-spacing-inline-m);
     }
 
     .content {

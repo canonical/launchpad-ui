@@ -33,11 +33,11 @@
 
 <style>
   .ds.options-panel {
-    --color-background-options-panel: var(--tmp-color-background-default);
+    --color-background-options-panel: var(--lp-color-background-default);
     --border-options-panel: var(--dimension-stroke-thickness-default) solid
-      var(--tmp-color-border-high-contrast);
+      var(--lp-color-border-high-contrast);
     --border-top-options-panel-footer: var(--dimension-stroke-thickness-default)
-      solid var(--tmp-color-border-high-contrast);
+      solid var(--lp-color-border-high-contrast);
 
     border: var(--border-options-panel);
     background-color: var(--color-background-options-panel);

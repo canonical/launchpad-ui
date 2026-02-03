@@ -109,7 +109,7 @@
 <style>
   .ds.markdown-editor-toolbar {
     --dimension-gap-markdown-editor-toolbar: var(
-      --tmp-dimension-spacing-inline-minimum
+      --lp-dimension-spacing-inline-minimum
     );
     display: flex;
     flex-direction: row;

@@ -46,12 +46,10 @@
 
 <style>
   .ds.timeline {
-    --dimension-gap-row-timeline: calc(
-      var(--tmp-dimension-spacing-block-s) * 2
-    );
-    --dimension-gap-column-timeline: var(--tmp-dimension-spacing-inline-m);
+    --dimension-gap-row-timeline: calc(var(--lp-dimension-spacing-block-s) * 2);
+    --dimension-gap-column-timeline: var(--lp-dimension-spacing-inline-m);
 
-    --color-background-timeline-line: var(--tmp-color-border-default);
+    --color-background-timeline-line: var(--lp-color-border-default);
     --dimension-width-timeline-line: var(--dimension-stroke-thickness-default);
 
     display: grid;

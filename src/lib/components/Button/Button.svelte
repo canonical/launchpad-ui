@@ -69,49 +69,49 @@
     .ds.button {
       --border-style-button: solid;
       --color-background-button-active: var(
-        --tmp-color-background-active-context,
-        var(--tmp-color-background-neutral-active)
+        --lp-color-background-active-context,
+        var(--lp-color-background-neutral-active)
       );
       --color-background-button-hover: var(
-        --tmp-color-background-hover-context,
-        var(--tmp-color-background-neutral-hover)
+        --lp-color-background-hover-context,
+        var(--lp-color-background-neutral-hover)
       );
       --color-background-button: var(
-        --tmp-color-background-context,
-        var(--tmp-color-background-default)
+        --lp-color-background-context,
+        var(--lp-color-background-default)
       );
       --color-border-button: var(
-        --tmp-color-border-context,
-        var(--tmp-color-border-high-contrast)
+        --lp-color-border-context,
+        var(--lp-color-border-high-contrast)
       );
       --color-border-button-hover: var(
-        --tmp-color-border-hover-context,
+        --lp-color-border-hover-context,
         var(--color-border-button)
       );
       --color-border-button-active: var(
-        --tmp-color-border-active-context,
+        --lp-color-border-active-context,
         var(--color-border-button)
       );
       --color-text-button: var(
-        --tmp-color-text-context,
-        var(--tmp-color-text-default)
+        --lp-color-text-context,
+        var(--lp-color-text-default)
       );
       --dimension-border-width-button: var(
         --dimension-stroke-thickness-default
       );
-      --dimension-gap-inline-icon: var(--tmp-dimension-spacing-inline-xs);
+      --dimension-gap-inline-icon: var(--lp-dimension-spacing-inline-xs);
       --dimension-padding-block-button-content: var(
         --dimension-padding-block-context,
-        var(--tmp-dimension-spacing-block-xxs)
+        var(--lp-dimension-spacing-block-xxs)
       );
       --dimension-padding-inline-button-content: var(
         --dimension-padding-inline-context,
-        var(--tmp-dimension-spacing-inline-s)
+        var(--lp-dimension-spacing-inline-s)
       );
       --dimension-radius-button: var(--dimension-radius-medium);
       --typography-button: var(
-        --tmp-typography-context,
-        var(--tmp-typography-paragraph-default)
+        --lp-typography-context,
+        var(--lp-typography-paragraph-default)
       );
 
       --dimension-padding-block-button: 0;
@@ -143,15 +143,15 @@
 
       /* Modifiers */
       &.brand {
-        --tmp-color-text-context: var(--tmp-color-text-white);
-        --tmp-color-border-context: var(--tmp-color-brand-default);
-        --tmp-color-background-context: var(--tmp-color-brand-default);
-        --tmp-color-background-hover-context: var(--tmp-color-brand-hover);
-        --tmp-color-background-active-context: var(--tmp-color-brand-active);
+        --lp-color-text-context: var(--lp-color-text-white);
+        --lp-color-border-context: var(--lp-color-brand-default);
+        --lp-color-background-context: var(--lp-color-brand-default);
+        --lp-color-background-hover-context: var(--lp-color-brand-hover);
+        --lp-color-background-active-context: var(--lp-color-brand-active);
       }
 
       &.base {
-        --tmp-color-border-context: transparent;
+        --lp-color-border-context: transparent;
       }
     }
   }

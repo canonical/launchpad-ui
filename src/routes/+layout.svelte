@@ -206,7 +206,7 @@
               </SideNavigation.ButtonItem>
             {/snippet}
             <ContextualMenuContent
-              style="margin-inline-start: var(--tmp-dimension-spacing-inline-xxs);"
+              style="margin-inline-start: var(--lp-dimension-spacing-inline-xxs);"
             >
               <form
                 {...setThemeForm.enhance(

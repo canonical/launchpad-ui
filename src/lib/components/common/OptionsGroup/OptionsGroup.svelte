@@ -24,23 +24,23 @@
 <style>
   .ds.options-group {
     --dimension-padding-block-options-group: var(
-      --tmp-dimension-spacing-block-xs
+      --lp-dimension-spacing-block-xs
     );
     --dimension-margin-block-end-options-group-legend: var(
-      --tmp-dimension-spacing-block-xxs
+      --lp-dimension-spacing-block-xxs
     );
     --typography-font-options-group-legend: var(
-      --tmp-typography-paragraph-default-small-caps
+      --lp-typography-paragraph-default-small-caps
     );
     --typography-letter-spacing-options-group-legend: var(
-      --tmp-typography-letter-spacing-l
+      --lp-typography-letter-spacing-l
     );
-    --color-text-options-group-legend: var(--tmp-color-text-muted);
+    --color-text-options-group-legend: var(--lp-color-text-muted);
     --dimension-padding-inline-options-group-legend: var(
-      --tmp-dimension-spacing-inline-m
+      --lp-dimension-spacing-inline-m
     );
     --border-options-group-separator: var(--dimension-stroke-thickness-default)
-      solid var(--tmp-color-border-default);
+      solid var(--lp-color-border-default);
 
     padding-inline: 0;
     border: none;

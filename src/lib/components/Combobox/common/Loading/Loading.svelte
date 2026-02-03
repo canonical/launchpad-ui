@@ -50,14 +50,14 @@ If displayed inside a `Combobox`, it will automatically set `aria-busy="true"` o
 <style>
   .ds.combobox-loading {
     --dimension-padding-inline-combobox-loading: var(
-      --tmp-dimension-spacing-inline-m
+      --lp-dimension-spacing-inline-m
     );
     --dimension-padding-block-combobox-loading: var(
-      --tmp-dimension-spacing-block-xs
+      --lp-dimension-spacing-block-xs
     );
-    --dimension-gap-combobox-loading: var(--tmp-dimension-spacing-inline-xs);
-    --typography-font-combobox-loading: var(--tmp-typography-paragraph-default);
-    --color-text-combobox-loading: var(--tmp-color-text-default);
+    --dimension-gap-combobox-loading: var(--lp-dimension-spacing-inline-xs);
+    --typography-font-combobox-loading: var(--lp-typography-paragraph-default);
+    --color-text-combobox-loading: var(--lp-color-text-default);
 
     display: flex;
     align-items: center;

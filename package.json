@@ -76,7 +76,7 @@
     "@stoplight/prism-http@5.12.0": "patches/@stoplight%2Fprism-http@5.12.0.patch"
   },
   "dependencies": {
-    "@canonical/launchpad-design-tokens": "^1.0.20",
+    "@canonical/launchpad-design-tokens": "^1.0.21",
     "@canonical/svelte-icons": "^0.0.9",
     "@floating-ui/dom": "^1.7.4",
     "markdown-actions": "^1.1.2",

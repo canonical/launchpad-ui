@@ -25,8 +25,8 @@
 
 <style>
   .ds.link {
-    --color-text-link: var(--tmp-color-text-link-default);
-    --color-text-link-visited: var(--tmp-color-text-link-visited);
+    --color-text-link: var(--lp-color-text-link-default);
+    --color-text-link-visited: var(--lp-color-text-link-visited);
     --text-decoration-link: none;
     --text-decoration-link-hover: underline;
 

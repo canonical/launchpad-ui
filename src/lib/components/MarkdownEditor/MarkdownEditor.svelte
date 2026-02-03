@@ -43,7 +43,7 @@
 
 <style>
   .ds.markdown-editor {
-    --dimension-gap-markdown-editor: var(--tmp-dimension-spacing-block-minimum);
+    --dimension-gap-markdown-editor: var(--lp-dimension-spacing-block-minimum);
     display: grid;
     grid-template-rows: auto 1fr;
     gap: var(--dimension-gap-markdown-editor);
