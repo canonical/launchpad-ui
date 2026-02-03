@@ -1,6 +1,5 @@
 <script module lang="ts">
   import { defineMeta } from "@storybook/addon-svelte-csf";
-  import { userAvatarModifiers } from "../UserAvatar";
   import UserChip from "./UserChip.svelte";
 
   const userAvatarUrl = "https://i.pravatar.cc/150?img=68";
@@ -18,9 +17,9 @@
 
 <Story name="Default" />
 
-<Story name="Sizes">
+<Story name="Sizes" argTypes={{ size: { table: { disable: true } } }}>
   {#snippet template(args)}
-    {#each userAvatarModifiers.size as size (size)}
+    {#each ["small", "medium", "large"] as const as size (size)}
       <UserChip {...args} userName={`John Doe (${size})`} {size} />
       <br /><br />
     {/each}

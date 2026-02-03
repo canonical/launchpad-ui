@@ -30,7 +30,7 @@
 </script>
 
 <script lang="ts">
-  import { SEMANTIC_MODIFIERS } from "$lib/modifiers";
+  import { MODIFIER_FAMILIES } from "$lib/modifier-families/constants.js";
 
   const severityModifiers = [
     "base",
@@ -64,7 +64,7 @@
 
 <Story name="Densities">
   {#snippet template(args)}
-    {#each [undefined, ...SEMANTIC_MODIFIERS.density] as density (density)}
+    {#each [undefined, ...MODIFIER_FAMILIES.density] as density (density)}
       <div class="row">
         <Button {...args} {density} severity="positive">
           {#snippet iconLeft()}

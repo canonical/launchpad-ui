@@ -8,7 +8,7 @@
 
   let {
     class: className,
-    size,
+    size = "medium",
     userName,
     userAvatarUrl,
     showAvatar = true,
@@ -22,7 +22,7 @@
   {...rest}
 >
   {#if showAvatar}
-    <UserAvatar {userName} {userAvatarUrl} aria-hidden="true" />
+    <UserAvatar {userName} {userAvatarUrl} {size} aria-hidden="true" />
   {/if}
   <span>
     {userName}
@@ -34,24 +34,25 @@
 
 ## Example Usage
 ```svelte
-<UserChip user={{ name: "John Doe", imageUrl: "https://example.com/avatar.png" }} />
+<UserChip userName="John Doe" userAvatarUrl="https://example.com/avatar.png" />
 ```
 -->
 
 <style>
   .ds.user-chip {
-    --typography-font-size-user-chip: var(
-      --typography-font-size-context,
-      var(--lp-typography-font-size-s)
-    );
-    --dimension-gap-user-chip: var(
-      --dimension-gap-context,
-      var(--lp-dimension-spacing-inline-xs)
-    );
-
     display: inline-flex;
     align-items: center;
-    font-size: var(--typography-font-size-user-chip);
-    gap: var(--dimension-gap-user-chip);
+
+    font: var(--lp-typography-paragraph-default-strong);
+    gap: var(--lp-dimension-spacing-inline-xs);
+
+    &.small {
+      font: var(--lp-typography-paragraph-s-strong);
+      gap: var(--lp-dimension-spacing-inline-xxs);
+    }
+
+    &.large {
+      font: var(--lp-typography-h5);
+    }
   }
 </style>

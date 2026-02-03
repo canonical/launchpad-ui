@@ -3,7 +3,7 @@
   import { defineMeta } from "@storybook/addon-svelte-csf";
   import { fn } from "storybook/test";
   import { Badge } from "$lib/components/Badge/index.js";
-  import { SEMANTIC_MODIFIERS } from "$lib/modifiers";
+  import { MODIFIER_FAMILIES } from "$lib/modifier-families/constants.js";
   import Chip from "./Chip.svelte";
 
   const { Story } = defineMeta({
@@ -23,7 +23,7 @@
 
 <Story name="Severities">
   {#snippet template(args)}
-    {#each SEMANTIC_MODIFIERS.severity as severity (severity)}
+    {#each MODIFIER_FAMILIES.severity as severity (severity)}
       <Chip
         {...args}
         lead="Severity"
@@ -81,7 +81,7 @@
 
 <Story name="Read-only">
   {#snippet template(args)}
-    {#each [undefined, ...SEMANTIC_MODIFIERS.severity] as severity (severity)}
+    {#each [undefined, ...MODIFIER_FAMILIES.severity] as severity (severity)}
       <Chip
         {...args}
         lead="Severity"

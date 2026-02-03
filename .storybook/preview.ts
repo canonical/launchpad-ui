@@ -4,7 +4,6 @@ import "./styles.css";
 import {
   changeSnippetControl,
   getThemeDecorator,
-  mergeModifiersArgs,
   transformSnippetArgs,
 } from "./utils";
 
@@ -18,7 +17,7 @@ const preview: Preview = {
     },
     backgrounds: { disable: true },
   },
-  decorators: [getThemeDecorator(), transformSnippetArgs, mergeModifiersArgs],
+  decorators: [getThemeDecorator(), transformSnippetArgs],
   argTypesEnhancers: [changeSnippetControl],
 };
 

@@ -9,7 +9,7 @@
     class: className,
     userName,
     userAvatarUrl,
-    size,
+    size = "medium",
     ...rest
   }: UserAvatarProps = $props();
   const avatarProps = $derived({
@@ -74,14 +74,6 @@ The avatar will display the user's image if available and able to be loaded, oth
     --dimension-border-width-user-avatar: var(
       --dimension-stroke-thickness-default
     );
-    --dimension-size-user-avatar: var(
-      --dimension-size-context,
-      var(--lp-dimension-size-m)
-    );
-    --typography-font-size-user-avatar: var(
-      --typography-font-size-context,
-      var(--lp-typography-font-size-m)
-    );
 
     display: inline-grid;
     place-content: center;
@@ -93,11 +85,22 @@ The avatar will display the user's image if available and able to be loaded, oth
     border: var(--dimension-border-width-user-avatar) solid
       var(--color-border-user-avatar);
     background-color: var(--color-background-user-avatar);
-    font-weight: var(--lp-typography-weight-bold);
 
-    width: var(--dimension-size-user-avatar);
-    height: var(--dimension-size-user-avatar);
-    font-size: var(--typography-font-size-user-avatar);
+    width: var(--lp-dimension-size-m);
+    height: var(--lp-dimension-size-m);
+    font: var(--lp-typography-paragraph-default-strong);
+
+    &.small {
+      width: var(--lp-dimension-size-s);
+      height: var(--lp-dimension-size-s);
+      font: var(--lp-typography-paragraph-s-strong);
+    }
+
+    &.large {
+      width: var(--lp-dimension-size-l);
+      height: var(--lp-dimension-size-l);
+      font: var(--lp-typography-h5);
+    }
 
     > abbr {
       text-transform: uppercase;

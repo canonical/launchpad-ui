@@ -1,7 +1,6 @@
 /* @canonical/generator-ds 0.9.0-experimental.22 */
 
 import type { HTMLAttributes } from "svelte/elements";
-import type { ModifierFamilyValues } from "$lib/modifier-families";
 import type { WithoutChildren } from "$lib/type-utils";
 
 export type UserOptions = {
@@ -13,5 +12,5 @@ export type UserOptions = {
 
 export interface UserAvatarProps
   extends WithoutChildren<HTMLAttributes<HTMLElement>>, UserOptions {
-  size?: ModifierFamilyValues["size"];
+  size?: "small" | "medium" | "large";
 }
