@@ -71,10 +71,10 @@ If `bind:group` is used, the `checked` prop must be omitted, and each radio in t
 
 <style>
   .ds.radio {
-    --color-background-radio-hover: var(--tmp-color-background-hover);
-    --color-background-radio: var(--tmp-color-background-default);
-    --color-border-radio-checked-marker: var(--tmp-color-text-link-default);
-    --color-border-radio: var(--tmp-color-border-high-contrast);
+    --color-background-radio-hover: var(--lp-color-background-hover);
+    --color-background-radio: var(--lp-color-background-default);
+    --color-border-radio-checked-marker: var(--lp-color-text-link-default);
+    --color-border-radio: var(--lp-color-border-high-contrast);
     /* Should it remain relative to the radio size? It is a unusual use of border If not: */
     /* TODO(@Enzo): Add missing token (5px). But to which sub-category? */
     --dimension-border-width-radio-checked-marker: calc(
@@ -82,8 +82,8 @@ If `bind:group` is used, the `checked` prop must be omitted, and each radio in t
     );
     --dimension-border-width-radio: var(--dimension-stroke-thickness-default);
     --dimension-radius-radio: var(--dimension-radius-full);
-    --dimension-size-radio: var(--tmp-dimension-size-xs);
-    --opacity-radio-disabled: var(--tmp-opacity-muted);
+    --dimension-size-radio: var(--lp-dimension-size-xs);
+    --opacity-radio-disabled: var(--lp-opacity-muted);
 
     position: relative;
     cursor: pointer;
@@ -97,8 +97,8 @@ If `bind:group` is used, the `checked` prop must be omitted, and each radio in t
     border-radius: var(--dimension-radius-radio);
     border: var(--dimension-border-width-radio) solid var(--color-border-radio);
     background-color: var(--color-background-radio);
-    transition: background-color var(--tmp-transition-duration-brisk)
-      var(--tmp-transition-timing-ease-out);
+    transition: background-color var(--lp-transition-duration-brisk)
+      var(--lp-transition-timing-ease-out);
 
     &::after {
       content: "";
@@ -107,8 +107,8 @@ If `bind:group` is used, the `checked` prop must be omitted, and each radio in t
       border-radius: var(--dimension-radius-radio);
       border: var(--dimension-border-width-radio-checked-marker) solid
         transparent;
-      transition: border-color var(--tmp-transition-duration-brisk)
-        var(--tmp-transition-timing-ease-out);
+      transition: border-color var(--lp-transition-duration-brisk)
+        var(--lp-transition-timing-ease-out);
     }
 
     &:disabled {

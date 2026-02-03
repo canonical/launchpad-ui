@@ -66,7 +66,7 @@
 
     .title {
       > * {
-        font: var(--tmp-typography-h5);
+        font: var(--lp-typography-h5);
       }
     }
   }

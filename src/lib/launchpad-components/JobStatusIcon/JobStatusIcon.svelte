@@ -13,22 +13,22 @@
   const [Icon, colorCssVar] = $derived.by((): [Component, `--${string}`] => {
     switch (status) {
       case "FINISHED":
-        return [SuccessIcon, "--tmp-color-icon-positive"];
+        return [SuccessIcon, "--lp-color-icon-positive"];
       case "FAILED":
       case "TERMINATED":
-        return [ErrorIcon, "--tmp-color-icon-negative"];
+        return [ErrorIcon, "--lp-color-icon-negative"];
       case "EXECUTING":
-        return [Spinner, "--tmp-color-icon-default"];
+        return [Spinner, "--lp-color-icon-default"];
       case "IDLE":
       case "PENDING":
-        return [LoadingStepsIcon, "--tmp-color-icon-default"];
+        return [LoadingStepsIcon, "--lp-color-icon-default"];
       case "CANCELLED":
-        return [SkipIcon, "--tmp-color-icon-muted"];
+        return [SkipIcon, "--lp-color-icon-muted"];
       case null:
-        return [HelpIcon, "--tmp-color-icon-default"];
+        return [HelpIcon, "--lp-color-icon-default"];
       default:
         safeAssertUnreachable(status, `Unhandled job status: ${status}`);
-        return [HelpIcon, "--tmp-color-icon-default"];
+        return [HelpIcon, "--lp-color-icon-default"];
     }
   });
 </script>

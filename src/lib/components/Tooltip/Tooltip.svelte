@@ -165,13 +165,13 @@ The tooltip enables a short "chaining" window (~350ms) after it closes. If any t
   .ds.tooltip {
     /* TODO(z-index-tokens): Should we tokenize z-indexes? What would they be used for except the tooltip? */
     --z-index-tooltip: 10;
-    --color-background-tooltip: var(--tmp-color-background-alt-reversed);
-    --color-text-tooltip: var(--tmp-color-text-reversed);
-    --dimension-padding-inline-tooltip: var(--tmp-dimension-spacing-inline-m);
-    --dimension-padding-block-tooltip: var(--tmp-dimension-spacing-block-xs);
-    --typography-tooltip: var(--tmp-typography-paragraph-s);
-    --dimension-height-tooltip-arrow: var(--tmp-dimension-size-xxxs);
-    --dimension-offset-tooltip-arrow: var(--tmp-dimension-spacing-inline-m);
+    --color-background-tooltip: var(--lp-color-background-alt-reversed);
+    --color-text-tooltip: var(--lp-color-text-reversed);
+    --dimension-padding-inline-tooltip: var(--lp-dimension-spacing-inline-m);
+    --dimension-padding-block-tooltip: var(--lp-dimension-spacing-block-xs);
+    --typography-tooltip: var(--lp-typography-paragraph-s);
+    --dimension-height-tooltip-arrow: var(--lp-dimension-size-xxxs);
+    --dimension-offset-tooltip-arrow: var(--lp-dimension-spacing-inline-m);
     --dimension-width-tooltip: max-content;
 
     position: absolute;

@@ -40,20 +40,20 @@
   li {
     display: flex;
     align-items: start;
-    --box-block-padding: var(--tmp-dimension-spacing-block-xs);
+    --box-block-padding: var(--lp-dimension-spacing-block-xs);
 
     > .box {
       display: flex;
       flex-grow: 1;
 
-      font: var(--tmp-typography-code-s);
-      gap: var(--tmp-dimension-spacing-inline-xs);
-      padding: var(--box-block-padding) var(--tmp-dimension-spacing-inline-m);
+      font: var(--lp-typography-code-s);
+      gap: var(--lp-dimension-spacing-inline-xs);
+      padding: var(--box-block-padding) var(--lp-dimension-spacing-inline-m);
       /* TODO(@Enzo): Missing token */
-      --tmp-color-background-code: rgb(
-        from var(--tmp-color-text-default) r g b / 0.03
+      --lp-color-background-code: rgb(
+        from var(--lp-color-text-default) r g b / 0.03
       );
-      background-color: var(--tmp-color-background-code);
+      background-color: var(--lp-color-background-code);
 
       .icon-aligner {
         height: 1lh;

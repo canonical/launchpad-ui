@@ -45,61 +45,61 @@
 <style>
   .ds.select {
     --color-background-select-input-hover: var(
-      --tmp-color-background-secondary-hover-context,
-      var(--tmp-color-background-hover)
+      --lp-color-background-secondary-hover-context,
+      var(--lp-color-background-hover)
     );
     --color-background-select-input-active: var(
       --color-background-select-input-hover
     );
     --color-background-select-input: var(
-      --tmp-color-background-secondary-context,
-      var(--tmp-color-background-input)
+      --lp-color-background-secondary-context,
+      var(--lp-color-background-input)
     );
 
     --color-background-select-input-invalid: var(
-      --tmp-color-background-negative-default
+      --lp-color-background-negative-default
     );
     --color-background-select-input-invalid-hover: var(
-      --tmp-color-background-negative-hover
+      --lp-color-background-negative-hover
     );
     --color-background-select-input-invalid-active: var(
-      --tmp-color-background-negative-active
+      --lp-color-background-negative-active
     );
 
-    --opacity-select-input-disabled: var(--tmp-opacity-muted);
+    --opacity-select-input-disabled: var(--lp-opacity-muted);
 
     --dimension-padding-inline-select-input: var(
-      --tmp-dimension-spacing-inline-xs
+      --lp-dimension-spacing-inline-xs
     );
     --dimension-padding-block-select-input: var(
       --dimension-padding-block-context,
-      var(--tmp-dimension-spacing-block-xxs)
+      var(--lp-dimension-spacing-block-xxs)
     );
 
     --color-border-select-input: var(
-      --tmp-color-border-secondary-context,
-      var(--tmp-color-border-high-contrast)
+      --lp-color-border-secondary-context,
+      var(--lp-color-border-high-contrast)
     );
     --color-outline-select-input: var(
-      --tmp-color-border-secondary-context,
-      var(--tmp-color-border-focus)
+      --lp-color-border-secondary-context,
+      var(--lp-color-border-focus)
     );
     --border-style-select-input: none none solid none;
     --dimension-border-width-select-input: var(
       --dimension-stroke-thickness-default
     );
-    --color-border-select-input-invalid: var(--tmp-color-border-negative);
-    --color-outline-select-input-invalid: var(--tmp-color-border-negative);
+    --color-border-select-input-invalid: var(--lp-color-border-negative);
+    --color-outline-select-input-invalid: var(--lp-color-border-negative);
 
-    --color-text-select-input: var(--tmp-color-text-default);
-    --color-text-select-input-placeholder: var(--tmp-color-text-muted);
-    --typography-select-input: var(--tmp-typography-paragraph-default);
+    --color-text-select-input: var(--lp-color-text-default);
+    --color-text-select-input-placeholder: var(--lp-color-text-muted);
+    --typography-select-input: var(--lp-typography-paragraph-default);
 
-    --dimension-gap-select-input: var(--tmp-dimension-spacing-inline-xxxs);
+    --dimension-gap-select-input: var(--lp-dimension-spacing-inline-xxxs);
 
     --dimension-radius-select-input: var(--dimension-radius-small);
 
-    --dimension-icon-size-select-input: var(--tmp-dimension-size-xs);
+    --dimension-icon-size-select-input: var(--lp-dimension-size-xs);
 
     grid-template-columns: 1fr;
     display: inline-grid;
@@ -128,9 +128,9 @@
       border-width: var(--dimension-border-width-select-input);
       background-color: var(--color-background-select-input);
 
-      transition-duration: var(--tmp-transition-duration-snap);
+      transition-duration: var(--lp-transition-duration-snap);
       transition-property: background-color, border-color;
-      transition-timing-function: var(--tmp-transition-timing-ease-in);
+      transition-timing-function: var(--lp-transition-timing-ease-in);
 
       grid-row-start: 1;
       grid-column-start: 1;
@@ -185,8 +185,8 @@
           --dimension-padding-block-select-input
         );
         --color-background-select-input-option-selected: var(
-          --tmp-color-background-secondary-active-context,
-          var(--tmp-color-background-active)
+          --lp-color-background-secondary-active-context,
+          var(--lp-color-background-active)
         );
 
         padding-block: var(--dimension-padding-block-select-input-option);

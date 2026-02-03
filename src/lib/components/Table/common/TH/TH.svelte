@@ -41,7 +41,7 @@
       flex-flow: row wrap;
       align-items: center;
       justify-content: space-between;
-      gap: var(--tmp-dimension-spacing-inline-xxs);
+      gap: var(--lp-dimension-spacing-inline-xxs);
     }
 
     &:not([aria-sort]),

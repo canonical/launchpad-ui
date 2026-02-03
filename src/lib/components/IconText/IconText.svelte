@@ -46,23 +46,23 @@
   .ds.icon-text {
     --typography-font-size-icon-text: var(
       --typography-font-size-context,
-      var(--tmp-typography-font-size-m)
+      var(--lp-typography-font-size-m)
     );
-    --typography-font-weight-icon-text: var(--tmp-typography-weight-regular);
+    --typography-font-weight-icon-text: var(--lp-typography-weight-regular);
     --typography-font-family-icon-text: var(
-      --tmp-typography-font-family-default
+      --lp-typography-font-family-default
     );
     --dimension-gap-icon-text: var(
       --dimension-gap-context,
-      var(--tmp-dimension-spacing-inline-s)
+      var(--lp-dimension-spacing-inline-s)
     );
     --color-text-icon-text: var(
-      --tmp-color-text-context,
-      var(--tmp-color-text-default)
+      --lp-color-text-context,
+      var(--lp-color-text-default)
     );
     --color-icon-icon-text: var(
-      --tmp-color-icon-context,
-      var(--tmp-color-text-context, var(--tmp-color-text-default))
+      --lp-color-icon-context,
+      var(--lp-color-text-context, var(--lp-color-text-default))
     );
     display: inline-flex;
     align-items: center;

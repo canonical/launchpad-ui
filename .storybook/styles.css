@@ -3,7 +3,7 @@
 }
 
 .docs-story {
-  background-color: var(--tmp-color-background-default);
+  background-color: var(--lp-color-background-default);
 }
 
 .row {
@@ -15,7 +15,7 @@
 }
 
 .placeholder-box {
-  border: 1px dashed var(--tmp-color-border-default, #ccc);
+  border: 1px dashed var(--lp-color-border-default, #ccc);
 
   &.center {
     display: grid;

@@ -23,18 +23,18 @@
   .ds.description-list-item {
     display: flex;
     flex-direction: column;
-    gap: var(--tmp-dimension-spacing-block-xs);
+    gap: var(--lp-dimension-spacing-block-xs);
 
     dt {
       order: 1;
-      font: var(--tmp-typography-paragraph-s-strong);
-      color: var(--tmp-color-text-muted);
+      font: var(--lp-typography-paragraph-s-strong);
+      color: var(--lp-color-text-muted);
     }
 
     dd {
       order: 3;
-      font: var(--tmp-typography-paragraph-s);
-      color: var(--tmp-color-text-default);
+      font: var(--lp-typography-paragraph-s);
+      color: var(--lp-color-text-default);
     }
 
     /* Horizontal line for list layout */
@@ -45,7 +45,7 @@
       flex-grow: 1;
       background: repeating-linear-gradient(
         to right,
-        var(--tmp-color-border-low-contrast) 0px 2px,
+        var(--lp-color-border-low-contrast) 0px 2px,
         transparent 2px 4px
       );
       flex-basis: 10%;
@@ -56,7 +56,7 @@
     &.list {
       flex-direction: row;
       align-items: baseline;
-      gap: var(--tmp-dimension-spacing-inline-xs);
+      gap: var(--lp-dimension-spacing-inline-xs);
 
       &::before {
         display: block;
@@ -72,7 +72,7 @@
       @container description-list (width <= 573px) {
         flex-direction: row;
         align-items: baseline;
-        gap: var(--tmp-dimension-spacing-inline-xs);
+        gap: var(--lp-dimension-spacing-inline-xs);
 
         &::before {
           display: block;

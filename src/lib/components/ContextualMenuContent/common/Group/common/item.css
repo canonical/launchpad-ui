@@ -1,41 +1,41 @@
 .ds.contextual-menu-content-item {
   --color-background-contextual-menu-content-item: var(
-    --tmp-color-background-default
+    --lp-color-background-default
   );
   --color-background-contextual-menu-content-item-hover: var(
-    --tmp-color-background-hover
+    --lp-color-background-hover
   );
   --color-background-contextual-menu-content-item-active: var(
-    --tmp-color-background-active
+    --lp-color-background-active
   );
-  --opacity-contextual-menu-content-item-disabled: var(--tmp-opacity-muted);
+  --opacity-contextual-menu-content-item-disabled: var(--lp-opacity-muted);
   --dimension-padding-inline-contextual-menu-content-item: var(
-    --tmp-dimension-spacing-inline-m
+    --lp-dimension-spacing-inline-m
   );
   --dimension-padding-block-contextual-menu-content-item: var(
-    --tmp-dimension-spacing-block-xxs
+    --lp-dimension-spacing-block-xxs
   );
   --typography-font-contextual-menu-content-item: var(
-    --tmp-typography-paragraph-default
+    --lp-typography-paragraph-default
   );
   --typography-font-contextual-menu-content-item-secondary: var(
-    --tmp-typography-paragraph-xs
+    --lp-typography-paragraph-xs
   );
-  --color-text-contextual-menu-content-item: var(--tmp-color-text-default);
+  --color-text-contextual-menu-content-item: var(--lp-color-text-default);
   --color-text-contextual-menu-content-item-secondary: var(
-    --tmp-color-text-muted
+    --lp-color-text-muted
   );
   --dimension-margin-end-contextual-menu-content-item-checkable: var(
-    --tmp-dimension-spacing-inline-m
+    --lp-dimension-spacing-inline-m
   );
   --dimension-margin-end-contextual-menu-content-item-icon: var(
-    --tmp-dimension-spacing-inline-xs
+    --lp-dimension-spacing-inline-xs
   );
   --dimension-margin-start-contextual-menu-content-item-trailing-text: var(
-    --tmp-dimension-spacing-inline-xs
+    --lp-dimension-spacing-inline-xs
   );
   --dimension-margin-start-contextual-menu-content-item-switch: var(
-    --tmp-dimension-spacing-inline-xs
+    --lp-dimension-spacing-inline-xs
   );
 
   text-align: left;
@@ -51,8 +51,8 @@
   padding-block: var(--dimension-padding-block-contextual-menu-content-item);
   font: var(--typography-font-contextual-menu-content-item);
   color: var(--color-text-contextual-menu-content-item);
-  transition: background-color var(--tmp-transition-duration-snap)
-    var(--tmp-transition-timing-ease-in);
+  transition: background-color var(--lp-transition-duration-snap)
+    var(--lp-transition-timing-ease-in);
 
   &:hover:not(.disabled) {
     background-color: var(

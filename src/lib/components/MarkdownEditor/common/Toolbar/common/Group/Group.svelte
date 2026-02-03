@@ -15,10 +15,10 @@
 <style>
   .ds.markdown-editor-toolbar-group {
     --color-background-markdown-editor-toolbar-group-separator: var(
-      --tmp-color-border-default
+      --lp-color-border-default
     );
     --dimension-height-markdown-editor-toolbar-group-separator: var(
-      --tmp-dimension-size-s
+      --lp-dimension-size-s
     );
     --dimension-width-markdown-editor-toolbar-group-separator: var(
       --dimension-stroke-thickness-default

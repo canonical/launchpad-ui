@@ -30,7 +30,7 @@
 
 <style>
   .ds.modal-content-header {
-    --typography-modal-content-header: var(--tmp-typography-h4);
+    --typography-modal-content-header: var(--lp-typography-h4);
 
     display: flex;
     justify-content: space-between;

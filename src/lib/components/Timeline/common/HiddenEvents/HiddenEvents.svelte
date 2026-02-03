@@ -45,25 +45,25 @@
     --border-block-timeline-hidden-events: var(
         --dimension-stroke-thickness-default
       )
-      solid var(--tmp-color-border-default);
+      solid var(--lp-color-border-default);
     --dimension-padding-block-timeline-hidden-events: var(
-      --tmp-dimension-spacing-block-xs
+      --lp-dimension-spacing-block-xs
     );
     --dimension-padding-inline-timeline-hidden-events: var(
-      --tmp-dimension-spacing-inline-m
+      --lp-dimension-spacing-inline-m
     );
 
     --typography-timeline-hidden-events-text: var(
-      --tmp-typography-paragraph-xs-strong
+      --lp-typography-paragraph-xs-strong
     );
     --typography-timeline-hidden-events-links: var(
-      --tmp-typography-paragraph-xs
+      --lp-typography-paragraph-xs
     );
     --dimension-gap-timeline-hidden-events: var(
-      --tmp-dimension-spacing-inline-xs
+      --lp-dimension-spacing-inline-xs
     );
     --color-text-timeline-hidden-events-links-separator: var(
-      --tmp-color-text-muted
+      --lp-color-text-muted
     );
 
     position: relative;

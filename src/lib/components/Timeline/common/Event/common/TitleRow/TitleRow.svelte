@@ -46,16 +46,16 @@
 
 <style>
   .ds.title-row {
-    --typography-timeline-event-title-row: var(--tmp-typography-paragraph-s);
+    --typography-timeline-event-title-row: var(--lp-typography-paragraph-s);
     --color-text-timeline-event-title-row-leading-text: var(
-      --tmp-color-text-default
+      --lp-color-text-default
     );
-    --color-text-timeline-event-title-row-date: var(--tmp-color-text-muted);
+    --color-text-timeline-event-title-row-date: var(--lp-color-text-muted);
     --color-text-timeline-event-title-row-description: var(
-      --tmp-color-text-muted
+      --lp-color-text-muted
     );
     --dimension-gap-timeline-event-title-row: var(
-      --tmp-dimension-spacing-inline-xs
+      --lp-dimension-spacing-inline-xs
     );
     /* TODO(@Enzo): Add a missing token */
     --dimension-basis-timeline-event-title-row-description: 10rem;

@@ -110,14 +110,14 @@
     height: 100vh;
 
     /* Defined height, to make sure scroll to log top is precise */
-    --header-height: calc(var(--tmp-dimension-spacing-block-xs) * 2 + 1lh);
+    --header-height: calc(var(--lp-dimension-spacing-block-xs) * 2 + 1lh);
 
     grid-template:
       "breadcrumbs log-container" var(--header-height)
       "details log-container" minmax(0, 1fr) / minmax(300px, 3fr) 5fr;
 
     --border-section-separator: var(--dimension-stroke-thickness-default) solid
-      var(--tmp-color-border-low-contrast);
+      var(--lp-color-border-low-contrast);
 
     &.log-full-screen {
       grid-template:
@@ -132,7 +132,7 @@
     grid-template-rows: subgrid;
 
     border-inline-start: var(--dimension-stroke-thickness-default) solid
-      var(--tmp-color-border-default);
+      var(--lp-color-border-default);
 
     .log-contents {
       display: flex;

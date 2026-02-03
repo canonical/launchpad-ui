@@ -29,8 +29,8 @@
 
 <style>
   .ds.modal-content-body {
-    --typography-modal-content-body: var(--tmp-typography-paragraph-default);
-    --color-text-modal-content-body: var(--tmp-color-text-default);
+    --typography-modal-content-body: var(--lp-typography-paragraph-default);
+    --color-text-modal-content-body: var(--lp-color-text-default);
 
     font: var(--typography-modal-content-body);
     color: var(--color-text-modal-content-body);

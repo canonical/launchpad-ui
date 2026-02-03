@@ -99,13 +99,13 @@
   :global {
     .ds.shortcuts-help-side-panel {
       --dimension-margin-block-shortcuts-help-modal-section: var(
-        --tmp-dimension-spacing-block-xxl
+        --lp-dimension-spacing-block-xxl
       );
       --dimension-margin-block-shortcuts-help-modal-section-items: var(
-        --tmp-dimension-spacing-block-m
+        --lp-dimension-spacing-block-m
       );
-      --typography-shortcuts-help-modal-dt: var(--tmp-typography-paragraph-xs);
-      --typography-shortcuts-help-modal-dd: var(--tmp-typography-paragraph-xs);
+      --typography-shortcuts-help-modal-dt: var(--lp-typography-paragraph-xs);
+      --typography-shortcuts-help-modal-dd: var(--lp-typography-paragraph-xs);
 
       /* 
       When there are many shortcuts that cause overflow (and intentional scroll) of the `.body`, the dialog itself gets a second scrollbar for the reasons that remain unknown.

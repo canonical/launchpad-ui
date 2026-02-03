@@ -83,7 +83,7 @@
     <Timeline.Event marker={SettingsIcon} markerSize="large">
       {#snippet titleRow()}
         <Timeline.Event.TitleRow>
-          The MP was <span style="color: var(--tmp-color-text-default)"
+          The MP was <span style="color: var(--lp-color-text-default)"
             >Merged</span
           >
           {#snippet date()}

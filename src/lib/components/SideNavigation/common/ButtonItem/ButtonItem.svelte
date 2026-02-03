@@ -42,18 +42,18 @@
       grid-column: 1 / -1;
 
       --dimension-padding-inline-button: 0;
-      --dimension-padding-block-button: var(--tmp-dimension-spacing-block-xxs);
+      --dimension-padding-block-button: var(--lp-dimension-spacing-block-xxs);
       --dimension-padding-inline-start-button-label: var(
-        --tmp-dimension-spacing-inline-xs
+        --lp-dimension-spacing-inline-xs
       );
       --color-background-button-selected: var(
-        --tmp-color-background-neutral-active
+        --lp-color-background-neutral-active
       );
       --dimension-width-button-selected-indicator: var(
         --dimension-stroke-thickness-large
       );
       --color-background-button-selected-indicator: var(
-        --tmp-color-border-highlight
+        --lp-color-border-highlight
       );
 
       grid-template-columns: subgrid;

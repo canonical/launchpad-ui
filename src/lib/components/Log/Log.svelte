@@ -77,17 +77,17 @@
     contain: inline-size layout paint;
     overflow: auto;
 
-    --log-padding-inline: var(--tmp-dimension-spacing-inline-m);
+    --log-padding-inline: var(--lp-dimension-spacing-inline-m);
 
-    background-color: var(--tmp-color-background-alt);
+    background-color: var(--lp-color-background-alt);
     padding-inline-end: var(--log-padding-inline);
-    padding-block-end: var(--tmp-dimension-spacing-block-xxxl);
+    padding-block-end: var(--lp-dimension-spacing-block-xxxl);
 
     tbody {
       display: grid;
       min-width: fit-content;
       grid-template-columns: [line-number-start] auto [line-number-end timestamp-start] max-content [timestamp-end content-start] 1fr [content-end];
-      row-gap: var(--tmp-dimension-spacing-block-xxxs);
+      row-gap: var(--lp-dimension-spacing-block-xxxs);
     }
   }
 </style>

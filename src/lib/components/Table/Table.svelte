@@ -55,12 +55,12 @@
     border-collapse: collapse;
 
     --border-table-row: var(--dimension-stroke-thickness-default) solid
-      var(--tmp-color-border-low-contrast);
+      var(--lp-color-border-low-contrast);
     --border-table-header-cell: var(--dimension-stroke-thickness-default) solid
-      var(--tmp-color-border-default);
-    --dimension-padding-block-table-cell: var(--tmp-dimension-spacing-block-xs);
+      var(--lp-color-border-default);
+    --dimension-padding-block-table-cell: var(--lp-dimension-spacing-block-xs);
     --dimension-padding-inline-table-cell: var(
-      --tmp-dimension-spacing-inline-xs
+      --lp-dimension-spacing-inline-xs
     );
 
     :global {
@@ -94,11 +94,11 @@
       }
 
       th {
-        font: var(--tmp-typography-paragraph-s-strong);
+        font: var(--lp-typography-paragraph-s-strong);
       }
 
       td {
-        font: var(--tmp-typography-paragraph-s);
+        font: var(--lp-typography-paragraph-s);
       }
     }
   }

@@ -132,7 +132,7 @@ If JavaScript is disabled, SidePanel can be controlled as a popover with declara
 
 <style>
   .ds.side-panel {
-    --color-background-side-panel-backdrop: var(--tmp-color-background-overlay);
+    --color-background-side-panel-backdrop: var(--lp-color-background-overlay);
     /* TODO(@Enzo): Replace with a token */
     --dimension-width-side-panel: 33.5rem;
 
@@ -148,7 +148,7 @@ If JavaScript is disabled, SidePanel can be controlled as a popover with declara
     transform: translateX(100%);
     transition-behavior: allow-discrete;
     transition-property: display, transform, overlay;
-    transition-duration: var(--tmp-transition-duration-fast);
+    transition-duration: var(--lp-transition-duration-fast);
 
     &:open {
       transform: translateX(0);

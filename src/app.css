@@ -8,8 +8,8 @@
 @import "$lib/modifiers/styles/index.css";
 
 html {
-  color: var(--tmp-color-text-default);
-  background-color: var(--tmp-color-background-default);
+  color: var(--lp-color-text-default);
+  background-color: var(--lp-color-background-default);
 
   /* 
   TODO: Should the color be controlled on the level of modifiers (severity)? If so, how?
@@ -22,7 +22,7 @@ html {
       - not OK, we don't have the required value in the severity context.
   */
   --focus-outline: var(--dimension-stroke-thickness-large) solid
-    var(--tmp-color-border-focus);
+    var(--lp-color-border-focus);
   /* Most elements have the outline on the inside of the element. Needs to be adjusted for specific cases (e.g. checkbox, radio) */
   --focus-outline-offset: calc(var(--dimension-stroke-thickness-large) * -1);
 }
@@ -34,7 +34,7 @@ html {
 }
 
 body {
-  font: var(--tmp-typography-paragraph-s);
+  font: var(--lp-typography-paragraph-s);
 }
 
 *:focus-visible {
@@ -66,20 +66,20 @@ body {
 }
 
 h1 {
-  font: var(--tmp-typography-h1);
+  font: var(--lp-typography-h1);
 }
 h2 {
-  font: var(--tmp-typography-h2);
+  font: var(--lp-typography-h2);
 }
 h3 {
-  font: var(--tmp-typography-h3);
+  font: var(--lp-typography-h3);
 }
 h4 {
-  font: var(--tmp-typography-h4);
+  font: var(--lp-typography-h4);
 }
 h5 {
-  font: var(--tmp-typography-h5);
+  font: var(--lp-typography-h5);
 }
 h6 {
-  font: var(--tmp-typography-h6);
+  font: var(--lp-typography-h6);
 }

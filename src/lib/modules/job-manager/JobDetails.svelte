@@ -118,7 +118,7 @@
         <!-- TODO: Proper link-looking button -->
         <button
           {...toggleButtonProps}
-          style="margin-top: var(--tmp-dimension-spacing-block-xs);"
+          style="margin-top: var(--lp-dimension-spacing-block-xs);"
         >
           {isExpanded ? "Show less" : "Show more"}
         </button>
@@ -160,7 +160,7 @@
         <ButtonPrimitive
           as="a"
           disabled
-          style="display: flex; gap: var(--tmp-dimension-spacing-inline-xs); align-items: center; padding: var(--tmp-dimension-spacing-block-minimum) var(--tmp-dimension-spacing-inline-xs);"
+          style="display: flex; gap: var(--lp-dimension-spacing-inline-xs); align-items: center; padding: var(--lp-dimension-spacing-block-minimum) var(--lp-dimension-spacing-inline-xs);"
         >
           <DownloadIcon />Download All
         </ButtonPrimitive>
@@ -188,47 +188,47 @@
     grid-area: details;
     overflow: auto;
 
-    padding-block: var(--tmp-dimension-spacing-block-l);
-    padding-inline: var(--tmp-dimension-spacing-inline-l);
+    padding-block: var(--lp-dimension-spacing-block-l);
+    padding-inline: var(--lp-dimension-spacing-inline-l);
 
     h1 {
-      font: var(--tmp-typography-h3);
+      font: var(--lp-typography-h3);
     }
 
     h2 {
-      font: var(--tmp-typography-h5);
+      font: var(--lp-typography-h5);
     }
 
     .chips {
       display: flex;
-      gap: var(--tmp-dimension-spacing-inline-xxs);
-      margin-block-start: var(--tmp-dimension-spacing-block-xs);
+      gap: var(--lp-dimension-spacing-inline-xxs);
+      margin-block-start: var(--lp-dimension-spacing-block-xs);
     }
 
     section:first-of-type {
-      margin-block-start: var(--tmp-dimension-spacing-block-l);
+      margin-block-start: var(--lp-dimension-spacing-block-l);
     }
 
     section + section {
-      margin-block-start: var(--tmp-dimension-spacing-block-m);
-      padding-block-start: var(--tmp-dimension-spacing-block-m);
+      margin-block-start: var(--lp-dimension-spacing-block-m);
+      padding-block-start: var(--lp-dimension-spacing-block-m);
       border-block-start: var(--border-section-separator);
     }
 
     .section-header {
-      margin-block-end: var(--tmp-dimension-spacing-block-m);
+      margin-block-end: var(--lp-dimension-spacing-block-m);
     }
 
     .artifacts {
       list-style: none;
       display: grid;
-      gap: var(--tmp-dimension-spacing-block-xs);
+      gap: var(--lp-dimension-spacing-block-xs);
 
       :global(a) {
         display: flex;
         align-items: start;
-        gap: var(--tmp-dimension-spacing-inline-xs);
-        color: var(--tmp-color-text-default);
+        gap: var(--lp-dimension-spacing-inline-xs);
+        color: var(--lp-color-text-default);
 
         > .icon-aligner {
           height: 1lh;

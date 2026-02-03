@@ -65,8 +65,8 @@ To make the `SearchBox` a search landmark wrap it in a [`<form role="search">`](
 
 <style>
   .ds.search-box {
-    --dimension-width-search-box-button: var(--tmp-dimension-size-l);
-    --dimension-gap-search-box: var(--tmp-dimension-spacing-inline-xs);
+    --dimension-width-search-box-button: var(--lp-dimension-size-l);
+    --dimension-gap-search-box: var(--lp-dimension-spacing-inline-xs);
 
     display: grid;
     grid-template-areas: "main";

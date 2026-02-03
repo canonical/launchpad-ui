@@ -48,31 +48,29 @@
 
 <style>
   .ds.textarea {
-    --color-background-textarea-input-active: var(
-      --tmp-color-background-active
-    );
-    --color-background-textarea-input-hover: var(--tmp-color-background-hover);
-    --color-background-textarea-input: var(--tmp-color-background-input);
+    --color-background-textarea-input-active: var(--lp-color-background-active);
+    --color-background-textarea-input-hover: var(--lp-color-background-hover);
+    --color-background-textarea-input: var(--lp-color-background-input);
     --dimension-padding-inline-textarea-input: var(
-      --tmp-dimension-spacing-inline-m
+      --lp-dimension-spacing-inline-m
     );
     --dimension-padding-block-textarea-input: var(
-      --tmp-dimension-spacing-block-xxs
+      --lp-dimension-spacing-block-xxs
     );
-    --color-border-textarea-input: var(--tmp-color-border-high-contrast);
+    --color-border-textarea-input: var(--lp-color-border-high-contrast);
     --border-style-textarea-input: none none solid none;
     --dimension-border-width-textarea-input: var(
       --dimension-stroke-thickness-default
     );
-    --color-text-textarea-input: var(--tmp-color-text-default);
-    --color-text-textarea-input-placeholder: var(--tmp-color-text-muted);
-    --typography-textarea-input: var(--tmp-typography-paragraph-default);
-    --opacity-textarea-input-disabled: var(--tmp-opacity-muted);
+    --color-text-textarea-input: var(--lp-color-text-default);
+    --color-text-textarea-input-placeholder: var(--lp-color-text-muted);
+    --typography-textarea-input: var(--lp-typography-paragraph-default);
+    --opacity-textarea-input-disabled: var(--lp-opacity-muted);
     --color-background-textarea-input-invalid: var(
-      --tmp-color-background-negative-default
+      --lp-color-background-negative-default
     );
-    --color-border-textarea-input-invalid: var(--tmp-color-border-negative);
-    --color-outline-textarea-input-invalid: var(--tmp-color-border-negative);
+    --color-border-textarea-input-invalid: var(--lp-color-border-negative);
+    --color-outline-textarea-input-invalid: var(--lp-color-border-negative);
 
     background-color: var(--color-background-textarea-input);
     border-color: var(--color-border-textarea-input);
@@ -82,9 +80,9 @@
     font: var(--typography-textarea-input);
     padding-block: var(--dimension-padding-block-textarea-input);
     padding-inline: var(--dimension-padding-inline-textarea-input);
-    transition-duration: var(--tmp-transition-duration-snap);
+    transition-duration: var(--lp-transition-duration-snap);
     transition-property: background-color, border-color;
-    transition-timing-function: var(--tmp-transition-timing-ease-in);
+    transition-timing-function: var(--lp-transition-timing-ease-in);
 
     &::placeholder {
       color: var(--color-text-textarea-input-placeholder);

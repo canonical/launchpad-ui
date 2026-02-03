@@ -42,11 +42,11 @@
   .ds.user-chip {
     --typography-font-size-user-chip: var(
       --typography-font-size-context,
-      var(--tmp-typography-font-size-s)
+      var(--lp-typography-font-size-s)
     );
     --dimension-gap-user-chip: var(
       --dimension-gap-context,
-      var(--tmp-dimension-spacing-inline-xs)
+      var(--lp-dimension-spacing-inline-xs)
     );
 
     display: inline-flex;

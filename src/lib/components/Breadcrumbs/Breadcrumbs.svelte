@@ -108,62 +108,60 @@
 <style>
   .ds.breadcrumbs {
     --color-background-breadcrumbs-collapse-menu-default: var(
-      --tmp-color-background-default
+      --lp-color-background-default
     );
     --color-background-breadcrumbs-collapse-menu-item-active: var(
-      --tmp-color-background-active
+      --lp-color-background-active
     );
     --color-background-breadcrumbs-collapse-menu-item-default: var(
-      --tmp-color-background-default
+      --lp-color-background-default
     );
     --color-background-breadcrumbs-collapse-menu-item-hover: var(
-      --tmp-color-background-hover
+      --lp-color-background-hover
     );
     --color-background-breadcrumbs-collapse-trigger-active: var(
-      --tmp-color-background-active
+      --lp-color-background-active
     );
     --color-background-breadcrumbs-collapse-trigger-default: var(
-      --tmp-color-background-default
+      --lp-color-background-default
     );
     --color-border-breadcrumbs-collapse-menu: var(
-      --tmp-color-border-high-contrast
+      --lp-color-border-high-contrast
     );
-    --color-text-breadcrumbs: var(--tmp-color-text-default);
+    --color-text-breadcrumbs: var(--lp-color-text-default);
     --color-text-link-breadcrumbs-link-default: var(
-      --tmp-color-text-link-default
+      --lp-color-text-link-default
     );
     --color-text-link-breadcrumbs-link-visited: var(
-      --tmp-color-text-link-visited
+      --lp-color-text-link-visited
     );
     --dimension-border-width-breadcrumbs-collapse-menu: var(
       --dimension-stroke-thickness-default
     );
     --dimension-margin-inline-breadcrumbs-separator: var(
-      --tmp-dimension-spacing-inline-xxs
+      --lp-dimension-spacing-inline-xxs
     );
     --dimension-margin-top-breadcrumbs-collapse-menu: var(
-      --tmp-dimension-spacing-block-xxs
+      --lp-dimension-spacing-block-xxs
     );
     --dimension-min-width-breadcrumbs-collapse-menu: min(17rem, 100vw);
     --dimension-padding-block-breadcrumbs-collapse-menu-item: var(
-      --tmp-dimension-spacing-block-xxs
+      --lp-dimension-spacing-block-xxs
     );
     --dimension-padding-block-breadcrumbs-collapse-menu: var(
-      --tmp-dimension-spacing-block-xs
+      --lp-dimension-spacing-block-xs
     );
-    --dimension-padding-block-breadcrumbs: var(
-      --tmp-dimension-spacing-block-xs
-    );
+    --dimension-padding-block-breadcrumbs: var(--lp-dimension-spacing-block-xs);
     --dimension-padding-inline-breadcrumbs-collapse-menu-item: var(
-      --tmp-dimension-spacing-inline-m
+      --lp-dimension-spacing-inline-m
     );
     --dimension-padding-inline-breadcrumbs-collapse-trigger: var(
-      --tmp-dimension-spacing-inline-s
+      --lp-dimension-spacing-inline-s
     );
     --dimension-padding-inline-breadcrumbs: var(
-      --tmp-dimension-spacing-inline-l
+      --lp-dimension-spacing-inline-l
     );
-    --typography-font-breadcrumbs: var(--tmp-typography-paragraph-s);
+    --typography-font-breadcrumbs: var(--lp-typography-paragraph-s);
 
     --border-breadcrumbs-collapse-menu: var(
         --dimension-border-width-breadcrumbs-collapse-menu

@@ -122,10 +122,10 @@ The component has two sections:
 
 <style>
   .ds.side-navigation {
-    --color-background-side-navigation: var(--tmp-color-background-alt);
-    --transition-duration-side-navigation: var(--tmp-transition-duration-brisk);
-    --transition-easing-side-navigation: var(--tmp-transition-timing-ease-out);
-    --dimension-padding-side-navigation: var(--tmp-dimension-spacing-inline-s);
+    --color-background-side-navigation: var(--lp-color-background-alt);
+    --transition-duration-side-navigation: var(--lp-transition-duration-brisk);
+    --transition-easing-side-navigation: var(--lp-transition-timing-ease-out);
+    --dimension-padding-side-navigation: var(--lp-dimension-spacing-inline-s);
     /* 
     TODO: This "hardcoded" width could be get rid of when support for either:
      - `interpolate-size: allow-keywords` (https://developer.mozilla.org/en-US/docs/Web/CSS/interpolate-size), or
@@ -138,15 +138,15 @@ The component has two sections:
     /* TODO(@Enzo): Missing token */
     --dimension-padding-block-start-side-navigation-nav: 40px;
     --dimension-padding-block-end-side-navigation-footer: var(
-      --tmp-dimension-spacing-block-xs
+      --lp-dimension-spacing-block-xs
     );
     --dimension-padding-block-end-side-navigation-nav: var(
-      --tmp-dimension-spacing-block-xxl
+      --lp-dimension-spacing-block-xxl
     );
     --dimension-padding-block-side-navigation-item: var(
-      --tmp-dimension-spacing-block-xxs
+      --lp-dimension-spacing-block-xxs
     );
-    --typography-side-navigation: var(--tmp-typography-paragraph-default);
+    --typography-side-navigation: var(--lp-typography-paragraph-default);
 
     width: var(--dimension-width-side-navigation-expanded);
     background-color: var(--color-background-side-navigation);
@@ -230,7 +230,7 @@ The component has two sections:
         grid-template-columns: subgrid;
         align-self: self-start;
 
-        margin-block-start: var(--tmp-dimension-spacing-block-m);
+        margin-block-start: var(--lp-dimension-spacing-block-m);
 
         .expand-icon {
           grid-column: logo;

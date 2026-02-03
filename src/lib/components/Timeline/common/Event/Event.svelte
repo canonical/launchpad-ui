@@ -79,19 +79,19 @@ The marker and the first line of the optional `titleRow` are meant to be aligned
 <style>
   .ds.event {
     /* Marker */
-    --color-background-timeline-marker: var(--tmp-color-background-alt);
+    --color-background-timeline-marker: var(--lp-color-background-alt);
     --border-timeline-marker: var(--dimension-stroke-thickness-default) solid
-      var(--tmp-color-border-default);
-    --dimension-size-timeline-marker-empty: var(--tmp-dimension-size-xxxs);
-    --dimension-size-timeline-marker-small: var(--tmp-dimension-size-s);
-    --dimension-size-timeline-marker-large: var(--tmp-dimension-size-l);
+      var(--lp-color-border-default);
+    --dimension-size-timeline-marker-empty: var(--lp-dimension-size-xxxs);
+    --dimension-size-timeline-marker-small: var(--lp-dimension-size-s);
+    --dimension-size-timeline-marker-large: var(--lp-dimension-size-l);
 
     /* Title row */
     --dimension-margin-block-end-timeline-event-title-row: var(
-      --tmp-dimension-spacing-block-xs
+      --lp-dimension-spacing-block-xs
     );
     --typography-line-height-timeline-event-title-row: var(
-      --tmp-typography-line-height-s
+      --lp-typography-line-height-s
     );
 
     grid-column: 1 / -1;
