@@ -144,19 +144,19 @@
         </ContextualMenuContent.Group>
       {/if}
       <ContextualMenuContent.Group>
-        <ContextualMenuContent.LinkItem
+        <ContextualMenuContent.ButtonItem
           href={fullScreen.toggleHref}
           text={fullScreenLinkLabel}
         />
         {#if viewLogUrl}
           <!-- TODO: Revisit, when Content-Disposition header is correctly set -->
-          <ContextualMenuContent.LinkItem
+          <ContextualMenuContent.ButtonItem
             text="View raw log"
             href={viewLogUrl}
           />
         {/if}
         {#if downloadLogUrl}
-          <ContextualMenuContent.LinkItem
+          <ContextualMenuContent.ButtonItem
             href={downloadLogUrl}
             download
             text="Download log"

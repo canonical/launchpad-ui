@@ -96,20 +96,21 @@ describe("ButtonOption component", () => {
     expect(onclick).toHaveBeenCalled();
   });
 
-  describe("type attribute", () => {
-    it("is of type button by default", async () => {
-      const page = render(Component, baseProps);
-      await expect
-        .element(componentLocator(page))
-        .toHaveAttribute("type", "button");
-    });
+  it("can have type set", async () => {
+    const page = render(Component, { ...baseProps, type: "submit" });
+    await expect
+      .element(componentLocator(page))
+      .toHaveAttribute("type", "submit");
+  });
 
-    it("can be of other type", async () => {
-      const page = render(Component, { ...baseProps, type: "submit" });
-      await expect
-        .element(componentLocator(page))
-        .toHaveAttribute("type", "submit");
+  it("renders as link when href is provided", async () => {
+    const page = render(Component, {
+      ...baseProps,
+      href: "https://example.com",
     });
+    await expect
+      .element(page.getByRole("link"))
+      .toHaveAttribute("href", "https://example.com");
   });
 });
 

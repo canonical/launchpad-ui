@@ -76,3 +76,19 @@
     </ButtonItem>
   {/snippet}
 </Story>
+
+<Story
+  name="As link"
+  args={{
+    href: "https://example.com",
+    target: "_blank",
+  }}
+>
+  {#snippet template(args)}
+    <ButtonItem {...args}>
+      {#snippet icon()}
+        <EditIcon />
+      {/snippet}
+    </ButtonItem>
+  {/snippet}
+</Story>

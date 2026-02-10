@@ -16,6 +16,7 @@
   );
   --dimension-margin-start-option-switch: var(--lp-dimension-spacing-inline-xs);
 
+  inline-size: 100%;
   text-align: left;
   display: grid;
   align-items: center;
