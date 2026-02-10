@@ -6,7 +6,6 @@ import { createRawSnippet } from "svelte";
 import type { ComponentProps } from "svelte";
 import { describe, expect, it } from "vitest";
 import Component from "./RadioOption.svelte";
-import type { RadioOptionProps } from "./types.js";
 
 describe("RadioOption SSR", () => {
   const baseProps = {
@@ -14,12 +13,12 @@ describe("RadioOption SSR", () => {
   } satisfies ComponentProps<typeof Component>;
   it("doesn't throw", () => {
     expect(() => {
-      renderRadioOption({ ...baseProps });
+      render(Component, { props: { ...baseProps } });
     }).not.toThrow();
   });
 
   it("renders", () => {
-    const page = renderRadioOption({ ...baseProps });
+    const page = render(Component, { props: { ...baseProps } });
     expect(componentLocator(page)).toBeInstanceOf(page.window.HTMLLabelElement);
   });
 
@@ -28,12 +27,16 @@ describe("RadioOption SSR", () => {
       ["id", "test-id"],
       ["aria-label", "test-aria-label"],
     ])("applies %s", (attribute, value) => {
-      const page = renderRadioOption({ ...baseProps, [attribute]: value });
+      const page = render(Component, {
+        props: { ...baseProps, [attribute]: value },
+      });
       expect(componentLocator(page).getAttribute(attribute)).toBe(value);
     });
 
     it("applies class", () => {
-      const page = renderRadioOption({ ...baseProps, class: "test-class" });
+      const page = render(Component, {
+        props: { ...baseProps, class: "test-class" },
+      });
       const element = componentLocator(page);
       expect(element.classList.contains("ds")).toBe(true);
       expect(element.classList.contains("radio-option")).toBe(true);
@@ -41,9 +44,8 @@ describe("RadioOption SSR", () => {
     });
 
     it("applies style", () => {
-      const page = renderRadioOption({
-        ...baseProps,
-        style: "color: orange;",
+      const page = render(Component, {
+        props: { ...baseProps, style: "color: orange;" },
       });
       expect(componentLocator(page).getAttribute("style")).toBe(
         "color: orange;",
@@ -53,14 +55,13 @@ describe("RadioOption SSR", () => {
 
   describe("Disabled state", () => {
     it("is not disabled by default", () => {
-      const page = renderRadioOption({ ...baseProps });
+      const page = render(Component, { props: { ...baseProps } });
       expect(radioLocator(page).hasAttribute("disabled")).toBe(false);
     });
 
     it("can be disabled", () => {
-      const page = renderRadioOption({
-        ...baseProps,
-        disabled: true,
+      const page = render(Component, {
+        props: { ...baseProps, disabled: true },
       });
       expect(radioLocator(page).hasAttribute("disabled")).toBe(true);
     });
@@ -68,14 +69,13 @@ describe("RadioOption SSR", () => {
 
   describe("Checked state", () => {
     it("is not checked by default", () => {
-      const page = renderRadioOption({ ...baseProps });
+      const page = render(Component, { props: { ...baseProps } });
       expect(radioLocator(page).checked).toBe(false);
     });
 
     it("can be rendered checked", () => {
-      const page = renderRadioOption({
-        ...baseProps,
-        checked: true,
+      const page = render(Component, {
+        props: { ...baseProps, checked: true },
       });
       expect(radioLocator(page).checked).toBe(true);
     });
@@ -83,42 +83,39 @@ describe("RadioOption SSR", () => {
 
   describe("Contents", () => {
     it("renders text", () => {
-      const page = renderRadioOption({ ...baseProps, text: "Main Text" });
+      const page = render(Component, {
+        props: { ...baseProps, text: "Main Text" },
+      });
       expect(componentLocator(page).textContent).toContain("Main Text");
     });
 
     it("renders secondary text", () => {
-      const page = renderRadioOption({
-        ...baseProps,
-        secondaryText: "Secondary Text",
+      const page = render(Component, {
+        props: { ...baseProps, secondaryText: "Secondary Text" },
       });
       expect(componentLocator(page).textContent).toContain("Secondary Text");
     });
 
     it("renders trailing text", () => {
-      const page = renderRadioOption({
-        ...baseProps,
-        trailingText: "Trailing Text",
+      const page = render(Component, {
+        props: { ...baseProps, trailingText: "Trailing Text" },
       });
       expect(componentLocator(page).textContent).toContain("Trailing Text");
     });
 
     it("renders icon", () => {
-      const page = renderRadioOption({
-        ...baseProps,
-        icon: createRawSnippet(() => ({
-          render: () => `<span data-testid="text-icon"></span>`,
-        })),
+      const page = render(Component, {
+        props: {
+          ...baseProps,
+          icon: createRawSnippet(() => ({
+            render: () => `<span data-testid="text-icon"></span>`,
+          })),
+        },
       });
       expect(page.getByTestId("text-icon")).toBeTruthy();
     });
   });
 });
-
-function renderRadioOption(props: RadioOptionProps) {
-  // @ts-expect-error TypeScript reports `Expression produces a union type that is too complex to represent.ts(2590)`
-  return render(Component, { props });
-}
 
 function componentLocator(page: RenderResult): HTMLElement {
   return page.getByTestId("radio-option");
