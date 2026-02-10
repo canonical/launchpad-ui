@@ -5,7 +5,7 @@
 <script lang="ts">
   import { HomeIcon, SettingsIcon, UserIcon } from "@canonical/svelte-icons";
   import { ColorPaletteIcon } from "$lib/components/icons/index.js";
-  import { ButtonItem, ExpandToggle, LinkItem } from "./common/index.js";
+  import { ExpandToggle, NavigationItem } from "./common/index.js";
   import type { ExpandToggleProps } from "./types.js";
 </script>
 
@@ -18,31 +18,31 @@
 {/snippet}
 
 {#snippet children()}
-  <LinkItem href="/">
+  <NavigationItem href="/">
     Link in nav
     {#snippet icon()}
       <HomeIcon />
     {/snippet}
-  </LinkItem>
-  <ButtonItem>
+  </NavigationItem>
+  <NavigationItem>
     Button in nav
     {#snippet icon()}
       <SettingsIcon />
     {/snippet}
-  </ButtonItem>
+  </NavigationItem>
 {/snippet}
 
 {#snippet footer()}
-  <ButtonItem>
+  <NavigationItem>
     Button in footer
     {#snippet icon()}
       <ColorPaletteIcon />
     {/snippet}
-  </ButtonItem>
-  <LinkItem href="/profile">
+  </NavigationItem>
+  <NavigationItem href="/profile">
     Link in footer
     {#snippet icon()}
       <UserIcon />
     {/snippet}
-  </LinkItem>
+  </NavigationItem>
 {/snippet}

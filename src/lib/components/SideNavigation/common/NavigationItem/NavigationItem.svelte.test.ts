@@ -6,13 +6,12 @@ import { describe, expect, it } from "vitest";
 import type { Locator } from "vitest/browser";
 import { render } from "vitest-browser-svelte";
 import type { RenderResult } from "vitest-browser-svelte";
-import Component from "./LinkItem.svelte";
+import Component from "./NavigationItem.svelte";
 
-describe("LinkItem component", () => {
+describe("NavigationItem component", () => {
   const baseProps = {
-    href: "#",
     children: createRawSnippet(() => ({
-      render: () => `<span>LinkItem</span>`,
+      render: () => `<span>NavigationItem</span>`,
     })),
   } satisfies ComponentProps<typeof Component>;
 
@@ -38,7 +37,7 @@ describe("LinkItem component", () => {
       await expect.element(componentLocator(page)).toHaveClass("ds");
       await expect
         .element(componentLocator(page))
-        .toHaveClass("navigation-link-item");
+        .toHaveClass("navigation-item");
     });
 
     it("applies style", async () => {
@@ -51,8 +50,18 @@ describe("LinkItem component", () => {
         .toHaveStyle({ color: "orange" });
     });
   });
+
+  it("renders as link when href is provided", async () => {
+    const page = render(Component, {
+      ...baseProps,
+      href: "https://example.com",
+    });
+    await expect
+      .element(page.getByRole("link"))
+      .toHaveAttribute("href", "https://example.com");
+  });
 });
 
 function componentLocator(page: RenderResult<typeof Component>): Locator {
-  return page.getByRole("link");
+  return page.getByRole("button");
 }

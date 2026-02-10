@@ -1,10 +1,9 @@
 /* @canonical/generator-ds 0.10.0-experimental.3 */
 
 import type { Snippet } from "svelte";
-import type { HTMLAnchorAttributes } from "svelte/elements";
+import type { ButtonPrimitiveProps } from "$lib/components/common/index.js";
 
-export interface LinkItemProps extends Omit<HTMLAnchorAttributes, "type"> {
-  disabled?: boolean;
+export type NavigationItemProps = ButtonPrimitiveProps & {
   /**
    * Whether the item should appear selected.
    */
@@ -17,4 +16,4 @@ export interface LinkItemProps extends Omit<HTMLAnchorAttributes, "type"> {
    * Content to be displayed inside the item.
    */
   children: Snippet<[]>;
-}
+};

@@ -4,15 +4,15 @@ import { render } from "@canonical/svelte-ssr-test";
 import type { RenderResult } from "@canonical/svelte-ssr-test";
 import { createRawSnippet } from "svelte";
 import { describe, expect, it } from "vitest";
-import Component from "./ButtonItem.svelte";
-import type { ButtonItemProps } from "./types.js";
+import Component from "./NavigationItem.svelte";
+import type { NavigationItemProps } from "./types.js";
 
-describe("ButtonItem SSR", () => {
+describe("NavigationItem SSR", () => {
   const baseProps = {
     children: createRawSnippet(() => ({
-      render: () => `<span>ButtonItem</span>`,
+      render: () => `<span>NavigationItem</span>`,
     })),
-  } satisfies ButtonItemProps;
+  } satisfies NavigationItemProps;
 
   describe("basics", () => {
     it("doesn't throw", () => {
@@ -46,9 +46,6 @@ describe("ButtonItem SSR", () => {
       });
       expect(componentLocator(page).classList).toContain("test-class");
       expect(componentLocator(page).classList).toContain("ds");
-      expect(componentLocator(page).classList).toContain(
-        "navigation-button-item",
-      );
       expect(componentLocator(page).classList).toContain("navigation-item");
     });
 
