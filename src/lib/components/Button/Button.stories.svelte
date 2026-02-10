@@ -25,6 +25,12 @@
         description: "Whether the button is disabled",
         type: { name: "boolean", required: false },
       },
+      href: {
+        control: "text",
+        description:
+          "If provided, the button will be rendered as an anchor element",
+        type: { name: "string", required: false },
+      },
     },
   });
 </script>
@@ -172,6 +178,20 @@
       {#snippet iconLeft()}
         <ForkIcon />
       {/snippet}
+      {#snippet iconRight()}
+        <ChevronDownIcon />
+      {/snippet}
+    </Button>
+  {/snippet}
+</Story>
+
+<Story name="Anchor button" args={{ href: "https://example.com" }}>
+  {#snippet template(args)}
+    <Button {...args}>
+      {#snippet iconLeft()}
+        <ForkIcon />
+      {/snippet}
+      Anchor Button
       {#snippet iconRight()}
         <ChevronDownIcon />
       {/snippet}

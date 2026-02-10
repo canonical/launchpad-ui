@@ -10,11 +10,7 @@
   let { class: className, ...rest }: ExpandToggleProps = $props();
 </script>
 
-<ButtonPrimitive
-  as="button"
-  class={[componentCssClassName, className]}
-  {...rest}
->
+<ButtonPrimitive class={[componentCssClassName, className]} {...rest}>
   <ExpandRightIcon class="expand-icon" />
 </ButtonPrimitive>
 

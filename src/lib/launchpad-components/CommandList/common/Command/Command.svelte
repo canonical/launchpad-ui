@@ -18,7 +18,6 @@
   </div>
   <ButtonPrimitive
     class="jump-to-element"
-    as="a"
     {href}
     disabled={!href}
     aria-label="Jump to command"

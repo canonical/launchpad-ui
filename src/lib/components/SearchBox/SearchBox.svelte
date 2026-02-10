@@ -30,13 +30,7 @@
     class={{ "no-invalid-styles": !invalidStyled }}
     {...rest}
   />
-  <ButtonPrimitive
-    as="button"
-    type="submit"
-    aria-label={ariaLabel}
-    {disabled}
-    {onclick}
-  >
+  <ButtonPrimitive type="submit" aria-label={ariaLabel} {disabled} {onclick}>
     <SearchIcon />
   </ButtonPrimitive>
 </div>

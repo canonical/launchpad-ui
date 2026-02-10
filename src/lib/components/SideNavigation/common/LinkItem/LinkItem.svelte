@@ -11,6 +11,7 @@
     children,
     icon,
     selected,
+    href,
     ...rest
   }: LinkItemProps = $props();
 
@@ -18,7 +19,7 @@
 </script>
 
 <ButtonPrimitive
-  as="a"
+  href={href ?? ""}
   class={[componentCssClassName, className, { selected }]}
   aria-labelledby={labelId}
   {...rest}

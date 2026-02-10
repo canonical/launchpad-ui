@@ -1,21 +1,30 @@
 /* @canonical/generator-ds 0.10.0-experimental.3 */
 
+import type { Attachment } from "svelte/attachments";
 import type {
   HTMLAnchorAttributes,
   HTMLButtonAttributes,
 } from "svelte/elements";
 
-type ButtonPrimitiveAnchorAttributes = HTMLAnchorAttributes & {
-  as: "a";
-  ref?: HTMLAnchorElement;
+interface BaseProps {
+  ref?: HTMLElement;
+  [key: symbol]: Attachment<HTMLElement> | false | undefined | null;
+}
+
+interface ButtonPrimitiveAnchorAttributes
+  extends
+    Omit<HTMLAnchorAttributes, "type" | "href" | keyof BaseProps>,
+    BaseProps {
+  href: HTMLAnchorAttributes["href"];
+  type?: never;
   disabled?: HTMLButtonAttributes["disabled"];
-};
+}
 
-type ButtonPrimitiveButtonAttributes = HTMLButtonAttributes & {
-  as: "button";
-  ref?: HTMLButtonElement;
-};
+interface ButtonPrimitiveButtonAttributes
+  extends Omit<HTMLButtonAttributes, keyof BaseProps>, BaseProps {
+  href?: never;
+}
 
-export type ButtonPrimitiveProps<T extends "button" | "a"> = T extends "button"
-  ? ButtonPrimitiveButtonAttributes
-  : ButtonPrimitiveAnchorAttributes;
+export type ButtonPrimitiveProps =
+  | ButtonPrimitiveButtonAttributes
+  | ButtonPrimitiveAnchorAttributes;

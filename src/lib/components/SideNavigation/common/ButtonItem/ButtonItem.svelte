@@ -18,7 +18,6 @@
 </script>
 
 <ButtonPrimitive
-  as="button"
   class={[componentCssClassName, className, { selected }]}
   aria-labelledby={labelId}
   {...rest}

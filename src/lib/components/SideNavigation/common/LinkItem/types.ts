@@ -3,7 +3,7 @@
 import type { Snippet } from "svelte";
 import type { HTMLAnchorAttributes } from "svelte/elements";
 
-export interface LinkItemProps extends HTMLAnchorAttributes {
+export interface LinkItemProps extends Omit<HTMLAnchorAttributes, "type"> {
   disabled?: boolean;
   /**
    * Whether the item should appear selected.

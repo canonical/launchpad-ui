@@ -9,9 +9,8 @@ import type { ButtonPrimitiveProps } from "./types.js";
 describe("ButtonPrimitive SSR", () => {
   describe.each(["button", "a"] as const)("as %s", (as) => {
     const baseProps = {
-      as,
       ...(as === "a" && { href: "https://example.com" }),
-    } satisfies ButtonPrimitiveProps<typeof as>;
+    } satisfies ButtonPrimitiveProps;
 
     it("doesn't throw", () => {
       expect(() => {
@@ -97,7 +96,6 @@ describe("ButtonPrimitive SSR", () => {
     it("applies type", () => {
       const page = render(Component, {
         props: {
-          as: "button",
           type: "submit",
         },
       });

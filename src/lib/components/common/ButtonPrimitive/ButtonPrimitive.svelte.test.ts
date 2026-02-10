@@ -14,8 +14,8 @@ describe("ButtonPrimitive component", () => {
       render: () => `<span>ButtonPrimitive</span>`,
     }));
     const baseProps = {
-      as: "a" as const,
       children: children,
+      href: "https://canonical.com",
     } satisfies ComponentProps<typeof Component>;
 
     it("renders", async () => {
@@ -27,7 +27,6 @@ describe("ButtonPrimitive component", () => {
     it("applies href", async () => {
       const page = render(Component, {
         ...baseProps,
-        href: "https://canonical.com",
       });
       await expect
         .element(componentLocator(page, "a"))
@@ -36,9 +35,7 @@ describe("ButtonPrimitive component", () => {
   });
 
   describe("button specific", () => {
-    const baseProps = {
-      as: "button" as const,
-    } satisfies ComponentProps<typeof Component>;
+    const baseProps = {} satisfies ComponentProps<typeof Component>;
 
     it("renders", async () => {
       const page = render(Component, { ...baseProps });
@@ -57,7 +54,7 @@ describe("ButtonPrimitive component", () => {
   });
 
   describe.each(["button", "a"] as const)("as %s", (as) => {
-    const baseProps = as === "a" ? { as, href: "#" } : { as };
+    const baseProps = as === "a" ? { href: "#" } : {};
 
     describe("attributes", () => {
       it.each([
