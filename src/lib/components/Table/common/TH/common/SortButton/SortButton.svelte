@@ -1,6 +1,7 @@
 <!-- @canonical/generator-ds 0.10.0-experimental.5 -->
 
 <script lang="ts">
+  import { ButtonPrimitive } from "$lib/components/common/index.js";
   import { getTHContext } from "../../context.js";
   import { SortIndicator } from "../common/index.js";
   import type { SortButtonProps } from "./types.js";
@@ -12,16 +13,19 @@
   const thContext = getTHContext();
 </script>
 
-<button
-  class={[componentCssClassName, className]}
-  class:sorted={thContext.sortDirection}
+<ButtonPrimitive
+  class={[
+    componentCssClassName,
+    className,
+    { sorted: thContext.sortDirection },
+  ]}
   {...rest}
 >
   <SortIndicator />
-</button>
+</ButtonPrimitive>
 
 <style>
-  .ds.table-th-sort {
+  :global(.ds.table-th-sort) {
     padding: var(--lp-dimension-spacing-block-xxxs)
       var(--lp-dimension-spacing-inline-xxxs);
     background: none;
@@ -31,6 +35,9 @@
 
     font-size: var(--lp-typography-font-size-m);
     color: var(--lp-color-icon-status-queued);
+
+    --color-background-button-hover: transparent;
+    --color-background-button-active: transparent;
 
     &:hover,
     &:focus-visible,

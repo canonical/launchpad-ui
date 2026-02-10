@@ -38,7 +38,7 @@
           <Table.TH {...args}>
             Header
             {#snippet action()}
-              <Table.TH.SortLink aria-label="Sort" href="#" />
+              <Table.TH.SortButton aria-label="Sort" href="#" />
             {/snippet}
           </Table.TH>
         </tr>
