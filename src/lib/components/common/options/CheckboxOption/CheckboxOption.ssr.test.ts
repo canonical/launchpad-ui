@@ -6,7 +6,6 @@ import { createRawSnippet } from "svelte";
 import type { ComponentProps } from "svelte";
 import { describe, expect, it } from "vitest";
 import Component from "./CheckboxOption.svelte";
-import type { CheckboxOptionProps } from "./types.js";
 
 describe("CheckboxOption SSR", () => {
   const baseProps = {
@@ -14,12 +13,12 @@ describe("CheckboxOption SSR", () => {
   } satisfies ComponentProps<typeof Component>;
   it("doesn't throw", () => {
     expect(() => {
-      renderCheckboxOption({ ...baseProps });
+      render(Component, { props: { ...baseProps } });
     }).not.toThrow();
   });
 
   it("renders", () => {
-    const page = renderCheckboxOption({ ...baseProps });
+    const page = render(Component, { props: { ...baseProps } });
     expect(componentLocator(page)).toBeInstanceOf(page.window.HTMLLabelElement);
   });
 
@@ -28,15 +27,16 @@ describe("CheckboxOption SSR", () => {
       ["id", "test-id"],
       ["aria-label", "test-aria-label"],
     ])("applies %s", (attribute, value) => {
-      const page = renderCheckboxOption({ ...baseProps, [attribute]: value });
+      const page = render(Component, {
+        props: { ...baseProps, [attribute]: value },
+      });
       const element = componentLocator(page);
       expect(element.getAttribute(attribute)).toBe(value);
     });
 
     it("applies class", () => {
-      const page = renderCheckboxOption({
-        ...baseProps,
-        class: "test-class",
+      const page = render(Component, {
+        props: { ...baseProps, class: "test-class" },
       });
       const element = componentLocator(page);
       expect(element.classList.contains("ds")).toBe(true);
@@ -45,9 +45,8 @@ describe("CheckboxOption SSR", () => {
     });
 
     it("applies style", () => {
-      const page = renderCheckboxOption({
-        ...baseProps,
-        style: "color: orange;",
+      const page = render(Component, {
+        props: { ...baseProps, style: "color: orange;" },
       });
       expect(componentLocator(page).getAttribute("style")).toBe(
         "color: orange;",
@@ -57,14 +56,13 @@ describe("CheckboxOption SSR", () => {
 
   describe("Disabled state", () => {
     it("is not disabled by default", () => {
-      const page = renderCheckboxOption({ ...baseProps });
+      const page = render(Component, { props: { ...baseProps } });
       expect(checkboxLocator(page).hasAttribute("disabled")).toBe(false);
     });
 
     it("can be disabled", () => {
-      const page = renderCheckboxOption({
-        ...baseProps,
-        disabled: true,
+      const page = render(Component, {
+        props: { ...baseProps, disabled: true },
       });
       expect(checkboxLocator(page).hasAttribute("disabled")).toBe(true);
     });
@@ -72,14 +70,13 @@ describe("CheckboxOption SSR", () => {
 
   describe("Checked state", () => {
     it("is not checked by default", () => {
-      const page = renderCheckboxOption({ ...baseProps });
+      const page = render(Component, { props: { ...baseProps } });
       expect(checkboxLocator(page).checked).toBe(false);
     });
 
     it("can be rendered checked", () => {
-      const page = renderCheckboxOption({
-        ...baseProps,
-        checked: true,
+      const page = render(Component, {
+        props: { ...baseProps, checked: true },
       });
       expect(checkboxLocator(page).checked).toBe(true);
     });
@@ -87,42 +84,39 @@ describe("CheckboxOption SSR", () => {
 
   describe("Contents", () => {
     it("renders text", () => {
-      const page = renderCheckboxOption({ ...baseProps, text: "Main Text" });
+      const page = render(Component, {
+        props: { ...baseProps, text: "Main Text" },
+      });
       expect(componentLocator(page).textContent).toContain("Main Text");
     });
 
     it("renders secondary text", () => {
-      const page = renderCheckboxOption({
-        ...baseProps,
-        secondaryText: "Secondary Text",
+      const page = render(Component, {
+        props: { ...baseProps, secondaryText: "Secondary Text" },
       });
       expect(componentLocator(page).textContent).toContain("Secondary Text");
     });
 
     it("renders trailing text", () => {
-      const page = renderCheckboxOption({
-        ...baseProps,
-        trailingText: "Trailing Text",
+      const page = render(Component, {
+        props: { ...baseProps, trailingText: "Trailing Text" },
       });
       expect(componentLocator(page).textContent).toContain("Trailing Text");
     });
 
     it("renders icon", () => {
-      const page = renderCheckboxOption({
-        ...baseProps,
-        icon: createRawSnippet(() => ({
-          render: () => `<span data-testid="text-icon"></span>`,
-        })),
+      const page = render(Component, {
+        props: {
+          ...baseProps,
+          icon: createRawSnippet(() => ({
+            render: () => `<span data-testid="text-icon"></span>`,
+          })),
+        },
       });
       expect(page.getByTestId("text-icon")).toBeTruthy();
     });
   });
 });
-
-function renderCheckboxOption(props: CheckboxOptionProps) {
-  // @ts-expect-error TypeScript reports `Expression produces a union type that is too complex to represent.ts(2590)`
-  return render(Component, { props });
-}
 
 function componentLocator(page: RenderResult): HTMLElement {
   return page.getByTestId("checkbox-option");

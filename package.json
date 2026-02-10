@@ -34,7 +34,7 @@
     "mock-server:dynamic": "bun run mock-server -d"
   },
   "devDependencies": {
-    "@canonical/svelte-ssr-test": "^0.10.0-experimental.5",
+    "@canonical/svelte-ssr-test": "^0.13.0-experimental.0",
     "@chromatic-com/storybook": "^5.0.0",
     "@eslint/js": "^9.39.1",
     "@stoplight/prism-cli": "^5.14.2",

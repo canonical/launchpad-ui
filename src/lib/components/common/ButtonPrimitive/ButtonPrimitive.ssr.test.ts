@@ -15,12 +15,12 @@ describe("ButtonPrimitive SSR", () => {
 
     it("doesn't throw", () => {
       expect(() => {
-        renderButtonPrimitive(baseProps);
+        render(Component, { props: baseProps });
       }).not.toThrow();
     });
 
     it("renders", () => {
-      const page = renderButtonPrimitive(baseProps);
+      const page = render(Component, { props: baseProps });
       expect(componentLocator(page, as)).toBeInstanceOf(
         page.window.HTMLElement,
       );
@@ -31,9 +31,11 @@ describe("ButtonPrimitive SSR", () => {
         ["id", "test-id"],
         ["aria-label", "test-aria-label"],
       ])("applies %s", (attribute, expected) => {
-        const page = renderButtonPrimitive({
-          [attribute]: expected,
-          ...baseProps,
+        const page = render(Component, {
+          props: {
+            [attribute]: expected,
+            ...baseProps,
+          },
         });
         expect(componentLocator(page, as).getAttribute(attribute)).toBe(
           expected,
@@ -41,17 +43,21 @@ describe("ButtonPrimitive SSR", () => {
       });
 
       it("applies classes", () => {
-        const page = renderButtonPrimitive({
-          class: "test-class",
-          ...baseProps,
+        const page = render(Component, {
+          props: {
+            class: "test-class",
+            ...baseProps,
+          },
         });
         expect(componentLocator(page, as).classList).toContain("test-class");
       });
 
       it("applies style", () => {
-        const page = renderButtonPrimitive({
-          style: "color: orange;",
-          ...baseProps,
+        const page = render(Component, {
+          props: {
+            style: "color: orange;",
+            ...baseProps,
+          },
         });
         expect(componentLocator(page, as).style.color).toBe("orange");
       });
@@ -60,9 +66,11 @@ describe("ButtonPrimitive SSR", () => {
 
   describe("anchor specific", () => {
     it("applies href", () => {
-      const page = renderButtonPrimitive({
-        as: "a",
-        href: "https://example.com",
+      const page = render(Component, {
+        props: {
+          as: "a",
+          href: "https://example.com",
+        },
       });
       expect(componentLocator(page, "a").getAttribute("href")).toBe(
         "https://example.com",
@@ -70,10 +78,12 @@ describe("ButtonPrimitive SSR", () => {
     });
 
     it("applies disabled", () => {
-      const page = renderButtonPrimitive({
-        as: "a",
-        href: "https://example.com",
-        disabled: true,
+      const page = render(Component, {
+        props: {
+          as: "a",
+          href: "https://example.com",
+          disabled: true,
+        },
       });
       expect(componentLocator(page, "a").getAttribute("aria-disabled")).toBe(
         "true",
@@ -85,9 +95,11 @@ describe("ButtonPrimitive SSR", () => {
 
   describe("button specific", () => {
     it("applies type", () => {
-      const page = renderButtonPrimitive({
-        as: "button",
-        type: "submit",
+      const page = render(Component, {
+        props: {
+          as: "button",
+          type: "submit",
+        },
       });
       expect(componentLocator(page, "button").getAttribute("type")).toBe(
         "submit",
@@ -95,9 +107,11 @@ describe("ButtonPrimitive SSR", () => {
     });
 
     it("applies disabled", () => {
-      const page = renderButtonPrimitive({
-        as: "button",
-        disabled: true,
+      const page = render(Component, {
+        props: {
+          as: "button",
+          disabled: true,
+        },
       });
       expect(componentLocator(page, "button").hasAttribute("disabled")).toBe(
         true,
@@ -112,11 +126,4 @@ function componentLocator<T extends "button" | "a">(
 ): T extends "button" ? HTMLButtonElement : HTMLAnchorElement {
   const role = as === "a" ? "link" : "button";
   return page.getByRole(role);
-}
-
-function renderButtonPrimitive<T extends "button" | "a">(
-  props: ButtonPrimitiveProps<T>,
-) {
-  // @ts-expect-error TypeScript reports `Expression produces a union type that is too complex to represent.ts(2590)`
-  return render(Component, { props });
 }
