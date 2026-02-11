@@ -1,7 +1,7 @@
 <!-- @canonical/generator-ds 0.10.0-experimental.3 -->
 
 <script lang="ts">
-  import { onMount, untrack } from "svelte";
+  import { onMount } from "svelte";
   import { Button } from "$lib/components/Button/index.js";
   import { Tooltip } from "$lib/components/Tooltip/index.js";
   import { useIsMounted } from "$lib/useIsMounted.svelte.js";
@@ -37,11 +37,11 @@
   // disabled by default until JS is loaded
   const disabled = $derived(!mounted.value);
 
-  // Unselect the action button if it becomes disabled and is in tab order
+  // Trigger a change in the toolbar context when the action button is mounted or becomes disabled
   $effect(() => {
-    if (disabled && untrack(() => isInTabOrder)) {
-      markdownEditorToolbarContext?.notifyActionButtonChange();
-    }
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+    disabled;
+    markdownEditorToolbarContext?.notifyActionButtonChange();
   });
 
   onMount(() => {

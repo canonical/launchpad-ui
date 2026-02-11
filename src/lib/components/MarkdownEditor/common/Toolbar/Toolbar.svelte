@@ -85,11 +85,6 @@
       }
     }
   };
-
-  // select the default action when the toolbar is mounted
-  $effect(() => {
-    selectDefaultAction();
-  });
 </script>
 
 <div
