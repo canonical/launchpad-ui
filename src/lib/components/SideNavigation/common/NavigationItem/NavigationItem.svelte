@@ -39,6 +39,7 @@
       display: grid;
       position: relative;
       grid-column: 1 / -1;
+      border: none;
 
       --dimension-padding-inline-button: 0;
       --dimension-padding-block-button: var(--lp-dimension-spacing-block-xxs);
