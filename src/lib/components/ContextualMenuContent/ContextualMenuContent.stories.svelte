@@ -88,7 +88,7 @@
       </ContextualMenuContent.SwitchItem>
     </ContextualMenuContent.Group>
     <ContextualMenuContent.Group>
-      <ContextualMenuContent.LinkItem
+      <ContextualMenuContent.ButtonItem
         href="https://launchpad.net"
         target="_blank"
         rel="noopener noreferrer"
@@ -97,8 +97,8 @@
         {#snippet icon()}
           <ExternalLinkIcon />
         {/snippet}
-      </ContextualMenuContent.LinkItem>
-      <ContextualMenuContent.LinkItem
+      </ContextualMenuContent.ButtonItem>
+      <ContextualMenuContent.ButtonItem
         href="/comments"
         text="See new comments"
         trailingText="4"

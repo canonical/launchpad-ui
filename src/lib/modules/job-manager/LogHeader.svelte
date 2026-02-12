@@ -72,7 +72,6 @@
   {#if scrollToTopHref}
     <ButtonPrimitive
       class="scroll-link header-button"
-      as="a"
       href={scrollToTopHref}
       aria-label="Scroll to top of logs"
     >
@@ -82,7 +81,6 @@
   {#if scrollToBottomHref}
     <ButtonPrimitive
       class="scroll-link header-button"
-      as="a"
       href={scrollToBottomHref}
       aria-label="Scroll to bottom of logs"
     >
@@ -91,7 +89,6 @@
   {/if}
   <ButtonPrimitive
     class="scroll-link header-button"
-    as="a"
     href={fullScreen.toggleHref}
     aria-label={fullScreenLinkLabel}
   >
@@ -147,19 +144,19 @@
         </ContextualMenuContent.Group>
       {/if}
       <ContextualMenuContent.Group>
-        <ContextualMenuContent.LinkItem
+        <ContextualMenuContent.ButtonItem
           href={fullScreen.toggleHref}
           text={fullScreenLinkLabel}
         />
         {#if viewLogUrl}
           <!-- TODO: Revisit, when Content-Disposition header is correctly set -->
-          <ContextualMenuContent.LinkItem
+          <ContextualMenuContent.ButtonItem
             text="View raw log"
             href={viewLogUrl}
           />
         {/if}
         {#if downloadLogUrl}
-          <ContextualMenuContent.LinkItem
+          <ContextualMenuContent.ButtonItem
             href={downloadLogUrl}
             download
             text="Download log"

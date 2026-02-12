@@ -158,7 +158,6 @@
         - Replace with a proper Button component
       -->
         <ButtonPrimitive
-          as="a"
           disabled
           style="display: flex; gap: var(--lp-dimension-spacing-inline-xs); align-items: center; padding: var(--lp-dimension-spacing-block-minimum) var(--lp-dimension-spacing-inline-xs);"
         >

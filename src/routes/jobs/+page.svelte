@@ -97,7 +97,7 @@
             >
               {label}
               {#snippet action()}
-                <Table.TH.SortLink
+                <Table.TH.SortButton
                   aria-label={sortLinkLabel(key, label)}
                   href={sortLinkHref(key)}
                 />

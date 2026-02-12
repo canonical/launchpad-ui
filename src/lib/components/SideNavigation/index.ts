@@ -1,32 +1,23 @@
 /* @canonical/generator-ds 0.10.0-experimental.3 */
 
 import { default as SideNavigationRoot } from "./SideNavigation.svelte";
-import { ButtonItem, ExpandToggle, LinkItem } from "./common/index.js";
+import { ExpandToggle, NavigationItem } from "./common/index.js";
 
 const SideNavigation = SideNavigationRoot as typeof SideNavigationRoot & {
   /**
-   * `SideNavigation.ButtonItem` A clickable button item within the side navigation.
+   * `SideNavigation.NavigationItem` A clickable button item within the side navigation.
    */
-  ButtonItem: typeof ButtonItem;
-  /**
-   * `SideNavigation.LinkItem` A navigational link item within the side navigation.
-   */
-  LinkItem: typeof LinkItem;
+  NavigationItem: typeof NavigationItem;
   /**
    * `SideNavigation.ExpandToggle` A button to toggle the expansion of the side navigation.
    */
   ExpandToggle: typeof ExpandToggle;
 };
 
-SideNavigation.ButtonItem = ButtonItem;
-SideNavigation.LinkItem = LinkItem;
+SideNavigation.NavigationItem = NavigationItem;
 SideNavigation.ExpandToggle = ExpandToggle;
 
 export { SideNavigation };
 export * from "./types.js";
 
-export type {
-  ButtonItemProps as SideNavigationButtonItemProps,
-  ExpandToggleProps as SideNavigationExpandToggleProps,
-  LinkItemProps as SideNavigationLinkItemProps,
-} from "./common/index.js";
+export type { NavigationItemProps as SideNavigationItemProps } from "./common/index.js";

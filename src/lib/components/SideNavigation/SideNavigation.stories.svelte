@@ -82,40 +82,40 @@
       {#each { length: 60 }, i (i)}
         {@const Icon = icons[i % icons.length]}
         {#if i % 2}
-          <SideNavigation.LinkItem href={`/item${i}`} selected={i === 1}>
+          <SideNavigation.NavigationItem href={`/item${i}`} selected={i === 1}>
             Link Item {i}
             {#snippet icon()}
               <Icon />
             {/snippet}
-          </SideNavigation.LinkItem>
+          </SideNavigation.NavigationItem>
         {:else}
-          <SideNavigation.ButtonItem>
+          <SideNavigation.NavigationItem>
             Button Item {i}
             {#snippet icon()}
               <Icon />
             {/snippet}
-          </SideNavigation.ButtonItem>
+          </SideNavigation.NavigationItem>
         {/if}
       {/each}
       {#snippet footer()}
-        <SideNavigation.ButtonItem>
+        <SideNavigation.NavigationItem>
           {#snippet icon()}
             <ColorPaletteIcon />
           {/snippet}
           Theme: Light
-        </SideNavigation.ButtonItem>
-        <SideNavigation.LinkItem href="/">
+        </SideNavigation.NavigationItem>
+        <SideNavigation.NavigationItem href="/">
           {#snippet icon()}
             <UserIcon />
           {/snippet}
           $username
-        </SideNavigation.LinkItem>
-        <SideNavigation.ButtonItem>
+        </SideNavigation.NavigationItem>
+        <SideNavigation.NavigationItem>
           {#snippet icon()}
             <LogOutIcon />
           {/snippet}
           Logout
-        </SideNavigation.ButtonItem>
+        </SideNavigation.NavigationItem>
       {/snippet}
     </SideNavigation>
   {/snippet}

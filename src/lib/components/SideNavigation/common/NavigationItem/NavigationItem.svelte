@@ -2,9 +2,9 @@
 
 <script lang="ts">
   import { ButtonPrimitive } from "$lib/components/common/index.js";
-  import type { LinkItemProps } from "./types.js";
+  import type { NavigationItemProps } from "./types.js";
 
-  const componentCssClassName = "ds navigation-link-item navigation-item";
+  const componentCssClassName = "ds navigation-item";
 
   let {
     class: className,
@@ -12,13 +12,12 @@
     icon,
     selected,
     ...rest
-  }: LinkItemProps = $props();
+  }: NavigationItemProps = $props();
 
   const labelId = $props.id();
 </script>
 
 <ButtonPrimitive
-  as="a"
   class={[componentCssClassName, className, { selected }]}
   aria-labelledby={labelId}
   {...rest}
@@ -36,10 +35,11 @@
 
 <style>
   :global {
-    .ds.navigation-link-item {
+    .ds.navigation-item {
       display: grid;
       position: relative;
       grid-column: 1 / -1;
+      border: none;
 
       --dimension-padding-inline-button: 0;
       --dimension-padding-block-button: var(--lp-dimension-spacing-block-xxs);

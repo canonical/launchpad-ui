@@ -157,7 +157,7 @@
             />
           </form>
         {/snippet}
-        <SideNavigation.LinkItem
+        <SideNavigation.NavigationItem
           href={resolve("/")}
           selected={page.url.pathname === "/"}
           aria-current={page.url.pathname === "/" ? "page" : undefined}
@@ -166,8 +166,8 @@
           {#snippet icon()}
             <HomeIcon />
           {/snippet}
-        </SideNavigation.LinkItem>
-        <SideNavigation.LinkItem
+        </SideNavigation.NavigationItem>
+        <SideNavigation.NavigationItem
           href={resolve("/jobs")}
           selected={page.url.pathname.startsWith("/jobs")}
           aria-current={page.url.pathname.startsWith("/jobs")
@@ -178,24 +178,24 @@
           {#snippet icon()}
             <IsoIcon />
           {/snippet}
-        </SideNavigation.LinkItem>
+        </SideNavigation.NavigationItem>
         <!-- TODO: Placeholder links -->
-        <SideNavigation.LinkItem disabled>
+        <SideNavigation.NavigationItem disabled>
           View another MP
           {#snippet icon()}
             <SearchIcon />
           {/snippet}
-        </SideNavigation.LinkItem>
-        <SideNavigation.LinkItem disabled>
+        </SideNavigation.NavigationItem>
+        <SideNavigation.NavigationItem disabled>
           Give feedback
           {#snippet icon()}
             <CommentsIcon />
           {/snippet}
-        </SideNavigation.LinkItem>
+        </SideNavigation.NavigationItem>
         {#snippet footer()}
           <Popover position="inline-end span-block-start">
             {#snippet trigger(triggerProps)}
-              <SideNavigation.ButtonItem {...triggerProps}>
+              <SideNavigation.NavigationItem {...triggerProps}>
                 {#snippet icon()}
                   <ColorPaletteIcon />
                 {/snippet}
@@ -203,7 +203,7 @@
                 <span style="text-transform: capitalize;"
                   >{await getTheme()}</span
                 >
-              </SideNavigation.ButtonItem>
+              </SideNavigation.NavigationItem>
             {/snippet}
             <ContextualMenuContent
               style="margin-inline-start: var(--lp-dimension-spacing-inline-xxs);"
@@ -239,18 +239,18 @@
             </ContextualMenuContent>
           </Popover>
           <!-- TODO: Placeholder links -->
-          <SideNavigation.LinkItem disabled>
+          <SideNavigation.NavigationItem disabled>
             $username
             {#snippet icon()}
               <UserIcon />
             {/snippet}
-          </SideNavigation.LinkItem>
-          <SideNavigation.LinkItem disabled>
+          </SideNavigation.NavigationItem>
+          <SideNavigation.NavigationItem disabled>
             Log out
             {#snippet icon()}
               <LogOutIcon />
             {/snippet}
-          </SideNavigation.LinkItem>
+          </SideNavigation.NavigationItem>
         {/snippet}
       </SideNavigation>
 

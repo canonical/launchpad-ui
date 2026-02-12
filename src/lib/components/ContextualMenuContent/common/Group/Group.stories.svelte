@@ -23,7 +23,11 @@
   {#snippet template(args)}
     <ContextualMenuContent.Group {...args}>
       <ContextualMenuContent.ButtonItem text="Button" />
-      <ContextualMenuContent.LinkItem text="Link (disabled)" disabled />
+      <ContextualMenuContent.ButtonItem
+        href="http://example.com"
+        text="Link (disabled)"
+        disabled
+      />
       <ContextualMenuContent.CheckboxItem text="Checkbox" />
       <ContextualMenuContent.RadioItem text="Radio (disabled)" disabled />
       <ContextualMenuContent.SwitchItem text="Switch" />

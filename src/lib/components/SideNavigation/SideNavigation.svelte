@@ -84,37 +84,37 @@ The component has two sections:
       onclick={() => (expanded = !expanded)}
     />
   {/snippet}
-  <SideNavigation.LinkItem href="/dashboard">
+  <SideNavigation.NavigationItem href="/dashboard">
     {#snippet icon()}
       <Dashboard />
     {/snippet}
     Dashboard
-  </SideNavigation.LinkItem>
-  <SideNavigation.LinkItem href="/projects">
+  </SideNavigation.NavigationItem>
+  <SideNavigation.NavigationItem href="/projects">
     {#snippet icon()}
       <Folder />
     {/snippet}
     Projects
-  </SideNavigation.LinkItem>
+  </SideNavigation.NavigationItem>
   {#snippet footer()}
-    <SideNavigation.ButtonItem onclick={doSomething}>
+    <SideNavigation.NavigationItem onclick={doSomething}>
       {#snippet icon()}
         <ColorPalette />
       {/snippet}
       Theme
-    </SideNavigation.ButtonItem>
-    <SideNavigation.LinkItem href="/profile">
+    </SideNavigation.NavigationItem>
+    <SideNavigation.NavigationItem href="/profile">
       {#snippet icon()}
         <User />
       {/snippet}
       John Doe
-    </SideNavigation.LinkItem>
-    <SideNavigation.ButtonItem onclick={doSomethingElse}>
+    </SideNavigation.NavigationItem>
+    <SideNavigation.NavigationItem onclick={doSomethingElse}>
       {#snippet icon()}
         <LogOut />
       {/snippet}
       Logout
-    </SideNavigation.ButtonItem>
+    </SideNavigation.NavigationItem>
   {/snippet}
 </SideNavigation>
 ```

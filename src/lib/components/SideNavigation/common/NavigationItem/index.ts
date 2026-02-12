@@ -1,4 +1,4 @@
 /* @canonical/generator-ds 0.10.0-experimental.3 */
 
-export { default as ButtonItem } from "./ButtonItem.svelte";
+export { default as NavigationItem } from "./NavigationItem.svelte";
 export * from "./types.js";

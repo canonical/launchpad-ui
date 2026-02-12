@@ -2,23 +2,17 @@
 
 import { render } from "@canonical/svelte-ssr-test";
 import type { RenderResult } from "@canonical/svelte-ssr-test";
-import type { ComponentProps } from "svelte";
-import { describe, expect, it, vi } from "vitest";
-import Component from "./SortLink.svelte";
+import { createRawSnippet } from "svelte";
+import { describe, expect, it } from "vitest";
+import Component from "./NavigationItem.svelte";
+import type { NavigationItemProps } from "./types.js";
 
-vi.mock("../../context.js", () => {
-  return {
-    getTHContext: () => ({
-      ariaSort: undefined,
-    }),
-  };
-});
-
-describe("SortLink SSR", () => {
+describe("NavigationItem SSR", () => {
   const baseProps = {
-    "aria-label": "Sort",
-    href: "#",
-  } satisfies ComponentProps<typeof Component>;
+    children: createRawSnippet(() => ({
+      render: () => `<span>NavigationItem</span>`,
+    })),
+  } satisfies NavigationItemProps;
 
   describe("basics", () => {
     it("doesn't throw", () => {
@@ -30,7 +24,7 @@ describe("SortLink SSR", () => {
     it("renders", () => {
       const page = render(Component, { props: { ...baseProps } });
       expect(componentLocator(page)).toBeInstanceOf(
-        page.window.HTMLAnchorElement,
+        page.window.HTMLButtonElement,
       );
     });
   });
@@ -38,7 +32,7 @@ describe("SortLink SSR", () => {
   describe("attributes", () => {
     it.each([
       ["id", "test-id"],
-      ["href", "#test"],
+      ["aria-label", "test-aria-label"],
     ])("applies %s", (attribute, expected) => {
       const page = render(Component, {
         props: { ...baseProps, [attribute]: expected },
@@ -48,14 +42,16 @@ describe("SortLink SSR", () => {
 
     it("applies classes", () => {
       const page = render(Component, {
-        props: { class: "test-class", ...baseProps },
+        props: { ...baseProps, class: "test-class" },
       });
       expect(componentLocator(page).classList).toContain("test-class");
+      expect(componentLocator(page).classList).toContain("ds");
+      expect(componentLocator(page).classList).toContain("navigation-item");
     });
 
     it("applies style", () => {
       const page = render(Component, {
-        props: { style: "color: orange;", ...baseProps },
+        props: { ...baseProps, style: "color: orange;" },
       });
       expect(componentLocator(page).style.color).toBe("orange");
     });
@@ -63,5 +59,5 @@ describe("SortLink SSR", () => {
 });
 
 function componentLocator(page: RenderResult): HTMLElement {
-  return page.getByRole("link", { name: "Sort" });
+  return page.getByRole("button");
 }

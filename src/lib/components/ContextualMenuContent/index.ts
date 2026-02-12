@@ -6,7 +6,6 @@ import {
   CheckboxItem,
   Group,
   Helper,
-  LinkItem,
   RadioItem,
   SwitchItem,
 } from "./common/index.js";
@@ -17,7 +16,6 @@ const ContextualMenuContent =
     Group: typeof Group;
     ButtonItem: typeof ButtonItem;
     CheckboxItem: typeof CheckboxItem;
-    LinkItem: typeof LinkItem;
     RadioItem: typeof RadioItem;
     SwitchItem: typeof SwitchItem;
   };
@@ -26,7 +24,6 @@ ContextualMenuContent.Helper = Helper;
 ContextualMenuContent.Group = Group;
 ContextualMenuContent.ButtonItem = ButtonItem;
 ContextualMenuContent.CheckboxItem = CheckboxItem;
-ContextualMenuContent.LinkItem = LinkItem;
 ContextualMenuContent.RadioItem = RadioItem;
 ContextualMenuContent.SwitchItem = SwitchItem;
 
@@ -37,7 +34,6 @@ export type {
   CheckboxItemProps as ContextualMenuContentCheckboxItemProps,
   GroupProps as ContextualMenuContentGroupProps,
   HelperProps as ContextualMenuContentHelperProps,
-  LinkItemProps as ContextualMenuContentLinkItemProps,
   RadioItemProps as ContextualMenuContentRadioItemProps,
   SwitchItemProps as ContextualMenuContentSwitchItemProps,
 } from "./common/index.js";

@@ -4,7 +4,7 @@ import type { ButtonProps } from "$lib/components/Button/index.js";
 import type { Shortcut } from "$lib/shortcuts/index.js";
 
 export type ActionButtonProps = Omit<
-  ButtonProps,
+  Extract<ButtonProps, { href?: never }>,
   "children" | "iconLeft" | "iconRight" | "density" | "severity"
 > & {
   /**

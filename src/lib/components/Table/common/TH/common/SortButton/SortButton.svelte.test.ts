@@ -49,6 +49,16 @@ describe("SortButton component", () => {
         .toHaveStyle({ color: "orange" });
     });
   });
+
+  it("renders as link when href is provided", async () => {
+    const page = render(Component, {
+      ...baseProps,
+      href: "https://example.com",
+    });
+    await expect
+      .element(page.getByRole("link", { name: "Sort" }))
+      .toHaveAttribute("href", "https://example.com");
+  });
 });
 
 function componentLocator(page: RenderResult<typeof Component>): Locator {

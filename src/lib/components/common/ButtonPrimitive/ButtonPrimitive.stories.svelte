@@ -17,19 +17,17 @@
   });
 </script>
 
-<Story name="As button" args={{ as: "button" }}>ButtonPrimitive</Story>
+<Story name="As button">ButtonPrimitive</Story>
 
-<Story name="As anchor" args={{ as: "a", href: "https://example.com" }}>
+<Story name="As anchor" args={{ href: "https://example.com" }}>
   ButtonPrimitive
 </Story>
 
-<Story name="Disabled button" args={{ as: "button", disabled: true }}>
-  ButtonPrimitive
-</Story>
+<Story name="Disabled button" args={{ disabled: true }}>ButtonPrimitive</Story>
 
 <Story
   name="Disabled anchor"
-  args={{ as: "a", href: "https://example.com", disabled: true }}
+  args={{ href: "https://example.com", disabled: true }}
 >
   ButtonPrimitive
 </Story>

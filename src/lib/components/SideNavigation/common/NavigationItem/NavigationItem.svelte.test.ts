@@ -1,36 +1,29 @@
 /* @canonical/generator-ds 0.10.0-experimental.5 */
 
+import { createRawSnippet } from "svelte";
 import type { ComponentProps } from "svelte";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import type { Locator } from "vitest/browser";
 import { render } from "vitest-browser-svelte";
 import type { RenderResult } from "vitest-browser-svelte";
-import Component from "./SortLink.svelte";
+import Component from "./NavigationItem.svelte";
 
-vi.mock("../../context.js", () => {
-  return {
-    getTHContext: () => ({
-      ariaSort: undefined,
-    }),
-  };
-});
-
-describe("SortLink component", () => {
+describe("NavigationItem component", () => {
   const baseProps = {
-    "aria-label": "Sort",
-    href: "#",
+    children: createRawSnippet(() => ({
+      render: () => `<span>NavigationItem</span>`,
+    })),
   } satisfies ComponentProps<typeof Component>;
 
   it("renders", async () => {
     const page = render(Component, { ...baseProps });
     await expect.element(componentLocator(page)).toBeInTheDocument();
-    await expect.element(componentLocator(page)).toBeVisible();
   });
 
   describe("attributes", () => {
     it.each([
       ["id", "test-id"],
-      ["href", "#test"],
+      ["aria-label", "test-aria-label"],
     ])("applies %s", async (attribute, expected) => {
       const page = render(Component, { ...baseProps, [attribute]: expected });
       await expect
@@ -41,6 +34,10 @@ describe("SortLink component", () => {
     it("applies classes", async () => {
       const page = render(Component, { ...baseProps, class: "test-class" });
       await expect.element(componentLocator(page)).toHaveClass("test-class");
+      await expect.element(componentLocator(page)).toHaveClass("ds");
+      await expect
+        .element(componentLocator(page))
+        .toHaveClass("navigation-item");
     });
 
     it("applies style", async () => {
@@ -53,8 +50,18 @@ describe("SortLink component", () => {
         .toHaveStyle({ color: "orange" });
     });
   });
+
+  it("renders as link when href is provided", async () => {
+    const page = render(Component, {
+      ...baseProps,
+      href: "https://example.com",
+    });
+    await expect
+      .element(page.getByRole("link"))
+      .toHaveAttribute("href", "https://example.com");
+  });
 });
 
 function componentLocator(page: RenderResult<typeof Component>): Locator {
-  return page.getByRole("link", { name: "Sort" });
+  return page.getByRole("button");
 }

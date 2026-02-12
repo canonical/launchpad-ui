@@ -3,6 +3,6 @@
 import type { ButtonProps } from "$lib/components/Button/index.js";
 
 export type CloseButtonProps = Omit<
-  ButtonProps,
+  Extract<ButtonProps, { href?: never }>,
   "children" | "iconLeft" | "iconRight"
 >;
