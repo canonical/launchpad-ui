@@ -153,6 +153,8 @@
           <ContextualMenuContent.ButtonItem
             text="View raw log"
             href={viewLogUrl}
+            target="_blank"
+            rel="noopener noreferrer"
           />
         {/if}
         {#if downloadLogUrl}
@@ -160,6 +162,8 @@
             href={downloadLogUrl}
             download
             text="Download log"
+            target="_blank"
+            rel="noopener noreferrer"
           />
         {/if}
       </ContextualMenuContent.Group>

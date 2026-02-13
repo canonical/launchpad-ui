@@ -43,7 +43,7 @@
     let sortParam: string;
 
     if (sort.field !== key) {
-      sortParam = key;
+      sortParam = `${key}`;
     } else if (sort.direction === "ascending") {
       sortParam = `-${key}`;
     } else {
@@ -110,7 +110,7 @@
       </tr>
     </thead>
     <tbody>
-      {#each (await jobsPromise).toSorted((a, b) => {
+      {#each (await jobsPromise).data.toSorted((a, b) => {
         const { field, direction } = sort;
         const aValue = a[field as keyof JobRead];
         const bValue = b[field as keyof JobRead];

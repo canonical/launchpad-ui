@@ -1,5 +1,6 @@
 <script lang="ts">
   import { MediaQuery } from "svelte/reactivity";
+  import { jobManagerHref } from "$lib/api/job-manager/hrefClient.js";
   import { Breadcrumbs, Log } from "$lib/components/index.js";
   import type { TimeZone } from "$lib/components/index.js";
   import {
@@ -25,6 +26,25 @@
   const logBottomId = "log-bottom";
 
   const fullScreen = useFullScreen();
+  const defaultLog = $derived(
+    job.objects?.find(
+      (obj) => obj.object_type === "log" && obj.filename === "default.log",
+    ),
+  );
+
+  function defaultLogHref(inline: boolean) {
+    if (!defaultLog) return undefined;
+
+    return jobManagerHref("/v1/jobs/{job_id}/object/{object_name}", {
+      path: {
+        job_id: job.id,
+        object_name: defaultLog.filename,
+      },
+      query: {
+        inline,
+      },
+    });
+  }
 
   /* 
   There is a bug in Chrome, that makes it ignore `scroll-margin` for global scroll on elements that have a parent with non-visible overflow. https://issues.chromium.org/issues/40074749
@@ -62,8 +82,8 @@
         bind:wrapLines
         bind:timeZone
         bind:showTimestamps
-        viewLogUrl={data.logUrl}
-        downloadLogUrl={data.logUrl}
+        viewLogUrl={defaultLogHref(true)}
+        downloadLogUrl={defaultLogHref(false)}
         scrollToTopHref={needsFallbackScrollMarginFix
           ? `#${logHeaderId}`
           : `#${logTopId}`}
