@@ -1,5 +1,7 @@
 import { error } from "@sveltejs/kit";
 import { jobManager } from "$lib/api/job-manager/client.js";
+import { defaultLogObjectName } from "$lib/api/job-manager/consts.js";
+import { extractErrorMessage } from "$lib/api/job-manager/utils.js";
 import { stripAnsi } from "$lib/utils/index.js";
 import type { PageServerLoad } from "./$types";
 
@@ -22,7 +24,7 @@ export const load = (async ({ params, fetch }) => {
       params: {
         path: {
           job_id: id,
-          object_name: "default.log",
+          object_name: defaultLogObjectName,
         },
       },
       parseAs: "text",
@@ -32,12 +34,17 @@ export const load = (async ({ params, fetch }) => {
 
   if (jobResponse.error) {
     console.error(jobResponse.error);
-    error(500, "Failed to fetch job details");
+    error(
+      jobResponse.response.status,
+      `Failed to fetch job: ${extractErrorMessage(jobResponse.error)}`,
+    );
   }
 
   if (logResponse.error) {
     if (logResponse.response.status !== 404) {
-      console.error(`Failed to fetch default log: ${logResponse.error.detail}`);
+      console.error(
+        `Failed to fetch default log: ${extractErrorMessage(logResponse.error)}`,
+      );
     }
 
     return {

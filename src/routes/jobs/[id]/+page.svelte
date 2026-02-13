@@ -1,5 +1,6 @@
 <script lang="ts">
   import { MediaQuery } from "svelte/reactivity";
+  import { defaultLogObjectName } from "$lib/api/job-manager/consts.js";
   import { jobManagerHref } from "$lib/api/job-manager/hrefClient.js";
   import { Breadcrumbs, Log } from "$lib/components/index.js";
   import type { TimeZone } from "$lib/components/index.js";
@@ -28,7 +29,8 @@
   const fullScreen = useFullScreen();
   const defaultLog = $derived(
     job.objects?.find(
-      (obj) => obj.object_type === "log" && obj.filename === "default.log",
+      (obj) =>
+        obj.object_type === "log" && obj.filename === defaultLogObjectName,
     ),
   );
 
