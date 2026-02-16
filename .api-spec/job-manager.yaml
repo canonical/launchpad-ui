@@ -1,4 +1,4 @@
-# Source commit: d99674acbf7d25902eb8b3c0ed6b33d93b2b6d79 (job-manager:main)
+# Source commit: dfa26287935c94eca49aa76beb14a9f5059ff8bb (job-manager:main)
 openapi: 3.1.0
 info:
   title: Job Manager API
@@ -58,14 +58,18 @@ paths:
             status: Optional job status to filter jobs by
             private: Optional flag to filter by privacy status
             repository_url: Optional repository URL to filter jobs by
+            sort: Optional field to sort by (prefix with - for descending)
+            limit: Optional number of records to return
+            offset: Optional number of records to skip
             db: Database session dependency
             token: API access token for authorization
 
         Returns:
-            List[JobRead]: List of all jobs matching the criteria
+            JobsListResponse: Paginated response with metadata and jobs data
 
         Raises:
             HTTPException 401: If authorization token is invalid or missing
+            HTTPException 400: If sort field is invalid
       operationId: get_jobs_v1_jobs_get
       parameters:
       - name: tags
@@ -128,16 +132,45 @@ paths:
           - type: string
           - type: 'null'
           title: Repository Url
+      - name: sort
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: string
+          - type: 'null'
+          description: Sort by field (prefix with - for descending, e.g., -created_at)
+          title: Sort
+        description: Sort by field (prefix with - for descending, e.g., -created_at)
+      - name: limit
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+            minimum: 0
+          - type: 'null'
+          description: Number of records to return
+          title: Limit
+        description: Number of records to return
+      - name: offset
+        in: query
+        required: false
+        schema:
+          anyOf:
+          - type: integer
+            minimum: 0
+          - type: 'null'
+          description: Number of records to skip
+          title: Offset
+        description: Number of records to skip
       responses:
         '200':
           description: Successful Response
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/JobRead'
-                title: Response Get Jobs V1 Jobs Get
+                $ref: '#/components/schemas/JobsListResponse'
         '422':
           description: Validation Error
           content:
@@ -191,20 +224,23 @@ paths:
       - jobs
       summary: Update Job
       description: |-
-        Update an existing job's information.
+        Update an existing job's priority.
+
+        Only admin users can update job priority.
 
         Args:
             job_id: Unique identifier of the job to update
-            job_in: Job update model containing fields to update
+            job_in: Job priority update model containing priority field
             db: Database session dependency
-            token: API access token for authorization
+            token: API access token for authorization (must have admin role)
 
         Returns:
             JobRead: The updated job object
 
         Raises:
-            HTTPException 400: If invalid tag format is provided
+            HTTPException 400: If job status is not PENDING
             HTTPException 401: If authorization token is invalid or missing
+            HTTPException 403: If user does not have admin role
             HTTPException 404: If job is not found
       operationId: update_job_v1_jobs__job_id__put
       parameters:
@@ -219,7 +255,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/JobUpdate'
+              $ref: '#/components/schemas/JobPriorityUpdate'
       responses:
         '200':
           description: Successful Response
@@ -364,11 +400,17 @@ paths:
       - jobs
       summary: Download Object
       description: |-
-        Download an artifact or object associated with a job.
+        Download an artifact, log, or metadata file associated with a job.
 
         Args:
             job_id: Unique identifier of the job
-            object_name: Name of the object/artifact to download
+            object_name: Path to the object, with format: {type}/{filename}
+                         where type is 'artifact', 'log', or 'metadata'
+                         (URL-encoded). Also supports legacy format without type.
+            inline: If True, display inline in browser
+                    (Content-Disposition: inline) and force text/plain for
+                    files listed in the job's log_urls. Defaults to False.
+            omit_content_length: If True, do not include Content-Length header.
             db: Database session dependency
 
         Returns:
@@ -378,7 +420,8 @@ paths:
         Raises:
             HTTPException 401: If job is private and no valid token is provided
             HTTPException 403: If user doesn't have permission to view private job
-            HTTPException 404: If job is not found
+                               or access validation fails
+            HTTPException 404: If job or object is not found
             HTTPException 500: If object cannot be accessed or S3 error occurs
       operationId: download_object_v1_jobs__job_id__object__object_name__get
       parameters:
@@ -394,6 +437,24 @@ paths:
         schema:
           type: string
           title: Object Name
+      - name: inline
+        in: query
+        required: false
+        schema:
+          type: boolean
+          description: Display inline in browser
+          default: false
+          title: Inline
+        description: Display inline in browser
+      - name: omit_content_length
+        in: query
+        required: false
+        schema:
+          type: boolean
+          description: Omit Content-Length header from the response
+          default: false
+          title: Omit Content Length
+        description: Omit Content-Length header from the response
       responses:
         '200':
           description: Successful Response
@@ -417,6 +478,7 @@ paths:
         Args:
             job_id: Unique identifier of the job
             object_name: Name of the object/artifact to get metadata for
+                (URL-encoded)
             db: Database session dependency
             token: Optional API access token for authorization (required for
                 private jobs)
@@ -426,9 +488,10 @@ paths:
                 headers
 
         Raises:
-            HTTPException 404: If job is not found
+            HTTPException 404: If job or object is not found
             HTTPException 401: If job is private and no valid token is provided
             HTTPException 403: If user doesn't have permission to view private job
+                               or access validation fails
             HTTPException 500: If object cannot be accessed
       operationId: get_object_metadata_v1_jobs__job_id__object__object_name__head
       parameters:
@@ -456,6 +519,48 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
+  /v1/jobs/{job_id}/artifacts/download:
+    get:
+      tags:
+      - jobs
+      summary: Download All Artifacts
+      description: |-
+        Download all artifacts for a job as a single zip file.
+
+        Args:
+            job_id: Unique identifier of the job
+            db: Database session dependency
+            token: Optional API access token for authorization (required for
+                private jobs)
+
+        Returns:
+            StreamingResponse: Stream of a zip file containing all job artifacts
+
+        Raises:
+            HTTPException 401: If job is private and no valid token is provided
+            HTTPException 403: If user doesn't have permission to view private job
+            HTTPException 404: If job is not found or has no artifacts
+            HTTPException 500: If artifacts cannot be accessed or S3 error occurs
+      operationId: download_all_artifacts_v1_jobs__job_id__artifacts_download_get
+      parameters:
+      - name: job_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Job Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
   /v1/jobs/{job_id}/token:
     post:
       tags:
@@ -463,6 +568,10 @@ paths:
       summary: Generate Token
       description: |-
         Generate a JWT token for job authentication and set up SSH keys.
+
+        SSH keys are now stored in the database with encryption for the private
+        key, enabling multi-instance deployments without shared filesystem
+        requirements.
 
         Args:
             job_id: Unique identifier of the job
@@ -658,16 +767,76 @@ paths:
         Args:
             runner_id: Unique identifier of the runner
             request: FastAPI request object containing health metrics
+            health_data: Health data sent by the runner
             background_tasks: FastAPI background tasks for async operations
-            db: Database session dependency
             _: Runner token for authorization
 
         Returns:
             dict: Acknowledgment of health update receipt
-
-        Raises:
-            HTTPException 404: If runner is not found
       operationId: update_runner_health_v1_runners__runner_id__health_put
+      parameters:
+      - name: runner_id
+        in: path
+        required: true
+        schema:
+          type: integer
+          title: Runner Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RunnerHealthUpdate'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RunnerHealthUpdateResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /v1/runners/list:
+    get:
+      tags:
+      - runners
+      summary: List Runners
+      description: |-
+        List all runners that exist in OpenStack (admins only).
+
+        Returns:
+            list: List of runners that exist in OpenStack
+      operationId: list_runners_v1_runners_list_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/RunnerListItem'
+                type: array
+                title: Response List Runners V1 Runners List Get
+  /v1/runners/{runner_id}/rebuild:
+    post:
+      tags:
+      - runners
+      summary: Rebuild Runner Admin Only
+      description: |-
+        Force rebuild a runner (admins only).
+
+        This endpoint forcefully rebuilds a runner regardless of its status.
+        If the runner has an assigned job, that job will be marked as FAILED
+        before the rebuild proceeds.
+
+        Access control:
+            - Requires a valid API access token
+            - Token must have the `admin` role
+      operationId: rebuild_runner_admin_only_v1_runners__runner_id__rebuild_post
       parameters:
       - name: runner_id
         in: path
@@ -680,8 +849,7 @@ paths:
           description: Successful Response
           content:
             application/json:
-              schema:
-                $ref: '#/components/schemas/RunnerHealthUpdateResponse'
+              schema: {}
         '422':
           description: Validation Error
           content:
@@ -774,30 +942,6 @@ components:
       - i386
       title: Architecture
       description: Supported CPU architectures.
-    ArtifactMetadata:
-      properties:
-        url:
-          type: string
-          title: Url
-        type:
-          type: string
-          title: Type
-        size:
-          type: integer
-          title: Size
-      type: object
-      required:
-      - url
-      - type
-      - size
-      title: ArtifactMetadata
-      description: |-
-        Metadata for a job artifact stored in S3.
-
-        Attributes:
-            url: Full URL to download the artifact
-            type: MIME type of the artifact (e.g., 'application/gzip')
-            size: Size of the artifact in bytes
     HTTPValidationError:
       properties:
         detail:
@@ -909,22 +1053,6 @@ components:
           default: 0
           examples:
           - 4
-        artifact_urls:
-          items: {}
-          type: array
-          title: Artifact Urls
-          default: []
-          examples:
-          - - https://example.com/jobs/123/output.tar.gz
-            - https://example.com/jobs/123/metadata.json
-        log_urls:
-          items: {}
-          type: array
-          title: Log Urls
-          default: []
-          examples:
-          - - https://example.com/jobs/123/object/default.log
-            - https://example.com/jobs/123/object/job-agent.log
         tags:
           items:
             type: string
@@ -937,6 +1065,81 @@ components:
       type: object
       title: JobCreate
       description: Job creation model.
+    JobObjectRead:
+      properties:
+        id:
+          type: integer
+          title: Id
+          examples:
+          - 1
+        job_id:
+          type: integer
+          title: Job Id
+          examples:
+          - 123
+        filename:
+          type: string
+          title: Filename
+          examples:
+          - output.tar.gz
+        object_type:
+          $ref: '#/components/schemas/ObjectType'
+          examples:
+          - artifact
+        content_type:
+          type: string
+          title: Content Type
+          examples:
+          - application/gzip
+        size_bytes:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Size Bytes
+          examples:
+          - 1024
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+          examples:
+          - '2024-01-15T10:30:00Z'
+        url:
+          type: string
+          title: Url
+          description: URL endpoint for this object
+          readOnly: true
+          examples:
+          - https://example.com/jobs/123/object/artifact/output.tar.gz
+      type: object
+      required:
+      - id
+      - job_id
+      - filename
+      - object_type
+      - content_type
+      - created_at
+      - url
+      title: JobObjectRead
+      description: Job object read model for artifacts and logs.
+    JobPriorityUpdate:
+      properties:
+        priority:
+          type: integer
+          maximum: 10.0
+          minimum: 0.0
+          title: Priority
+          examples:
+          - 7
+      type: object
+      required:
+      - priority
+      title: JobPriorityUpdate
+      description: |-
+        Job priority update model.
+
+        Only priority can be updated via this model, and only by admin users.
+        This is used for the admin-only job update endpoint.
     JobRead:
       properties:
         title:
@@ -1039,22 +1242,6 @@ components:
           default: 0
           examples:
           - 4
-        artifact_urls:
-          items: {}
-          type: array
-          title: Artifact Urls
-          default: []
-          examples:
-          - - https://example.com/jobs/123/output.tar.gz
-            - https://example.com/jobs/123/metadata.json
-        log_urls:
-          items: {}
-          type: array
-          title: Log Urls
-          default: []
-          examples:
-          - - https://example.com/jobs/123/object/default.log
-            - https://example.com/jobs/123/object/job-agent.log
         tags:
           items:
             type: string
@@ -1102,27 +1289,92 @@ components:
           title: Completed At
           examples:
           - '2025-01-15T10:45:23.456789Z'
-        artifacts:
+        objects:
           items:
-            $ref: '#/components/schemas/ArtifactMetadata'
+            $ref: '#/components/schemas/JobObjectRead'
           type: array
-          title: Artifacts
-          description: List of artifact metadata with URL, MIME type, and size. Returns empty list if no artifacts exist or S3 is unavailable.
+          title: Objects
+          examples:
+          - - content_type: application/gzip
+              created_at: '2025-01-15T10:30:00.123456Z'
+              filename: build-output.tar.gz
+              id: 1
+              job_id: 123
+              object_type: artifact
+              size_bytes: 2048576
+            - content_type: application/json
+              created_at: '2025-01-15T10:30:05.123456Z'
+              filename: fetch_service_metadata.json
+              id: 2
+              job_id: 123
+              object_type: metadata
+              size_bytes: 512
+            - content_type: application/xml
+              created_at: '2025-01-15T10:30:10.123456Z'
+              filename: test-results.xml
+              id: 3
+              job_id: 123
+              object_type: artifact
+              size_bytes: 15360
+            - content_type: text/html
+              created_at: '2025-01-15T10:30:15.123456Z'
+              filename: coverage-report.html
+              id: 4
+              job_id: 123
+              object_type: artifact
+              size_bytes: 51200
+            - content_type: text/plain
+              created_at: '2025-01-15T10:24:00.123456Z'
+              filename: job_agent.log
+              id: 5
+              job_id: 123
+              object_type: log
+              size_bytes: 3840
+            - content_type: text/plain
+              created_at: '2025-01-15T10:25:00.123456Z'
+              filename: default.log
+              id: 6
+              job_id: 123
+              object_type: log
+              size_bytes: 10240
+        duration:
+          anyOf:
+          - type: number
+          - type: 'null'
+          title: Duration
+          description: Duration of the job in seconds. For finished jobs, this is completed_at - started_at. For in-progress jobs, this is current time - started_at. Returns None if job hasn't started.
           readOnly: true
           examples:
-          - - size: 2048576
-              type: application/gzip
-              url: https://example.com/v1/jobs/123/object/output.tar.gz
-            - size: 1024
-              type: application/json
-              url: https://example.com/v1/jobs/123/object/metadata.json
+          - 3600.5
+        artifact_urls:
+          items:
+            type: string
+          type: array
+          title: Artifact Urls
+          description: List of artifact URLs. Generated from objects table. Use objects field for full metadata.
+          readOnly: true
+          examples:
+          - - https://example.com/jobs/123/object/artifact/output.tar.gz
+            - https://example.com/jobs/123/object/metadata/fetch_service_metadata.json
+        log_urls:
+          items:
+            type: string
+          type: array
+          title: Log Urls
+          description: List of log URLs. Generated from objects table. Use objects field for full metadata.
+          readOnly: true
+          examples:
+          - - https://example.com/jobs/123/object/default.log
+      additionalProperties: true
       type: object
       required:
       - id
       - requested_by
       - created_at
       - updated_at
-      - artifacts
+      - duration
+      - artifact_urls
+      - log_urls
       title: JobRead
       description: Job read model with all fields.
     JobStatus:
@@ -1137,82 +1389,59 @@ components:
       - TERMINATED
       title: JobStatus
       description: Job status values.
-    JobUpdate:
+    JobsListMetadata:
       properties:
-        requested_by:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Requested By
+        total_count:
+          type: integer
+          title: Total Count
           examples:
-          - user
-        status:
-          anyOf:
-          - $ref: '#/components/schemas/JobStatus'
-          - type: 'null'
+          - 85
+        count:
+          type: integer
+          title: Count
           examples:
-          - FINISHED
-        artifact_urls:
-          anyOf:
-          - items: {}
-            type: array
-          - type: 'null'
-          title: Artifact Urls
+          - 20
+        limit:
+          type: integer
+          title: Limit
           examples:
-          - - https://example.com/jobs/123/output.tar.gz
-            - https://example.com/jobs/123/metadata.json
-        log_urls:
-          anyOf:
-          - items: {}
-            type: array
-          - type: 'null'
-          title: Log Urls
+          - 20
+        offset:
+          type: integer
+          title: Offset
+          default: 0
           examples:
-          - - https://example.com/jobs/123/object/default.log
-            - https://example.com/jobs/123/object/job-agent.log
-        started_at:
-          anyOf:
-          - type: string
-            format: date-time
-          - type: 'null'
-          title: Started At
-          examples:
-          - '2025-01-15T09:20:11.987654Z'
-        completed_at:
-          anyOf:
-          - type: string
-            format: date-time
-          - type: 'null'
-          title: Completed At
-          examples:
-          - '2025-01-15T10:45:23.456789Z'
-        title:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Title
-          examples:
-          - Build Ubuntu 24.04 image
-        description:
-          anyOf:
-          - type: string
-          - type: 'null'
-          title: Description
-          examples:
-          - Build a hardened Ubuntu image with security patches
-        tags:
-          anyOf:
-          - items:
-              type: string
-            type: array
-          - type: 'null'
-          title: Tags
-          examples:
-          - - security
-            - production
+          - 0
       type: object
-      title: JobUpdate
-      description: Job update model.
+      required:
+      - total_count
+      - count
+      - limit
+      title: JobsListMetadata
+      description: Metadata for paginated jobs list response.
+    JobsListResponse:
+      properties:
+        metadata:
+          $ref: '#/components/schemas/JobsListMetadata'
+        data:
+          items:
+            $ref: '#/components/schemas/JobRead'
+          type: array
+          title: Data
+      type: object
+      required:
+      - metadata
+      - data
+      title: JobsListResponse
+      description: Paginated response for jobs list.
+    ObjectType:
+      type: string
+      enum:
+      - artifact
+      - log
+      - metadata
+      title: ObjectType
+      description: Type of object being stored in S3.
     RunnerCreate:
       properties:
         name:
@@ -1262,6 +1491,36 @@ components:
       - status
       - deletable
       title: RunnerHealthResponse
+    RunnerHealthUpdate:
+      properties:
+        vm_ip:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Vm Ip
+        status:
+          $ref: '#/components/schemas/JobStatus'
+        label:
+          type: string
+          title: Label
+      additionalProperties: true
+      type: object
+      required:
+      - status
+      - label
+      title: RunnerHealthUpdate
+      description: |-
+        Health update data received from runner or job agent.
+
+        Accepts any additional fields the runner provides, but requires
+        at least vm_ip, status, and label.
+      examples:
+      - cpu_usage: '45.2'
+        disk_usage: '15360'
+        label: test-runner-1
+        ram_usage: '2048'
+        status: EXECUTING
+        vm_ip: 192.168.1.100
     RunnerHealthUpdateResponse:
       properties:
         message:
@@ -1271,6 +1530,36 @@ components:
       required:
       - message
       title: RunnerHealthUpdateResponse
+    RunnerListItem:
+      properties:
+        id:
+          type: integer
+          title: Id
+        cloud_name:
+          type: string
+          title: Cloud Name
+        openstack_server_id:
+          type: string
+          title: Openstack Server Id
+        status:
+          $ref: '#/components/schemas/RunnerStatus'
+        job_id:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Job Id
+        job_status:
+          anyOf:
+          - $ref: '#/components/schemas/JobStatus'
+          - type: 'null'
+      type: object
+      required:
+      - id
+      - cloud_name
+      - openstack_server_id
+      - status
+      title: RunnerListItem
+      description: Model for runner list item.
     RunnerRegisterResponse:
       properties:
         id:
@@ -1290,6 +1579,17 @@ components:
       - id
       - token
       title: RunnerRegisterResponse
+    RunnerStatus:
+      type: string
+      enum:
+      - CREATING
+      - IDLE
+      - BUSY
+      - REBUILDING
+      - DELETING
+      - ERROR
+      title: RunnerStatus
+      description: Runner status values.
     Series:
       type: string
       enum:

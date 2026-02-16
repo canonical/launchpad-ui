@@ -1,5 +1,7 @@
 import { error } from "@sveltejs/kit";
 import { jobManager } from "$lib/api/job-manager/client.js";
+import { defaultLogObjectName } from "$lib/api/job-manager/constants.js";
+import { extractErrorMessage } from "$lib/api/job-manager/utils.js";
 import { stripAnsi } from "$lib/utils/index.js";
 import type { PageServerLoad } from "./$types";
 
@@ -9,48 +11,51 @@ export const load = (async ({ params, fetch }) => {
     error(400, "Invalid job ID");
   }
 
-  const response = await jobManager.GET("/v1/jobs/{job_id}", {
-    params: {
-      path: {
-        job_id: id,
+  const [jobResponse, logResponse] = await Promise.all([
+    jobManager.GET("/v1/jobs/{job_id}", {
+      params: {
+        path: {
+          job_id: id,
+        },
       },
-    },
-    fetch,
-  });
+      fetch,
+    }),
+    jobManager.GET("/v1/jobs/{job_id}/object/{object_name}", {
+      params: {
+        path: {
+          job_id: id,
+          object_name: defaultLogObjectName,
+        },
+      },
+      parseAs: "text",
+      fetch,
+    }),
+  ]);
 
-  if (response.error) {
-    console.error(response.error);
-    error(500, "Failed to fetch job details");
+  if (jobResponse.error) {
+    error(
+      jobResponse.response.status,
+      `Failed to fetch job: ${extractErrorMessage(jobResponse.error)}`,
+    );
   }
 
-  const job = response.data;
+  if (logResponse.error) {
+    if (logResponse.response.status !== 404) {
+      error(
+        logResponse.response.status,
+        `Failed to fetch default log: ${extractErrorMessage(logResponse.error)}`,
+      );
+    }
 
-  const defaultLogUrl = job.log_urls?.find((url) =>
-    // @ts-expect-error until log_urls is typed properly
-    url.endsWith("default.log"),
-  );
-
-  if (!defaultLogUrl) {
     return {
-      job,
+      job: jobResponse.data,
       log: [],
     };
   }
 
-  // @ts-expect-error until log_urls is typed properly
-  const logResponse = await fetch(defaultLogUrl);
+  const log = logResponse.data.split("\n").map((line) => parseLogLine(line));
 
-  if (!logResponse.ok) {
-    console.error(
-      `Failed to fetch default log: ${logResponse.status} ${logResponse.statusText}`,
-    );
-    return { job, log: [] };
-  }
-
-  const logText = await logResponse.text();
-  const log = logText.split("\n").map((line) => parseLogLine(line));
-
-  return { job, log, logUrl: defaultLogUrl as string };
+  return { job: jobResponse.data, log };
 }) satisfies PageServerLoad;
 
 function parseLogLine(rawLine: string) {

@@ -23,14 +23,18 @@ export interface paths {
          *         status: Optional job status to filter jobs by
          *         private: Optional flag to filter by privacy status
          *         repository_url: Optional repository URL to filter jobs by
+         *         sort: Optional field to sort by (prefix with - for descending)
+         *         limit: Optional number of records to return
+         *         offset: Optional number of records to skip
          *         db: Database session dependency
          *         token: API access token for authorization
          *
          *     Returns:
-         *         List[JobRead]: List of all jobs matching the criteria
+         *         JobsListResponse: Paginated response with metadata and jobs data
          *
          *     Raises:
          *         HTTPException 401: If authorization token is invalid or missing
+         *         HTTPException 400: If sort field is invalid
          */
         get: operations["get_jobs_v1_jobs_get"];
         put?: never;
@@ -85,20 +89,23 @@ export interface paths {
         get: operations["get_job_v1_jobs__job_id__get"];
         /**
          * Update Job
-         * @description Update an existing job's information.
+         * @description Update an existing job's priority.
+         *
+         *     Only admin users can update job priority.
          *
          *     Args:
          *         job_id: Unique identifier of the job to update
-         *         job_in: Job update model containing fields to update
+         *         job_in: Job priority update model containing priority field
          *         db: Database session dependency
-         *         token: API access token for authorization
+         *         token: API access token for authorization (must have admin role)
          *
          *     Returns:
          *         JobRead: The updated job object
          *
          *     Raises:
-         *         HTTPException 400: If invalid tag format is provided
+         *         HTTPException 400: If job status is not PENDING
          *         HTTPException 401: If authorization token is invalid or missing
+         *         HTTPException 403: If user does not have admin role
          *         HTTPException 404: If job is not found
          */
         put: operations["update_job_v1_jobs__job_id__put"];
@@ -207,11 +214,17 @@ export interface paths {
         };
         /**
          * Download Object
-         * @description Download an artifact or object associated with a job.
+         * @description Download an artifact, log, or metadata file associated with a job.
          *
          *     Args:
          *         job_id: Unique identifier of the job
-         *         object_name: Name of the object/artifact to download
+         *         object_name: Path to the object, with format: {type}/{filename}
+         *                      where type is 'artifact', 'log', or 'metadata'
+         *                      (URL-encoded). Also supports legacy format without type.
+         *         inline: If True, display inline in browser
+         *                 (Content-Disposition: inline) and force text/plain for
+         *                 files listed in the job's log_urls. Defaults to False.
+         *         omit_content_length: If True, do not include Content-Length header.
          *         db: Database session dependency
          *
          *     Returns:
@@ -221,7 +234,8 @@ export interface paths {
          *     Raises:
          *         HTTPException 401: If job is private and no valid token is provided
          *         HTTPException 403: If user doesn't have permission to view private job
-         *         HTTPException 404: If job is not found
+         *                            or access validation fails
+         *         HTTPException 404: If job or object is not found
          *         HTTPException 500: If object cannot be accessed or S3 error occurs
          */
         get: operations["download_object_v1_jobs__job_id__object__object_name__get"];
@@ -237,6 +251,7 @@ export interface paths {
          *     Args:
          *         job_id: Unique identifier of the job
          *         object_name: Name of the object/artifact to get metadata for
+         *             (URL-encoded)
          *         db: Database session dependency
          *         token: Optional API access token for authorization (required for
          *             private jobs)
@@ -246,12 +261,48 @@ export interface paths {
          *             headers
          *
          *     Raises:
-         *         HTTPException 404: If job is not found
+         *         HTTPException 404: If job or object is not found
          *         HTTPException 401: If job is private and no valid token is provided
          *         HTTPException 403: If user doesn't have permission to view private job
+         *                            or access validation fails
          *         HTTPException 500: If object cannot be accessed
          */
         head: operations["get_object_metadata_v1_jobs__job_id__object__object_name__head"];
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/jobs/{job_id}/artifacts/download": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Download All Artifacts
+         * @description Download all artifacts for a job as a single zip file.
+         *
+         *     Args:
+         *         job_id: Unique identifier of the job
+         *         db: Database session dependency
+         *         token: Optional API access token for authorization (required for
+         *             private jobs)
+         *
+         *     Returns:
+         *         StreamingResponse: Stream of a zip file containing all job artifacts
+         *
+         *     Raises:
+         *         HTTPException 401: If job is private and no valid token is provided
+         *         HTTPException 403: If user doesn't have permission to view private job
+         *         HTTPException 404: If job is not found or has no artifacts
+         *         HTTPException 500: If artifacts cannot be accessed or S3 error occurs
+         */
+        get: operations["download_all_artifacts_v1_jobs__job_id__artifacts_download_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
         patch?: never;
         trace?: never;
     };
@@ -267,6 +318,10 @@ export interface paths {
         /**
          * Generate Token
          * @description Generate a JWT token for job authentication and set up SSH keys.
+         *
+         *     SSH keys are now stored in the database with encryption for the private
+         *     key, enabling multi-instance deployments without shared filesystem
+         *     requirements.
          *
          *     Args:
          *         job_id: Unique identifier of the job
@@ -402,18 +457,66 @@ export interface paths {
          *     Args:
          *         runner_id: Unique identifier of the runner
          *         request: FastAPI request object containing health metrics
+         *         health_data: Health data sent by the runner
          *         background_tasks: FastAPI background tasks for async operations
-         *         db: Database session dependency
          *         _: Runner token for authorization
          *
          *     Returns:
          *         dict: Acknowledgment of health update receipt
-         *
-         *     Raises:
-         *         HTTPException 404: If runner is not found
          */
         put: operations["update_runner_health_v1_runners__runner_id__health_put"];
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/runners/list": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Runners
+         * @description List all runners that exist in OpenStack (admins only).
+         *
+         *     Returns:
+         *         list: List of runners that exist in OpenStack
+         */
+        get: operations["list_runners_v1_runners_list_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/runners/{runner_id}/rebuild": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Rebuild Runner Admin Only
+         * @description Force rebuild a runner (admins only).
+         *
+         *     This endpoint forcefully rebuilds a runner regardless of its status.
+         *     If the runner has an assigned job, that job will be marked as FAILED
+         *     before the rebuild proceeds.
+         *
+         *     Access control:
+         *         - Requires a valid API access token
+         *         - Token must have the `admin` role
+         */
+        post: operations["rebuild_runner_admin_only_v1_runners__runner_id__rebuild_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -518,23 +621,6 @@ export interface components {
          * @enum {string}
          */
         Architecture: "amd64" | "arm64" | "armel" | "armhf" | "ppc64el" | "s390x" | "riscv64" | "amd64v3" | "i386";
-        /**
-         * ArtifactMetadata
-         * @description Metadata for a job artifact stored in S3.
-         *
-         *     Attributes:
-         *         url: Full URL to download the artifact
-         *         type: MIME type of the artifact (e.g., 'application/gzip')
-         *         size: Size of the artifact in bytes
-         */
-        ArtifactMetadata: {
-            /** Url */
-            url: string;
-            /** Type */
-            type: string;
-            /** Size */
-            size: number;
-        };
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
@@ -656,24 +742,6 @@ export interface components {
              */
             priority: number;
             /**
-             * Artifact Urls
-             * @default []
-             * @example [
-             *       "https://example.com/jobs/123/output.tar.gz",
-             *       "https://example.com/jobs/123/metadata.json"
-             *     ]
-             */
-            artifact_urls: unknown[];
-            /**
-             * Log Urls
-             * @default []
-             * @example [
-             *       "https://example.com/jobs/123/object/default.log",
-             *       "https://example.com/jobs/123/object/job-agent.log"
-             *     ]
-             */
-            log_urls: unknown[];
-            /**
              * Tags
              * @default []
              * @example [
@@ -682,6 +750,65 @@ export interface components {
              *     ]
              */
             tags: string[];
+        };
+        /**
+         * JobObjectRead
+         * @description Job object read model for artifacts and logs.
+         */
+        JobObjectRead: {
+            /**
+             * Id
+             * @example 1
+             */
+            id: number;
+            /**
+             * Job Id
+             * @example 123
+             */
+            job_id: number;
+            /**
+             * Filename
+             * @example output.tar.gz
+             */
+            filename: string;
+            /** @example artifact */
+            object_type: components["schemas"]["ObjectType"];
+            /**
+             * Content Type
+             * @example application/gzip
+             */
+            content_type: string;
+            /**
+             * Size Bytes
+             * @example 1024
+             */
+            size_bytes?: number | null;
+            /**
+             * Created At
+             * Format: date-time
+             * @example 2024-01-15T10:30:00Z
+             */
+            created_at: string;
+            /**
+             * Url
+             * @description URL endpoint for this object
+             * @example https://example.com/jobs/123/object/artifact/output.tar.gz
+             */
+            readonly url: string;
+        };
+        /**
+         * JobPriorityUpdate
+         * @description Job priority update model.
+         *
+         *     Only priority can be updated via this model, and only by admin users.
+         *     This is used for the admin-only job update endpoint.
+         */
+        JobPriorityUpdate: {
+            /**
+             * Priority
+             * @example 7
+             */
+            priority: number;
         };
         /**
          * JobRead
@@ -799,24 +926,6 @@ export interface components {
              */
             priority: number;
             /**
-             * Artifact Urls
-             * @default []
-             * @example [
-             *       "https://example.com/jobs/123/output.tar.gz",
-             *       "https://example.com/jobs/123/metadata.json"
-             *     ]
-             */
-            artifact_urls: unknown[];
-            /**
-             * Log Urls
-             * @default []
-             * @example [
-             *       "https://example.com/jobs/123/object/default.log",
-             *       "https://example.com/jobs/123/object/job-agent.log"
-             *     ]
-             */
-            log_urls: unknown[];
-            /**
              * Tags
              * @default []
              * @example [
@@ -858,22 +967,90 @@ export interface components {
              */
             completed_at?: string | null;
             /**
-             * Artifacts
-             * @description List of artifact metadata with URL, MIME type, and size. Returns empty list if no artifacts exist or S3 is unavailable.
+             * Objects
              * @example [
              *       {
-             *         "size": 2048576,
-             *         "type": "application/gzip",
-             *         "url": "https://example.com/v1/jobs/123/object/output.tar.gz"
+             *         "content_type": "application/gzip",
+             *         "created_at": "2025-01-15T10:30:00.123456Z",
+             *         "filename": "build-output.tar.gz",
+             *         "id": 1,
+             *         "job_id": 123,
+             *         "object_type": "artifact",
+             *         "size_bytes": 2048576
              *       },
              *       {
-             *         "size": 1024,
-             *         "type": "application/json",
-             *         "url": "https://example.com/v1/jobs/123/object/metadata.json"
+             *         "content_type": "application/json",
+             *         "created_at": "2025-01-15T10:30:05.123456Z",
+             *         "filename": "fetch_service_metadata.json",
+             *         "id": 2,
+             *         "job_id": 123,
+             *         "object_type": "metadata",
+             *         "size_bytes": 512
+             *       },
+             *       {
+             *         "content_type": "application/xml",
+             *         "created_at": "2025-01-15T10:30:10.123456Z",
+             *         "filename": "test-results.xml",
+             *         "id": 3,
+             *         "job_id": 123,
+             *         "object_type": "artifact",
+             *         "size_bytes": 15360
+             *       },
+             *       {
+             *         "content_type": "text/html",
+             *         "created_at": "2025-01-15T10:30:15.123456Z",
+             *         "filename": "coverage-report.html",
+             *         "id": 4,
+             *         "job_id": 123,
+             *         "object_type": "artifact",
+             *         "size_bytes": 51200
+             *       },
+             *       {
+             *         "content_type": "text/plain",
+             *         "created_at": "2025-01-15T10:24:00.123456Z",
+             *         "filename": "job_agent.log",
+             *         "id": 5,
+             *         "job_id": 123,
+             *         "object_type": "log",
+             *         "size_bytes": 3840
+             *       },
+             *       {
+             *         "content_type": "text/plain",
+             *         "created_at": "2025-01-15T10:25:00.123456Z",
+             *         "filename": "default.log",
+             *         "id": 6,
+             *         "job_id": 123,
+             *         "object_type": "log",
+             *         "size_bytes": 10240
              *       }
              *     ]
              */
-            readonly artifacts: components["schemas"]["ArtifactMetadata"][];
+            objects?: components["schemas"]["JobObjectRead"][];
+            /**
+             * Duration
+             * @description Duration of the job in seconds. For finished jobs, this is completed_at - started_at. For in-progress jobs, this is current time - started_at. Returns None if job hasn't started.
+             * @example 3600.5
+             */
+            readonly duration: number | null;
+            /**
+             * Artifact Urls
+             * @description List of artifact URLs. Generated from objects table. Use objects field for full metadata.
+             * @example [
+             *       "https://example.com/jobs/123/object/artifact/output.tar.gz",
+             *       "https://example.com/jobs/123/object/metadata/fetch_service_metadata.json"
+             *     ]
+             */
+            readonly artifact_urls: string[];
+            /**
+             * Log Urls
+             * @description List of log URLs. Generated from objects table. Use objects field for full metadata.
+             * @example [
+             *       "https://example.com/jobs/123/object/default.log"
+             *     ]
+             */
+            readonly log_urls: string[];
+        } & {
+            [key: string]: unknown;
         };
         /**
          * JobStatus
@@ -882,62 +1059,47 @@ export interface components {
          */
         JobStatus: "PENDING" | "EXECUTING" | "IDLE" | "FINISHED" | "FAILED" | "CANCELLED" | "TERMINATED";
         /**
-         * JobUpdate
-         * @description Job update model.
+         * JobsListMetadata
+         * @description Metadata for paginated jobs list response.
          */
-        JobUpdate: {
+        JobsListMetadata: {
             /**
-             * Requested By
-             * @example user
+             * Total Count
+             * @example 85
              */
-            requested_by?: string | null;
-            /** @example FINISHED */
-            status?: components["schemas"]["JobStatus"] | null;
+            total_count: number;
             /**
-             * Artifact Urls
-             * @example [
-             *       "https://example.com/jobs/123/output.tar.gz",
-             *       "https://example.com/jobs/123/metadata.json"
-             *     ]
+             * Count
+             * @example 20
              */
-            artifact_urls?: unknown[] | null;
+            count: number;
             /**
-             * Log Urls
-             * @example [
-             *       "https://example.com/jobs/123/object/default.log",
-             *       "https://example.com/jobs/123/object/job-agent.log"
-             *     ]
+             * Limit
+             * @example 20
              */
-            log_urls?: unknown[] | null;
+            limit: number;
             /**
-             * Started At
-             * @example 2025-01-15T09:20:11.987654Z
+             * Offset
+             * @default 0
+             * @example 0
              */
-            started_at?: string | null;
-            /**
-             * Completed At
-             * @example 2025-01-15T10:45:23.456789Z
-             */
-            completed_at?: string | null;
-            /**
-             * Title
-             * @example Build Ubuntu 24.04 image
-             */
-            title?: string | null;
-            /**
-             * Description
-             * @example Build a hardened Ubuntu image with security patches
-             */
-            description?: string | null;
-            /**
-             * Tags
-             * @example [
-             *       "security",
-             *       "production"
-             *     ]
-             */
-            tags?: string[] | null;
+            offset: number;
         };
+        /**
+         * JobsListResponse
+         * @description Paginated response for jobs list.
+         */
+        JobsListResponse: {
+            metadata: components["schemas"]["JobsListMetadata"];
+            /** Data */
+            data: components["schemas"]["JobRead"][];
+        };
+        /**
+         * ObjectType
+         * @description Type of object being stored in S3.
+         * @enum {string}
+         */
+        ObjectType: "artifact" | "log" | "metadata";
         /**
          * RunnerCreate
          * @description Runner creation model.
@@ -968,10 +1130,50 @@ export interface components {
             /** Deletable */
             deletable: boolean;
         };
+        /**
+         * RunnerHealthUpdate
+         * @description Health update data received from runner or job agent.
+         *
+         *     Accepts any additional fields the runner provides, but requires
+         *     at least vm_ip, status, and label.
+         * @example {
+         *       "cpu_usage": "45.2",
+         *       "disk_usage": "15360",
+         *       "label": "test-runner-1",
+         *       "ram_usage": "2048",
+         *       "status": "EXECUTING",
+         *       "vm_ip": "192.168.1.100"
+         *     }
+         */
+        RunnerHealthUpdate: {
+            /** Vm Ip */
+            vm_ip?: string | null;
+            status: components["schemas"]["JobStatus"];
+            /** Label */
+            label: string;
+        } & {
+            [key: string]: unknown;
+        };
         /** RunnerHealthUpdateResponse */
         RunnerHealthUpdateResponse: {
             /** Message */
             message: string;
+        };
+        /**
+         * RunnerListItem
+         * @description Model for runner list item.
+         */
+        RunnerListItem: {
+            /** Id */
+            id: number;
+            /** Cloud Name */
+            cloud_name: string;
+            /** Openstack Server Id */
+            openstack_server_id: string;
+            status: components["schemas"]["RunnerStatus"];
+            /** Job Id */
+            job_id?: number | null;
+            job_status?: components["schemas"]["JobStatus"] | null;
         };
         /** RunnerRegisterResponse */
         RunnerRegisterResponse: {
@@ -984,6 +1186,12 @@ export interface components {
                 [key: string]: unknown;
             } | null;
         };
+        /**
+         * RunnerStatus
+         * @description Runner status values.
+         * @enum {string}
+         */
+        RunnerStatus: "CREATING" | "IDLE" | "BUSY" | "REBUILDING" | "DELETING" | "ERROR";
         /**
          * Series
          * @description Supported Ubuntu series.
@@ -1007,16 +1215,22 @@ export interface components {
     pathItems: never;
 }
 export type Architecture = components['schemas']['Architecture'];
-export type ArtifactMetadata = components['schemas']['ArtifactMetadata'];
 export type HttpValidationError = components['schemas']['HTTPValidationError'];
 export type JobCreate = components['schemas']['JobCreate'];
+export type JobObjectRead = components['schemas']['JobObjectRead'];
+export type JobPriorityUpdate = components['schemas']['JobPriorityUpdate'];
 export type JobRead = components['schemas']['JobRead'];
 export type JobStatus = components['schemas']['JobStatus'];
-export type JobUpdate = components['schemas']['JobUpdate'];
+export type JobsListMetadata = components['schemas']['JobsListMetadata'];
+export type JobsListResponse = components['schemas']['JobsListResponse'];
+export type ObjectType = components['schemas']['ObjectType'];
 export type RunnerCreate = components['schemas']['RunnerCreate'];
 export type RunnerHealthResponse = components['schemas']['RunnerHealthResponse'];
+export type RunnerHealthUpdate = components['schemas']['RunnerHealthUpdate'];
 export type RunnerHealthUpdateResponse = components['schemas']['RunnerHealthUpdateResponse'];
+export type RunnerListItem = components['schemas']['RunnerListItem'];
 export type RunnerRegisterResponse = components['schemas']['RunnerRegisterResponse'];
+export type RunnerStatus = components['schemas']['RunnerStatus'];
 export type Series = components['schemas']['Series'];
 export type ValidationError = components['schemas']['ValidationError'];
 export type $defs = Record<string, never>;
@@ -1032,6 +1246,12 @@ export interface operations {
                 status?: string | null;
                 private?: boolean | null;
                 repository_url?: string | null;
+                /** @description Sort by field (prefix with - for descending, e.g., -created_at) */
+                sort?: string | null;
+                /** @description Number of records to return */
+                limit?: number | null;
+                /** @description Number of records to skip */
+                offset?: number | null;
             };
             header?: never;
             path?: never;
@@ -1045,7 +1265,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["JobRead"][];
+                    "application/json": components["schemas"]["JobsListResponse"];
                 };
             };
             /** @description Validation Error */
@@ -1134,7 +1354,7 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["JobUpdate"];
+                "application/json": components["schemas"]["JobPriorityUpdate"];
             };
         };
         responses: {
@@ -1253,7 +1473,12 @@ export interface operations {
     };
     download_object_v1_jobs__job_id__object__object_name__get: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description Display inline in browser */
+                inline?: boolean;
+                /** @description Omit Content-Length header from the response */
+                omit_content_length?: boolean;
+            };
             header?: never;
             path: {
                 job_id: number;
@@ -1290,6 +1515,37 @@ export interface operations {
             path: {
                 job_id: number;
                 object_name: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    download_all_artifacts_v1_jobs__job_id__artifacts_download_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                job_id: number;
             };
             cookie?: never;
         };
@@ -1471,7 +1727,11 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RunnerHealthUpdate"];
+            };
+        };
         responses: {
             /** @description Successful Response */
             200: {
@@ -1480,6 +1740,57 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["RunnerHealthUpdateResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_runners_v1_runners_list_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RunnerListItem"][];
+                };
+            };
+        };
+    };
+    rebuild_runner_admin_only_v1_runners__runner_id__rebuild_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                runner_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
                 };
             };
             /** @description Validation Error */

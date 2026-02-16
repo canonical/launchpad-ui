@@ -1,8 +1,9 @@
 <script lang="ts">
   import { DownloadIcon, FileIcon } from "@canonical/svelte-icons";
+  import { jobManagerHref } from "$lib/api/job-manager/hrefClient.js";
   import type { JobRead } from "$lib/api/job-manager/types.js";
-  import { ButtonPrimitive } from "$lib/components/common/index.js";
   import {
+    Button,
     Chip,
     DateTime,
     DescriptionList,
@@ -19,8 +20,13 @@
   const { job }: { job: JobRead } = $props();
 
   const jobManagerLog = $derived(
-    // TODO: Remove `as string[]` when API types are fixed
-    (job.log_urls as string[]).find((url) => url.endsWith("job_agent.log")),
+    job.objects?.find(
+      (obj) => obj.object_type === "log" && obj.filename === "job_agent.log",
+    ),
+  );
+
+  const artifacts = $derived(
+    job.objects?.filter((obj) => obj.object_type === "artifact") ?? [],
   );
 </script>
 
@@ -106,7 +112,13 @@
           {#if jobManagerLog}
             <DescriptionList.Item {...hiddenItemProps} name="Job manager log">
               <Link
-                href={jobManagerLog}
+                href={jobManagerHref("/v1/jobs/{job_id}/object/{object_name}", {
+                  path: {
+                    job_id: job.id,
+                    object_name: jobManagerLog.filename,
+                  },
+                })}
+                download
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -145,34 +157,48 @@
       {/each}
     </CommandList>
   </section>
-  {#if job.artifacts?.length}
+  {#if artifacts?.length}
     <section>
       <div
         class="section-header"
         style="display: flex; justify-content: space-between; align-items: center;"
       >
         <h2>Artifacts</h2>
-        <!--
-      TODO:
-        - Add href, when zip endpoint is available
-        - Replace with a proper Button component
-      -->
-        <ButtonPrimitive
-          disabled
-          style="display: flex; gap: var(--lp-dimension-spacing-inline-xs); align-items: center; padding: var(--lp-dimension-spacing-block-minimum) var(--lp-dimension-spacing-inline-xs);"
+        <Button
+          href={jobManagerHref("/v1/jobs/{job_id}/artifacts/download", {
+            path: { job_id: job.id },
+          })}
+          density="dense"
+          severity="base"
+          download
+          target="_blank"
+          rel="noopener noreferrer"
         >
-          <DownloadIcon />Download All
-        </ButtonPrimitive>
+          {#snippet iconLeft()}
+            <DownloadIcon />
+          {/snippet}
+          Download All
+        </Button>
       </div>
       <ul class="artifacts">
-        {#each job.artifacts as { url, size } (url)}
+        {#each artifacts as { size_bytes, object_type, filename } (`${object_type}/${filename}`)}
           <li>
-            <Link href={url} download>
+            <Link
+              href={jobManagerHref("/v1/jobs/{job_id}/object/{object_name}", {
+                path: {
+                  job_id: job.id,
+                  object_name: filename,
+                },
+              })}
+              download
+              target="_blank"
+              rel="noopener noreferrer"
+            >
               <span class="icon-aligner">
                 <FileIcon aria-hidden="true" />
               </span>
               <span class="artifact-name">
-                {url.split("/").at(-1)} ({bytesToHumanReadable(size)})
+                {filename} ({bytesToHumanReadable(size_bytes ?? 0)})
               </span>
             </Link>
           </li>

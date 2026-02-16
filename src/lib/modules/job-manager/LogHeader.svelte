@@ -149,7 +149,6 @@
           text={fullScreenLinkLabel}
         />
         {#if viewLogUrl}
-          <!-- TODO: Revisit, when Content-Disposition header is correctly set -->
           <ContextualMenuContent.ButtonItem
             text="View raw log"
             href={viewLogUrl}
@@ -160,6 +159,8 @@
             href={downloadLogUrl}
             download
             text="Download log"
+            target="_blank"
+            rel="noopener noreferrer"
           />
         {/if}
       </ContextualMenuContent.Group>
