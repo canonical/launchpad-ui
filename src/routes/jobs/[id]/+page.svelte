@@ -1,6 +1,6 @@
 <script lang="ts">
   import { MediaQuery } from "svelte/reactivity";
-  import { defaultLogObjectName } from "$lib/api/job-manager/consts.js";
+  import { defaultLogObjectName } from "$lib/api/job-manager/constants.js";
   import { jobManagerHref } from "$lib/api/job-manager/hrefClient.js";
   import { Breadcrumbs, Log } from "$lib/components/index.js";
   import type { TimeZone } from "$lib/components/index.js";

@@ -1,6 +1,6 @@
 import { error } from "@sveltejs/kit";
 import { jobManager } from "$lib/api/job-manager/client.js";
-import { defaultLogObjectName } from "$lib/api/job-manager/consts.js";
+import { defaultLogObjectName } from "$lib/api/job-manager/constants.js";
 import { extractErrorMessage } from "$lib/api/job-manager/utils.js";
 import { stripAnsi } from "$lib/utils/index.js";
 import type { PageServerLoad } from "./$types";
