@@ -33,7 +33,6 @@ export const load = (async ({ params, fetch }) => {
   ]);
 
   if (jobResponse.error) {
-    console.error(jobResponse.error);
     error(
       jobResponse.response.status,
       `Failed to fetch job: ${extractErrorMessage(jobResponse.error)}`,
@@ -42,7 +41,8 @@ export const load = (async ({ params, fetch }) => {
 
   if (logResponse.error) {
     if (logResponse.response.status !== 404) {
-      console.error(
+      error(
+        logResponse.response.status,
         `Failed to fetch default log: ${extractErrorMessage(logResponse.error)}`,
       );
     }
