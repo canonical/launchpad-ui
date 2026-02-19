@@ -80,12 +80,7 @@
   );
 </script>
 
-<Table
-  id={tableId}
-  style="width: 100%; min-width: 1250px;"
-  aria-busy={isTableChanging}
->
-  <!-- TODO: Remove this zIndex if the tbody doesn't change opacity on navigation. (see the TODO below) -->
+<Table id={tableId} aria-busy={isTableChanging} class="jobs-table">
   <thead style="z-index: 1;">
     <tr>
       {#each headerCells as { key, label, sortable } (key)}
@@ -111,7 +106,6 @@
       {/each}
     </tr>
   </thead>
-  <!-- TODO(@Enzo): How to indicate state changing? -->
   <tbody style:opacity={navigating.to?.route.id === "/jobs" ? 0.5 : 1}>
     {#each jobs as job (job.id)}
       <tr>
@@ -122,13 +116,15 @@
         </td>
         <td>{job.title || "-"}</td>
         <td>{job.architecture}</td>
-        <td
-          style="display: flex; align-items: center; gap: var(--lp-dimension-spacing-inline-s)"
-        >
-          <JobStatusIcon status={job.status} aria-hidden="true" />
-          <span>
-            {job.status ?? "UNKNOWN"}
-          </span>
+        <td>
+          <div
+            style="display: flex; align-items: center; gap: var(--lp-dimension-spacing-inline-s)"
+          >
+            <JobStatusIcon status={job.status} aria-hidden="true" />
+            <span>
+              {job.status ?? "UNKNOWN"}
+            </span>
+          </div>
         </td>
         <td>
           {#if job.requested_by}
@@ -168,6 +164,42 @@
 {/snippet}
 
 <style>
+  :global {
+    .jobs-table {
+      display: grid;
+      --jobs-table-max-column-width: 320px;
+
+      /* 
+        Columns don't get smaller than `max-content`,
+        but if there is leftover space, don't let them stretch beyond 320px
+        + distribute any leftover space proportionally based on their content size (max in `px` not with `fr`)
+      */
+      grid-template-columns: repeat(
+        10,
+        minmax(max-content, var(--jobs-table-max-column-width))
+      );
+
+      th,
+      td {
+        /* Hard lower limit for column width */
+        min-width: 80px;
+        /* 
+          If `min > max` in `minmax(min, max)`, then `max` is ignored and the track size is `min`.
+          So we need to set a hard `max-width` on the cells
+         */
+        max-width: var(--jobs-table-max-column-width);
+      }
+    }
+  }
+
+  thead,
+  tbody,
+  tr {
+    display: grid;
+    grid-template-columns: subgrid;
+    grid-column: 1 / -1;
+  }
+
   thead {
     background-color: var(--lp-color-background-default);
     position: sticky;
