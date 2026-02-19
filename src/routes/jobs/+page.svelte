@@ -12,14 +12,17 @@
   import type { PageProps } from "./$types";
   import { browser } from "$app/environment";
   import { resolve } from "$app/paths";
-  import { page } from "$app/state";
+  import { navigating, page } from "$app/state";
 
   let { data }: PageProps = $props();
 
   const jobsPromise = $derived(data.jobsPromise);
 
   const sort = $derived.by(() => {
-    const sort = page.url.searchParams.get("sort") ?? "id";
+    const sort = page.url.searchParams.get("sort");
+    if (!sort) {
+      return null;
+    }
 
     if (sort.startsWith("-")) {
       return { field: sort.slice(1), direction: "descending" as const };
@@ -29,7 +32,7 @@
   });
 
   const sortLinkLabel = (key: keyof JobRead, column: string) => {
-    if (sort.field !== key) {
+    if (!sort || sort.field !== key) {
       return `Sort by ${column} ascending`;
     } else if (sort.direction === "ascending") {
       return `Sort by ${column} descending`;
@@ -42,7 +45,7 @@
     const url = new URL(page.url);
     let sortParam: string;
 
-    if (sort.field !== key) {
+    if (!sort || sort.field !== key) {
       sortParam = `${key}`;
     } else if (sort.direction === "ascending") {
       sortParam = `-${key}`;
@@ -93,7 +96,9 @@
         {#each headerCells as { key, label, sortable } (key)}
           {#if sortable}
             <Table.TH
-              sortDirection={sort.field === key ? sort.direction : undefined}
+              sortDirection={$state.eager(
+                sort?.field === key ? sort.direction : undefined,
+              )}
             >
               {label}
               {#snippet action()}
@@ -109,38 +114,9 @@
         {/each}
       </tr>
     </thead>
-    <tbody>
-      {#each (await jobsPromise).data.toSorted((a, b) => {
-        const { field, direction } = sort;
-        const aValue = a[field as keyof JobRead];
-        const bValue = b[field as keyof JobRead];
-
-        if (aValue === bValue) {
-          return 0;
-        }
-
-        if (aValue === null || aValue === undefined) {
-          return direction === "ascending" ? -1 : 1;
-        }
-
-        if (bValue === null || bValue === undefined) {
-          return direction === "ascending" ? 1 : -1;
-        }
-
-        if (typeof aValue === "string" && typeof bValue === "string") {
-          return direction === "ascending" ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
-        }
-
-        if (typeof aValue === "number" && typeof bValue === "number") {
-          return direction === "ascending" ? aValue - bValue : bValue - aValue;
-        }
-
-        if (typeof aValue === "boolean" && typeof bValue === "boolean") {
-          return direction === "ascending" ? Number(aValue) - Number(bValue) : Number(bValue) - Number(aValue);
-        }
-
-        return 0;
-      }) as job (job.id)}
+    <!-- TODO(@Enzo): How to indicate state changing? -->
+    <tbody style:opacity={navigating.complete === null ? 1 : 0.5}>
+      {#each (await jobsPromise).data as job (job.id)}
         <tr>
           <td>
             <Link href={resolve("/jobs/[id]", { id: job.id.toString() })}>
