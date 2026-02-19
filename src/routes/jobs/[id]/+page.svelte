@@ -9,8 +9,8 @@
     LogHeader,
     NoLogs,
     TrailingBar,
-    useFullScreen,
-  } from "$lib/modules/job-manager/index.js";
+  } from "$lib/modules/job-manager/job-details/index.js";
+  import { useFullScreen } from "$lib/modules/job-manager/useFullScreen.svelte.js";
   import type { PageProps } from "./$types";
   import { browser } from "$app/environment";
   import { resolve } from "$app/paths";

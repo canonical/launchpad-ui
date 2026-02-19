@@ -15,7 +15,7 @@
   } from "$lib/components/index.js";
   import type { TimeZone } from "$lib/components/index.js";
   import { Shortcut, useShortcuts } from "$lib/shortcuts/index.js";
-  import { useFullScreen } from "./useFullScreen.svelte.js";
+  import { useFullScreen } from "../useFullScreen.svelte.js";
   import { browser } from "$app/environment";
 
   let {
