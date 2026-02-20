@@ -1,0 +1,5 @@
+.ds.pagination-items-count {
+  display: flex;
+  align-items: center;
+  padding-inline: var(--lp-dimension-spacing-inline-xs);
+}

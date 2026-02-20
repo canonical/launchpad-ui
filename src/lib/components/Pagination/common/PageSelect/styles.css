@@ -1,0 +1,14 @@
+.ds.pagination-page-select {
+  display: flex;
+  align-items: center;
+  gap: var(--lp-dimension-spacing-inline-xxs);
+  padding-inline-end: var(--lp-dimension-spacing-inline-xs);
+
+  > .select {
+    > select {
+      background-color: transparent;
+      border: none;
+      font: var(--lp-typography-paragraph-s);
+    }
+  }
+}
