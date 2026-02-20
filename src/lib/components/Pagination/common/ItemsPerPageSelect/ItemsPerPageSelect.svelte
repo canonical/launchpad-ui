@@ -40,14 +40,3 @@
     {@render children?.()}
   </Select>
 </div>
-
-<!-- @component
-`ItemsPerPageSelect` [FIXME] (placeholder) A reusable UI component that renders content in a div container.
-
-## Example Usage
-```svelte
-<ItemsPerPageSelect class="custom-class" id="unique-id">
-  <p>Content goes here</p>
-</ItemsPerPageSelect>
-```
--->

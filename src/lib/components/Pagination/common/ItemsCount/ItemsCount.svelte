@@ -19,14 +19,3 @@
 <span class={[componentCssClassName, className]} {...rest}>
   Showing {text}
 </span>
-
-<!-- @component
-`ItemsCount` A reusable UI component that displays the number of items being shown, optionally out of a total number of items.
-
-## Example Usage
-```svelte
-<ItemsCount showing={5} total={10} />
-```
-</ItemsCount>
-```
--->

@@ -42,12 +42,53 @@
 </nav>
 
 <!-- @component
-`Pagination` [FIXME] (placeholder) A reusable UI component that renders content in a div container.
+`Pagination` Provides a set of controls for navigating through paginated data.
 
 ## Example Usage
 ```svelte
-<Pagination class="custom-class" id="unique-id">
-  <p>Content goes here</p>
+<Pagination tableId="example-table">
+  {#snippet leftGroup()}
+    <Pagination.ItemsPerPageSelect bind:value={itemsPerPage}>
+      <option value={5}>5</option>
+      <option value={10}>10</option>
+      <option value={50}>50</option>
+      <option value={100}>100</option>
+    </Pagination.ItemsPerPageSelect>
+    <Pagination.ItemsCount
+      showing={itemsOnCurrentPage}
+      total={totalItems}
+    />
+  {/snippet}
+  {#snippet rightGroup()}
+    <Pagination.PageSelect
+      bind:value={currentPage}
+      totalPages={numberOfPages}
+    >
+      {#each { length: numberOfPages }, i (i)}
+        <option value={i + 1}>{i + 1}</option>
+      {/each}
+    </Pagination.PageSelect>
+  {/snippet}
+  <Pagination.PageNavigation
+    direction="first"
+    disabled={currentPage === 1}
+    onclick={() => (currentPage = 1)}
+  />
+  <Pagination.PageNavigation
+    direction="previous"
+    disabled={currentPage === 1}
+    onclick={() => (currentPage = Math.max(1, currentPage - 1))}
+  />
+  <Pagination.PageNavigation
+    direction="next"
+    disabled={currentPage === numberOfPages}
+    onclick={() => (currentPage = Math.min(numberOfPages, currentPage + 1))}
+  />
+  <Pagination.PageNavigation
+    direction="last"
+    disabled={currentPage === numberOfPages}
+    onclick={() => (currentPage = numberOfPages)}
+  />
 </Pagination>
 ```
 -->

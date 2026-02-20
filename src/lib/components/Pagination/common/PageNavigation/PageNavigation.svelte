@@ -43,14 +43,3 @@
     <SkipToEndIcon />
   {/if}
 </ButtonPrimitive>
-
-<!-- @component
-`PageNavigation` [FIXME] (placeholder) A reusable UI component that renders content in a div container.
-
-## Example Usage
-```svelte
-<PageNavigation class="custom-class" id="unique-id">
-  <p>Content goes here</p>
-</PageNavigation>
-```
--->

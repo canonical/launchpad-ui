@@ -42,14 +42,3 @@
   </Select>
   <span>of {totalPages} Page{totalPages === 1 ? "" : "s"}</span>
 </div>
-
-<!-- @component
-`PageSelect` [FIXME] (placeholder) A reusable UI component that renders content in a div container.
-
-## Example Usage
-```svelte
-<PageSelect class="custom-class" id="unique-id">
-  <p>Content goes here</p>
-</PageSelect>
-```
--->
