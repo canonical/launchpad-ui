@@ -1,0 +1,8 @@
+.ds.pagination-page-navigation {
+  display: grid;
+  place-content: center;
+  flex-shrink: 0;
+  border: none;
+  padding-inline: var(--lp-dimension-spacing-inline-xs);
+  padding-block: var(--lp-dimension-spacing-block-xs);
+}

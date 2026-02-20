@@ -39,6 +39,8 @@ export { default as ScrollToBottomIcon } from "./ScrollToBottomIcon.svelte";
 export { default as SkipCircleIcon } from "./SkipCircleIcon.svelte";
 export { default as SkipIcon } from "./SkipIcon.svelte";
 export { default as SkipToBottomIcon } from "./SkipToBottomIcon.svelte";
+export { default as SkipToEndIcon } from "./SkipToEndIcon.svelte";
+export { default as SkipToStartIcon } from "./SkipToStartIcon.svelte";
 export { default as SkipToTopIcon } from "./SkipToTopIcon.svelte";
 export { default as SortBothIcon } from "./SortBothIcon.svelte";
 export { default as SortDownIcon } from "./SortDownIcon.svelte";
