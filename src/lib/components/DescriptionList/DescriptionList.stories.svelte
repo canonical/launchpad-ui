@@ -21,7 +21,7 @@
       <UserChip userName="Jane Doe" size="small" />
     </DescriptionList.Item>
     <DescriptionList.Item name="Created">
-      <DateTime date="2023-10-01T12:00:00Z" absolute={true} />
+      <DateTime date="2023-10-01T12:00:00Z" />
     </DescriptionList.Item>
     <DescriptionList.Item name="A very long term name to test layout behavior">
       This is a description for a term with a very long name to see how the

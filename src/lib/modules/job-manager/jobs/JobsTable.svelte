@@ -1,8 +1,7 @@
 <script lang="ts">
   import type { JobRead } from "$lib/api/job-manager/types.js";
-  import { DateTime, Link, Table, UserChip } from "$lib/components/index.js";
-  import type { DateTimeProps } from "$lib/components/index.js";
-  import { JobStatusIcon } from "$lib/launchpad-components/index.js";
+  import { Link, Table, UserChip } from "$lib/components/index.js";
+  import { DateTime, JobStatusIcon } from "$lib/launchpad-components/index.js";
   import { resolve } from "$app/paths";
   import { navigating, page } from "$app/state";
 
@@ -127,11 +126,7 @@
           </div>
         </td>
         <td>
-          {#if job.requested_by}
-            <UserChip userName={job.requested_by} size="small" />
-          {:else}
-            -
-          {/if}
+          <UserChip userName={job.requested_by} size="small" />
         </td>
         <td>
           {#if job.tags.length > 0}
@@ -141,27 +136,27 @@
           {/if}
         </td>
         <td>
-          {@render nullableDateTime(job.created_at)}
+          <DateTime date={job.created_at} />
         </td>
         <td>
-          {@render nullableDateTime(job.started_at)}
+          {#if job.started_at}
+            <DateTime date={job.started_at} />
+          {:else}
+            -
+          {/if}
         </td>
         <td>
-          {@render nullableDateTime(job.completed_at)}
+          {#if job.completed_at}
+            <DateTime date={job.completed_at} />
+          {:else}
+            -
+          {/if}
         </td>
         <td>{job.private ? "Private" : "Public"}</td>
       </tr>
     {/each}
   </tbody>
 </Table>
-
-{#snippet nullableDateTime(date: DateTimeProps["date"] | null | undefined)}
-  {#if date === null || date === undefined}
-    -
-  {:else}
-    <DateTime {date} />
-  {/if}
-{/snippet}
 
 <style>
   :global {

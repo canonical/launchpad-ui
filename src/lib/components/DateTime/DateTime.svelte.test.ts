@@ -9,14 +9,10 @@ import Component from "./DateTime.svelte";
 
 vi.mock("./utils/formatters.js", () => {
   return {
-    dateTimeFormatter: new Intl.DateTimeFormat("en-US", {
+    defaultDateTimeFormatter: new Intl.DateTimeFormat("en-US", {
       dateStyle: "short",
       timeStyle: "short",
       timeZone: "UTC",
-    }),
-    relativeTimeFormatter: new Intl.RelativeTimeFormat("en-US", {
-      numeric: "auto",
-      style: "long",
     }),
   };
 });
@@ -83,107 +79,16 @@ describe("DateTime component", () => {
     });
   });
 
-  describe("Content", () => {
-    describe("now label", () => {
-      it("renders nowLabel when within nowThreshold", async () => {
-        const now = Date.now();
-        const page = render(Component, {
-          ...baseProps,
-          date: now,
-          nowThreshold: 999999,
-        });
-        await expect.element(componentLocator(page)).toHaveTextContent("now");
-      });
-
-      it("does not render nowLabel when outside nowThreshold", async () => {
-        const now = Date.now();
-        const page = render(Component, {
-          ...baseProps,
-          date: now - 1000,
-          nowThreshold: 10,
-        });
-        await expect
-          .element(componentLocator(page))
-          .not.toHaveTextContent("now");
-      });
-
-      it("renders custom nowLabel when within nowThreshold", async () => {
-        const now = Date.now();
-        const page = render(Component, {
-          ...baseProps,
-          date: now,
-          nowThreshold: 999999,
-          nowLabel: "just now",
-        });
-        await expect
-          .element(componentLocator(page))
-          .toHaveTextContent("just now");
-      });
+  it("accepts custom formatter", async () => {
+    const page = render(Component, {
+      ...baseProps,
+      formatter: {
+        format: (date: Date) => `Formatted: ${date.toISOString()}`,
+      },
     });
-
-    describe("Relative time", () => {
-      it("renders relative time when outside nowThreshold", async () => {
-        const pastDate = new Date(Date.now() - 1000 * 60 * 60 * 3); // 3 hours ago
-        const page = render(Component, {
-          ...baseProps,
-          date: pastDate,
-          nowThreshold: 0,
-        });
-
-        await expect
-          .element(componentLocator(page))
-          .toHaveTextContent("3 hours ago");
-      });
-
-      it("updates over time", async () => {
-        vi.useFakeTimers();
-        const pastDate = new Date(Date.now() - 1000 * 60 * 3); // 3 minutes ago
-        const page = render(Component, {
-          ...baseProps,
-          date: pastDate,
-          nowThreshold: 0,
-        });
-
-        await expect
-          .element(componentLocator(page))
-          .toHaveTextContent("3 minutes ago");
-
-        vi.advanceTimersByTime(1000 * 60);
-        await expect
-          .element(componentLocator(page))
-          .toHaveTextContent("4 minutes ago");
-
-        vi.advanceTimersByTime(1000 * 60 * 60);
-        await expect
-          .element(componentLocator(page))
-          .toHaveTextContent("1 hour ago");
-
-        vi.useRealTimers();
-      });
-    });
-
-    describe("Absolute time", () => {
-      it("renders absolute time when absolute is true", async () => {
-        const page = render(Component, { ...baseProps, absolute: true });
-        await expect
-          .element(componentLocator(page))
-          .toHaveTextContent("1/1/24, 12:00 PM");
-      });
-    });
-  });
-
-  describe("title attribute", () => {
-    it("applies formatted date as title for relative time", async () => {
-      const page = render(Component, baseProps);
-      await expect
-        .element(componentLocator(page))
-        .toHaveAttribute("title", "1/1/24, 12:00 PM");
-    });
-
-    it("does not apply title for absolute time", async () => {
-      const page = render(Component, { ...baseProps, absolute: true });
-      await expect.element(componentLocator(page)).not.toHaveAttribute("title");
-    });
+    await expect
+      .element(componentLocator(page))
+      .toHaveTextContent(`Formatted: ${date.toISOString()}`);
   });
 });
 

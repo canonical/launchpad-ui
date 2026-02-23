@@ -11,8 +11,10 @@ export * from "./Link/index.js";
 export * from "./Log/index.js";
 export * from "./Modal/index.js";
 export * from "./ModalContent/index.js";
+export * from "./Pagination/index.js";
 export * from "./Popover/index.js";
 export * from "./Radio/index.js";
+export * from "./RelativeDateTime/index.js";
 export * from "./SearchBox/index.js";
 export * from "./ShortcutsHelpSidePanel/index.js";
 export * from "./SideNavigation/index.js";
@@ -26,5 +28,3 @@ export * from "./Timeline/index.js";
 export * from "./Tooltip/index.js";
 export * from "./UserAvatar/index.js";
 export * from "./UserChip/index.js";
-
-export * from "./Pagination/index.js";
