@@ -37,27 +37,27 @@ As an input, it requires a `<label>` associated with it.
 
 <style>
   :global(.ds.text-input) {
-    --color-background-text-input-active: var(
+    --color-background-input-active: var(
       --lp-color-background-secondary-active-context,
       var(--lp-color-background-active)
     );
-    --color-background-text-input-hover: var(
+    --color-background-input-hover: var(
       --lp-color-background-secondary-hover-context,
       var(--lp-color-background-hover)
     );
-    --color-background-text-input: var(
+    --color-background-input: var(
       --lp-color-background-secondary-context,
       var(--lp-color-background-input)
     );
-    --dimension-padding-block-text-input: var(
+    --dimension-padding-block-input: var(
       --dimension-padding-block-context,
       var(--lp-dimension-spacing-block-xxs)
     );
-    --color-border-text-input: var(
+    --color-border-input: var(
       --lp-color-border-secondary-context,
       var(--lp-color-border-high-contrast)
     );
-    --color-outline-text-input: var(
+    --color-outline-input: var(
       --lp-color-border-secondary-context,
       var(--lp-color-border-focus)
     );

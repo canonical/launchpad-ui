@@ -81,17 +81,15 @@ To make the `SearchBox` a search landmark wrap it in a [`<form role="search">`](
         }
 
         &.no-invalid-styles {
-          --color-background-text-input-invalid: var(
-            --color-background-text-input
+          --color-background-input-invalid: var(--color-background-input);
+          --color-background-input-invalid-hover: var(
+            --color-background-input-hover
           );
-          --color-background-text-input-invalid-hover: var(
-            --color-background-text-input-hover
+          --color-background-input-invalid-active: var(
+            --color-background-input-active
           );
-          --color-background-text-input-invalid-active: var(
-            --color-background-text-input-active
-          );
-          --color-border-text-input-invalid: var(--color-border-text-input);
-          --color-outline-text-input-invalid: var(--color-outline-text-input);
+          --color-border-input-invalid: var(--color-border-input);
+          --color-outline-input-invalid: var(--color-outline-input);
         }
       }
 
