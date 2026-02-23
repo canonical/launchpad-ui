@@ -1,4 +1,5 @@
 <script lang="ts">
+  import type { HTMLSelectAttributes } from "svelte/elements";
   import type { JobsListMetadata } from "$lib/api/job-manager/types.js";
   import { Button, Pagination } from "$lib/components/index.js";
   import {
@@ -31,6 +32,38 @@
     }
     return url.pathname + url.search;
   };
+
+  const selectLimit: HTMLSelectAttributes["onchange"] = (e) => {
+    const url = new URL(page.url);
+    if (e.currentTarget.value === jobsTableLimitDefault.toString()) {
+      url.searchParams.delete("limit");
+    } else {
+      url.searchParams.set("limit", e.currentTarget.value);
+    }
+    url.searchParams.delete("page"); // Reset to first page when limit changes
+
+    // eslint-disable-next-line svelte/no-navigation-without-resolve
+    goto(url.toString(), {
+      replaceState: true,
+      noScroll: true,
+      invalidate: ["/jobs"],
+    });
+  };
+
+  const selectPage: HTMLSelectAttributes["onchange"] = (e) => {
+    const url = new URL(page.url);
+    if (e.currentTarget.value === "1") {
+      url.searchParams.delete("page");
+    } else {
+      url.searchParams.set("page", e.currentTarget.value);
+    }
+
+    // eslint-disable-next-line svelte/no-navigation-without-resolve
+    goto(url.toString(), {
+      noScroll: true,
+      invalidate: ["/jobs"],
+    });
+  };
 </script>
 
 <Pagination {tableId}>
@@ -39,22 +72,7 @@
       <Pagination.ItemsPerPageSelect
         name="limit"
         value={metadata.limit}
-        onchange={(e) => {
-          const url = new URL(page.url);
-          if (e.currentTarget.value === jobsTableLimitDefault.toString()) {
-            url.searchParams.delete("limit");
-          } else {
-            url.searchParams.set("limit", e.currentTarget.value);
-          }
-          url.searchParams.delete("page"); // Reset to first page when limit changes
-
-          // eslint-disable-next-line svelte/no-navigation-without-resolve
-          goto(url.toString(), {
-            replaceState: true,
-            noScroll: true,
-            invalidate: ["/jobs"],
-          });
-        }}
+        onchange={selectLimit}
       >
         {#each jobsTableLimitOptions as option (option)}
           <option value={option}>
@@ -72,20 +90,7 @@
         totalPages={numberOfPages}
         name="page"
         value={currentPage}
-        onchange={(e) => {
-          const url = new URL(page.url);
-          if (e.currentTarget.value === "1") {
-            url.searchParams.delete("page");
-          } else {
-            url.searchParams.set("page", e.currentTarget.value);
-          }
-
-          // eslint-disable-next-line svelte/no-navigation-without-resolve
-          goto(url.toString(), {
-            noScroll: true,
-            invalidate: ["/jobs"],
-          });
-        }}
+        onchange={selectPage}
       >
         {#each { length: numberOfPages }, i (i)}
           <option value={i + 1}>{i + 1}</option>

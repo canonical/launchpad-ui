@@ -81,7 +81,7 @@
 </script>
 
 <Table id={tableId} aria-busy={isTableChanging} class="jobs-table">
-  <thead style="z-index: 1;">
+  <thead>
     <tr>
       {#each headerCells as { key, label, sortable } (key)}
         {#if sortable}
@@ -106,7 +106,7 @@
       {/each}
     </tr>
   </thead>
-  <tbody style:opacity={navigating.to?.route.id === "/jobs" ? 0.5 : 1}>
+  <tbody style:opacity={isTableChanging ? 0.5 : 1}>
     {#each jobs as job (job.id)}
       <tr>
         <td>
@@ -166,28 +166,30 @@
 <style>
   :global {
     .jobs-table {
+      isolation: isolate;
       display: grid;
-      --jobs-table-max-column-width: 320px;
+      --jobs-table-column-max-width: 320px;
+      --jobs-table-column-min-width: 80px;
 
       /* 
         Columns don't get smaller than `max-content`,
-        but if there is leftover space, don't let them stretch beyond 320px
+        but if there is leftover space, don't let them stretch beyond `--jobs-table-column-max-width`
         + distribute any leftover space proportionally based on their content size (max in `px` not with `fr`)
       */
       grid-template-columns: repeat(
         10,
-        minmax(max-content, var(--jobs-table-max-column-width))
+        minmax(max-content, var(--jobs-table-column-max-width))
       );
 
       th,
       td {
         /* Hard lower limit for column width */
-        min-width: 80px;
+        min-width: var(--jobs-table-column-min-width);
         /* 
           If `min > max` in `minmax(min, max)`, then `max` is ignored and the track size is `min`.
           So we need to set a hard `max-width` on the cells
          */
-        max-width: var(--jobs-table-max-column-width);
+        max-width: var(--jobs-table-column-max-width);
       }
     }
   }
@@ -202,6 +204,7 @@
 
   thead {
     background-color: var(--lp-color-background-default);
+    z-index: 1;
     position: sticky;
     top: 0;
   }
