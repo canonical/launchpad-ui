@@ -47,4 +47,12 @@
 
 <Story name="Disabled" args={{ placeholder: "Disabled...", disabled: true }} />
 
-<Story name="Invalid" args={{ required: true, value: "" }} />
+<Story
+  name="Invalid"
+  args={{
+    required: true,
+    minlength: 50,
+    value: "",
+    placeholder: "Type less than 50 characters and unfocus",
+  }}
+/>

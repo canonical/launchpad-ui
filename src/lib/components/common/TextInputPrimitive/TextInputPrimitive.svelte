@@ -74,7 +74,7 @@
       opacity: var(--opacity-text-input-disabled);
     }
 
-    &:invalid,
+    &:user-invalid,
     &[aria-invalid="true"] {
       background-color: var(--color-background-text-input-invalid);
       border-color: var(--color-border-text-input-invalid);

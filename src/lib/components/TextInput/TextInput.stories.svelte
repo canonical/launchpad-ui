@@ -83,4 +83,13 @@
   {/snippet}
 </Story>
 
-<Story name="Invalid state" args={{ required: true, value: "" }} />
+<Story
+  name="Invalid state"
+  args={{
+    required: true,
+    minlength: 8,
+    value: "",
+    placeholder: "Type less than 8 characters and unfocus",
+    style: "width: 400px;",
+  }}
+/>
