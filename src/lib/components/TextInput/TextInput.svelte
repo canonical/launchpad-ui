@@ -1,14 +1,13 @@
 <!-- @canonical/generator-ds 0.10.0-experimental.2 -->
 
 <script lang="ts">
-  import { TextInputPrimitive } from "$lib/components/common/index.js";
+  import { InputPrimitive } from "$lib/components/common/index.js";
   import type { TextInputProps } from "./types.js";
 
   const componentCssClassName = "ds text-input";
 
   let {
     class: className,
-    type = "text",
     severity,
     density,
     value = $bindable(),
@@ -16,9 +15,8 @@
   }: TextInputProps = $props();
 </script>
 
-<TextInputPrimitive
+<InputPrimitive
   class={[componentCssClassName, className, severity, density]}
-  {type}
   bind:value
   {...rest}
 />

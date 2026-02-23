@@ -4,9 +4,9 @@ import { render } from "@canonical/svelte-ssr-test";
 import type { RenderResult } from "@canonical/svelte-ssr-test";
 import type { ComponentProps } from "svelte";
 import { describe, expect, it } from "vitest";
-import Component from "./TextInputPrimitive.svelte";
+import Component from "./InputPrimitive.svelte";
 
-describe("TextInputPrimitive SSR", () => {
+describe("InputPrimitive SSR", () => {
   const baseProps = {} satisfies ComponentProps<typeof Component>;
 
   describe("basics", () => {

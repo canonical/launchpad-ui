@@ -4,7 +4,7 @@
   import { SearchIcon } from "@canonical/svelte-icons";
   import {
     ButtonPrimitive,
-    TextInputPrimitive,
+    InputPrimitive,
   } from "$lib/components/common/index.js";
   import type { SearchBoxProps } from "./types.js";
 
@@ -22,7 +22,7 @@
 </script>
 
 <div class={[componentCssClassName, className]} data-testid="search-box">
-  <TextInputPrimitive
+  <InputPrimitive
     type="search"
     bind:value
     aria-label={ariaLabel}

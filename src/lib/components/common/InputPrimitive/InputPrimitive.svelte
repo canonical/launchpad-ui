@@ -1,14 +1,14 @@
 <!-- @canonical/generator-ds 0.10.0-experimental.4 -->
 
 <script lang="ts">
-  import type { TextInputPrimitiveProps } from "./types.js";
+  import type { InputPrimitiveProps } from "./types.js";
 
   let {
     value = $bindable(),
     ref = $bindable(),
     type = "text",
     ...rest
-  }: TextInputPrimitiveProps = $props();
+  }: InputPrimitiveProps = $props();
 </script>
 
 <input {type} bind:value bind:this={ref} {...rest} />

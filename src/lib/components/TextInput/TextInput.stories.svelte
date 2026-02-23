@@ -72,7 +72,7 @@
   name="With bound value"
   argTypes={{ value: { table: { disable: true } } }}
 >
-  {#snippet template(args)}
+  {#snippet template({ value: _, ...args })}
     <!-- 
       <script lang="ts">
         let value = $state("Hello world");
