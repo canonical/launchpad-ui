@@ -1,7 +1,7 @@
 <script module lang="ts">
   import { defineMeta } from "@storybook/addon-svelte-csf";
   import type { Snippet } from "svelte";
-  import { DateTime } from "$lib/components/DateTime/index.js";
+  import { RelativeDateTime } from "$lib/components/RelativeDateTime/index.js";
   import TitleRow from "./TitleRow.svelte";
 
   const { Story } = defineMeta({
@@ -25,7 +25,7 @@
 </script>
 
 {#snippet date()}
-  <DateTime date={new Date("2023-03-15")} />
+  <RelativeDateTime date="2023-03-15" />
 {/snippet}
 
 <Story name="Default" />

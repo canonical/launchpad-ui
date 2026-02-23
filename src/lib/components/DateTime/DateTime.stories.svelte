@@ -6,41 +6,29 @@
     title: "Components/DateTime",
     tags: ["autodocs"],
     component: DateTime,
+    args: {
+      date: "2023-10-01T12:00:00Z",
+    },
   });
 </script>
 
-<script lang="ts">
-  const times = [
-    1000 * 60 * 5, // 5 minutes
-    1000 * 60 * 60 * 1.5, // 1.5 hour
-    1000 * 60 * 60 * 24 * 1.5, // 1.5 days
-    1000 * 60 * 60 * 24 * 7 * 1.5, // 1.5 week
-  ];
-</script>
-
-<Story name="Now" args={{ date: new Date() }} />
-
-<Story name="Past Dates" argTypes={{ date: { control: false } }}>
-  {#snippet template(args)}
-    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-      {#each times as time (time)}
-        <DateTime {...args} date={Date.now() - time} />
-      {/each}
-    </div>
-  {/snippet}
-</Story>
-
-<Story name="Future Dates" argTypes={{ date: { control: false } }}>
-  {#snippet template(args)}
-    <div style="display: flex; flex-direction: column; gap: 0.5rem;">
-      {#each times as time (time)}
-        <DateTime {...args} date={Date.now() + time} />
-      {/each}
-    </div>
-  {/snippet}
-</Story>
+<Story name="Default" />
 
 <Story
-  name="Absolute Date"
-  args={{ absolute: true, date: "2022-01-01T00:00:00Z" }}
+  name="Custom Intl formatter"
+  args={{
+    formatter: new Intl.DateTimeFormat("en-GB", {
+      dateStyle: "long",
+      timeStyle: "long",
+    }),
+  }}
+/>
+
+<Story
+  name="Custom formatter function"
+  args={{
+    formatter: {
+      format: (date: Date) => `${date.getTime()} since epoch`,
+    },
+  }}
 />

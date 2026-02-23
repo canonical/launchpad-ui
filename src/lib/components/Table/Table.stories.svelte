@@ -3,6 +3,7 @@
   import { SeededRandom } from "../../../stories/utils/SeededRandom.js";
   import { DateTime } from "../DateTime/index.js";
   import { Link } from "../Link/index.js";
+  import { RelativeDateTime } from "../RelativeDateTime/index.js";
   import { UserChip } from "../UserChip/index.js";
   import { Table } from "./index.js";
   import type { TableSortDirection } from "./index.js";
@@ -130,8 +131,8 @@
             </Link>
           </th>
           <td>{row.street}, {row.city}</td>
-          <td><DateTime date={row.birthday} absolute /></td>
-          <td><DateTime date={row.registered} /></td>
+          <td><DateTime date={row.birthday} /></td>
+          <td><RelativeDateTime date={row.registered} /></td>
           <td>
             {row.balance.toLocaleString("en-US", {
               style: "currency",
@@ -272,8 +273,8 @@
             </Link>
           </th>
           <td>{row.street}, {row.city}</td>
-          <td><DateTime date={row.birthday} absolute /></td>
-          <td><DateTime date={row.registered} /></td>
+          <td><DateTime date={row.birthday} /></td>
+          <td><RelativeDateTime date={row.registered} /></td>
           <td>
             {row.balance.toLocaleString("en-US", {
               style: "currency",

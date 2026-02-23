@@ -12,28 +12,7 @@ export interface DateTimeProps extends BaseProps {
    */
   date: Date | string | number;
   /**
-   * Whether to display the date as an absolute time (e.g., "9/17/2023, 3:24 PM") instead of a relative time (e.g., "3 hours ago").
+   * Custom formatter to use.
    */
-  absolute?: boolean;
-  /**
-   * The threshold in milliseconds below which to display the `nowLabel` label.
-   *
-   * Has no effect if `absolute` is true.
-   *
-   * @default 60_000 (1 minute)
-   */
-  nowThreshold?: number;
-  /**
-   * The label to display when the time is within the `nowThreshold`.
-   *
-   * Has no effect if `absolute` is true.
-   *
-   * @default "now"
-   */
-  nowLabel?: string;
+  formatter?: { format: (date: Date) => string };
 }
-
-export type RelativeTimeFormatValue = {
-  value: number;
-  unit: Intl.RelativeTimeFormatUnit;
-};

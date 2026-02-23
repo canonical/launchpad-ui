@@ -74,19 +74,19 @@
             <UserChip userName={job.requested_by} size="small" />
           </DescriptionList.Item>
           <DescriptionList.Item name="Created">
-            <DateTime date={job.created_at} absolute />
+            <DateTime date={job.created_at} />
           </DescriptionList.Item>
           <DescriptionList.Item name="Updated">
-            <DateTime date={job.updated_at} absolute />
+            <DateTime date={job.updated_at} />
           </DescriptionList.Item>
           {#if job.started_at}
             <DescriptionList.Item name="Started">
-              <DateTime date={job.started_at} absolute />
+              <DateTime date={job.started_at} />
             </DescriptionList.Item>
           {/if}
           {#if job.completed_at}
             <DescriptionList.Item name="Finished">
-              <DateTime date={job.completed_at} absolute />
+              <DateTime date={job.completed_at} />
             </DescriptionList.Item>
           {/if}
           <!-- TODO: Duration -->

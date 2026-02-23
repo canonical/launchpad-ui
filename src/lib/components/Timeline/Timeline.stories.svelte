@@ -27,7 +27,7 @@
         <Timeline.Event.TitleRow leadingText={user.userName}>
           added 1 commit and filed 2 issues
           {#snippet date()}
-            <DateTime date={new Date(today.getTime() - 5 * day)} absolute />
+            <DateTime date={new Date(today.getTime() - 5 * day)} />
           {/snippet}
         </Timeline.Event.TitleRow>
       {/snippet}

@@ -4,14 +4,18 @@ import { render } from "@canonical/svelte-ssr-test";
 import type { RenderResult } from "@canonical/svelte-ssr-test";
 import type { ComponentProps } from "svelte";
 import { describe, expect, it, vi } from "vitest";
-import Component from "./DateTime.svelte";
+import Component from "./RelativeDateTime.svelte";
 
 vi.mock("./utils/formatters.js", () => {
   return {
-    defaultDateTimeFormatter: new Intl.DateTimeFormat("en-US", {
+    dateTimeFormatter: new Intl.DateTimeFormat("en-US", {
       dateStyle: "short",
       timeStyle: "short",
       timeZone: "UTC",
+    }),
+    relativeTimeFormatter: new Intl.RelativeTimeFormat("en-US", {
+      numeric: "auto",
+      style: "long",
     }),
   };
 });
@@ -20,7 +24,7 @@ const date = new Date("2024-01-01T12:00:00Z");
 const timestamp = date.getTime();
 const dateString = date.toISOString();
 
-describe("DateTime SSR", () => {
+describe("RelativeDateTime SSR", () => {
   const baseProps = {
     date,
   } satisfies ComponentProps<typeof Component>;
@@ -93,17 +97,56 @@ describe("DateTime SSR", () => {
     });
   });
 
-  it("accepts custom formatter", () => {
-    const page = render(Component, {
-      props: {
-        ...baseProps,
-        formatter: {
-          format: (date: Date) => `Formatted: ${date.toISOString()}`,
-        },
-      },
+  describe("Content", () => {
+    describe("now label", () => {
+      it("renders nowLabel when within nowThreshold", () => {
+        const now = Date.now();
+        const page = render(Component, {
+          props: { ...baseProps, date: now, nowThreshold: 999999 },
+        });
+        expect(componentLocator(page).textContent).toContain("now");
+      });
+
+      it("does not render nowLabel when outside nowThreshold", () => {
+        const now = Date.now();
+        const page = render(Component, {
+          props: { ...baseProps, date: now - 1000, nowThreshold: 10 },
+        });
+        expect(componentLocator(page).textContent).not.toContain("now");
+      });
+
+      it("renders custom nowLabel when within nowThreshold", () => {
+        const now = Date.now();
+        const page = render(Component, {
+          props: {
+            ...baseProps,
+            date: now,
+            nowThreshold: 999999,
+            nowLabel: "just now",
+          },
+        });
+        expect(componentLocator(page).textContent).toContain("just now");
+      });
     });
-    const element = componentLocator(page);
-    expect(element.textContent).toBe(`Formatted: ${date.toISOString()}`);
+
+    it("renders relative time when outside nowThreshold", () => {
+      const now = Date.now();
+      const pastDate = new Date(now - 1000 * 60 * 60 * 3); // 3 hours ago
+      const page = render(Component, {
+        props: { ...baseProps, date: pastDate, nowThreshold: 0 },
+      });
+
+      expect(componentLocator(page).textContent).toContain("3 hours ago");
+    });
+  });
+
+  it("applies formatted date as title", () => {
+    const page = render(Component, {
+      props: { ...baseProps },
+    });
+    expect(componentLocator(page).getAttribute("title")).toBe(
+      "1/1/24, 12:00 PM",
+    );
   });
 });
 
