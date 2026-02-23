@@ -254,9 +254,7 @@
         {/snippet}
       </SideNavigation>
 
-      <main>
-        {@render children()}
-      </main>
+      {@render children()}
     </div>
   </GlobalShortcutsProvider>
 </IconsOptimizationProvider>

@@ -9,8 +9,8 @@
     LogHeader,
     NoLogs,
     TrailingBar,
-    useFullScreen,
-  } from "$lib/modules/job-manager/index.js";
+  } from "$lib/modules/job-manager/job-details/index.js";
+  import { useFullScreen } from "$lib/modules/job-manager/useFullScreen.svelte.js";
   import type { PageProps } from "./$types";
   import { browser } from "$app/environment";
   import { resolve } from "$app/paths";
@@ -66,7 +66,7 @@
   );
 </script>
 
-<div class="page" class:log-full-screen={fullScreen.isEnabled}>
+<main class:log-full-screen={fullScreen.isEnabled}>
   {#if !fullScreen.isEnabled}
     <Breadcrumbs
       segments={[
@@ -124,10 +124,10 @@
       />
     {/if}
   </section>
-</div>
+</main>
 
 <style>
-  .page {
+  main {
     display: grid;
     height: 100vh;
 
@@ -168,7 +168,7 @@
   }
 
   @media (max-width: 1036px) {
-    .page:not(.log-full-screen) {
+    main:not(.log-full-screen) {
       height: auto;
       min-height: 100vh;
       grid-template:
