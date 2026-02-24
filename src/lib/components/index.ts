@@ -11,6 +11,7 @@ export * from "./Link/index.js";
 export * from "./Log/index.js";
 export * from "./Modal/index.js";
 export * from "./ModalContent/index.js";
+export * from "./NumberInput/index.js";
 export * from "./Pagination/index.js";
 export * from "./Popover/index.js";
 export * from "./Radio/index.js";
