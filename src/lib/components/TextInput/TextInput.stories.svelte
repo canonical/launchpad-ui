@@ -1,5 +1,6 @@
 <script module lang="ts">
   import { defineMeta } from "@storybook/addon-svelte-csf";
+  import { MODIFIER_FAMILIES } from "$lib/modifier-families/constants.js";
   import TextInput from "./TextInput.svelte";
 
   const { Story } = defineMeta({
@@ -30,13 +31,6 @@
 </script>
 
 <script lang="ts">
-  const severityModifiers = [
-    undefined,
-    "negative",
-    "caution",
-    "positive",
-  ] as const;
-
   let value = $state("Hello world");
 </script>
 
@@ -49,7 +43,7 @@
     <div
       style="display: flex; flex-direction: column; gap: 0.5rem; align-items: flex-start;"
     >
-      {#each severityModifiers as severity (severity)}
+      {#each MODIFIER_FAMILIES["severity"] as severity (severity)}
         <TextInput {...args} {severity} placeholder={severity || "default"} />
       {/each}
     </div>
