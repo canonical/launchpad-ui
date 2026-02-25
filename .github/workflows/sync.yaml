@@ -11,27 +11,62 @@ jobs:
     env:
       LP_REPO_URL: https://git.launchpad.net/launchpad-ui
     steps:
-      - name: Compute LP vs GH SHAs
+      - name: Compare LP vs GH branches
         id: shas
         env:
-          BRANCH: main
           REPO: ${{ github.repository }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
-          LP_SHA=$(git ls-remote "$LP_REPO_URL" "refs/heads/${BRANCH}" | awk '{print $1}')
-          GH_SHA=$(curl -fsSL -H "Authorization: Bearer $GITHUB_TOKEN" \
-                   "https://api.github.com/repos/$REPO/branches/$BRANCH" | jq -r .commit.sha)
-          
-          echo "lp_sha=$LP_SHA" >> "$GITHUB_OUTPUT"
-          echo "gh_sha=$GH_SHA" >> "$GITHUB_OUTPUT"
-          
-          if [ "$LP_SHA" = "$GH_SHA" ]; then
-            echo "changed=false" >> "$GITHUB_OUTPUT"
-            echo "No changes detected - repositories are in sync"
-          else
-            echo "changed=true" >> "$GITHUB_OUTPUT"
+
+          # Fetch all branch HEADs from Launchpad
+          declare -A lp_branches
+          while IFS=$'\t' read -r sha ref; do
+            branch="${ref#refs/heads/}"
+            lp_branches["$branch"]="$sha"
+          done < <(git ls-remote --heads "$LP_REPO_URL")
+
+          # Fetch all branch HEADs from GitHub
+          declare -A gh_branches
+          page=1
+          while true; do
+            response=$(curl -fsSL -H "Authorization: Bearer $GITHUB_TOKEN" \
+              "https://api.github.com/repos/$REPO/branches?per_page=100&page=$page")
+            count=$(echo "$response" | jq length)
+            if [ "$count" -eq 0 ]; then
+              break
+            fi
+            while IFS=$'\t' read -r name sha; do
+              gh_branches["$name"]="$sha"
+            done < <(echo "$response" | jq -r '.[] | [.name, .commit.sha] | @tsv')
+            page=$((page + 1))
+          done
+
+          # Compare branches
+          changed=false
+          diff_details=""
+          for branch in "${!lp_branches[@]}"; do
+            lp_sha="${lp_branches[$branch]}"
+            gh_sha="${gh_branches[$branch]:-}"
+            if [ "$lp_sha" != "$gh_sha" ]; then
+              changed=true
+              if [ -z "$gh_sha" ]; then
+                diff_details+="  - **${branch}**: new branch (LP: \`${lp_sha:0:12}\`)\n"
+              else
+                diff_details+="  - **${branch}**: LP \`${lp_sha:0:12}\` != GH \`${gh_sha:0:12}\`\n"
+              fi
+            fi
+          done
+
+          echo "changed=$changed" >> "$GITHUB_OUTPUT"
+          echo "diff_details<<EOF" >> "$GITHUB_OUTPUT"
+          echo -e "$diff_details" >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
+
+          if [ "$changed" = "true" ]; then
             echo "Changes detected - sync required"
+          else
+            echo "No changes detected - all branches are in sync"
           fi
 
       - name: Cleanup previous cancelled Sync runs
@@ -66,9 +101,8 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           echo "## Sync Status: No Changes" >> $GITHUB_STEP_SUMMARY
-          echo "**LP SHA:** \`${{ steps.shas.outputs.lp_sha }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "**GH SHA:** \`${{ steps.shas.outputs.gh_sha }}\`" >> $GITHUB_STEP_SUMMARY
-          
+          echo "All branches are in sync." >> $GITHUB_STEP_SUMMARY
+
           gh run cancel ${{ github.run_id }} -R "${{ github.repository }}"
 
       - name: Setup SSH
@@ -84,9 +118,8 @@ jobs:
         run: |
           set -euxo pipefail
           echo "## Sync Status: Changes Detected" >> $GITHUB_STEP_SUMMARY
-          echo "**LP SHA:** \`${{ steps.shas.outputs.lp_sha }}\`" >> $GITHUB_STEP_SUMMARY
-          echo "**GH SHA:** \`${{ steps.shas.outputs.gh_sha }}\`" >> $GITHUB_STEP_SUMMARY
-          
+          echo "${{ steps.shas.outputs.diff_details }}" >> $GITHUB_STEP_SUMMARY
+
           git clone --mirror "$LP_REPO_URL" lp-mirror.git
           cd lp-mirror.git
           git remote set-url --push origin "git@github.com:${REPO}.git"
