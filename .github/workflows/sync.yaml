@@ -1,0 +1,93 @@
+name: Sync with Launchpad repository
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch: {}
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    env:
+      LP_REPO_URL: https://git.launchpad.net/launchpad-ui
+    steps:
+      - name: Compute LP vs GH SHAs
+        id: shas
+        env:
+          BRANCH: main
+          REPO: ${{ github.repository }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          LP_SHA=$(git ls-remote "$LP_REPO_URL" "refs/heads/${BRANCH}" | awk '{print $1}')
+          GH_SHA=$(curl -fsSL -H "Authorization: Bearer $GITHUB_TOKEN" \
+                   "https://api.github.com/repos/$REPO/branches/$BRANCH" | jq -r .commit.sha)
+          
+          echo "lp_sha=$LP_SHA" >> "$GITHUB_OUTPUT"
+          echo "gh_sha=$GH_SHA" >> "$GITHUB_OUTPUT"
+          
+          if [ "$LP_SHA" = "$GH_SHA" ]; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            echo "No changes detected - repositories are in sync"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+            echo "Changes detected - sync required"
+          fi
+
+      - name: Cleanup previous cancelled Sync runs
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+
+          # List run IDs for this workflow file.
+          run_ids="$(
+            gh api "repos/$REPO/actions/workflows/sync.yaml/runs" --paginate --jq '
+              .workflow_runs[]
+              | select(.status == "completed")
+              | .id
+            ' || true
+          )"
+
+          if [[ -z "$run_ids" ]]; then
+            exit 0
+          fi
+
+          while IFS= read -r run_id; do
+            [[ -z "$run_id" ]] && continue
+            gh api -X DELETE "repos/$REPO/actions/runs/$run_id" || true
+          done <<<"$run_ids"
+
+      - name: Cancel this run if no changes
+        if: steps.shas.outputs.changed == 'false'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          echo "## Sync Status: No Changes" >> $GITHUB_STEP_SUMMARY
+          echo "**LP SHA:** \`${{ steps.shas.outputs.lp_sha }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**GH SHA:** \`${{ steps.shas.outputs.gh_sha }}\`" >> $GITHUB_STEP_SUMMARY
+          
+          gh run cancel ${{ github.run_id }} -R "${{ github.repository }}"
+
+      - name: Setup SSH
+        if: steps.shas.outputs.changed == 'true'
+        uses: webfactory/ssh-agent@v0.9.1
+        with:
+          ssh-private-key: ${{ secrets.PUSH_DEPLOY_PRIVATE_KEY }}
+
+      - name: Mirror from Launchpad to GitHub
+        if: steps.shas.outputs.changed == 'true'
+        env:
+          REPO: ${{ github.repository }}
+        run: |
+          set -euxo pipefail
+          echo "## Sync Status: Changes Detected" >> $GITHUB_STEP_SUMMARY
+          echo "**LP SHA:** \`${{ steps.shas.outputs.lp_sha }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "**GH SHA:** \`${{ steps.shas.outputs.gh_sha }}\`" >> $GITHUB_STEP_SUMMARY
+          
+          git clone --mirror "$LP_REPO_URL" lp-mirror.git
+          cd lp-mirror.git
+          git remote set-url --push origin "git@github.com:${REPO}.git"
+          git push --mirror --force
