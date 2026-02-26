@@ -1,11 +1,11 @@
 <script module lang="ts">
   import { defineMeta } from "@storybook/addon-svelte-csf";
-  import TextInputPrimitive from "./TextInputPrimitive.svelte";
+  import InputPrimitive from "./InputPrimitive.svelte";
 
   const { Story } = defineMeta({
-    title: "Primitives/TextInputPrimitive",
+    title: "Primitives/InputPrimitive",
     tags: ["autodocs"],
-    component: TextInputPrimitive,
+    component: InputPrimitive,
     argTypes: {
       ref: {
         table: { disable: true },

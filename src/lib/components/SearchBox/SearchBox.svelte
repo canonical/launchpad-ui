@@ -4,7 +4,7 @@
   import { SearchIcon } from "@canonical/svelte-icons";
   import {
     ButtonPrimitive,
-    TextInputPrimitive,
+    InputPrimitive,
   } from "$lib/components/common/index.js";
   import type { SearchBoxProps } from "./types.js";
 
@@ -22,7 +22,7 @@
 </script>
 
 <div class={[componentCssClassName, className]} data-testid="search-box">
-  <TextInputPrimitive
+  <InputPrimitive
     type="search"
     bind:value
     aria-label={ariaLabel}
@@ -81,17 +81,15 @@ To make the `SearchBox` a search landmark wrap it in a [`<form role="search">`](
         }
 
         &.no-invalid-styles {
-          --color-background-text-input-invalid: var(
-            --color-background-text-input
+          --color-background-input-invalid: var(--color-background-input);
+          --color-background-input-invalid-hover: var(
+            --color-background-input-hover
           );
-          --color-background-text-input-invalid-hover: var(
-            --color-background-text-input-hover
+          --color-background-input-invalid-active: var(
+            --color-background-input-active
           );
-          --color-background-text-input-invalid-active: var(
-            --color-background-text-input-active
-          );
-          --color-border-text-input-invalid: var(--color-border-text-input);
-          --color-outline-text-input-invalid: var(--color-outline-text-input);
+          --color-border-input-invalid: var(--color-border-input);
+          --color-outline-input-invalid: var(--color-outline-input);
         }
       }
 

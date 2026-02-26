@@ -149,7 +149,7 @@
         opacity: var(--opacity-select-input-disabled);
       }
 
-      &:invalid,
+      &:user-invalid,
       &[aria-invalid="true"] {
         background-color: var(--color-background-select-input-invalid);
         border-color: var(--color-border-select-input-invalid);

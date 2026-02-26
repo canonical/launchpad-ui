@@ -1,11 +1,11 @@
-<!-- @canonical/generator-ds 0.10.0-experimental.2 -->
+<!-- @canonical/generator-ds 0.10.0-experimental.5 -->
 
 <script lang="ts">
   import { InputPrimitive } from "$lib/components/common/index.js";
-  import type { TextInputProps } from "./types.js";
+  import type { NumberInputProps } from "./types.js";
   import "./styles.css";
 
-  const componentCssClassName = "ds text-input";
+  const componentCssClassName = "ds number-input";
 
   let {
     class: className,
@@ -13,25 +13,26 @@
     density,
     value = $bindable(),
     ...rest
-  }: TextInputProps = $props();
+  }: NumberInputProps = $props();
 </script>
 
 <InputPrimitive
   class={[componentCssClassName, className, severity, density]}
+  type="number"
   bind:value
   {...rest}
 />
 
 <!-- @component
-`TextInput` is a styled wrapper around the native text-based `<input>` element.
+`NumberInput` is a styled wrapper around the native `<input type="number">` element.
 
 As an input, it requires a `<label>` associated with it.
 
 ## Example Usage
 ```svelte
 <label>
-  Password
-  <TextInput type="password" placeholder="*********" minLength={8} required />
+  Age
+  <NumberInput class="custom-class" id="unique-id" min={0} max={100} />
 </label>
 ```
 -->

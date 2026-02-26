@@ -1,37 +1,20 @@
 <script module lang="ts">
   import { defineMeta } from "@storybook/addon-svelte-csf";
   import { MODIFIER_FAMILIES } from "$lib/modifier-families/constants.js";
-  import TextInput from "./TextInput.svelte";
+  import NumberInput from "./NumberInput.svelte";
 
   const { Story } = defineMeta({
-    title: "Components/TextInput",
+    title: "Components/NumberInput",
     tags: ["autodocs"],
-    component: TextInput,
-    argTypes: {
-      disabled: {
-        control: { type: "boolean" },
-        description: "Disables the text input, preventing user interaction.",
-        table: {
-          type: { summary: "boolean" },
-          category: "properties",
-        },
-      },
-      placeholder: {
-        control: { type: "text" },
-        description: "The placeholder text for the input.",
-        table: {
-          category: "properties",
-        },
-      },
-    },
+    component: NumberInput,
     args: {
-      placeholder: "Enter text...",
+      placeholder: "Enter number...",
     },
   });
 </script>
 
 <script lang="ts">
-  let value = $state("Hello world");
+  let value = $state(42);
 </script>
 
 <!-- As an input, it requires a `<label>` associated with it. -->
@@ -44,7 +27,7 @@
       style="display: flex; flex-direction: column; gap: 0.5rem; align-items: flex-start;"
     >
       {#each MODIFIER_FAMILIES["severity"] as severity (severity)}
-        <TextInput {...args} {severity} placeholder={severity || "default"} />
+        <NumberInput {...args} {severity} placeholder={severity || "default"} />
       {/each}
     </div>
   {/snippet}
@@ -56,7 +39,7 @@
       style="display: flex; flex-direction: column; gap: 0.5rem; align-items: flex-start;"
     >
       {#each ["dense", "medium"] as const as density (density)}
-        <TextInput {...args} {density} placeholder={density} />
+        <NumberInput {...args} {density} placeholder={density} />
       {/each}
     </div>
   {/snippet}
@@ -69,10 +52,10 @@
   {#snippet template({ value: _, ...args })}
     <!-- 
       <script lang="ts">
-        let value = $state("Hello world");
+        let value = $state(42);
       </script>
     -->
-    <TextInput {...args} bind:value />
+    <NumberInput {...args} bind:value />
     <span style="margin-inline-start: 0.5rem;">Current value: {value}</span>
   {/snippet}
 </Story>
@@ -81,9 +64,9 @@
   name="Invalid state"
   args={{
     required: true,
-    minlength: 8,
-    value: "",
-    placeholder: "Type less than 8 characters and unfocus",
-    style: "width: 400px;",
+    min: 0,
+    max: 10,
+    placeholder: "Enter a number greater than 10 and unfocus",
+    style: "width: 380px;",
   }}
 />

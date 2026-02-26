@@ -5,9 +5,9 @@ import { describe, expect, it } from "vitest";
 import type { Locator } from "vitest/browser";
 import { render } from "vitest-browser-svelte";
 import type { RenderResult } from "vitest-browser-svelte";
-import Component from "./TextInputPrimitive.svelte";
+import Component from "./InputPrimitive.svelte";
 
-describe("TextInputPrimitive component", () => {
+describe("InputPrimitive component", () => {
   const baseProps = {} satisfies ComponentProps<typeof Component>;
 
   it("renders", async () => {

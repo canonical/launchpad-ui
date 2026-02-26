@@ -53,7 +53,7 @@
   name="With invalid styles"
   args={{
     invalidStyled: true,
-    placeholder: "Type at least 3 characters",
+    placeholder: "Type less than 3 characters and unfocus",
     required: true,
     minlength: 3,
   }}

@@ -102,7 +102,7 @@
       opacity: var(--opacity-textarea-input-disabled);
     }
 
-    &:invalid,
+    &:user-invalid,
     &[aria-invalid="true"] {
       background-color: var(--color-background-textarea-input-invalid);
       border-color: var(--color-border-textarea-input-invalid);
