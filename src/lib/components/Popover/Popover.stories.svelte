@@ -1,9 +1,8 @@
 <script module lang="ts">
   import { ChevronDownIcon, ChevronUpIcon } from "@canonical/svelte-icons";
   import { defineMeta } from "@storybook/addon-svelte-csf";
-  import type { Snippet } from "svelte";
   import type { ToggleEventHandler } from "svelte/elements";
-  import { Button } from "$lib/components/Button/index.js";
+  import { Button } from "../Button/index.js";
   import Popover from "./Popover.svelte";
   import type { PopoverMethods } from "./types.js";
 
@@ -15,12 +14,14 @@
       trigger: {
         control: false,
       },
-    },
-    args: {
-      children: "This is the content of the popover." as unknown as Snippet,
+      children: {
+        control: false,
+      },
     },
   });
+</script>
 
+<script lang="ts">
   let popover = $state<PopoverMethods>();
   let timeLeft = $state(0);
   const ontoggle: ToggleEventHandler<HTMLDivElement> = (e) => {
@@ -35,10 +36,12 @@
       }, 1000);
     }
   };
+
+  const positionedPopovers = $state<PopoverMethods[]>([]);
 </script>
 
 <Story name="Default">
-  {#snippet template({ trigger: _, ...args })}
+  {#snippet template({ trigger: _, children: __, ...args })}
     <Popover {...args}>
       {#snippet trigger(triggerProps, open)}
         <Button {...triggerProps}>
@@ -52,6 +55,7 @@
           {/snippet}
         </Button>
       {/snippet}
+      This is content of the popover.
     </Popover>
   {/snippet}
 </Story>
@@ -108,17 +112,22 @@
   args={{ popover: "manual" }}
   argTypes={{
     position: { table: { disable: true } },
-    children: { control: false },
   }}
 >
   {#snippet template({ children: _, trigger: __, ...args })}
+    <Button
+      onclick={() => positionedPopovers.forEach((p) => p.togglePopover())}
+      style="margin-bottom: 2rem; margin-inline: auto; display: block;"
+    >
+      Toggle all popovers
+    </Button>
     <div
       style="display: grid; grid-template-columns: repeat(2, 1fr); place-items: center; gap: 4rem;"
     >
-      {#each ["block-start span-inline-start", "block-end span-inline-start", "block-start span-inline-end", "block-end span-inline-end", "block-start", "block-end"] as const as position (position)}
-        <Popover {...args} {position}>
-          {#snippet trigger(triggerProps)}
-            <Button {...triggerProps} {@attach (e) => e.click()}>Toggle</Button>
+      {#each ["block-start span-inline-start", "block-end span-inline-start", "block-start span-inline-end", "block-end span-inline-end", "block-start", "block-end", "inline-start", "inline-end"] as const as position, i (position)}
+        <Popover {...args} {position} bind:this={positionedPopovers[i]}>
+          {#snippet trigger(triggerProps, open)}
+            <Button {...triggerProps}>{open ? "Close" : "Open"}</Button>
           {/snippet}
           I'm <code>{position}</code>!
         </Popover>
@@ -129,22 +138,25 @@
 
 <Story
   name="Fallback positioned"
-  tags={["!autodocs"]}
-  argTypes={{ children: { control: false } }}
   args={{
-    positionTryFallback: "flip-inline, flip-block",
     position: "block-end span-inline-end",
+    positionTryFallbacks: "flip-inline",
   }}
 >
   {#snippet template({ children: _, trigger: __, ...args })}
-    <div style="display: flex; justify-content: flex-end;">
+    <div
+      style="display: flex; justify-content: flex-end; align-items: start; min-height: 150px;"
+    >
       <Popover {...args}>
         {#snippet trigger(triggerProps)}
           <Button {...triggerProps}>Toggle</Button>
         {/snippet}
-        <p style="width: min(400px, 100vw);">
+        <p
+          style="width: min(500px, 100vh); border: 1px solid var(--lp-color-border-default);"
+        >
           This is a wide popover content that could overflow the viewport on the
-          inline-end side. Resize your window if it doesn't.
+          inline-end side. The popover will attempt to flip the content to the
+          opposite side to avoid the overflow. Resize the viewport if necessary.
         </p>
       </Popover>
     </div>

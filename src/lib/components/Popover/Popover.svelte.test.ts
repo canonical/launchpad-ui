@@ -19,6 +19,7 @@ describe("Popover component", () => {
   const baseProps = {
     trigger,
     children,
+    "data-testid": "popover",
   } satisfies ComponentProps<typeof Component>;
 
   it("renders", async () => {

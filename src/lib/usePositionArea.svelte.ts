@@ -35,10 +35,19 @@ export const positionAreaFallbackMap = {
 
 export type PositionArea = keyof typeof positionAreaFallbackMap;
 
-export type PositionTryFallback =
+/**
+ * A subset of `position-try-fallbacks` values that should cover the most common fallback strategies.
+ */
+export type PositionTryFallbacks =
   | "flip-inline"
   | "flip-block"
-  | "flip-inline, flip-block";
+  | "flip-inline flip-block"
+  | "flip-inline, flip-block"
+  | "flip-block, flip-inline"
+  | "flip-inline, flip-inline flip-block"
+  | "flip-block, flip-inline flip-block"
+  | "flip-inline, flip-block, flip-inline flip-block"
+  | "flip-block, flip-inline, flip-inline flip-block";
 
 /**
  * Allows to position a floating target relative to a trigger using CSS `position-area` when available, and automatically falls back to Floating UI when unsupported.
@@ -46,35 +55,39 @@ export type PositionTryFallback =
  * Usage:
  * - Attach `triggerAttachment` to the trigger element and `targetAttachment` to the target element you wish to position.
  * - Provide the style returned by `targetStyle()` to the target element.
- * - Control activation via `getActive()`, the desired placement via `getPosition()` and optionally position fallback behavior via `getTryFallback()`.
+ * - Control activation via `getActive()`, the desired placement via `getPosition()` and optionally position fallback behavior via `getTryFallbacks()`.
  *
  * @param getPosition - Returns the desired position-area value.
  * @param getActive - Returns whether positioning should be active.
- * @param getTryFallback - Optionally returns a position-try-fallbacks value.
+ * @param getTryFallbacks - Optionally returns a position-try-fallbacks value.
  * @returns Attachments to be applied to the trigger and target elements and the target style getter.
  */
 export function usePositionArea(
   getPosition: () => PositionArea,
   getActive: () => boolean,
-  getTryFallback?: () => PositionTryFallback | undefined,
+  getTryFallbacks?: () => PositionTryFallbacks | undefined,
 ) {
   const isMounted = useIsMounted();
   const needsFallback = $derived.by(() => {
+    if (!isMounted.value) return false;
+
     const position = getPosition();
+    const tryFallback = getTryFallbacks?.();
+
     return (
-      isMounted.value &&
-      (!CSS.supports("position-area", position) ||
-        // Chrome (as of 129) reports support for `inline-start` and `inline-end`, but it is partial and unstable.
-        // See: https://issues.chromium.org/issues/438334710
-        // TODO: Remove when this is resolved.
-        position.startsWith("inline"))
+      !CSS.supports("position-area", position) ||
+      // Some versions of Firefox and Chrome seem to report support for `inline-start` and `inline-end`, but they don't actually position the element properly. For now, force the fallback for these values.
+      // TODO: Remove when this is resolved.
+      position.startsWith("inline") ||
+      (tryFallback !== undefined &&
+        !CSS.supports("position-try-fallbacks", tryFallback))
     );
   });
 
   const isFloatingUiActive = $derived(needsFallback && getActive());
   const floatingUIConfig = $derived.by(() => {
     const position = getPosition();
-    const tryFallback = getTryFallback?.();
+    const tryFallback = getTryFallbacks?.();
 
     if (!tryFallback) {
       return {
@@ -117,7 +130,7 @@ export function usePositionArea(
     if (needsFallback && fallbackStyle) {
       return fallbackStyle;
     }
-    const tryFallback = getTryFallback?.();
+    const tryFallback = getTryFallbacks?.();
     return `position-area: ${getPosition()};${tryFallback ? ` position-try-fallbacks: ${tryFallback};` : ""}`;
   });
 

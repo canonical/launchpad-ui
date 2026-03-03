@@ -16,6 +16,7 @@ describe("Popover SSR", () => {
   const baseProps = {
     trigger,
     children,
+    "data-testid": "popover",
   } satisfies ComponentProps<typeof Component>;
 
   describe("basics", () => {

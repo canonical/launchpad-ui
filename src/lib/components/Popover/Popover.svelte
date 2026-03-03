@@ -16,7 +16,7 @@
     ontoggle: ontoggleProp,
     popover = "auto",
     position = "block-end span-inline-end",
-    positionTryFallback,
+    positionTryFallbacks,
     ...rest
   }: PopoverProps = $props();
 
@@ -42,16 +42,21 @@
 
   const fallbackId = $props.id();
   const id = $derived(idProp || fallbackId);
+  const anchorName = $derived(`--popover-${id}`);
 
   const { triggerAttachment, targetAttachment, targetStyle } = usePositionArea(
     () => position,
     () => open,
-    () => positionTryFallback,
+    () => positionTryFallbacks,
   );
 </script>
 
 {@render trigger(
-  { popovertarget: id, [createAttachmentKey()]: triggerAttachment },
+  {
+    popovertarget: id,
+    style: `anchor-name: ${anchorName}`,
+    [createAttachmentKey()]: triggerAttachment,
+  },
   open,
 )}
 <div
@@ -60,8 +65,8 @@
   class={[componentCssClassName, className]}
   {popover}
   {ontoggle}
-  data-testid="popover"
   style="{targetStyle()} {style}"
+  style:position-anchor={anchorName}
   {@attach targetAttachment}
   {...rest}
 >
@@ -98,7 +103,7 @@ If needed, you may control the popover imperatively by calling `showPopover`, `h
 
 <style>
   .ds.popover {
-    border: 0;
+    border: none;
     inset: auto;
     background-color: transparent;
   }
