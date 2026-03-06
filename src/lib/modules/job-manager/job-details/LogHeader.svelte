@@ -4,7 +4,7 @@
   import { FullscreenIcon, MenuContextualIcon } from "@canonical/svelte-icons";
   import { ButtonPrimitive } from "$lib/components/common/index.js";
   import {
-    ChevronCollapseIcon,
+    ExitFullscreenIcon,
     SkipToBottomIcon,
     SkipToTopIcon,
   } from "$lib/components/icons/index.js";
@@ -93,8 +93,7 @@
     aria-label={fullScreenLinkLabel}
   >
     {#if fullScreen.isEnabled}
-      <!-- TODO(@Enzo): Correct icon -->
-      <ChevronCollapseIcon />
+      <ExitFullscreenIcon />
     {:else}
       <FullscreenIcon />
     {/if}

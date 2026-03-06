@@ -14,6 +14,7 @@ export { default as ConflictIcon } from "./ConflictIcon.svelte";
 export { default as ConflictResolutionIcon } from "./ConflictResolutionIcon.svelte";
 export { default as CreditCardIcon } from "./CreditCardIcon.svelte";
 export { default as EmojiSmileIcon } from "./EmojiSmileIcon.svelte";
+export { default as ExitFullscreenIcon } from "./ExitFullscreenIcon.svelte";
 export { default as ExpandDownIcon } from "./ExpandDownIcon.svelte";
 export { default as ExpandIcon } from "./ExpandIcon.svelte";
 export { default as ExpandRightIcon } from "./ExpandRightIcon.svelte";
