@@ -45,14 +45,15 @@
         />
       {/snippet}
       {#snippet rightGroup()}
-        <Pagination.PageSelect
-          bind:value={currentPage}
+        <Pagination.PageInput
+          value={currentPage}
+          onchange={(event) => {
+            const value = Number(event.currentTarget.value);
+            if (isNaN(value)) return;
+            currentPage = Math.min(Math.max(1, value), numberOfPages);
+          }}
           totalPages={numberOfPages}
-        >
-          {#each { length: numberOfPages }, i (i)}
-            <option value={i + 1}>{i + 1}</option>
-          {/each}
-        </Pagination.PageSelect>
+        />
       {/snippet}
       <Pagination.PageNavigation
         direction="first"
@@ -109,16 +110,15 @@
   {#snippet template({ leftGroup: _, rightGroup: __, children: ___, ...args })}
     <Pagination {...args}>
       {#snippet rightGroup()}
-        <div style="display: flex;">
-          <input
-            aria-label="Go to page"
-            type="number"
-            min={1}
-            max={numberOfPages}
-            bind:value={currentPage}
-            style="border: 1px solid var(--lp-color-border-default); padding: 2px"
-          />
-        </div>
+        <select
+          aria-label="Go to page"
+          bind:value={currentPage}
+          style="border: 1px solid var(--lp-color-border-default); padding: 2px"
+        >
+          {#each Array(numberOfPages) as _, index (index)}
+            <option value={index + 1}>{index + 1}</option>
+          {/each}
+        </select>
       {/snippet}
       <Pagination.PageNavigation
         direction="first"

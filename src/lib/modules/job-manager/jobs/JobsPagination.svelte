@@ -1,5 +1,8 @@
 <script lang="ts">
-  import type { HTMLSelectAttributes } from "svelte/elements";
+  import type {
+    HTMLInputAttributes,
+    HTMLSelectAttributes,
+  } from "svelte/elements";
   import type { JobsListMetadata } from "$lib/api/job-manager/types.js";
   import { Button, Pagination } from "$lib/components/index.js";
   import {
@@ -50,16 +53,26 @@
     });
   };
 
-  const selectPage: HTMLSelectAttributes["onchange"] = (e) => {
+  const selectPage: HTMLInputAttributes["onblur"] = (e) => {
+    const newPageNumber = Number(e.currentTarget.value);
+    if (isNaN(newPageNumber)) return;
+
+    const clampedPageNumber = Math.min(
+      Math.max(newPageNumber, 1),
+      numberOfPages,
+    );
+    if (clampedPageNumber === currentPage) return;
+
     const url = new URL(page.url);
-    if (e.currentTarget.value === "1") {
+    if (clampedPageNumber === 1) {
       url.searchParams.delete("page");
     } else {
-      url.searchParams.set("page", e.currentTarget.value);
+      url.searchParams.set("page", clampedPageNumber.toString());
     }
 
     // eslint-disable-next-line svelte/no-navigation-without-resolve
     goto(url.toString(), {
+      replaceState: true,
       noScroll: true,
       invalidate: ["/jobs"],
     });
@@ -86,16 +99,13 @@
   {/snippet}
   {#snippet rightGroup()}
     <form method="GET" data-sveltekit-noscroll>
-      <Pagination.PageSelect
+      <Pagination.PageInput
         totalPages={numberOfPages}
         name="page"
         value={currentPage}
-        onchange={selectPage}
-      >
-        {#each { length: numberOfPages }, i (i)}
-          <option value={i + 1}>{i + 1}</option>
-        {/each}
-      </Pagination.PageSelect>
+        onblur={selectPage}
+      />
+
       {@render noScriptSubmit()}
       {#if metadata.limit !== jobsTableLimitDefault}
         <input type="hidden" name="limit" value={metadata.limit} />

@@ -4,27 +4,23 @@ import { default as PaginationRoot } from "./Pagination.svelte";
 import {
   ItemsCount,
   ItemsPerPageSelect,
+  PageInput,
   PageNavigation,
-  PageSelect,
 } from "./common/index.js";
 
 const Pagination = PaginationRoot as typeof PaginationRoot & {
   /**
-   * The `PageSelect` component renders a select input for navigating to a specific page.
+   * The `PageInput` component renders an input for navigating to a specific page.
    *
    * @example
    * ```svelte
-   *  <Pagination.PageSelect
+   *  <Pagination.PageInput
    *    bind:value={currentPage}
    *    totalPages={numberOfPages}
-   *  >
-   *    {#each { length: numberOfPages }, i (i)}
-   *      <option value={i + 1}>{i + 1}</option>
-   *    {/each}
-   *  </Pagination.PageSelect>
+   *  />
    * ```
    */
-  PageSelect: typeof PageSelect;
+  PageInput: typeof PageInput;
   /**
    * The `PageNavigation` component is a link/button for navigating to the next, previous, first, or last page.
    *
@@ -61,7 +57,7 @@ const Pagination = PaginationRoot as typeof PaginationRoot & {
   ItemsCount: typeof ItemsCount;
 };
 
-Pagination.PageSelect = PageSelect;
+Pagination.PageInput = PageInput;
 Pagination.PageNavigation = PageNavigation;
 Pagination.ItemsPerPageSelect = ItemsPerPageSelect;
 Pagination.ItemsCount = ItemsCount;
@@ -72,6 +68,6 @@ export * from "./types.js";
 export type {
   ItemsCountProps as PaginationItemsCountProps,
   ItemsPerPageSelectProps as PaginationItemsPerPageSelectProps,
+  PageInputProps as PaginationPageInputProps,
   PageNavigationProps as PaginationPageNavigationProps,
-  PageSelectProps as PaginationPageSelectProps,
 } from "./common/index.js";
