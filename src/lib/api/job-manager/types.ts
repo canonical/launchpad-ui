@@ -523,6 +523,32 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/capacity": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Capacity
+         * @description Return runner and job capacity statistics grouped by architecture.
+         *
+         *     Args:
+         *         db: Database session.
+         *
+         *     Returns:
+         *         Capacity statistics for each architecture that has runners or jobs.
+         */
+        get: operations["get_capacity_v1_capacity_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/metrics": {
         parameters: {
             query?: never;
@@ -620,7 +646,82 @@ export interface components {
          * @description Supported CPU architectures.
          * @enum {string}
          */
-        Architecture: "amd64" | "arm64" | "armel" | "armhf" | "ppc64el" | "s390x" | "riscv64" | "amd64v3" | "i386";
+        Architecture: "amd64" | "amd64v3" | "arm64" | "armel" | "armhf" | "i386" | "ppc64el" | "riscv64" | "s390x";
+        /**
+         * CapacityArchitectureEntry
+         * @description Capacity statistics for a single architecture.
+         */
+        CapacityArchitectureEntry: {
+            /** @example amd64 */
+            architecture: components["schemas"]["Architecture"];
+            runners: components["schemas"]["CapacityRunnersStats"];
+            jobs: components["schemas"]["CapacityJobsStats"];
+            /**
+             * Queue Eta Seconds
+             * @description Estimated queue drain time in seconds (TBD)
+             * @example null
+             */
+            queue_eta_seconds?: number | null;
+        };
+        /**
+         * CapacityJobsStats
+         * @description Job statistics for a given architecture.
+         */
+        CapacityJobsStats: {
+            /**
+             * Total
+             * @example 1255
+             */
+            total: number;
+            /**
+             * Status Counts
+             * @example {
+             *       "CANCELLED": 4,
+             *       "EXECUTING": 43,
+             *       "FAILED": 7,
+             *       "FINISHED": 1200,
+             *       "IDLE": 0,
+             *       "PENDING": 0,
+             *       "TERMINATED": 1
+             *     }
+             */
+            status_counts: {
+                [key: string]: number;
+            };
+        };
+        /**
+         * CapacityResponse
+         * @description Response model for the /capacity endpoint.
+         */
+        CapacityResponse: {
+            /** Architectures */
+            architectures: components["schemas"]["CapacityArchitectureEntry"][];
+        };
+        /**
+         * CapacityRunnersStats
+         * @description Runner statistics for a given architecture.
+         */
+        CapacityRunnersStats: {
+            /**
+             * Total
+             * @example 180
+             */
+            total: number;
+            /**
+             * Status Counts
+             * @example {
+             *       "BUSY": 43,
+             *       "CREATING": 2,
+             *       "DELETING": 0,
+             *       "ERROR": 0,
+             *       "IDLE": 135,
+             *       "REBUILDING": 0
+             *     }
+             */
+            status_counts: {
+                [key: string]: number;
+            };
+        };
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
@@ -756,16 +857,6 @@ export interface components {
          * @description Job object read model for artifacts and logs.
          */
         JobObjectRead: {
-            /**
-             * Id
-             * @example 1
-             */
-            id: number;
-            /**
-             * Job Id
-             * @example 123
-             */
-            job_id: number;
             /**
              * Filename
              * @example output.tar.gz
@@ -968,6 +1059,7 @@ export interface components {
             completed_at?: string | null;
             /**
              * Objects
+             * @default []
              * @example [
              *       {
              *         "content_type": "application/gzip",
@@ -1025,7 +1117,7 @@ export interface components {
              *       }
              *     ]
              */
-            objects?: components["schemas"]["JobObjectRead"][];
+            objects: components["schemas"]["JobObjectRead"][];
             /**
              * Duration
              * @description Duration of the job in seconds. For finished jobs, this is completed_at - started_at. For in-progress jobs, this is current time - started_at. Returns None if job hasn't started.
@@ -1057,7 +1149,7 @@ export interface components {
          * @description Job status values.
          * @enum {string}
          */
-        JobStatus: "PENDING" | "EXECUTING" | "IDLE" | "FINISHED" | "FAILED" | "CANCELLED" | "TERMINATED";
+        JobStatus: "CANCELLED" | "EXECUTING" | "FAILED" | "FINISHED" | "IDLE" | "PENDING" | "TERMINATED";
         /**
          * JobsListMetadata
          * @description Metadata for paginated jobs list response.
@@ -1197,7 +1289,7 @@ export interface components {
          * @description Supported Ubuntu series.
          * @enum {string}
          */
-        Series: "noble" | "mantic" | "jammy" | "focal" | "bionic";
+        Series: "bionic" | "focal" | "jammy" | "mantic" | "noble";
         /** ValidationError */
         ValidationError: {
             /** Location */
@@ -1206,6 +1298,10 @@ export interface components {
             msg: string;
             /** Error Type */
             type: string;
+            /** Input */
+            input?: unknown;
+            /** Context */
+            ctx?: Record<string, never>;
         };
     };
     responses: never;
@@ -1215,6 +1311,10 @@ export interface components {
     pathItems: never;
 }
 export type Architecture = components['schemas']['Architecture'];
+export type CapacityArchitectureEntry = components['schemas']['CapacityArchitectureEntry'];
+export type CapacityJobsStats = components['schemas']['CapacityJobsStats'];
+export type CapacityResponse = components['schemas']['CapacityResponse'];
+export type CapacityRunnersStats = components['schemas']['CapacityRunnersStats'];
 export type HttpValidationError = components['schemas']['HTTPValidationError'];
 export type JobCreate = components['schemas']['JobCreate'];
 export type JobObjectRead = components['schemas']['JobObjectRead'];
@@ -1800,6 +1900,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_capacity_v1_capacity_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CapacityResponse"];
                 };
             };
         };

@@ -1,4 +1,4 @@
-# Source commit: dfa26287935c94eca49aa76beb14a9f5059ff8bb (job-manager:main)
+# Source commit: ec0f6d8d57a22ff8d95f885351313d3ea2d1f5a1 (job-manager:main)
 openapi: 3.1.0
 info:
   title: Job Manager API
@@ -856,6 +856,27 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/HTTPValidationError'
+  /v1/capacity:
+    get:
+      tags:
+      - capacity
+      summary: Get Capacity
+      description: |-
+        Return runner and job capacity statistics grouped by architecture.
+
+        Args:
+            db: Database session.
+
+        Returns:
+            Capacity statistics for each architecture that has runners or jobs.
+      operationId: get_capacity_v1_capacity_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CapacityResponse'
   /metrics:
     get:
       summary: Metrics
@@ -932,16 +953,108 @@ components:
       type: string
       enum:
       - amd64
+      - amd64v3
       - arm64
       - armel
       - armhf
-      - ppc64el
-      - s390x
-      - riscv64
-      - amd64v3
       - i386
+      - ppc64el
+      - riscv64
+      - s390x
       title: Architecture
       description: Supported CPU architectures.
+    CapacityArchitectureEntry:
+      properties:
+        architecture:
+          $ref: '#/components/schemas/Architecture'
+          examples:
+          - amd64
+        runners:
+          $ref: '#/components/schemas/CapacityRunnersStats'
+        jobs:
+          $ref: '#/components/schemas/CapacityJobsStats'
+        queue_eta_seconds:
+          anyOf:
+          - type: integer
+          - type: 'null'
+          title: Queue Eta Seconds
+          description: Estimated queue drain time in seconds (TBD)
+          examples:
+          - null
+      type: object
+      required:
+      - architecture
+      - runners
+      - jobs
+      title: CapacityArchitectureEntry
+      description: Capacity statistics for a single architecture.
+    CapacityJobsStats:
+      properties:
+        total:
+          type: integer
+          title: Total
+          examples:
+          - 1255
+        status_counts:
+          additionalProperties:
+            type: integer
+          propertyNames:
+            $ref: '#/components/schemas/JobStatus'
+          type: object
+          title: Status Counts
+          examples:
+          - CANCELLED: 4
+            EXECUTING: 43
+            FAILED: 7
+            FINISHED: 1200
+            IDLE: 0
+            PENDING: 0
+            TERMINATED: 1
+      type: object
+      required:
+      - total
+      - status_counts
+      title: CapacityJobsStats
+      description: Job statistics for a given architecture.
+    CapacityResponse:
+      properties:
+        architectures:
+          items:
+            $ref: '#/components/schemas/CapacityArchitectureEntry'
+          type: array
+          title: Architectures
+      type: object
+      required:
+      - architectures
+      title: CapacityResponse
+      description: Response model for the /capacity endpoint.
+    CapacityRunnersStats:
+      properties:
+        total:
+          type: integer
+          title: Total
+          examples:
+          - 180
+        status_counts:
+          additionalProperties:
+            type: integer
+          propertyNames:
+            $ref: '#/components/schemas/RunnerStatus'
+          type: object
+          title: Status Counts
+          examples:
+          - BUSY: 43
+            CREATING: 2
+            DELETING: 0
+            ERROR: 0
+            IDLE: 135
+            REBUILDING: 0
+      type: object
+      required:
+      - total
+      - status_counts
+      title: CapacityRunnersStats
+      description: Runner statistics for a given architecture.
     HTTPValidationError:
       properties:
         detail:
@@ -1067,16 +1180,6 @@ components:
       description: Job creation model.
     JobObjectRead:
       properties:
-        id:
-          type: integer
-          title: Id
-          examples:
-          - 1
-        job_id:
-          type: integer
-          title: Job Id
-          examples:
-          - 123
         filename:
           type: string
           title: Filename
@@ -1113,8 +1216,6 @@ components:
           - https://example.com/jobs/123/object/artifact/output.tar.gz
       type: object
       required:
-      - id
-      - job_id
       - filename
       - object_type
       - content_type
@@ -1294,6 +1395,7 @@ components:
             $ref: '#/components/schemas/JobObjectRead'
           type: array
           title: Objects
+          default: []
           examples:
           - - content_type: application/gzip
               created_at: '2025-01-15T10:30:00.123456Z'
@@ -1380,12 +1482,12 @@ components:
     JobStatus:
       type: string
       enum:
-      - PENDING
-      - EXECUTING
-      - IDLE
-      - FINISHED
-      - FAILED
       - CANCELLED
+      - EXECUTING
+      - FAILED
+      - FINISHED
+      - IDLE
+      - PENDING
       - TERMINATED
       title: JobStatus
       description: Job status values.
@@ -1593,11 +1695,11 @@ components:
     Series:
       type: string
       enum:
-      - noble
-      - mantic
-      - jammy
-      - focal
       - bionic
+      - focal
+      - jammy
+      - mantic
+      - noble
       title: Series
       description: Supported Ubuntu series.
     ValidationError:
@@ -1615,6 +1717,11 @@ components:
         type:
           type: string
           title: Error Type
+        input:
+          title: Input
+        ctx:
+          type: object
+          title: Context
       type: object
       required:
       - loc
