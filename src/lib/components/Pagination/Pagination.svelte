@@ -60,14 +60,10 @@
     />
   {/snippet}
   {#snippet rightGroup()}
-    <Pagination.PageSelect
+    <Pagination.PageInput
       bind:value={currentPage}
       totalPages={numberOfPages}
-    >
-      {#each { length: numberOfPages }, i (i)}
-        <option value={i + 1}>{i + 1}</option>
-      {/each}
-    </Pagination.PageSelect>
+    />
   {/snippet}
   <Pagination.PageNavigation
     direction="first"

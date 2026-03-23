@@ -2,8 +2,7 @@ import { render } from "@canonical/svelte-ssr-test";
 import type { RenderResult } from "@canonical/svelte-ssr-test";
 import type { ComponentProps } from "svelte";
 import { describe, expect, it, vi } from "vitest";
-import Component from "./PageSelect.svelte";
-import { children } from "./test.fixtures.svelte";
+import Component from "../PageInput/PageInput.svelte";
 
 const { tableId } = vi.hoisted(() => ({
   tableId: "jobs-table",
@@ -15,12 +14,11 @@ vi.mock("../../context.js", () => {
   };
 });
 
-describe("PageSelect SSR", () => {
+describe("PageInput SSR", () => {
   const baseProps = {
-    children,
     totalPages: 3,
-    value: "2",
-    "data-testid": "page-select",
+    value: 2,
+    "data-testid": "page-input",
   } satisfies ComponentProps<typeof Component>;
 
   it("doesn't throw", () => {
@@ -29,23 +27,23 @@ describe("PageSelect SSR", () => {
     }).not.toThrow();
   });
 
-  it("renders label, select, and page count", () => {
+  it("renders label, input, and page count", () => {
     const page = render(Component, { props: { ...baseProps } });
     expect(componentLocator(page)).toBeInstanceOf(page.window.HTMLDivElement);
     expect(page.getByLabelText("Page:")).toBeInstanceOf(
-      page.window.HTMLSelectElement,
+      page.window.HTMLInputElement,
     );
     expect(page.getByText("of 3 Pages")).toBeInstanceOf(
       page.window.HTMLSpanElement,
     );
   });
 
-  describe("connects label and select", () => {
+  describe("connects label and input", () => {
     it("when id is provided", () => {
       const page = render(Component, {
-        props: { ...baseProps, id: "page-select" },
+        props: { ...baseProps, id: "page-input" },
       });
-      expect(page.getByLabelText("Page:").id).toBe("page-select");
+      expect(page.getByLabelText("Page:").id).toBe("page-input");
     });
 
     it("when id is omitted", () => {
@@ -63,7 +61,7 @@ describe("PageSelect SSR", () => {
 
   it("forwards pagination table id to aria-controls", () => {
     const page = render(Component, { props: { ...baseProps } });
-    expect(selectLocator(page).getAttribute("aria-controls")).toBe(tableId);
+    expect(inputLocator(page).getAttribute("aria-controls")).toBe(tableId);
   });
 
   it("applies classes", () => {
@@ -72,9 +70,7 @@ describe("PageSelect SSR", () => {
     });
     expect(componentLocator(page).classList).toContain("test-class");
     expect(componentLocator(page).classList).toContain("ds");
-    expect(componentLocator(page).classList).toContain(
-      "pagination-page-select",
-    );
+    expect(componentLocator(page).classList).toContain("pagination-page-input");
   });
 
   it("applies style", () => {
@@ -86,9 +82,9 @@ describe("PageSelect SSR", () => {
 });
 
 function componentLocator(page: RenderResult): HTMLElement {
-  return page.getByTestId("page-select");
+  return page.getByTestId("page-input");
 }
 
-function selectLocator(page: RenderResult): HTMLSelectElement {
-  return page.getByRole("combobox");
+function inputLocator(page: RenderResult): HTMLInputElement {
+  return page.getByRole("spinbutton");
 }
