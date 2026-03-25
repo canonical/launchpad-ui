@@ -1,13 +1,25 @@
 import type { ValidationError } from "./types";
 
 export const extractErrorMessage = <
-  T extends {
-    detail?: ValidationError[];
-  },
+  T extends
+    | {
+        detail?: ValidationError[] | string;
+      }
+    | string,
 >(
   error: T,
 ) => {
-  return Array.isArray(error.detail)
-    ? error.detail.map((e) => e.msg).join(", ")
-    : error.detail || "An unknown error occurred";
+  if (typeof error === "string") {
+    return error;
+  }
+
+  if (typeof error.detail === "string") {
+    return error.detail;
+  }
+
+  if (Array.isArray(error.detail)) {
+    return error.detail.map((e) => e.msg).join(", ");
+  }
+
+  return "An unknown error occurred";
 };
