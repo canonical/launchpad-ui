@@ -1,6 +1,7 @@
 <script lang="ts">
   import { Spinner } from "$lib/components/index.js";
   import { Whoops } from "$lib/launchpad-components/index.js";
+  import QueueTable from "$lib/modules/job-manager/jobs/QueueTable.svelte";
   import {
     JobsPagination,
     JobsTable,
@@ -20,7 +21,7 @@
       The Launchpad build farm is an open-source system for building and testing
       packages.
     </p>
-    <div class="queue-table">Queue table placeholder</div>
+    <QueueTable capacities={data.capacity.architectures} class="queue-table" />
     <h2>Builds</h2>
   </div>
   <!--
@@ -74,29 +75,25 @@
 
     position: sticky;
     left: 0;
-  }
 
-  h1 {
-    font: var(--lp-typography-h3);
-    margin-block-end: var(--lp-dimension-spacing-block-m);
-  }
+    h1 {
+      font: var(--lp-typography-h3);
+      margin-block-end: var(--lp-dimension-spacing-block-m);
+    }
 
-  .description {
-    margin-block-end: var(--lp-dimension-spacing-block-l);
-    max-width: 489px;
+    .description {
+      margin-block-end: var(--lp-dimension-spacing-block-l);
+      max-width: 489px;
+    }
+
+    :global(.queue-table) {
+      margin-block-end: var(--lp-dimension-spacing-block-xxl);
+      max-width: 831px;
+    }
   }
 
   h2 {
     font: var(--lp-typography-h3);
-  }
-
-  .queue-table {
-    height: 229px;
-    max-width: 831px;
-    border: 1px dashed var(--lp-color-border-default);
-    display: grid;
-    place-items: center;
-    margin-block-end: var(--lp-dimension-spacing-block-xxl);
   }
 
   .jobs-table-wrapper {
