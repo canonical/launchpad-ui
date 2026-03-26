@@ -85,14 +85,15 @@
   <thead>
     <tr>
       {#each headerCells as { key, label, sortable } (key)}
+        {@const headerCellLabelId = `${id}-header-cell-${key}`}
         {#if sortable}
           <Table.TH
-            aria-labelledby={id + key}
+            aria-labelledby={headerCellLabelId}
             sortDirection={$state.eager(
               sort?.field === key ? sort.direction : undefined,
             )}
           >
-            <span id={id + key}>
+            <span id={headerCellLabelId}>
               {label}
             </span>
             {#snippet action()}
