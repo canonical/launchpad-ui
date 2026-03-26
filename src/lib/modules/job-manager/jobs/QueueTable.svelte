@@ -72,8 +72,6 @@
         auto
       );
 
-    --queue-table-column-gap: var(--lp-dimension-spacing-inline-m);
-
     container: queue-table / inline-size;
 
     thead,
@@ -87,14 +85,17 @@
       grid-template-columns: subgrid;
     }
 
-    th,
+    th {
+      text-align: start;
+      font: var(--lp-typography-paragraph-s);
+      padding-inline: var(--lp-dimension-spacing-inline-xs);
+    }
+
     td {
       font: var(--lp-typography-paragraph-s);
-      text-align: start;
 
-      /* Define column gaps via margins instead of using column-gap, because we don't want to propagate gaps to the runners spans */
-      &:not(:last-child) {
-        margin-inline-end: var(--queue-table-column-gap);
+      &:not(.runners) {
+        padding-inline: var(--lp-dimension-spacing-inline-xs);
       }
     }
 
@@ -131,7 +132,7 @@
       > span {
         grid-column: span 2;
         display: grid;
-        margin-inline-end: var(--lp-dimension-spacing-inline-m);
+        padding-inline: var(--lp-dimension-spacing-inline-xs);
 
         .count {
           text-align: end;
