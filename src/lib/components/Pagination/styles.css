@@ -4,12 +4,12 @@
   align-items: stretch;
   justify-content: flex-end;
   font: var(--lp-typography-paragraph-s);
-  border-top: var(--dimension-stroke-thickness-default) solid
+  border-top: var(--lp-dimension-stroke-thickness-default) solid
     var(--lp-color-border-default);
 
   --dimension-pagination-group-gap: var(--lp-dimension-spacing-inline-m);
   --dimension-pagination-divider-width: var(
-    --dimension-stroke-thickness-default
+    --lp-dimension-stroke-thickness-default
   );
   --dimension-pagination-group-padding-block: var(
     --lp-dimension-spacing-block-xxs

@@ -28,13 +28,13 @@
     --dimension-padding-block-tab: var(--lp-dimension-spacing-block-s);
     --dimension-padding-inline-tab: var(--lp-dimension-spacing-inline-m);
     --dimension-stroke-thickness-accent-tab-active: var(
-      --dimension-stroke-thickness-large
+      --lp-dimension-stroke-thickness-large
     );
     --dimension-stroke-thickness-accent-tab-hover: var(
-      --dimension-stroke-thickness-large
+      --lp-dimension-stroke-thickness-large
     );
     --dimension-stroke-thickness-accent-tab: var(
-      --dimension-stroke-thickness-default
+      --lp-dimension-stroke-thickness-default
     );
 
     position: relative;

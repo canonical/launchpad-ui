@@ -50,7 +50,9 @@
     --dimension-gap-column-timeline: var(--lp-dimension-spacing-inline-m);
 
     --color-background-timeline-line: var(--lp-color-border-default);
-    --dimension-width-timeline-line: var(--dimension-stroke-thickness-default);
+    --dimension-width-timeline-line: var(
+      --lp-dimension-stroke-thickness-default
+    );
 
     display: grid;
     grid-template-columns: [marker-start] auto [marker-end content-start] 1fr [content-end];

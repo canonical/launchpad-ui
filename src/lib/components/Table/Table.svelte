@@ -54,10 +54,10 @@
   table {
     border-collapse: collapse;
 
-    --border-table-row: var(--dimension-stroke-thickness-default) solid
+    --border-table-row: var(--lp-dimension-stroke-thickness-default) solid
       var(--lp-color-border-low-contrast);
-    --border-table-header-cell: var(--dimension-stroke-thickness-default) solid
-      var(--lp-color-border-default);
+    --border-table-header-cell: var(--lp-dimension-stroke-thickness-default)
+      solid var(--lp-color-border-default);
     --dimension-padding-block-table-cell: var(--lp-dimension-spacing-block-xs);
     --dimension-padding-inline-table-cell: var(
       --lp-dimension-spacing-inline-xs

@@ -43,7 +43,7 @@
 <style>
   .ds.hidden-events {
     --border-block-timeline-hidden-events: var(
-        --dimension-stroke-thickness-default
+        --lp-dimension-stroke-thickness-default
       )
       solid var(--lp-color-border-default);
     --dimension-padding-block-timeline-hidden-events: var(

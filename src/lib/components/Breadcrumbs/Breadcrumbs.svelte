@@ -136,7 +136,7 @@
       --lp-color-text-link-visited
     );
     --dimension-border-width-breadcrumbs-collapse-menu: var(
-      --dimension-stroke-thickness-default
+      --lp-dimension-stroke-thickness-default
     );
     --dimension-margin-inline-breadcrumbs-separator: var(
       --lp-dimension-spacing-inline-xxs

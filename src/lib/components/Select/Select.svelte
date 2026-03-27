@@ -86,7 +86,7 @@
     );
     --border-style-select-input: none none solid none;
     --dimension-border-width-select-input: var(
-      --dimension-stroke-thickness-default
+      --lp-dimension-stroke-thickness-default
     );
     --color-border-select-input-invalid: var(--lp-color-border-negative);
     --color-outline-select-input-invalid: var(--lp-color-border-negative);
@@ -97,7 +97,7 @@
 
     --dimension-gap-select-input: var(--lp-dimension-spacing-inline-xxxs);
 
-    --dimension-radius-select-input: var(--dimension-radius-small);
+    --dimension-radius-select-input: var(--lp-dimension-radius-small);
 
     --dimension-icon-size-select-input: var(--lp-dimension-size-xs);
 

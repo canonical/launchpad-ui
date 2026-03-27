@@ -113,8 +113,8 @@
       --dimension-padding-inline-context,
       var(--lp-dimension-spacing-inline-s)
     );
-    --dimension-radius-chip: var(--dimension-radius-full);
-    --dimension-border-width-chip: var(--dimension-stroke-thickness-default);
+    --dimension-radius-chip: var(--lp-dimension-radius-full);
+    --dimension-border-width-chip: var(--lp-dimension-stroke-thickness-default);
     --typography-chip: var(--lp-typography-paragraph-s);
     --typography-letter-spacing-chip-leader: var(
       --lp-typography-letter-spacing-l
@@ -178,11 +178,11 @@
       justify-content: center;
       background-color: transparent;
       cursor: pointer;
-      border-radius: var(--dimension-radius-full);
+      border-radius: var(--lp-dimension-radius-full);
       width: var(--dimension-size-chip-close-icon);
       height: var(--dimension-size-chip-close-icon);
       margin-left: var(--dimension-gap-inline-chip);
-      border: var(--dimension-stroke-thickness-default) solid transparent;
+      border: var(--lp-dimension-stroke-thickness-default) solid transparent;
 
       :global(.dismiss-icon) {
         --dimension-size-icon: 100%;

@@ -46,7 +46,9 @@
     --color-border-button-hover: var(--color-border-button);
     --color-border-button: transparent;
     --color-text-button: var(--lp-color-text-default);
-    --dimension-border-width-button: var(--dimension-stroke-thickness-default);
+    --dimension-border-width-button: var(
+      --lp-dimension-stroke-thickness-default
+    );
     --dimension-padding-block-button: var(--lp-dimension-spacing-block-xxs);
     --dimension-padding-inline-button: var(--lp-dimension-spacing-inline-s);
     --opacity-button-disabled: var(--lp-opacity-muted);

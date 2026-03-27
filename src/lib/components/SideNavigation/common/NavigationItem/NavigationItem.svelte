@@ -50,7 +50,7 @@
         --lp-color-background-neutral-active
       );
       --dimension-width-button-selected-indicator: var(
-        --dimension-stroke-thickness-large
+        --lp-dimension-stroke-thickness-large
       );
       --color-background-button-selected-indicator: var(
         --lp-color-border-highlight
