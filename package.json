@@ -30,7 +30,7 @@
     "openapi:update": "bun run openapi:update-schema && bun run openapi:generate-types",
     "openapi:update-schema": "./scripts/openapi-update-schema.sh",
     "openapi:generate-types": "openapi-typescript .api-spec/job-manager.yaml -o src/lib/api/job-manager/types.ts --root-types --root-types-no-schema-prefix",
-    "mock-server": "prism mock --errors .api-spec/job-manager.yaml --port 4010",
+    "mock-server": "prism mock .api-spec/job-manager.yaml --port 4010",
     "mock-server:dynamic": "bun run mock-server -d"
   },
   "devDependencies": {

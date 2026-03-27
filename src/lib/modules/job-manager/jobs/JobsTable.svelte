@@ -13,6 +13,8 @@
     tableId: string;
   } = $props();
 
+  const id = $props.id();
+
   const sort = $derived.by(() => {
     const sort = page.url.searchParams.get("sort");
 
@@ -83,13 +85,17 @@
   <thead>
     <tr>
       {#each headerCells as { key, label, sortable } (key)}
+        {@const headerCellLabelId = `${id}-header-cell-${key}`}
         {#if sortable}
           <Table.TH
+            aria-labelledby={headerCellLabelId}
             sortDirection={$state.eager(
               sort?.field === key ? sort.direction : undefined,
             )}
           >
-            {label}
+            <span id={headerCellLabelId}>
+              {label}
+            </span>
             {#snippet action()}
               <Table.TH.SortButton
                 aria-label={$state.eager(sortLinkLabel(key, label))}
