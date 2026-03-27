@@ -150,17 +150,12 @@ SidePanel is declaratively controlled by default through the [Invoker Commands A
     transition-property: display, transform, overlay;
     transition-duration: var(--lp-transition-duration-fast);
 
-    &:open {
-      transform: translateX(0);
-    }
-
     /* 
-      Fallback for Safari that doesn't support the `:open`. It has to be kept separate from the above `&:open` to work.
+      [open] is a fallback for Safari that doesn't support the `:open`.
 
       TODO(:open): Remove when Safari supports it (https://developer.mozilla.org/en-US/docs/Web/CSS/:open)
     */
-    &[open],
-    &:popover-open {
+    &:is(:open, [open]) {
       transform: translateX(0);
     }
 
@@ -174,20 +169,13 @@ SidePanel is declaratively controlled by default through the [Invoker Commands A
   }
 
   @starting-style {
-    .ds.side-panel {
-      &:open {
-        transform: translateX(100%);
-      }
+    /* 
+      [open] is a fallback for Safari that doesn't support the `:open`.
 
-      /* 
-        Fallback for Safari that doesn't support the `:open`. It has to be kept separate from the above `&:open` to work.
-
-        TODO(:open): Remove when Safari supports it (https://developer.mozilla.org/en-US/docs/Web/CSS/:open)
-      */
-      &[open],
-      &:popover-open {
-        transform: translateX(100%);
-      }
+      TODO(:open): Remove when Safari supports it (https://developer.mozilla.org/en-US/docs/Web/CSS/:open)
+    */
+    .ds.side-panel:is(:open, [open]) {
+      transform: translateX(100%);
     }
   }
 </style>

@@ -147,20 +147,12 @@ Modal is declaratively controlled by default through the [Invoker Commands API](
       background-color: var(--color-background-modal-backdrop);
     }
 
-    &:open {
-      &,
-      &::backdrop {
-        opacity: 1;
-      }
-    }
-
     /* 
-      Fallback for Safari that doesn't support the `:open`. It has to be kept separate from the above `&:open` to work.
+      [open] is a fallback for Safari that doesn't support the `:open`.
 
       TODO(:open): Remove when Safari supports it (https://developer.mozilla.org/en-US/docs/Web/CSS/:open)
     */
-    &[open],
-    &:popover-open {
+    &:is(:open, [open]) {
       &,
       &::backdrop {
         opacity: 1;
@@ -177,25 +169,15 @@ Modal is declaratively controlled by default through the [Invoker Commands API](
   }
 
   @starting-style {
-    .ds.modal {
-      &:open {
-        &,
-        &::backdrop {
-          opacity: 0;
-        }
-      }
+    /* 
+      [open] is a fallback for Safari that doesn't support the `:open`.
 
-      /* 
-        Fallback for Safari that doesn't support the `:open`. It has to be kept separate from the above `&:open` to work.
-
-        TODO(:open): Remove when Safari supports it (https://developer.mozilla.org/en-US/docs/Web/CSS/:open)
-      */
-      &[open],
-      &:popover-open {
-        &,
-        &::backdrop {
-          opacity: 0;
-        }
+      TODO(:open): Remove when Safari supports it (https://developer.mozilla.org/en-US/docs/Web/CSS/:open)
+    */
+    .ds.modal:is(:open, [open]) {
+      &,
+      &::backdrop {
+        opacity: 0;
       }
     }
   }
