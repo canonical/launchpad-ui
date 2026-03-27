@@ -138,8 +138,8 @@
       "breadcrumbs log-container" var(--header-height)
       "details log-container" minmax(0, 1fr) / minmax(300px, 3fr) 5fr;
 
-    --border-section-separator: var(--dimension-stroke-thickness-default) solid
-      var(--lp-color-border-low-contrast);
+    --border-section-separator: var(--lp-dimension-stroke-thickness-default)
+      solid var(--lp-color-border-low-contrast);
 
     &.log-full-screen {
       grid-template:
@@ -153,7 +153,7 @@
     display: grid;
     grid-template-rows: subgrid;
 
-    border-inline-start: var(--dimension-stroke-thickness-default) solid
+    border-inline-start: var(--lp-dimension-stroke-thickness-default) solid
       var(--lp-color-border-default);
 
     .log-contents {

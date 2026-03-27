@@ -81,7 +81,7 @@ If `bind:group` is used, the `checked` prop must be omitted, and each checkbox i
     --color-background-checkbox-checked: var(--lp-color-text-link-default);
     --color-border-checkbox: var(--lp-color-border-high-contrast);
     --dimension-border-width-checkbox: var(
-      --dimension-stroke-thickness-default
+      --lp-dimension-stroke-thickness-default
     );
     --dimension-size-checkbox: var(--lp-dimension-size-xs);
     --opacity-checkbox-disabled: var(--lp-opacity-muted);

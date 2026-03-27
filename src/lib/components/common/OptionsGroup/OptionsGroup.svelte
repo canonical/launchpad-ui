@@ -39,7 +39,9 @@
     --dimension-padding-inline-options-group-legend: var(
       --lp-dimension-spacing-inline-m
     );
-    --border-options-group-separator: var(--dimension-stroke-thickness-default)
+    --border-options-group-separator: var(
+        --lp-dimension-stroke-thickness-default
+      )
       solid var(--lp-color-border-default);
 
     padding-inline: 0;

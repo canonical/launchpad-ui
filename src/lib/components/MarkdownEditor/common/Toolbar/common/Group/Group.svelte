@@ -21,7 +21,7 @@
       --lp-dimension-size-s
     );
     --dimension-width-markdown-editor-toolbar-group-separator: var(
-      --dimension-stroke-thickness-default
+      --lp-dimension-stroke-thickness-default
     );
 
     display: flex;

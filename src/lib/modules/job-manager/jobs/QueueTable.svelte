@@ -105,7 +105,7 @@
       }
 
       tr {
-        border-bottom: var(--dimension-stroke-thickness-default) solid
+        border-bottom: var(--lp-dimension-stroke-thickness-default) solid
           var(--lp-color-border-default);
         padding-block-end: var(--lp-dimension-spacing-block-xs);
       }
@@ -118,7 +118,7 @@
     tbody {
       tr {
         padding-block: var(--lp-dimension-spacing-block-xxs);
-        border-block-end: var(--dimension-stroke-thickness-default) solid
+        border-block-end: var(--lp-dimension-stroke-thickness-default) solid
           var(--lp-color-border-low-contrast);
       }
 

@@ -39,7 +39,7 @@
       --lp-dimension-spacing-block-xs
     );
     --dimension-gap-combobox-footer: var(--lp-dimension-spacing-inline-xs);
-    --border-top-combobox-footer: var(--dimension-stroke-thickness-default)
+    --border-top-combobox-footer: var(--lp-dimension-stroke-thickness-default)
       solid var(--lp-color-border-default);
 
     display: flex;

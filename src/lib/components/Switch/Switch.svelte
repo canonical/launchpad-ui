@@ -95,10 +95,10 @@ The presence of a Switch's `value` in the `group` array determines (and is refle
     --color-background-switch-checked: var(--lp-color-text-link-default);
     --color-background-switch-knob: var(--lp-color-background-default);
     --opacity-switch-disabled: var(--lp-opacity-muted);
-    --dimension-radius-switch: var(--dimension-radius-full);
+    --dimension-radius-switch: var(--lp-dimension-radius-full);
     --dimension-width-switch: var(--lp-dimension-size-l);
     --dimension-height-switch: var(--lp-dimension-size-xs);
-    --dimension-padding-switch: var(--dimension-stroke-thickness-default);
+    --dimension-padding-switch: var(--lp-dimension-stroke-thickness-default);
 
     appearance: none;
     position: relative;

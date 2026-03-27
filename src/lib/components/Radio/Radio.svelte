@@ -80,8 +80,10 @@ If `bind:group` is used, the `checked` prop must be omitted, and each radio in t
     --dimension-border-width-radio-checked-marker: calc(
       var(--dimension-size-radio) * 0.3125
     );
-    --dimension-border-width-radio: var(--dimension-stroke-thickness-default);
-    --dimension-radius-radio: var(--dimension-radius-full);
+    --dimension-border-width-radio: var(
+      --lp-dimension-stroke-thickness-default
+    );
+    --dimension-radius-radio: var(--lp-dimension-radius-full);
     --dimension-size-radio: var(--lp-dimension-size-xs);
     --opacity-radio-disabled: var(--lp-opacity-muted);
 

@@ -80,7 +80,7 @@ The marker and the first line of the optional `titleRow` are meant to be aligned
   .ds.event {
     /* Marker */
     --color-background-timeline-marker: var(--lp-color-background-alt);
-    --border-timeline-marker: var(--dimension-stroke-thickness-default) solid
+    --border-timeline-marker: var(--lp-dimension-stroke-thickness-default) solid
       var(--lp-color-border-default);
     --dimension-size-timeline-marker-empty: var(--lp-dimension-size-xxxs);
     --dimension-size-timeline-marker-small: var(--lp-dimension-size-s);

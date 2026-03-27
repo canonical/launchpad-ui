@@ -96,7 +96,7 @@
         var(--lp-color-text-default)
       );
       --dimension-border-width-button: var(
-        --dimension-stroke-thickness-default
+        --lp-dimension-stroke-thickness-default
       );
       --dimension-gap-inline-icon: var(--lp-dimension-spacing-inline-xs);
       --dimension-padding-block-button-content: var(
@@ -107,7 +107,7 @@
         --dimension-padding-inline-context,
         var(--lp-dimension-spacing-inline-s)
       );
-      --dimension-radius-button: var(--dimension-radius-medium);
+      --dimension-radius-button: var(--lp-dimension-radius-medium);
       --typography-button: var(
         --lp-typography-context,
         var(--lp-typography-paragraph-default)

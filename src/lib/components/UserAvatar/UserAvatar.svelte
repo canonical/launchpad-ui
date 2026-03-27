@@ -72,7 +72,7 @@ The avatar will display the user's image if available and able to be loaded, oth
     --color-background-user-avatar: var(--lp-color-background-alt);
     --color-border-user-avatar: var(--lp-color-border-default);
     --dimension-border-width-user-avatar: var(
-      --dimension-stroke-thickness-default
+      --lp-dimension-stroke-thickness-default
     );
 
     display: inline-grid;

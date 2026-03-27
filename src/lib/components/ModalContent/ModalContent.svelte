@@ -39,7 +39,7 @@
 
 <style>
   .ds.modal-content {
-    --border-modal-content: var(--dimension-stroke-thickness-default) solid
+    --border-modal-content: var(--lp-dimension-stroke-thickness-default) solid
       var(--lp-color-border-high-contrast);
     --color-background-modal-content: var(--lp-color-background-default);
     --dimension-gap-modal-content: var(--lp-dimension-spacing-block-m);
