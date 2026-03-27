@@ -89,7 +89,8 @@ describe("Modal SSR", () => {
       });
       const modalId = componentLocator(page).getAttribute("id");
       assert(modalId !== undefined);
-      expect(triggerLocator(page).getAttribute("popovertarget")).toBe(modalId);
+      expect(triggerLocator(page).getAttribute("commandfor")).toBe(modalId);
+      expect(triggerLocator(page).getAttribute("command")).toBe("show-modal");
       expect(triggerLocator(page).getAttribute("aria-haspopup")).toBe("dialog");
     });
 
@@ -106,34 +107,32 @@ describe("Modal SSR", () => {
         name: closeButtonText,
         hidden: true,
       });
-      expect(closeButton.getAttribute("popovertarget")).toBe(modalId);
+      expect(closeButton.getAttribute("commandfor")).toBe(modalId);
+      expect(closeButton.getAttribute("command")).toBe("close");
     });
   });
 
-  describe("Popover fallback", () => {
-    it("renders as auto popover if `closeOnOutsideClick` is true", () => {
+  describe("closedby", () => {
+    it("renders as any if `closeOnOutsideClick` is true", () => {
       const page = render(Component, {
         props: {
           ...baseProps,
           closeOnOutsideClick: true,
         },
       });
-      expect(componentLocator(page).getAttribute("popover")).toBe("auto");
+      expect(componentLocator(page).getAttribute("closedby")).toBe("any");
     });
 
-    it("renders as manual popover if `closeOnOutsideClick` is false", () => {
+    it("renders as closerequest if `closeOnOutsideClick` is false", () => {
       const page = render(Component, {
         props: {
           ...baseProps,
           closeOnOutsideClick: false,
         },
       });
-      expect(componentLocator(page).getAttribute("popover")).toBe("manual");
-    });
-
-    it("does not have `closedby` attribute", () => {
-      const page = render(Component, { props: { ...baseProps } });
-      expect(componentLocator(page).getAttribute("closedby")).toBeNull();
+      expect(componentLocator(page).getAttribute("closedby")).toBe(
+        "closerequest",
+      );
     });
   });
 });
