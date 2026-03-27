@@ -12,9 +12,11 @@
   <button {...triggerProps}>{triggerText}</button>
 {/snippet}
 
-{#snippet children(popovertarget: string | undefined, close: () => void)}
+{#snippet children(commandfor: string, close: () => void)}
   <div>
     <p>{contentText}</p>
-    <button {popovertarget} onclick={close}>{closeButtonText}</button>
+    <button {commandfor} command="close" onclick={close}
+      >{closeButtonText}</button
+    >
   </div>
 {/snippet}

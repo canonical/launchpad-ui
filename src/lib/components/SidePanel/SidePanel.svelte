@@ -23,7 +23,6 @@
   const id = $derived(idProp || fallbackId);
 
   const isMounted = useIsMounted();
-  const asPopover = $derived(!isMounted.value);
 
   export const showModal: SidePanelMethods["showModal"] = () => {
     dialogRef?.showModal();
@@ -41,6 +40,12 @@
     isMounted.value && !("closedBy" in HTMLDialogElement.prototype),
   );
 
+  const isInvokerCommandsFallbackNeeded = $derived(
+    isMounted.value &&
+      (!("commandForElement" in HTMLButtonElement.prototype) ||
+        !("command" in HTMLButtonElement.prototype)),
+  );
+
   const fallbackOnclick: typeof onclick = (e) => {
     onclick?.(e);
     if (
@@ -54,28 +59,24 @@
 </script>
 
 {@render trigger?.({
-  onclick: showModal,
+  onclick: isInvokerCommandsFallbackNeeded ? showModal : undefined,
+  commandfor: id,
+  command: "show-modal",
   "aria-haspopup": "dialog",
-  popovertarget: asPopover ? id : undefined,
 })}
 
 <dialog
   bind:this={dialogRef}
   {id}
   class={[componentCssClassName, className]}
-  popover={asPopover ? (closeOnOutsideClick ? "auto" : "manual") : undefined}
-  closedby={asPopover
-    ? undefined
-    : closeOnOutsideClick
-      ? "any"
-      : "closerequest"}
+  closedby={closeOnOutsideClick ? "any" : "closerequest"}
   data-testid="side-panel"
   onclick={isClosedByFallbackNeeded ? fallbackOnclick : onclick}
   {...rest}
 >
   <!-- TODO(closedby): Remove this wrapper when Webkit supports closedby -->
   <div style="display: contents;" bind:this={contentWrapperRef}>
-    {@render children?.(asPopover ? id : undefined, close)}
+    {@render children?.(id, close)}
   </div>
 </dialog>
 
@@ -83,17 +84,17 @@
 `SidePanel` provides a mechanism for displaying content overlaying the main application. It is a bring-your-own trigger and content component.
 
 SidePanel can be imperatively controlled by the following methods available on the component instance:
-- `showModal`: Additionally supplied as `triggerProps.onclick` via the `trigger` snippet.
-- `close`: Additionally supplied via the `children` snippet.
+- `showModal`: Shows the modal.
+- `close`: Closes the modal.
 
-If JavaScript is disabled, SidePanel can be controlled as a popover with declaratively bound button triggers. To allow for that pass the `popovertarget` supplied via the `trigger` or `children` snippets to buttons you want to use as triggers. However this should be treated as a fallback. If possible, the side panel should be controlled using the imperative calls of `showModal` and `close` which ensure better accessibility and user experience (e.g. rendering the rest of the document as inert) See [MDN](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/dialog) for more information.
+SidePanel is declaratively controlled by default through the [Invoker Commands API](https://developer.mozilla.org/en-US/docs/Web/API/Invoker_Commands_API) using `commandfor` and `command` attributes supplied via the `trigger` snippet. Imperative methods remain available for cases where opening or closing must be orchestrated in code. See [MDN](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/dialog) for more information.
 
 ## Example Usage
 ```svelte
 <script lang="ts">
   let sidePanel = $state<SidePanelMethods>();
   // Imperative controls on the component instance
-  $effect(() => sidePanel?.show())
+  $effect(() => sidePanel?.showModal())
 </script>
 
 <SidePanel bind:this={sidePanel}>
@@ -102,12 +103,12 @@ If JavaScript is disabled, SidePanel can be controlled as a popover with declara
       Open SidePanel
     </button>
   {/snippet}
-  {#snippet children(popovertarget, close)}
+  {#snippet children(commandfor, close)}
     <ModalContent.Header>
       SidePanel's Header
       <ModalContent.Header.CloseButton
-        {popovertarget}
-        onclick={close}
+        {commandfor}
+        command="close"
       />
     </ModalContent.Header>
     <ModalContent.Body>
@@ -115,7 +116,6 @@ If JavaScript is disabled, SidePanel can be controlled as a popover with declara
     </ModalContent.Body>
     <ModalContent.Footer>
       <Button
-        {popovertarget}
         onclick={() => {
           // doSomething();
           close();

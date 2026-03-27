@@ -1,10 +1,7 @@
 /* @canonical/generator-ds 0.10.0-experimental.2 */
 
 import type { Snippet } from "svelte";
-import type {
-  HTMLButtonAttributes,
-  HTMLDialogAttributes,
-} from "svelte/elements";
+import type { HTMLDialogAttributes } from "svelte/elements";
 
 /*
  `open` is omitted, as from the [MDN](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/dialog#html-only_dialog):
@@ -12,12 +9,13 @@ import type {
  > It is possible to toggle the display of the dialog by adding or removing the boolean `open` attribute, but it is not the recommended practice.
 */
 type BaseProps = Omit<HTMLDialogAttributes, "open" | "children">;
-type PopoverTarget = Exclude<HTMLButtonAttributes["popovertarget"], null>;
 
 export type SidePanelTriggerProps = {
-  onclick: () => void;
+  // TODO(Invoker Commands API): Remove `onclick` fallback when [Invoker Commands API](https://developer.mozilla.org/en-US/docs/Web/API/Invoker_Commands_API) support is widespread enough.
+  onclick?: () => void;
+  commandfor: string;
+  command: "show-modal";
   "aria-haspopup": "dialog";
-  popovertarget: PopoverTarget;
 };
 
 export interface SidePanelProps extends BaseProps {
@@ -26,9 +24,10 @@ export interface SidePanelProps extends BaseProps {
    *
    * Snippet arguments:
    * - `triggerProps`: Props to spread on the button element. It contains:
-   *   - `onclick`: An onclick handler to open the side panel.
+   *   - `commandfor`: The id of the dialog element. Setting it as `commandfor` associates the button with the dialog to open.
+   *   - `command`: Always set to `"show-modal"` to indicate that the button opens a modal side panel.
+   *   - `onclick`: An onclick handler that calls `dialog.showModal()`. Present only as a fallback for browsers that don't support [Invoker Commands API](https://developer.mozilla.org/en-US/docs/Web/API/Invoker_Commands_API).
    *   - `aria-haspopup`: Always set to `"dialog"` to indicate that the button opens a dialog.
-   *   - `popovertarget`: The id of the side panel element. Setting it as `popovertarget` attribute on the button element allows for a no-JS fallback for opening the side panel. If there is JS, this will be `undefined`.
    */
   trigger?: Snippet<[triggerProps: SidePanelTriggerProps]>;
   /**
@@ -41,10 +40,10 @@ export interface SidePanelProps extends BaseProps {
    * Content of the side panel.
    *
    * Snippet arguments:
-   * - `popovertarget`: The id of the side panel element. Set it as `popovertarget` attribute on the button elements you want use to close the side panel in a no-JS fallback mode. If there is JS, this will be `undefined`.
+   * - `commandfor`: The id of the dialog element. Can be used to associate a close button with the dialog by setting it as `commandfor` and `command` to `"close"`.
    * - `close`: A function to close the side panel.
    */
-  children?: Snippet<[popovertarget: PopoverTarget, close: () => void]>;
+  children?: Snippet<[commandfor: string, close: () => void]>;
 }
 
 export interface SidePanelMethods {
