@@ -1,10 +1,8 @@
-<!-- `SidePanel` component provides a mechanism to display content in a dialog overlay. To see an example of how to compose it with `ModalContent` see [SidePanel pattern](https://main--689106f3797b06760a3c9414.chromatic.com/?path=/docs/patterns-sidepanel--docs). -->
-
 <script module lang="ts">
   import { defineMeta } from "@storybook/addon-svelte-csf";
   import { Button } from "$lib/components/Button/index.js";
-  import SidePanel from "./SidePanel.svelte";
   import type { SidePanelMethods } from "./types.js";
+  import { SidePanel } from "./index.js";
 
   const { Story } = defineMeta({
     title: "Components/SidePanel",
@@ -43,10 +41,19 @@
         <Button {...triggerProps}>Show SidePanel</Button>
       {/snippet}
       {#snippet children(commandfor)}
-        <div style="padding: 1rem;">
-          <p>This is the side panel content.</p>
-          <Button {commandfor} command="close">Close</Button>
-        </div>
+        <SidePanel.Content>
+          <SidePanel.Content.Header>
+            Discard pending review?
+            <SidePanel.Content.Header.CloseButton
+              {commandfor}
+              command="close"
+            />
+          </SidePanel.Content.Header>
+          <SidePanel.Content.Body>
+            You have added 4 comments. Discarding the pending review will
+            permanently delete them. Are you sure you want to continue?
+          </SidePanel.Content.Body>
+        </SidePanel.Content>
       {/snippet}
     </SidePanel>
   {/snippet}

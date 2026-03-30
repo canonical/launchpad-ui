@@ -1,10 +1,9 @@
 <!-- @canonical/generator-ds 0.10.0-experimental.3 -->
 
 <script lang="ts">
-  import { DialogContent } from "$lib/components/common/DialogContent/index.js";
   import { Shortcut, useShortcuts } from "$lib/shortcuts/index.js";
   import type { SidePanelMethods } from "../SidePanel";
-  import { SidePanel } from "../SidePanel";
+  import { SidePanel } from "../SidePanel/index.js";
   import TextInput from "../TextInput/TextInput.svelte";
   import { Section } from "./common/index.js";
   import type {
@@ -58,12 +57,12 @@
   {...props}
 >
   {#snippet children(_, close)}
-    <DialogContent class="content">
-      <DialogContent.Header>
+    <SidePanel.Content class="content">
+      <SidePanel.Content.Header>
         <h4>Command guide</h4>
-        <DialogContent.Header.CloseButton onclick={close} />
-      </DialogContent.Header>
-      <DialogContent.Body class="body">
+        <SidePanel.Content.Header.CloseButton onclick={close} />
+      </SidePanel.Content.Header>
+      <SidePanel.Content.Body class="body">
         <TextInput
           type="search"
           autofocus
@@ -75,8 +74,8 @@
         {#each Object.entries(groupedByCategory) as [category, shortcuts] (category)}
           <Section {category} {shortcuts} />
         {/each}
-      </DialogContent.Body>
-    </DialogContent>
+      </SidePanel.Content.Body>
+    </SidePanel.Content>
   {/snippet}
 </SidePanel>
 
