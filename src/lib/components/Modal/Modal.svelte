@@ -40,6 +40,7 @@
     isMounted.value && !("closedBy" in HTMLDialogElement.prototype),
   );
 
+  // TODO(Invoker Commands API): Remove this when Invoker Commands API is widely supported (https://caniuse.com/wf-invoker-commands)
   const isInvokerCommandsFallbackNeeded = $derived(
     isMounted.value &&
       (!("commandForElement" in HTMLButtonElement.prototype) ||
