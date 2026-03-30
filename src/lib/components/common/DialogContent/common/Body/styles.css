@@ -1,0 +1,4 @@
+.ds.dialog-content-body {
+  font: var(--lp-typography-paragraph-default);
+  color: var(--lp-color-text-default);
+}

@@ -1,0 +1,11 @@
+.ds.dialog-content-header {
+  display: flex;
+  align-items: start;
+  text-wrap: balance;
+
+  font: var(--lp-typography-h4);
+
+  > .ds.dialog-content-close-button {
+    margin-inline-start: auto;
+  }
+}

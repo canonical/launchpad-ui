@@ -1,7 +1,7 @@
 <!-- @canonical/generator-ds 0.10.0-experimental.3 -->
 
 <script lang="ts">
-  import { ModalContent } from "$lib/components/ModalContent/index.js";
+  import { DialogContent } from "$lib/components/common/DialogContent/index.js";
   import { Shortcut, useShortcuts } from "$lib/shortcuts/index.js";
   import type { SidePanelMethods } from "../SidePanel";
   import { SidePanel } from "../SidePanel";
@@ -58,12 +58,12 @@
   {...props}
 >
   {#snippet children(_, close)}
-    <ModalContent class="content">
-      <ModalContent.Header>
+    <DialogContent class="content">
+      <DialogContent.Header>
         <h4>Command guide</h4>
-        <ModalContent.Header.CloseButton onclick={close} />
-      </ModalContent.Header>
-      <ModalContent.Body class="body">
+        <DialogContent.Header.CloseButton onclick={close} />
+      </DialogContent.Header>
+      <DialogContent.Body class="body">
         <TextInput
           type="search"
           autofocus
@@ -75,8 +75,8 @@
         {#each Object.entries(groupedByCategory) as [category, shortcuts] (category)}
           <Section {category} {shortcuts} />
         {/each}
-      </ModalContent.Body>
-    </ModalContent>
+      </DialogContent.Body>
+    </DialogContent>
   {/snippet}
 </SidePanel>
 
