@@ -4,6 +4,7 @@
   import { useIsMounted } from "$lib/useIsMounted.svelte.js";
   import { isEventTargetInElement } from "$lib/utils/index.js";
   import type { ModalMethods, ModalProps } from "./types.js";
+  import "./styles.css";
 
   const componentCssClassName = "ds modal";
 
@@ -81,9 +82,7 @@
 </dialog>
 
 <!-- @component
-`Modal` provides a mechanism for displaying content overlaying the main application. It is a bring-your-own trigger and content component.
-
-The modal-like layout and structure are provided by the `ModalContent` component.
+`Modal` provides a mechanism for displaying content overlaying the main application. 
 
 Modal can be imperatively controlled by the following methods available on the component instance:
 - `showModal`: Shows the modal.
@@ -106,80 +105,30 @@ Modal is declaratively controlled by default through the [Invoker Commands API](
     </button>
   {/snippet}
   {#snippet children(commandfor, close)}
-    <ModalContent.Header>
-      Modal's Header
-      <ModalContent.Header.CloseButton
-        {commandfor}
-        command="close"
-      />
-    </ModalContent.Header>
-    <ModalContent.Body>
-      Main Content
-    </ModalContent.Body>
-    <ModalContent.Footer>
-      <Button
-        onclick={() => {
-          // doSomething();
-          close();
-        }}
-      >
-        Confirm
-      </Button>
-    </ModalContent.Footer>
+    <Modal.Content>
+      <Modal.Content.Header>
+        Modal's Header
+        <Modal.Content.Header.CloseButton
+          {commandfor}
+          command="close"
+        />
+      </Modal.Content.Header>
+      <Modal.Content.Body>
+        Main Content
+      </Modal.Content.Body>
+      <Modal.Content.Footer>
+        <Button
+          onclick={() => {
+            // doSomething();
+            close();
+          }}
+        >
+          Confirm
+        </Button>
+      </Modal.Content.Footer>
+    </Modal.Content>
   {/snippet}
 </Modal>
 ```
 
 -->
-
-<style>
-  .ds.modal {
-    --color-background-modal-backdrop: var(--lp-color-background-overlay);
-    /* TODO(@Enzo): Replace with a token */
-    --dimension-width-modal: 38rem;
-
-    position: fixed;
-    margin: auto;
-    border: none;
-
-    width: min(100vw, var(--dimension-width-modal));
-
-    &::backdrop {
-      background-color: var(--color-background-modal-backdrop);
-    }
-
-    /* 
-      [open] is a fallback for Safari that doesn't support the `:open`.
-
-      TODO(:open): Remove when Safari supports it (https://developer.mozilla.org/en-US/docs/Web/CSS/:open)
-    */
-    &:is(:open, [open]) {
-      &,
-      &::backdrop {
-        opacity: 1;
-      }
-    }
-  }
-
-  .ds.modal,
-  .ds.modal::backdrop {
-    opacity: 0;
-    transition-behavior: allow-discrete;
-    transition-property: display, opacity, overlay;
-    transition-duration: var(--lp-transition-duration-fast);
-  }
-
-  @starting-style {
-    /* 
-      [open] is a fallback for Safari that doesn't support the `:open`.
-
-      TODO(:open): Remove when Safari supports it (https://developer.mozilla.org/en-US/docs/Web/CSS/:open)
-    */
-    .ds.modal:is(:open, [open]) {
-      &,
-      &::backdrop {
-        opacity: 0;
-      }
-    }
-  }
-</style>

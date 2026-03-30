@@ -33,8 +33,7 @@
     --typography-modal-content-header: var(--lp-typography-h4);
 
     display: flex;
-    justify-content: space-between;
-    align-items: baseline;
+    align-items: start;
     text-wrap: balance;
 
     font: var(--typography-modal-content-header);

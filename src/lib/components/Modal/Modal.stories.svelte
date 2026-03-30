@@ -1,7 +1,6 @@
 <script module lang="ts">
   import { defineMeta } from "@storybook/addon-svelte-csf";
   import { Button } from "$lib/components/Button/index.js";
-  import { ModalContent } from "$lib/components/ModalContent/index.js";
   import type { ModalMethods } from "./types.js";
   import { Modal } from "./index.js";
 
@@ -35,25 +34,23 @@
   };
 </script>
 
-<!-- `Modal` component provides a mechanism to display content in a dialog overlay. This Story composes it with the [`ModalContent` component](?path=/docs/components-modalcontent--docs) to create a confirmation dialog. -->
-
-<Story name="With ModalContent">
+<Story name="Default">
   {#snippet template({ children: _, trigger: __, ...args })}
     <Modal {...args}>
       {#snippet trigger(triggerProps)}
         <Button {...triggerProps}>Show Modal</Button>
       {/snippet}
       {#snippet children(commandfor, close)}
-        <ModalContent>
-          <ModalContent.Header>
+        <Modal.Content>
+          <Modal.Content.Header>
             Discard pending review?
-            <ModalContent.Header.CloseButton {commandfor} command="close" />
-          </ModalContent.Header>
-          <ModalContent.Body>
+            <Modal.Content.Header.CloseButton {commandfor} command="close" />
+          </Modal.Content.Header>
+          <Modal.Content.Body>
             You have added 4 comments. Discarding the pending review will
             permanently delete them. Are you sure you want to continue?
-          </ModalContent.Body>
-          <ModalContent.Footer>
+          </Modal.Content.Body>
+          <Modal.Content.Footer>
             <Button {commandfor} command="close">Keep review</Button>
             <Button
               onclick={() => {
@@ -64,8 +61,8 @@
             >
               Discard review
             </Button>
-          </ModalContent.Footer>
-        </ModalContent>
+          </Modal.Content.Footer>
+        </Modal.Content>
       {/snippet}
     </Modal>
   {/snippet}

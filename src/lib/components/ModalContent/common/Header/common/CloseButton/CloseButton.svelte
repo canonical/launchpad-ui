@@ -9,14 +9,14 @@
 
   let {
     class: className,
-    severity: _severity,
+    "aria-label": ariaLabel = "Close",
     ...rest
   }: CloseButtonProps = $props();
 </script>
 
 <Button
   class={[componentCssClassName, className]}
-  aria-label="Close"
+  aria-label={ariaLabel}
   severity="base"
   {...rest}
 >
