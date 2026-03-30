@@ -43,20 +43,19 @@
       {#snippet trigger(triggerProps)}
         <Button {...triggerProps}>Show Modal</Button>
       {/snippet}
-      {#snippet children(popovertarget, close)}
+      {#snippet children(commandfor, close)}
         <ModalContent>
           <ModalContent.Header>
             Discard pending review?
-            <ModalContent.Header.CloseButton {popovertarget} onclick={close} />
+            <ModalContent.Header.CloseButton {commandfor} command="close" />
           </ModalContent.Header>
           <ModalContent.Body>
             You have added 4 comments. Discarding the pending review will
             permanently delete them. Are you sure you want to continue?
           </ModalContent.Body>
           <ModalContent.Footer>
-            <Button {popovertarget} onclick={close}>Keep review</Button>
+            <Button {commandfor} command="close">Keep review</Button>
             <Button
-              {popovertarget}
               onclick={() => {
                 // doSomething();
                 close();

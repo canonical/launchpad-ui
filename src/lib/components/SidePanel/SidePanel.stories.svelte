@@ -42,10 +42,10 @@
       {#snippet trigger(triggerProps)}
         <Button {...triggerProps}>Show SidePanel</Button>
       {/snippet}
-      {#snippet children(popovertarget, close)}
+      {#snippet children(commandfor)}
         <div style="padding: 1rem;">
           <p>This is the side panel content.</p>
-          <Button {popovertarget} onclick={close}>Close</Button>
+          <Button {commandfor} command="close">Close</Button>
         </div>
       {/snippet}
     </SidePanel>
@@ -62,7 +62,7 @@
     let timeLeft = $state(0);
     const onclick = () => {
       if (!sidePanel) return;
-      sidePanel.show();
+      sidePanel.showModal();
       timeLeft = 5;
       const interval = setInterval(() => {
         timeLeft -= 1;

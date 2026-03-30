@@ -65,7 +65,17 @@ describe("SidePanel component", () => {
       const page = render(Component, {
         ...baseProps,
       });
+      const sidePanelId = (
+        componentLocator(page, true).element() as HTMLDialogElement
+      ).id;
+
       await expect.element(triggerLocator(page)).toBeInTheDocument();
+      await expect
+        .element(triggerLocator(page))
+        .toHaveAttribute("command", "show-modal");
+      await expect
+        .element(triggerLocator(page))
+        .toHaveAttribute("commandfor", sidePanelId);
       await expect
         .element(triggerLocator(page))
         .toHaveAttribute("aria-haspopup", "dialog");
@@ -113,9 +123,6 @@ describe("SidePanel component", () => {
         ...baseProps,
       });
       await expect.element(componentLocator(page, true)).not.toBeVisible();
-      await expect
-        .element(componentLocator(page, true))
-        .not.toHaveAttribute("popover");
 
       await triggerLocator(page).click();
       await expect.element(componentLocator(page)).toBeVisible();
@@ -214,25 +221,15 @@ describe("SidePanel component", () => {
     });
   });
 
-  describe("Removal of the fallback when mounted", () => {
-    it("does not have popover attribute", async () => {
-      const page = render(Component, { ...baseProps });
-      await expect
-        .element(componentLocator(page, true))
-        .not.toHaveAttribute("popover");
-    });
-
-    it("popovertarget passed to trigger is undefined", async () => {
-      const page = render(Component, { trigger });
-      await expect
-        .element(triggerLocator(page))
-        .not.toHaveAttribute("popovertarget");
-    });
-
-    it("popovertarget passed to children is undefined", async () => {
+  describe("Declarative control attributes", () => {
+    it("passes commandfor to children", async () => {
       const page = render(Component, {
         ...baseProps,
       });
+      const sidePanelId = (
+        componentLocator(page, true).element() as HTMLDialogElement
+      ).id;
+
       await expect
         .element(
           page.getByRole("button", {
@@ -240,7 +237,21 @@ describe("SidePanel component", () => {
             includeHidden: true,
           }),
         )
-        .not.toHaveAttribute("popovertarget");
+        .toHaveAttribute("commandfor", sidePanelId);
+    });
+
+    it("only adds onclick trigger fallback when invoker commands are unsupported", async () => {
+      const page = render(Component, { ...baseProps, trigger });
+      const supportsInvokerCommands =
+        "commandForElement" in HTMLButtonElement.prototype &&
+        "command" in HTMLButtonElement.prototype;
+      const triggerButton = triggerLocator(page).element() as HTMLButtonElement;
+
+      if (supportsInvokerCommands) {
+        expect(triggerButton.onclick).toBeNull();
+      } else {
+        expect(triggerButton.onclick).toBeTypeOf("function");
+      }
     });
   });
 });
@@ -259,9 +270,6 @@ function triggerLocator(page: RenderResult<typeof Component>): Locator {
 async function showSidePanel(
   page: RenderResult<typeof Component>,
 ): Promise<void> {
-  await expect
-    .element(componentLocator(page, true))
-    .not.toHaveAttribute("popover");
   (page.component as unknown as SidePanelMethods).showModal();
   await expect.element(componentLocator(page)).toBeVisible();
   await expect.element(componentLocator(page)).toHaveAttribute("open");

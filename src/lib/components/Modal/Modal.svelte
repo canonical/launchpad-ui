@@ -23,7 +23,6 @@
   const id = $derived(idProp || fallbackId);
 
   const isMounted = useIsMounted();
-  const asPopover = $derived(!isMounted.value);
 
   export const showModal: ModalMethods["showModal"] = () => {
     dialogRef?.showModal();
@@ -41,6 +40,13 @@
     isMounted.value && !("closedBy" in HTMLDialogElement.prototype),
   );
 
+  // TODO(Invoker Commands API): Remove this when Invoker Commands API is widely supported (https://caniuse.com/wf-invoker-commands)
+  const isInvokerCommandsFallbackNeeded = $derived(
+    isMounted.value &&
+      (!("commandForElement" in HTMLButtonElement.prototype) ||
+        !("command" in HTMLButtonElement.prototype)),
+  );
+
   const fallbackOnclick: typeof onclick = (e) => {
     onclick?.(e);
     if (
@@ -54,27 +60,23 @@
 </script>
 
 {@render trigger?.({
-  onclick: showModal,
+  onclick: isInvokerCommandsFallbackNeeded ? showModal : undefined,
+  commandfor: id,
+  command: "show-modal",
   "aria-haspopup": "dialog",
-  popovertarget: asPopover ? id : undefined,
 })}
 
 <dialog
   bind:this={dialogRef}
   {id}
   class={[componentCssClassName, className]}
-  popover={asPopover ? (closeOnOutsideClick ? "auto" : "manual") : undefined}
-  closedby={asPopover
-    ? undefined
-    : closeOnOutsideClick
-      ? "any"
-      : "closerequest"}
+  closedby={closeOnOutsideClick ? "any" : "closerequest"}
   onclick={isClosedByFallbackNeeded ? fallbackOnclick : onclick}
   {...rest}
 >
   <!-- TODO(closedby): Remove this wrapper when Webkit supports closedby -->
   <div style="display: contents;" bind:this={contentWrapperRef}>
-    {@render children?.(asPopover ? id : undefined, close)}
+    {@render children?.(id, close)}
   </div>
 </dialog>
 
@@ -84,10 +86,10 @@
 The modal-like layout and structure are provided by the `ModalContent` component.
 
 Modal can be imperatively controlled by the following methods available on the component instance:
-- `showModal`: Additionally supplied as `triggerProps.onclick` via the `trigger` snippet.
-- `close`: Additionally supplied via the `children` snippet.
+- `showModal`: Shows the modal.
+- `close`: Closes the modal.
 
-If JavaScript is disabled, Modal can be controlled as a popover with declaratively bound button triggers. To allow for that pass the `popovertarget` supplied via the `trigger` or `children` snippets to buttons you want to use as triggers. However this should be treated as a fallback. If possible, the modal should be controlled using the imperative calls of `showModal` and `close` which ensure better accessibility and user experience (e.g. rendering the rest of the document as inert) See [MDN](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/dialog) for more information.
+Modal is declaratively controlled by default through the [Invoker Commands API](https://developer.mozilla.org/en-US/docs/Web/API/Invoker_Commands_API) using `commandfor` and `command` attributes supplied via the `trigger` snippet. Imperative methods remain available for cases where opening or closing must be orchestrated in code. See [MDN](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/dialog) for more information.
 
 ## Example Usage
 ```svelte
@@ -103,12 +105,12 @@ If JavaScript is disabled, Modal can be controlled as a popover with declarative
       Open Modal
     </button>
   {/snippet}
-  {#snippet children(popovertarget, close)}
+  {#snippet children(commandfor, close)}
     <ModalContent.Header>
       Modal's Header
       <ModalContent.Header.CloseButton
-        {popovertarget}
-        onclick={close}
+        {commandfor}
+        command="close"
       />
     </ModalContent.Header>
     <ModalContent.Body>
@@ -116,7 +118,6 @@ If JavaScript is disabled, Modal can be controlled as a popover with declarative
     </ModalContent.Body>
     <ModalContent.Footer>
       <Button
-        {popovertarget}
         onclick={() => {
           // doSomething();
           close();
@@ -147,20 +148,12 @@ If JavaScript is disabled, Modal can be controlled as a popover with declarative
       background-color: var(--color-background-modal-backdrop);
     }
 
-    &:open {
-      &,
-      &::backdrop {
-        opacity: 1;
-      }
-    }
-
     /* 
-      Fallback for Safari that doesn't support the `:open`. It has to be kept separate from the above `&:open` to work.
+      [open] is a fallback for Safari that doesn't support the `:open`.
 
       TODO(:open): Remove when Safari supports it (https://developer.mozilla.org/en-US/docs/Web/CSS/:open)
     */
-    &[open],
-    &:popover-open {
+    &:is(:open, [open]) {
       &,
       &::backdrop {
         opacity: 1;
@@ -177,25 +170,15 @@ If JavaScript is disabled, Modal can be controlled as a popover with declarative
   }
 
   @starting-style {
-    .ds.modal {
-      &:open {
-        &,
-        &::backdrop {
-          opacity: 0;
-        }
-      }
+    /* 
+      [open] is a fallback for Safari that doesn't support the `:open`.
 
-      /* 
-        Fallback for Safari that doesn't support the `:open`. It has to be kept separate from the above `&:open` to work.
-
-        TODO(:open): Remove when Safari supports it (https://developer.mozilla.org/en-US/docs/Web/CSS/:open)
-      */
-      &[open],
-      &:popover-open {
-        &,
-        &::backdrop {
-          opacity: 0;
-        }
+      TODO(:open): Remove when Safari supports it (https://developer.mozilla.org/en-US/docs/Web/CSS/:open)
+    */
+    .ds.modal:is(:open, [open]) {
+      &,
+      &::backdrop {
+        opacity: 0;
       }
     }
   }
