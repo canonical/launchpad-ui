@@ -1,4 +1,4 @@
-# Source commit: ec0f6d8d57a22ff8d95f885351313d3ea2d1f5a1 (job-manager:main)
+# Source commit: 8de5dc294dbf3cd342829d479b3a942c49eb7691 (job-manager:main)
 openapi: 3.1.0
 info:
   title: Job Manager API
@@ -282,7 +282,8 @@ paths:
 
         Args:
             job_id: Unique identifier of the job
-            request: FastAPI request object containing health data
+            health_data: Health data sent by the job
+            request: FastAPI request object for extracting client IP
             background_tasks: FastAPI background tasks for async operations
             db: Database session dependency
             token: Builder token for authorization
@@ -301,6 +302,12 @@ paths:
         schema:
           type: integer
           title: Job Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RunnerHealthUpdate'
       responses:
         '200':
           description: Successful Response
@@ -827,11 +834,11 @@ paths:
       - runners
       summary: Rebuild Runner Admin Only
       description: |-
-        Force rebuild a runner (admins only).
+        Rebuild a runner (admins only).
 
-        This endpoint forcefully rebuilds a runner regardless of its status.
-        If the runner has an assigned job, that job will be marked as FAILED
-        before the rebuild proceeds.
+        This endpoint rebuilds a runner regardless of its current status.
+        If the runner has an assigned job, that job will be marked as
+        TERMINATED before the rebuild proceeds.
 
         Access control:
             - Requires a valid API access token

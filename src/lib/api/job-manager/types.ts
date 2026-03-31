@@ -149,7 +149,8 @@ export interface paths {
          *
          *     Args:
          *         job_id: Unique identifier of the job
-         *         request: FastAPI request object containing health data
+         *         health_data: Health data sent by the job
+         *         request: FastAPI request object for extracting client IP
          *         background_tasks: FastAPI background tasks for async operations
          *         db: Database session dependency
          *         token: Builder token for authorization
@@ -506,11 +507,11 @@ export interface paths {
         put?: never;
         /**
          * Rebuild Runner Admin Only
-         * @description Force rebuild a runner (admins only).
+         * @description Rebuild a runner (admins only).
          *
-         *     This endpoint forcefully rebuilds a runner regardless of its status.
-         *     If the runner has an assigned job, that job will be marked as FAILED
-         *     before the rebuild proceeds.
+         *     This endpoint rebuilds a runner regardless of its current status.
+         *     If the runner has an assigned job, that job will be marked as
+         *     TERMINATED before the rebuild proceeds.
          *
          *     Access control:
          *         - Requires a valid API access token
@@ -1518,7 +1519,11 @@ export interface operations {
             };
             cookie?: never;
         };
-        requestBody?: never;
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RunnerHealthUpdate"];
+            };
+        };
         responses: {
             /** @description Successful Response */
             200: {
