@@ -21,7 +21,7 @@
     $props();
 
   const numberOfPages = $derived(
-    Math.ceil(metadata.total_count / metadata.limit),
+    Math.max(Math.ceil(metadata.total_count / metadata.limit), 1),
   );
 
   const currentPage = $derived(toPageNumber(metadata.offset, metadata.limit));
