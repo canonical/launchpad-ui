@@ -2010,3 +2010,16 @@ export interface operations {
         };
     };
 }
+type FlattenedDeepRequired<T> = {
+    [K in keyof T]-?: FlattenedDeepRequired<T[K] extends unknown[] | undefined | null ? Extract<T[K], unknown[]>[number] : T[K]>;
+};
+type ReadonlyArray<T> = [
+    Exclude<T, undefined>
+] extends [
+    unknown[]
+] ? Readonly<Exclude<T, undefined>> : Readonly<Exclude<T, undefined>[]>;
+export const architectureValues: ReadonlyArray<FlattenedDeepRequired<components>["schemas"]["Architecture"]> = ["amd64", "amd64v3", "arm64", "armel", "armhf", "i386", "ppc64el", "riscv64", "s390x"];
+export const jobStatusValues: ReadonlyArray<FlattenedDeepRequired<components>["schemas"]["JobStatus"]> = ["CANCELLED", "EXECUTING", "FAILED", "FINISHED", "IDLE", "PENDING", "TERMINATED"];
+export const objectTypeValues: ReadonlyArray<FlattenedDeepRequired<components>["schemas"]["ObjectType"]> = ["artifact", "log", "metadata"];
+export const runnerStatusValues: ReadonlyArray<FlattenedDeepRequired<components>["schemas"]["RunnerStatus"]> = ["CREATING", "IDLE", "BUSY", "REBUILDING", "DELETING", "ERROR"];
+export const seriesValues: ReadonlyArray<FlattenedDeepRequired<components>["schemas"]["Series"]> = ["bionic", "focal", "jammy", "mantic", "noble"];
