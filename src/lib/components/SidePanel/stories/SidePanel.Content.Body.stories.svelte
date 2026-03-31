@@ -1,12 +1,11 @@
 <script module lang="ts">
   import { defineMeta } from "@storybook/addon-svelte-csf";
-  import { DialogContent } from "../../index.js";
-  import Body from "./Body.svelte";
+  import { SidePanel } from "../index.js";
 
   const { Story } = defineMeta({
-    title: "Components/DialogContent/Body",
+    title: "Components/SidePanel/Content/Body",
     tags: ["autodocs"],
-    component: Body,
+    component: SidePanel.Content.Body,
     argTypes: {
       children: {
         control: { disable: true },
@@ -17,8 +16,9 @@
 
 <Story name="Default">
   {#snippet template({ children: _, ...args })}
-    <DialogContent.Body {...args}>
-      This is the body of the dialog. It contains the main content.
-    </DialogContent.Body>
+    <SidePanel.Content.Body {...args}>
+      This is the side panel body where users can review details and make
+      changes without leaving the current page.
+    </SidePanel.Content.Body>
   {/snippet}
 </Story>

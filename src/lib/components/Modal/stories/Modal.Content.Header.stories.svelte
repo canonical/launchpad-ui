@@ -1,12 +1,11 @@
 <script module lang="ts">
   import { defineMeta } from "@storybook/addon-svelte-csf";
-  import { DialogContent } from "../../index.js";
-  import Header from "./Header.svelte";
+  import { Modal } from "../index.js";
 
   const { Story } = defineMeta({
-    title: "Components/DialogContent/Header",
+    title: "Components/Modal/Content/Header",
     tags: ["autodocs"],
-    component: Header,
+    component: Modal.Content.Header,
     argTypes: {
       children: {
         control: { disable: true },
@@ -16,12 +15,12 @@
 </script>
 
 <Story name="Default" asChild>
-  <DialogContent.Header>This is a dialog header</DialogContent.Header>
+  <Modal.Content.Header>This is a dialog header</Modal.Content.Header>
 </Story>
 
 <Story name="With a close button" asChild>
-  <DialogContent.Header>
+  <Modal.Content.Header>
     This is a dialog header
-    <DialogContent.Header.CloseButton />
-  </DialogContent.Header>
+    <Modal.Content.Header.CloseButton />
+  </Modal.Content.Header>
 </Story>

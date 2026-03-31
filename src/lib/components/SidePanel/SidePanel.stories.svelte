@@ -38,20 +38,20 @@
   {#snippet template({ children: _, trigger: __, ...args })}
     <SidePanel {...args}>
       {#snippet trigger(triggerProps)}
-        <Button {...triggerProps}>Show SidePanel</Button>
+        <Button {...triggerProps}>Open side panel</Button>
       {/snippet}
       {#snippet children(commandfor)}
         <SidePanel.Content>
           <SidePanel.Content.Header>
-            Discard pending review?
+            Job details
             <SidePanel.Content.Header.CloseButton
               {commandfor}
               command="close"
             />
           </SidePanel.Content.Header>
           <SidePanel.Content.Body>
-            You have added 4 comments. Discarding the pending review will
-            permanently delete them. Are you sure you want to continue?
+            Inspect run history, owner, and retry policy without navigating away
+            from the jobs list.
           </SidePanel.Content.Body>
         </SidePanel.Content>
       {/snippet}
@@ -81,9 +81,9 @@
     };
     -->
 
-    <Button {onclick}>Some button</Button>
+    <Button {onclick}>Show timed side panel</Button>
     <SidePanel bind:this={sidePanel} {...args}>
-      The side panel will close automatically in {timeLeft} seconds.
+      This side panel closes automatically in {timeLeft} seconds.
     </SidePanel>
   {/snippet}
 </Story>

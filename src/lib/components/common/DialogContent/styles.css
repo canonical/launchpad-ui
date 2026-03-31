@@ -3,6 +3,7 @@
 .ds.dialog-content {
   display: flex;
   flex-direction: column;
+  min-height: 100%;
   gap: var(--lp-dimension-spacing-block-m);
 
   background-color: var(--lp-color-background-default);
