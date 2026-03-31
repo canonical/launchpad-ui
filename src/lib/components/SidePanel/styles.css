@@ -5,8 +5,9 @@
   margin: 0 0 0 auto;
   opacity: 1;
   height: 100vh;
-  max-height: 100vh;
 
+  /* User-agent styles reset */
+  max-height: unset;
   border: none;
 
   box-shadow: 0 0 32px 0 rgba(0, 0, 0, 0.2);
