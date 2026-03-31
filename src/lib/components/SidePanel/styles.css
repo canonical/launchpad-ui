@@ -29,4 +29,8 @@
   &::backdrop {
     background-color: transparent;
   }
+
+  .ds.dialog-content {
+    min-height: 100%;
+  }
 }
