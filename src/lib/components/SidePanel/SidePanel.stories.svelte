@@ -83,7 +83,12 @@
 
     <Button {onclick}>Show timed side panel</Button>
     <SidePanel bind:this={sidePanel} {...args}>
-      This side panel closes automatically in {timeLeft} seconds.
+      <SidePanel.Content>
+        <SidePanel.Content.Header>Timed Side Panel</SidePanel.Content.Header>
+        <SidePanel.Content.Body>
+          This side panel closes automatically in {timeLeft} seconds.
+        </SidePanel.Content.Body>
+      </SidePanel.Content>
     </SidePanel>
   {/snippet}
 </Story>

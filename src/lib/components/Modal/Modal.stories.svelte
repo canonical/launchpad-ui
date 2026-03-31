@@ -38,7 +38,7 @@
   {#snippet template({ children: _, trigger: __, ...args })}
     <Modal {...args}>
       {#snippet trigger(triggerProps)}
-        <Button {...triggerProps}>Show Modal</Button>
+        <Button {...triggerProps}>Show modal</Button>
       {/snippet}
       {#snippet children(commandfor, close)}
         <Modal.Content>
@@ -90,9 +90,14 @@
     };
     -->
 
-    <Button {onclick}>Some button</Button>
+    <Button {onclick}>Show timed modal</Button>
     <Modal bind:this={modal} {...args}>
-      The modal will close automatically in {timeLeft} seconds.
+      <Modal.Content>
+        <Modal.Content.Header>Timed Modal</Modal.Content.Header>
+        <Modal.Content.Body>
+          The modal will close automatically in {timeLeft} seconds.
+        </Modal.Content.Body>
+      </Modal.Content>
     </Modal>
   {/snippet}
 </Story>
