@@ -71,9 +71,11 @@
           class="shortcuts-help-modal-search"
           bind:value={filterQuery}
         />
-        {#each Object.entries(groupedByCategory) as [category, shortcuts] (category)}
-          <Section {category} {shortcuts} />
-        {/each}
+        <div class="shortcuts">
+          {#each Object.entries(groupedByCategory) as [category, shortcuts] (category)}
+            <Section {category} {shortcuts} />
+          {/each}
+        </div>
       </SidePanel.Content.Body>
     </SidePanel.Content>
   {/snippet}
@@ -106,25 +108,17 @@
       --typography-shortcuts-help-modal-dt: var(--lp-typography-paragraph-xs);
       --typography-shortcuts-help-modal-dd: var(--lp-typography-paragraph-xs);
 
-      /* 
-      When there are many shortcuts that cause overflow (and intentional scroll) of the `.body`, the dialog itself gets a second scrollbar for the reasons that remain unknown.
-
-      This prevents that from happening.
-      */
-      overflow: hidden;
-
       .content {
         display: grid;
-        grid-template-rows: auto minmax(0, 1fr);
+        grid-template-rows: auto auto minmax(0, 1fr);
         height: 100%;
-        border: none;
 
-        .body {
-          overflow-y: auto;
-          > .shortcuts-help-modal-search {
-            width: 100%;
-            position: sticky;
-            top: 0;
+        > .body {
+          display: contents;
+
+          > .shortcuts {
+            overflow-y: auto;
+            contain: strict;
           }
         }
       }
