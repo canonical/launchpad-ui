@@ -1,10 +1,8 @@
-<!-- `SidePanel` component provides a mechanism to display content in a dialog overlay. To see an example of how to compose it with `ModalContent` see [SidePanel pattern](https://main--689106f3797b06760a3c9414.chromatic.com/?path=/docs/patterns-sidepanel--docs). -->
-
 <script module lang="ts">
   import { defineMeta } from "@storybook/addon-svelte-csf";
   import { Button } from "$lib/components/Button/index.js";
-  import SidePanel from "./SidePanel.svelte";
   import type { SidePanelMethods } from "./types.js";
+  import { SidePanel } from "./index.js";
 
   const { Story } = defineMeta({
     title: "Components/SidePanel",
@@ -40,13 +38,22 @@
   {#snippet template({ children: _, trigger: __, ...args })}
     <SidePanel {...args}>
       {#snippet trigger(triggerProps)}
-        <Button {...triggerProps}>Show SidePanel</Button>
+        <Button {...triggerProps}>Open side panel</Button>
       {/snippet}
       {#snippet children(commandfor)}
-        <div style="padding: 1rem;">
-          <p>This is the side panel content.</p>
-          <Button {commandfor} command="close">Close</Button>
-        </div>
+        <SidePanel.Content>
+          <SidePanel.Content.Header>
+            Job details
+            <SidePanel.Content.Header.CloseButton
+              {commandfor}
+              command="close"
+            />
+          </SidePanel.Content.Header>
+          <SidePanel.Content.Body>
+            Inspect run history, owner, and retry policy without navigating away
+            from the jobs list.
+          </SidePanel.Content.Body>
+        </SidePanel.Content>
       {/snippet}
     </SidePanel>
   {/snippet}
@@ -74,9 +81,14 @@
     };
     -->
 
-    <Button {onclick}>Some button</Button>
+    <Button {onclick}>Show timed side panel</Button>
     <SidePanel bind:this={sidePanel} {...args}>
-      The side panel will close automatically in {timeLeft} seconds.
+      <SidePanel.Content>
+        <SidePanel.Content.Header>Timed Side Panel</SidePanel.Content.Header>
+        <SidePanel.Content.Body>
+          This side panel closes automatically in {timeLeft} seconds.
+        </SidePanel.Content.Body>
+      </SidePanel.Content>
     </SidePanel>
   {/snippet}
 </Story>

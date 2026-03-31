@@ -1,10 +1,9 @@
 <!-- @canonical/generator-ds 0.10.0-experimental.3 -->
 
 <script lang="ts">
-  import { ModalContent } from "$lib/components/ModalContent/index.js";
   import { Shortcut, useShortcuts } from "$lib/shortcuts/index.js";
   import type { SidePanelMethods } from "../SidePanel";
-  import { SidePanel } from "../SidePanel";
+  import { SidePanel } from "../SidePanel/index.js";
   import TextInput from "../TextInput/TextInput.svelte";
   import { Section } from "./common/index.js";
   import type {
@@ -58,12 +57,12 @@
   {...props}
 >
   {#snippet children(_, close)}
-    <ModalContent class="content">
-      <ModalContent.Header>
+    <SidePanel.Content class="content">
+      <SidePanel.Content.Header>
         <h4>Command guide</h4>
-        <ModalContent.Header.CloseButton onclick={close} />
-      </ModalContent.Header>
-      <ModalContent.Body class="body">
+        <SidePanel.Content.Header.CloseButton onclick={close} />
+      </SidePanel.Content.Header>
+      <SidePanel.Content.Body class="body">
         <TextInput
           type="search"
           autofocus
@@ -72,11 +71,13 @@
           class="shortcuts-help-modal-search"
           bind:value={filterQuery}
         />
-        {#each Object.entries(groupedByCategory) as [category, shortcuts] (category)}
-          <Section {category} {shortcuts} />
-        {/each}
-      </ModalContent.Body>
-    </ModalContent>
+        <div class="shortcuts">
+          {#each Object.entries(groupedByCategory) as [category, shortcuts] (category)}
+            <Section {category} {shortcuts} />
+          {/each}
+        </div>
+      </SidePanel.Content.Body>
+    </SidePanel.Content>
   {/snippet}
 </SidePanel>
 
@@ -107,25 +108,17 @@
       --typography-shortcuts-help-modal-dt: var(--lp-typography-paragraph-xs);
       --typography-shortcuts-help-modal-dd: var(--lp-typography-paragraph-xs);
 
-      /* 
-      When there are many shortcuts that cause overflow (and intentional scroll) of the `.body`, the dialog itself gets a second scrollbar for the reasons that remain unknown.
-
-      This prevents that from happening.
-      */
-      overflow: hidden;
-
       .content {
         display: grid;
-        grid-template-rows: auto minmax(0, 1fr);
+        grid-template-rows: auto auto minmax(0, 1fr);
         height: 100%;
-        border: none;
 
-        .body {
-          overflow-y: auto;
-          > .shortcuts-help-modal-search {
-            width: 100%;
-            position: sticky;
-            top: 0;
+        > .body {
+          display: contents;
+
+          > .shortcuts {
+            overflow-y: auto;
+            contain: strict;
           }
         }
       }
