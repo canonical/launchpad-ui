@@ -12,15 +12,3 @@
 <header class={[componentCssClassName, className]} {...rest}>
   {@render children?.()}
 </header>
-
-<!-- @component
-`DialogContent.Header` represents the header section of a dialog.
-
-## Example Usage
-```svelte
-<DialogContent.Header>
-  Header Content
-  <DialogContent.Header.CloseButton />
-</DialogContent.Header>
-```
--->

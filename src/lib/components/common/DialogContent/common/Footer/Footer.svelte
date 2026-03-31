@@ -12,15 +12,3 @@
 <footer class={[componentCssClassName, className]} {...rest}>
   {@render children?.()}
 </footer>
-
-<!-- @component
-`DialogContent.Footer` represents the footer section of a dialog. Usually contains action buttons.
-
-## Example Usage
-```svelte
-<DialogContent.Footer>
-  <Button>Cancel</Button>
-  <Button>Confirm</Button>
-</DialogContent.Footer>
-```
--->

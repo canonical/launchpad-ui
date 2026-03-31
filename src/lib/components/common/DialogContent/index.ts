@@ -4,8 +4,42 @@ import { default as DialogContentRoot } from "./DialogContent.svelte";
 import { Body, Footer, Header } from "./common/index.js";
 
 const DialogContent = DialogContentRoot as typeof DialogContentRoot & {
+  /**
+   * `DialogContent.Header` represents the header section of a dialog.
+   *
+   * @example
+   * ```svelte
+   * <DialogContent.Header>
+   *   Header Content
+   *   <DialogContent.Header.CloseButton />
+   * </DialogContent.Header>
+   * ```
+   */
   Header: typeof Header;
+
+  /**
+   * `DialogContent.Body` represents the main content area of a dialog.
+   *
+   * @example
+   * ```svelte
+   * <DialogContent.Body>
+   *   Main Content
+   * </DialogContent.Body>
+   * ```
+   */
   Body: typeof Body;
+
+  /**
+   * `DialogContent.Footer` represents the footer section of a dialog. Usually contains action buttons.
+   *
+   * @example
+   * ```svelte
+   * <DialogContent.Footer>
+   *   <Button>Cancel</Button>
+   *   <Button>Confirm</Button>
+   * </DialogContent.Footer>
+   * ```
+   */
   Footer: typeof Footer;
 };
 

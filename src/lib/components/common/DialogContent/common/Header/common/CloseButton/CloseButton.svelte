@@ -24,12 +24,3 @@
     <CloseIcon />
   {/snippet}
 </Button>
-
-<!-- @component
-`DialogContent.Header.CloseButton` is a wrapper over `Button` meant to be used as a close button in dialog headers.
-
-## Example Usage
-```svelte
-<DialogContent.Header.CloseButton onclick={handleClose} />
-```
--->

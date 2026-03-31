@@ -12,14 +12,3 @@
 <div class={[componentCssClassName, className]} {...rest}>
   {@render children?.()}
 </div>
-
-<!-- @component
-`DialogContent.Body` represents the main content area of a dialog.
-
-## Example Usage
-```svelte
-<DialogContent.Body>
-  Main Content
-</DialogContent.Body>
-```
--->
