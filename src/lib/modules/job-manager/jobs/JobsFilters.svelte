@@ -9,6 +9,7 @@
   import { Button, Select } from "$lib/components/index.js";
   import KeepQueryInput from "$lib/launchpad-components/KeepQueryInput.svelte";
   import { architectureFilterSchema, statusFilterSchema } from "./filtering.js";
+  import { JobsQueryParam } from "./queryParams.js";
   import { goto } from "$app/navigation";
   import { page } from "$app/state";
 
@@ -25,7 +26,7 @@
     } else {
       url.searchParams.set(name, value);
     }
-    url.searchParams.delete("page");
+    url.searchParams.delete(JobsQueryParam.Page);
 
     // eslint-disable-next-line svelte/no-navigation-without-resolve
     await goto(url.toString(), {
@@ -35,22 +36,26 @@
   };
 
   const statusFilterValue = $derived(
-    v.parse(statusFilterSchema, page.url.searchParams.get("status")),
+    v.parse(
+      statusFilterSchema,
+      page.url.searchParams.get(JobsQueryParam.FilterStatus),
+    ),
   );
 
   const architectureFilterValue = $derived(
     v.parse(
       architectureFilterSchema,
-      page.url.searchParams.get("architecture"),
+      page.url.searchParams.get(JobsQueryParam.FilterArchitecture),
     ),
   );
 
   const isFiltering = $derived(statusFilterValue || architectureFilterValue);
+
   const resetFiltersHref = () => {
     const url = new URL(page.url);
-    url.searchParams.delete("architecture");
-    url.searchParams.delete("status");
-    url.searchParams.delete("page");
+    url.searchParams.delete(JobsQueryParam.FilterArchitecture);
+    url.searchParams.delete(JobsQueryParam.FilterStatus);
+    url.searchParams.delete(JobsQueryParam.Page);
     return url.search || "?";
   };
 </script>
@@ -61,7 +66,7 @@
       <label for="{id}-arch">Arch: </label>
       <Select
         id="{id}-arch"
-        name="architecture"
+        name={JobsQueryParam.FilterArchitecture}
         class="select"
         onchange={updateFilters}
         aria-controls={tableId}
@@ -77,7 +82,7 @@
       <label for="{id}-status">Status: </label>
       <Select
         id="{id}-status"
-        name="status"
+        name={JobsQueryParam.FilterStatus}
         class="select"
         onchange={updateFilters}
         aria-controls={tableId}
@@ -105,8 +110,8 @@
         Remove filters
       </Button>
     {/if}
-    <KeepQueryInput name="sort" />
-    <KeepQueryInput name="limit" />
+    <KeepQueryInput name={JobsQueryParam.Sort} />
+    <KeepQueryInput name={JobsQueryParam.Limit} />
   </form>
 </search>
 

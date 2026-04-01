@@ -3,6 +3,7 @@ import * as v from "valibot";
 import { jobManager } from "$lib/api/job-manager/client.js";
 import { extractErrorMessage } from "$lib/api/job-manager/utils.js";
 import {
+  JobsQueryParam,
   architectureFilterSchema,
   jobsTableLimitSchema,
   jobsTablePageSchema,
@@ -23,19 +24,28 @@ export const load = (async ({ fetch, url }) => {
     error(capacity.response.status, extractErrorMessage(capacity.error));
   }
 
-  const page = v.parse(jobsTablePageSchema, url.searchParams.get("page"));
-  const limit = v.parse(jobsTableLimitSchema, url.searchParams.get("limit"));
+  const page = v.parse(
+    jobsTablePageSchema,
+    url.searchParams.get(JobsQueryParam.Page),
+  );
+  const limit = v.parse(
+    jobsTableLimitSchema,
+    url.searchParams.get(JobsQueryParam.Limit),
+  );
   const architecture = v.parse(
     architectureFilterSchema,
-    url.searchParams.get("architecture"),
+    url.searchParams.get(JobsQueryParam.FilterArchitecture),
   );
-  const status = v.parse(statusFilterSchema, url.searchParams.get("status"));
+  const status = v.parse(
+    statusFilterSchema,
+    url.searchParams.get(JobsQueryParam.FilterStatus),
+  );
 
   const jobsPromise = jobManager
     .GET("/v1/jobs", {
       params: {
         query: {
-          sort: url.searchParams.get("sort"),
+          sort: url.searchParams.get(JobsQueryParam.Sort),
           limit,
           offset: toOffset(page, limit),
           architecture,

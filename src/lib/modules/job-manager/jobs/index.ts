@@ -3,3 +3,4 @@ export { default as JobsPagination } from "./JobsPagination.svelte";
 export { default as JobsFilters } from "./JobsFilters.svelte";
 export * from "./pagination.js";
 export * from "./filtering.js";
+export * from "./queryParams.js";
