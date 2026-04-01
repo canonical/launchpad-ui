@@ -5,4 +5,4 @@ export * from "./CommandList/index.js";
 export * from "./DateTime/index.js";
 export * from "./JobStatusIcon/index.js";
 export * from "./PartialListDisclosure/index.js";
-export { default as KeepQueryInput } from "./KeepQueryInput.svelte";
+export { default as QueryParamHiddenInput } from "./QueryParamHiddenInput.svelte";

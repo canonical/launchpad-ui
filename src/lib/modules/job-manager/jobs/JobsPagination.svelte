@@ -5,7 +5,7 @@
   } from "svelte/elements";
   import type { JobsListMetadata } from "$lib/api/job-manager/types.js";
   import { Button, Pagination } from "$lib/components/index.js";
-  import KeepQueryInput from "$lib/launchpad-components/KeepQueryInput.svelte";
+  import { QueryParamHiddenInput } from "$lib/launchpad-components/index.js";
   import {
     jobsTableLimitDefault,
     jobsTableLimitOptions,
@@ -94,9 +94,9 @@
         {/each}
       </Pagination.ItemsPerPageSelect>
       {@render noScriptSubmit()}
-      <KeepQueryInput name={JobsQueryParam.Sort} />
-      <KeepQueryInput name={JobsQueryParam.FilterArchitecture} />
-      <KeepQueryInput name={JobsQueryParam.FilterStatus} />
+      <QueryParamHiddenInput name={JobsQueryParam.Sort} />
+      <QueryParamHiddenInput name={JobsQueryParam.FilterArchitecture} />
+      <QueryParamHiddenInput name={JobsQueryParam.FilterStatus} />
     </form>
     <Pagination.ItemsCount showing={numJobs} total={metadata.total_count} />
   {/snippet}
@@ -109,10 +109,10 @@
         onblur={selectPage}
       />
       {@render noScriptSubmit()}
-      <KeepQueryInput name={JobsQueryParam.Limit} />
-      <KeepQueryInput name={JobsQueryParam.Sort} />
-      <KeepQueryInput name={JobsQueryParam.FilterArchitecture} />
-      <KeepQueryInput name={JobsQueryParam.FilterStatus} />
+      <QueryParamHiddenInput name={JobsQueryParam.Limit} />
+      <QueryParamHiddenInput name={JobsQueryParam.Sort} />
+      <QueryParamHiddenInput name={JobsQueryParam.FilterArchitecture} />
+      <QueryParamHiddenInput name={JobsQueryParam.FilterStatus} />
     </form>
   {/snippet}
   <Pagination.PageNavigation

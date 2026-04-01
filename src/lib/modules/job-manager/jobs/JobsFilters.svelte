@@ -7,7 +7,7 @@
     jobStatusValues,
   } from "$lib/api/job-manager/types.js";
   import { Button, Select } from "$lib/components/index.js";
-  import KeepQueryInput from "$lib/launchpad-components/KeepQueryInput.svelte";
+  import { QueryParamHiddenInput } from "$lib/launchpad-components/index.js";
   import { architectureFilterSchema, statusFilterSchema } from "./filtering.js";
   import { JobsQueryParam } from "./queryParams.js";
   import { goto } from "$app/navigation";
@@ -110,8 +110,8 @@
         Remove filters
       </Button>
     {/if}
-    <KeepQueryInput name={JobsQueryParam.Sort} />
-    <KeepQueryInput name={JobsQueryParam.Limit} />
+    <QueryParamHiddenInput name={JobsQueryParam.Sort} />
+    <QueryParamHiddenInput name={JobsQueryParam.Limit} />
   </form>
 </search>
 
