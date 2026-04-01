@@ -5,6 +5,7 @@
   } from "svelte/elements";
   import type { JobsListMetadata } from "$lib/api/job-manager/types.js";
   import { Button, Pagination } from "$lib/components/index.js";
+  import KeepQueryInput from "$lib/launchpad-components/KeepQueryInput.svelte";
   import {
     jobsTableLimitDefault,
     jobsTableLimitOptions,
@@ -33,7 +34,7 @@
     } else {
       url.searchParams.set("page", pageNumber.toString());
     }
-    return url.pathname + url.search;
+    return url.search || "?";
   };
 
   const selectLimit: HTMLSelectAttributes["onchange"] = (e) => {
@@ -49,7 +50,6 @@
     goto(url.toString(), {
       replaceState: true,
       noScroll: true,
-      invalidate: ["/jobs"],
     });
   };
 
@@ -74,7 +74,6 @@
     goto(url.toString(), {
       replaceState: true,
       noScroll: true,
-      invalidate: ["/jobs"],
     });
   };
 </script>
@@ -94,6 +93,9 @@
         {/each}
       </Pagination.ItemsPerPageSelect>
       {@render noScriptSubmit()}
+      <KeepQueryInput name="sort" />
+      <KeepQueryInput name="architecture" />
+      <KeepQueryInput name="status" />
     </form>
     <Pagination.ItemsCount showing={numJobs} total={metadata.total_count} />
   {/snippet}
@@ -105,18 +107,11 @@
         value={currentPage}
         onblur={selectPage}
       />
-
       {@render noScriptSubmit()}
-      {#if metadata.limit !== jobsTableLimitDefault}
-        <input type="hidden" name="limit" value={metadata.limit} />
-      {/if}
-      {#if page.url.searchParams.get("sort")}
-        <input
-          type="hidden"
-          name="sort"
-          value={page.url.searchParams.get("sort")}
-        />
-      {/if}
+      <KeepQueryInput name="limit" />
+      <KeepQueryInput name="sort" />
+      <KeepQueryInput name="architecture" />
+      <KeepQueryInput name="status" />
     </form>
   {/snippet}
   <Pagination.PageNavigation

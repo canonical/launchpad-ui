@@ -3,8 +3,10 @@ import * as v from "valibot";
 import { jobManager } from "$lib/api/job-manager/client.js";
 import { extractErrorMessage } from "$lib/api/job-manager/utils.js";
 import {
+  architectureFilterSchema,
   jobsTableLimitSchema,
   jobsTablePageSchema,
+  statusFilterSchema,
   toOffset,
 } from "$lib/modules/job-manager/jobs/index.js";
 import type { PageServerLoad } from "./$types";
@@ -23,6 +25,11 @@ export const load = (async ({ fetch, url }) => {
 
   const page = v.parse(jobsTablePageSchema, url.searchParams.get("page"));
   const limit = v.parse(jobsTableLimitSchema, url.searchParams.get("limit"));
+  const architecture = v.parse(
+    architectureFilterSchema,
+    url.searchParams.get("architecture"),
+  );
+  const status = v.parse(statusFilterSchema, url.searchParams.get("status"));
 
   const jobsPromise = jobManager
     .GET("/v1/jobs", {
@@ -31,6 +38,8 @@ export const load = (async ({ fetch, url }) => {
           sort: url.searchParams.get("sort"),
           limit,
           offset: toOffset(page, limit),
+          architecture,
+          status,
         },
       },
       fetch,

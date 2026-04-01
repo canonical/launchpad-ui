@@ -89,17 +89,17 @@
         {#if sortable}
           <Table.TH
             aria-labelledby={headerCellLabelId}
-            sortDirection={$state.eager(
-              sort?.field === key ? sort.direction : undefined,
-            )}
+            sortDirection={// FIXME: $state.eager doesn't provide the value in SSR render, so if used the sort indicators aren't rendered in no-js. Investigate.
+            // $state.eager(
+            sort?.field === key ? sort.direction : undefined}
           >
             <span id={headerCellLabelId}>
               {label}
             </span>
             {#snippet action()}
               <Table.TH.SortButton
-                aria-label={$state.eager(sortLinkLabel(key, label))}
-                href={$state.eager(sortLinkHref(key))}
+                aria-label={sortLinkLabel(key, label)}
+                href={sortLinkHref(key)}
                 data-sveltekit-replacestate
                 data-sveltekit-noscroll
               />
