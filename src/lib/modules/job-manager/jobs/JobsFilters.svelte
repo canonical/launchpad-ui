@@ -120,6 +120,7 @@
     display: flex;
     flex-wrap: wrap;
     align-items: center;
+    /* TODO: Add l-sized block padding after the tabs and searchbox added */
 
     gap: var(--lp-dimension-spacing-inline-m);
 
