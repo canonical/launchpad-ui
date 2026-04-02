@@ -38,6 +38,7 @@
     min="1"
     max={totalPages}
     autocomplete="off"
+    disabled={totalPages === 1}
     {...rest}
   />
   <span>of {totalPages} Page{totalPages === 1 ? "" : "s"}</span>

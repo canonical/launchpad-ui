@@ -2,6 +2,7 @@
   import type { JobRead } from "$lib/api/job-manager/types.js";
   import { Link, Table, UserChip } from "$lib/components/index.js";
   import { DateTime, JobStatusIcon } from "$lib/launchpad-components/index.js";
+  import { JobsQueryParam } from "./queryParams.js";
   import { resolve } from "$app/paths";
   import { navigating, page } from "$app/state";
 
@@ -16,7 +17,7 @@
   const id = $props.id();
 
   const sort = $derived.by(() => {
-    const sort = page.url.searchParams.get("sort");
+    const sort = page.url.searchParams.get(JobsQueryParam.Sort);
 
     if (!sort) {
       return null;
@@ -51,12 +52,12 @@
     } else if (sort.direction === "ascending") {
       sortParam = `-${key}`;
     } else {
-      url.searchParams.delete("sort");
+      url.searchParams.delete(JobsQueryParam.Sort);
       return url.pathname + url.search;
     }
 
-    url.searchParams.set("sort", sortParam);
-    url.searchParams.delete("page"); // Reset to first page when sorting changes
+    url.searchParams.set(JobsQueryParam.Sort, sortParam);
+    url.searchParams.delete(JobsQueryParam.Page); // Reset to first page when sorting changes
 
     return url.pathname + url.search;
   };
@@ -89,17 +90,17 @@
         {#if sortable}
           <Table.TH
             aria-labelledby={headerCellLabelId}
-            sortDirection={$state.eager(
-              sort?.field === key ? sort.direction : undefined,
-            )}
+            sortDirection={// FIXME: $state.eager doesn't provide the value in SSR render, so if used the sort indicators aren't rendered in no-js. Investigate.
+            // $state.eager(
+            sort?.field === key ? sort.direction : undefined}
           >
             <span id={headerCellLabelId}>
               {label}
             </span>
             {#snippet action()}
               <Table.TH.SortButton
-                aria-label={$state.eager(sortLinkLabel(key, label))}
-                href={$state.eager(sortLinkHref(key))}
+                aria-label={sortLinkLabel(key, label)}
+                href={sortLinkHref(key)}
                 data-sveltekit-replacestate
                 data-sveltekit-noscroll
               />

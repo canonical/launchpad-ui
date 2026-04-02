@@ -1,9 +1,6 @@
 export { default as JobsTable } from "./JobsTable.svelte";
 export { default as JobsPagination } from "./JobsPagination.svelte";
-export {
-  jobsTableLimitOptions,
-  jobsTableLimitSchema,
-  jobsTablePageSchema,
-  toOffset,
-  toPageNumber,
-} from "./pagination.js";
+export { default as JobsFilters } from "./JobsFilters.svelte";
+export * from "./pagination.js";
+export * from "./filtering.js";
+export * from "./queryParams.js";

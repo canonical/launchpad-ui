@@ -5,11 +5,13 @@
   } from "svelte/elements";
   import type { JobsListMetadata } from "$lib/api/job-manager/types.js";
   import { Button, Pagination } from "$lib/components/index.js";
+  import { QueryParamHiddenInput } from "$lib/launchpad-components/index.js";
   import {
     jobsTableLimitDefault,
     jobsTableLimitOptions,
     toPageNumber,
   } from "./pagination.js";
+  import { JobsQueryParam } from "./queryParams.js";
   import { goto } from "$app/navigation";
   import { page } from "$app/state";
 
@@ -21,7 +23,7 @@
     $props();
 
   const numberOfPages = $derived(
-    Math.ceil(metadata.total_count / metadata.limit),
+    Math.max(Math.ceil(metadata.total_count / metadata.limit), 1),
   );
 
   const currentPage = $derived(toPageNumber(metadata.offset, metadata.limit));
@@ -29,27 +31,26 @@
   const pageChangeHref = (pageNumber: number) => {
     const url = new URL(page.url);
     if (pageNumber === 1) {
-      url.searchParams.delete("page");
+      url.searchParams.delete(JobsQueryParam.Page);
     } else {
-      url.searchParams.set("page", pageNumber.toString());
+      url.searchParams.set(JobsQueryParam.Page, pageNumber.toString());
     }
-    return url.pathname + url.search;
+    return url.search || "?";
   };
 
   const selectLimit: HTMLSelectAttributes["onchange"] = (e) => {
     const url = new URL(page.url);
     if (e.currentTarget.value === jobsTableLimitDefault.toString()) {
-      url.searchParams.delete("limit");
+      url.searchParams.delete(JobsQueryParam.Limit);
     } else {
-      url.searchParams.set("limit", e.currentTarget.value);
+      url.searchParams.set(JobsQueryParam.Limit, e.currentTarget.value);
     }
-    url.searchParams.delete("page"); // Reset to first page when limit changes
+    url.searchParams.delete(JobsQueryParam.Page); // Reset to first page when limit changes
 
     // eslint-disable-next-line svelte/no-navigation-without-resolve
     goto(url.toString(), {
       replaceState: true,
       noScroll: true,
-      invalidate: ["/jobs"],
     });
   };
 
@@ -65,16 +66,15 @@
 
     const url = new URL(page.url);
     if (clampedPageNumber === 1) {
-      url.searchParams.delete("page");
+      url.searchParams.delete(JobsQueryParam.Page);
     } else {
-      url.searchParams.set("page", clampedPageNumber.toString());
+      url.searchParams.set(JobsQueryParam.Page, clampedPageNumber.toString());
     }
 
     // eslint-disable-next-line svelte/no-navigation-without-resolve
     goto(url.toString(), {
       replaceState: true,
       noScroll: true,
-      invalidate: ["/jobs"],
     });
   };
 </script>
@@ -83,7 +83,7 @@
   {#snippet leftGroup()}
     <form method="GET" data-sveltekit-noscroll>
       <Pagination.ItemsPerPageSelect
-        name="limit"
+        name={JobsQueryParam.Limit}
         value={metadata.limit}
         onchange={selectLimit}
       >
@@ -94,6 +94,9 @@
         {/each}
       </Pagination.ItemsPerPageSelect>
       {@render noScriptSubmit()}
+      <QueryParamHiddenInput name={JobsQueryParam.Sort} />
+      <QueryParamHiddenInput name={JobsQueryParam.FilterArchitecture} />
+      <QueryParamHiddenInput name={JobsQueryParam.FilterStatus} />
     </form>
     <Pagination.ItemsCount showing={numJobs} total={metadata.total_count} />
   {/snippet}
@@ -101,22 +104,15 @@
     <form method="GET" data-sveltekit-noscroll>
       <Pagination.PageInput
         totalPages={numberOfPages}
-        name="page"
+        name={JobsQueryParam.Page}
         value={currentPage}
         onblur={selectPage}
       />
-
       {@render noScriptSubmit()}
-      {#if metadata.limit !== jobsTableLimitDefault}
-        <input type="hidden" name="limit" value={metadata.limit} />
-      {/if}
-      {#if page.url.searchParams.get("sort")}
-        <input
-          type="hidden"
-          name="sort"
-          value={page.url.searchParams.get("sort")}
-        />
-      {/if}
+      <QueryParamHiddenInput name={JobsQueryParam.Limit} />
+      <QueryParamHiddenInput name={JobsQueryParam.Sort} />
+      <QueryParamHiddenInput name={JobsQueryParam.FilterArchitecture} />
+      <QueryParamHiddenInput name={JobsQueryParam.FilterStatus} />
     </form>
   {/snippet}
   <Pagination.PageNavigation
