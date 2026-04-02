@@ -11,5 +11,5 @@
 {/if}
 
 <!-- @component
-`KeepQueryInput` A hidden input that ensures that `name` query parameter is preserved when submitting forms. This is useful for keeping pagination, sorting, and filtering parameters in native form submissions.
+`QueryParamHiddenInput` A hidden input that ensures that `name` query parameter is preserved when submitting forms. This is useful for keeping pagination, sorting, and filtering parameters in native form submissions.
 -->
