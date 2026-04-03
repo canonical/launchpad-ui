@@ -1,4 +1,5 @@
 <script module lang="ts">
+  import { Button, Switch } from "@canonical/svelte-ds-app-launchpad";
   import {
     ForkIcon,
     RevisionsIcon,
@@ -10,8 +11,6 @@
     BranchMergeIcon,
     BranchMergedIcon,
   } from "$lib/components/icons/index.js";
-  import Switch from "../Switch/Switch.svelte";
-  import { Button } from "../index.js";
   import { MarkdownEditor } from "./index.js";
 
   const { Story } = defineMeta({

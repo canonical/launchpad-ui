@@ -1,7 +1,7 @@
 <script module lang="ts">
+  import { Button } from "@canonical/svelte-ds-app-launchpad";
   import { defineMeta } from "@storybook/addon-svelte-csf";
   import type { Snippet } from "svelte";
-  import { Button } from "$lib/components/Button/index.js";
   import Tooltip from "./Tooltip.svelte";
 
   const { Story } = defineMeta({

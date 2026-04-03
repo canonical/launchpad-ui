@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { Popover } from "@canonical/svelte-ds-app-launchpad";
   import {
     CommentsIcon,
     DesktopIcon,
@@ -17,7 +18,6 @@
   } from "$lib/components/icons/index.js";
   import {
     ContextualMenuContent,
-    Popover,
     ShortcutsHelpSidePanel,
     SideNavigation,
   } from "$lib/components/index.js";

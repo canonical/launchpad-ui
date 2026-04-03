@@ -1,10 +1,10 @@
 <!-- @canonical/generator-ds 0.10.0-experimental.5 -->
 
 <script lang="ts">
+  import { Spinner } from "@canonical/svelte-ds-app-launchpad";
   import { ErrorIcon, HelpIcon, SuccessIcon } from "@canonical/svelte-icons";
   import type { Component } from "svelte";
   import { LoadingStepsIcon, SkipIcon } from "$lib/components/icons/index.js";
-  import { Spinner } from "$lib/components/index.js";
   import { safeAssertUnreachable } from "$lib/utils/index.js";
   import type { JobStatusIconProps } from "./types.js";
 

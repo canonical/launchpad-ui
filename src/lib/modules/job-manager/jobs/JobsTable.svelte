@@ -1,6 +1,7 @@
 <script lang="ts">
+  import { Link } from "@canonical/svelte-ds-app-launchpad";
   import type { JobRead } from "$lib/api/job-manager/types.js";
-  import { Link, Table, UserChip } from "$lib/components/index.js";
+  import { Table, UserChip } from "$lib/components/index.js";
   import { DateTime, JobStatusIcon } from "$lib/launchpad-components/index.js";
   import { JobsQueryParam } from "./queryParams.js";
   import { resolve } from "$app/paths";

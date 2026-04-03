@@ -1,7 +1,7 @@
 <!-- @canonical/generator-ds 0.10.0-experimental.0 -->
 
 <script lang="ts" generics="T">
-  import { Switch } from "$lib/components/Switch/index.js";
+  import { Switch } from "@canonical/svelte-ds-app-launchpad";
   import { extractAria } from "$lib/utils/extractAria.js";
   import { OptionContent } from "../common/index.js";
   import type { SwitchOptionProps } from "./types.js";

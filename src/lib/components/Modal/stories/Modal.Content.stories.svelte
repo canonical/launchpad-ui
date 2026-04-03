@@ -1,6 +1,6 @@
 <script module lang="ts">
+  import { Button } from "@canonical/svelte-ds-app-launchpad";
   import { defineMeta } from "@storybook/addon-svelte-csf";
-  import { Button } from "../../Button/index.js";
   import { Modal } from "../index.js";
 
   const { Story } = defineMeta({

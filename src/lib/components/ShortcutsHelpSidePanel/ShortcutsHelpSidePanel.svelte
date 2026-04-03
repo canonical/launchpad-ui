@@ -1,10 +1,10 @@
 <!-- @canonical/generator-ds 0.10.0-experimental.3 -->
 
 <script lang="ts">
+  import { TextInput } from "@canonical/svelte-ds-app-launchpad";
   import { Shortcut, useShortcuts } from "$lib/shortcuts/index.js";
   import type { SidePanelMethods } from "../SidePanel";
   import { SidePanel } from "../SidePanel/index.js";
-  import TextInput from "../TextInput/TextInput.svelte";
   import { Section } from "./common/index.js";
   import type {
     ShortcutsHelpSidePanelMethods,

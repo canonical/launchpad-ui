@@ -1,11 +1,8 @@
 <script module lang="ts">
+  import { Button, Popover } from "@canonical/svelte-ds-app-launchpad";
   import { ChevronUpIcon, InformationIcon } from "@canonical/svelte-icons";
   import { defineMeta } from "@storybook/addon-svelte-csf";
-  import {
-    Button,
-    ContextualMenuContent,
-    Popover,
-  } from "$lib/components/index.js";
+  import { ContextualMenuContent } from "$lib/components/index.js";
 
   const { Story } = defineMeta({
     tags: ["autodocs"],
@@ -23,8 +20,11 @@ The following Contextual Menu example can be assembled using:
 <Story name="ContextualMenu" asChild>
   <div style="min-height: 350px;">
     <Popover>
-      {#snippet trigger(triggerProps, open)}
-        <Button {...triggerProps} style={open ? "border-bottom: 0;" : ""}>
+      {#snippet trigger({ style, ...triggerProps }, open)}
+        <Button
+          {...triggerProps}
+          style="{style}; {open && 'border-bottom: 0;'}"
+        >
           Options
           {#snippet iconRight()}
             <!-- TODO: Replace with <Chevron /> -->

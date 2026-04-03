@@ -1,8 +1,8 @@
 <!-- @canonical/generator-ds 0.10.0-experimental.3 -->
 
 <script lang="ts">
+  import { Button } from "@canonical/svelte-ds-app-launchpad";
   import { onMount, untrack } from "svelte";
-  import { Button } from "$lib/components/Button/index.js";
   import { Tooltip } from "$lib/components/Tooltip/index.js";
   import { useIsMounted } from "$lib/useIsMounted.svelte.js";
   import { getMarkdownEditorToolbarContext } from "../../context.js";

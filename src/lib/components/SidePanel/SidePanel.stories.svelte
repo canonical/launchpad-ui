@@ -1,6 +1,6 @@
 <script module lang="ts">
+  import { Button } from "@canonical/svelte-ds-app-launchpad";
   import { defineMeta } from "@storybook/addon-svelte-csf";
-  import { Button } from "$lib/components/Button/index.js";
   import type { SidePanelMethods } from "./types.js";
   import { SidePanel } from "./index.js";
 

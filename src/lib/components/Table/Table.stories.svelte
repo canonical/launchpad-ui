@@ -1,9 +1,11 @@
 <script module lang="ts">
+  import {
+    DateTime,
+    Link,
+    RelativeDateTime,
+  } from "@canonical/svelte-ds-app-launchpad";
   import { defineMeta } from "@storybook/addon-svelte-csf";
   import { SeededRandom } from "../../../stories/utils/SeededRandom.js";
-  import { DateTime } from "../DateTime/index.js";
-  import { Link } from "../Link/index.js";
-  import { RelativeDateTime } from "../RelativeDateTime/index.js";
   import { UserChip } from "../UserChip/index.js";
   import { Table } from "./index.js";
   import type { TableSortDirection } from "./index.js";

@@ -1,8 +1,9 @@
 <script lang="ts">
+  import { Breadcrumbs } from "@canonical/svelte-ds-app-launchpad";
   import { MediaQuery } from "svelte/reactivity";
   import { defaultLogObjectName } from "$lib/api/job-manager/constants.js";
   import { jobManagerHref } from "$lib/api/job-manager/hrefClient.js";
-  import { Breadcrumbs, Log } from "$lib/components/index.js";
+  import { Log } from "$lib/components/index.js";
   import type { TimeZone } from "$lib/components/index.js";
   import {
     JobDetails,

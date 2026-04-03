@@ -1,14 +1,14 @@
 <script lang="ts">
-  import { DownloadIcon, FileIcon } from "@canonical/svelte-icons";
-  import { jobManagerHref } from "$lib/api/job-manager/hrefClient.js";
-  import type { JobRead } from "$lib/api/job-manager/types.js";
   import {
     Button,
     Chip,
     DescriptionList,
     Link,
-    UserChip,
-  } from "$lib/components/index.js";
+  } from "@canonical/svelte-ds-app-launchpad";
+  import { DownloadIcon, FileIcon } from "@canonical/svelte-icons";
+  import { jobManagerHref } from "$lib/api/job-manager/hrefClient.js";
+  import type { JobRead } from "$lib/api/job-manager/types.js";
+  import { UserChip } from "$lib/components/index.js";
   import {
     CommandList,
     DateTime,

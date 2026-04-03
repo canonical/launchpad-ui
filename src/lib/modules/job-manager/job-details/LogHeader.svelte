@@ -1,6 +1,7 @@
 <!-- @canonical/generator-ds 0.10.0-experimental.5 -->
 
 <script lang="ts">
+  import { Button, Popover } from "@canonical/svelte-ds-app-launchpad";
   import { FullscreenIcon, MenuContextualIcon } from "@canonical/svelte-icons";
   import { ButtonPrimitive } from "$lib/components/common/index.js";
   import {
@@ -8,11 +9,7 @@
     SkipToBottomIcon,
     SkipToTopIcon,
   } from "$lib/components/icons/index.js";
-  import {
-    Button,
-    ContextualMenuContent,
-    Popover,
-  } from "$lib/components/index.js";
+  import { ContextualMenuContent } from "$lib/components/index.js";
   import type { TimeZone } from "$lib/components/index.js";
   import { Shortcut, useShortcuts } from "$lib/shortcuts/index.js";
   import { useFullScreen } from "../useFullScreen.svelte.js";
