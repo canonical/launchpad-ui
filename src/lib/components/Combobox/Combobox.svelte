@@ -1,8 +1,8 @@
 <!-- @canonical/generator-ds 0.10.0-experimental.2 -->
 
 <script lang="ts">
+  import { useIsMounted } from "@canonical/svelte-ds-app-launchpad";
   import { OptionsPanel } from "$lib/components/common/index.js";
-  import { useIsMounted } from "$lib/useIsMounted.svelte.js";
   import { setComboboxContext } from "./context.js";
   import type { ComboboxProps } from "./types.js";
 

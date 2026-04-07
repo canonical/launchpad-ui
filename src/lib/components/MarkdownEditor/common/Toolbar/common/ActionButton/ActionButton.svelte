@@ -1,10 +1,9 @@
 <!-- @canonical/generator-ds 0.10.0-experimental.3 -->
 
 <script lang="ts">
-  import { Button } from "@canonical/svelte-ds-app-launchpad";
+  import { Button, useIsMounted } from "@canonical/svelte-ds-app-launchpad";
   import { onMount, untrack } from "svelte";
   import { Tooltip } from "$lib/components/Tooltip/index.js";
-  import { useIsMounted } from "$lib/useIsMounted.svelte.js";
   import { getMarkdownEditorToolbarContext } from "../../context.js";
   import { ACTION_BUTTON_CSS_CLASS_NAME } from "./constant.js";
   import type { ActionButtonProps } from "./types.js";
