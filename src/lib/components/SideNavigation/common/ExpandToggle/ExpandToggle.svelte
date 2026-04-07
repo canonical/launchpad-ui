@@ -1,7 +1,7 @@
 <!-- @canonical/generator-ds 0.10.0-experimental.3 -->
 
 <script lang="ts">
-  import { ButtonPrimitive } from "$lib/components/common/index.js";
+  import { ButtonPrimitive } from "@canonical/svelte-ds-app-launchpad/internal";
   import { ExpandRightIcon } from "$lib/components/icons/index.js";
   import type { ExpandToggleProps } from "./types.js";
 

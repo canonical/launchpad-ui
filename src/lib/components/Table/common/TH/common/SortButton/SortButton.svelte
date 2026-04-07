@@ -1,7 +1,7 @@
 <!-- @canonical/generator-ds 0.10.0-experimental.5 -->
 
 <script lang="ts">
-  import { ButtonPrimitive } from "$lib/components/common/index.js";
+  import { ButtonPrimitive } from "@canonical/svelte-ds-app-launchpad/internal";
   import { getTHContext } from "../../context.js";
   import { SortIndicator } from "../common/index.js";
   import type { SortButtonProps } from "./types.js";

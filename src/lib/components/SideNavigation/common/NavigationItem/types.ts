@@ -1,7 +1,7 @@
 /* @canonical/generator-ds 0.10.0-experimental.3 */
 
+import type { ButtonPrimitiveProps } from "@canonical/svelte-ds-app-launchpad/internal";
 import type { Snippet } from "svelte";
-import type { ButtonPrimitiveProps } from "$lib/components/common/index.js";
 
 export type NavigationItemProps = ButtonPrimitiveProps & {
   /**

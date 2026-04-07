@@ -2,8 +2,8 @@
 
 <script lang="ts">
   import { Button, Popover } from "@canonical/svelte-ds-app-launchpad";
+  import { ButtonPrimitive } from "@canonical/svelte-ds-app-launchpad/internal";
   import { FullscreenIcon, MenuContextualIcon } from "@canonical/svelte-icons";
-  import { ButtonPrimitive } from "$lib/components/common/index.js";
   import {
     ExitFullscreenIcon,
     SkipToBottomIcon,
