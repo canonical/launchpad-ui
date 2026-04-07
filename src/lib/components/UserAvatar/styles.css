@@ -26,6 +26,7 @@
   &:is(img) {
     object-fit: cover;
     position: relative;
+    overflow: hidden;
 
     /*
     A fallback for when there is no JS and the image cannot be loaded.

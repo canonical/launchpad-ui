@@ -35,7 +35,7 @@
     {#if userName}
       <abbr title={userName}>{userInitials}</abbr>
     {:else}
-      <UserIcon aria-label="User avatar" />
+      <UserIcon aria-label="User icon" />
     {/if}
   </div>
 {/if}

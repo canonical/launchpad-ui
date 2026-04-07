@@ -6,6 +6,8 @@ import { render } from "vitest-browser-svelte";
 import Component from "./UserAvatar.svelte";
 
 describe("UserAvatar component", () => {
+  const avatarUrl = "https://i.pravatar.cc/150?img=68";
+
   const baseProps = {
     "data-testid": "user-avatar",
   } satisfies ComponentProps<typeof Component>;
@@ -47,77 +49,145 @@ describe("UserAvatar component", () => {
     });
   });
 
-  describe("renders", () => {
-    it("with image when userAvatarUrl is provided", async () => {
+  describe("renders as <img>", () => {
+    it("when userAvatarUrl and userName are provided", async () => {
       const page = render(Component, {
         ...baseProps,
-        userAvatarUrl: "https://example.com/avatar.png",
+        userAvatarUrl: avatarUrl,
         userName: "John Doe",
       });
 
       const element = page.getByRole("img", { name: "John Doe's avatar" });
       await expect.element(element).toBeInTheDocument();
-      await expect
-        .element(element)
-        .toHaveAttribute("src", "https://example.com/avatar.png");
+      await expect.element(element).toHaveAttribute("src", avatarUrl);
       await expect.element(element).toHaveAttribute("alt", "John Doe's avatar");
-      await expect.element(element).toHaveAttribute("data-initials", "JD");
+      await expect.element(element).toHaveAttribute("title", "John Doe");
+      await expect.element(element).toHaveAttribute("data-initials");
+      await expect
+        .element(page.getByLabelText("User icon"))
+        .not.toBeInTheDocument();
+      expect(page.container.querySelector("abbr")).toBeNull();
     });
 
-    it("with image when userAvatarUrl is provided but no userName", async () => {
+    it("when userAvatarUrl is provided without userName", async () => {
       const page = render(Component, {
         ...baseProps,
-        userAvatarUrl: "https://example.com/avatar.png",
+        userAvatarUrl: avatarUrl,
       });
 
       const element = page.getByRole("img", { name: "User avatar" });
       await expect.element(element).toBeInTheDocument();
-      await expect
-        .element(element)
-        .toHaveAttribute("src", "https://example.com/avatar.png");
+      await expect.element(element).toHaveAttribute("src", avatarUrl);
       await expect.element(element).toHaveAttribute("alt", "User avatar");
+      await expect.element(element).not.toHaveAttribute("title");
       await expect.element(element).not.toHaveAttribute("data-initials");
+      await expect
+        .element(page.getByLabelText("User icon"))
+        .not.toBeInTheDocument();
+      expect(page.container.querySelector("abbr")).toBeNull();
     });
+  });
 
-    it("initials when name is provided but no userAvatarUrl", async () => {
+  describe("renders as <abbr>", () => {
+    it("when userName is provided without userAvatarUrl", async () => {
       const page = render(Component, { ...baseProps, userName: "John Doe" });
 
-      const abbrElement = page.getByTitle("John Doe");
-      await expect.element(abbrElement).toBeInTheDocument();
-      await expect.element(abbrElement).toHaveTextContent("JD");
+      await expect.element(page.getByTitle("John Doe")).toBeInTheDocument();
+      await expect
+        .element(page.getByLabelText("User icon"))
+        .not.toBeInTheDocument();
+      await expect.element(page.getByRole("img")).not.toBeInTheDocument();
     });
+  });
 
-    it("only first letter from single name", async () => {
-      const page = render(Component, { ...baseProps, userName: "John" });
-
-      const abbrElement = page.getByTitle("John");
-      await expect.element(abbrElement).toBeInTheDocument();
-      await expect.element(abbrElement).toHaveTextContent("J");
-    });
-
-    it("first letter from first two words of multi-word names", async () => {
-      const page = render(Component, {
-        ...baseProps,
-        userName: "John Jacob Smith",
-      });
-
-      const abbrElement = page.getByTitle("John Jacob Smith");
-      await expect.element(abbrElement).toBeInTheDocument();
-      await expect.element(abbrElement).toHaveTextContent("JJ");
-    });
-
-    it("default icon when no user data is provided", async () => {
+  describe("renders as icon", () => {
+    it("when no user data is provided", async () => {
       const page = render(Component, { ...baseProps });
 
-      const iconElement = page.getByLabelText("User avatar");
-      await expect.element(iconElement).toBeInTheDocument();
+      await expect
+        .element(page.getByLabelText("User icon"))
+        .toBeInTheDocument();
+      expect(page.getByTestId("user-avatar").element().tagName).toBe("DIV");
+      expect(page.container.querySelector("img")).toBeNull();
+      expect(page.container.querySelector("abbr")).toBeNull();
+    });
+  });
+
+  describe("fallback behaviors", () => {
+    it("falls back to <abbr> when JS handles image error and userName is provided", async () => {
+      const page = render(Component, {
+        ...baseProps,
+        userAvatarUrl: "invalid-url",
+        userName: "John Doe",
+      });
+
+      const imageElement = page.getByRole("img", { name: "John Doe's avatar" });
+      imageElement.element().dispatchEvent(new Event("error"));
+
+      await expect.element(page.getByTitle("John Doe")).toBeInTheDocument();
+      await expect
+        .element(page.getByRole("img", { name: "John Doe's avatar" }))
+        .not.toBeInTheDocument();
+      await expect
+        .element(page.getByLabelText("User icon"))
+        .not.toBeInTheDocument();
     });
 
-    it("default icon when user name is empty", async () => {
-      const page = render(Component, { ...baseProps, userName: "" });
+    it("falls back to icon when JS handles image error and userName is missing", async () => {
+      const page = render(Component, {
+        ...baseProps,
+        userAvatarUrl: "invalid-url",
+      });
 
-      const iconElement = page.getByLabelText("User avatar");
-      await expect.element(iconElement).toBeInTheDocument();
+      const imageElement = page.getByRole("img", { name: "User avatar" });
+      imageElement.element().dispatchEvent(new Event("error"));
+
+      await expect
+        .element(page.getByLabelText("User icon"))
+        .toBeInTheDocument();
+      await expect
+        .element(page.getByRole("img", { name: "User avatar" }))
+        .not.toBeInTheDocument();
+      expect(page.container.querySelector("abbr")).toBeNull();
+    });
+
+    describe("when no JS is available", () => {
+      it("keeps rendering as <img> in no-JS when userName is provided", async () => {
+        const page = render(Component, {
+          ...baseProps,
+          userAvatarUrl: `invalid-url`,
+          userName: "John Doe",
+          onerror: () => {},
+        });
+
+        const imageElement = page.getByRole("img", {
+          name: "John Doe's avatar",
+        });
+        imageElement.element().dispatchEvent(new Event("error"));
+
+        await expect.element(imageElement).toBeInTheDocument();
+        await expect.element(imageElement).toHaveAttribute("data-initials");
+        await expect
+          .element(page.getByLabelText("User icon"))
+          .not.toBeInTheDocument();
+      });
+
+      it("keeps rendering as <img> in no-JS without userName", async () => {
+        const page = render(Component, {
+          ...baseProps,
+          userAvatarUrl: "invalid-url",
+          onerror: () => {},
+        });
+
+        const imageElement = page.getByRole("img", { name: "User avatar" });
+        imageElement.element().dispatchEvent(new Event("error"));
+
+        await expect.element(imageElement).toBeInTheDocument();
+        await expect.element(imageElement).not.toHaveAttribute("data-initials");
+        await expect
+          .element(page.getByLabelText("User icon"))
+          .not.toBeInTheDocument();
+      });
     });
   });
 
