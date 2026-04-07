@@ -4,7 +4,9 @@ import { describe, expect, it } from "vitest";
 import Component from "./UserAvatar.svelte";
 
 describe("UserAvatar SSR", () => {
-  const baseProps = {} satisfies ComponentProps<typeof Component>;
+  const baseProps = {
+    "data-testid": "user-avatar",
+  } satisfies ComponentProps<typeof Component>;
 
   describe("basics", () => {
     it("doesn't throw", () => {
@@ -16,7 +18,7 @@ describe("UserAvatar SSR", () => {
     it("renders", () => {
       const page = render(Component, { props: { ...baseProps } });
       expect(page.getByTestId("user-avatar")).toBeInstanceOf(
-        page.window.HTMLSpanElement,
+        page.window.HTMLDivElement,
       );
     });
   });
@@ -37,13 +39,14 @@ describe("UserAvatar SSR", () => {
           userName: "John Doe",
         },
       });
-      const element = page.getByRole("img", { name: "John Doe" });
-      expect(element).toBeInstanceOf(page.window.HTMLObjectElement);
-      expect(element.getAttribute("data")).toBe(
+      const element = page.getByRole("img", { name: "John Doe's avatar" });
+      expect(element).toBeInstanceOf(page.window.HTMLImageElement);
+      expect(element.getAttribute("src")).toBe(
         "https://example.com/avatar.png",
       );
+      expect(element.getAttribute("alt")).toBe("John Doe's avatar");
       expect(element.getAttribute("title")).toBe("John Doe");
-      expect(element.getAttribute("type")).toBe("image/png");
+      expect(element.getAttribute("data-initials")).toBe("JD");
     });
 
     it("with image when userAvatarUrl is provided but no userName", () => {
@@ -54,10 +57,12 @@ describe("UserAvatar SSR", () => {
         },
       });
       const element = page.getByRole("img", { name: "User avatar" });
-      expect(element).toBeInstanceOf(page.window.HTMLObjectElement);
-      expect(element.getAttribute("data")).toBe(
+      expect(element).toBeInstanceOf(page.window.HTMLImageElement);
+      expect(element.getAttribute("src")).toBe(
         "https://example.com/avatar.png",
       );
+      expect(element.getAttribute("alt")).toBe("User avatar");
+      expect(element.getAttribute("data-initials")).toBeNull();
     });
 
     it("initials when name is provided but no userAvatarUrl", () => {

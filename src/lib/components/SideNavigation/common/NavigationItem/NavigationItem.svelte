@@ -35,7 +35,7 @@
 
 <style>
   :global {
-    .ds.navigation-item {
+    .ds.ds.navigation-item {
       display: grid;
       position: relative;
       grid-column: 1 / -1;

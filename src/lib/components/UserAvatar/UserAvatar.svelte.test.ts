@@ -6,7 +6,9 @@ import { render } from "vitest-browser-svelte";
 import Component from "./UserAvatar.svelte";
 
 describe("UserAvatar component", () => {
-  const baseProps = {} satisfies ComponentProps<typeof Component>;
+  const baseProps = {
+    "data-testid": "user-avatar",
+  } satisfies ComponentProps<typeof Component>;
 
   describe("basics", () => {
     it("renders", async () => {
@@ -53,12 +55,13 @@ describe("UserAvatar component", () => {
         userName: "John Doe",
       });
 
-      const element = page.getByRole("img", { name: "John Doe" });
+      const element = page.getByRole("img", { name: "John Doe's avatar" });
       await expect.element(element).toBeInTheDocument();
       await expect
         .element(element)
-        .toHaveAttribute("data", "https://example.com/avatar.png");
-      await expect.element(element).toHaveAttribute("type", "image/png");
+        .toHaveAttribute("src", "https://example.com/avatar.png");
+      await expect.element(element).toHaveAttribute("alt", "John Doe's avatar");
+      await expect.element(element).toHaveAttribute("data-initials", "JD");
     });
 
     it("with image when userAvatarUrl is provided but no userName", async () => {
@@ -71,7 +74,9 @@ describe("UserAvatar component", () => {
       await expect.element(element).toBeInTheDocument();
       await expect
         .element(element)
-        .toHaveAttribute("data", "https://example.com/avatar.png");
+        .toHaveAttribute("src", "https://example.com/avatar.png");
+      await expect.element(element).toHaveAttribute("alt", "User avatar");
+      await expect.element(element).not.toHaveAttribute("data-initials");
     });
 
     it("initials when name is provided but no userAvatarUrl", async () => {
@@ -102,13 +107,6 @@ describe("UserAvatar component", () => {
     });
 
     it("default icon when no user data is provided", async () => {
-      const page = render(Component, { ...baseProps });
-
-      const iconElement = page.getByLabelText("User avatar");
-      await expect.element(iconElement).toBeInTheDocument();
-    });
-
-    it("default icon when user object is empty", async () => {
       const page = render(Component, { ...baseProps });
 
       const iconElement = page.getByLabelText("User avatar");

@@ -17,7 +17,7 @@
   {#snippet template(args)}
     <div class="row">
       {#each ["small", "medium", "large"] as const as size (size)}
-        <UserAvatar {...args} {size} userName={`John Doe (${size})`} />
+        <UserAvatar {...args} {size} userName="John Doe" />
       {/each}
     </div>
     <br />
@@ -58,5 +58,26 @@
   tags={["!autodocs"]}
   args={{
     userName: "Lorem Ipsum Dolor Sit Amet Consectetur Adipiscing Elit",
+  }}
+/>
+
+<!-- Simulate no JavaScript environment by overriding the onerror handler -->
+
+<Story
+  name="With invalid imageURL (no JavaScript)"
+  tags={["!autodocs"]}
+  args={{
+    userAvatarUrl: "invalid-url",
+    userName: "John Doe",
+    onerror: () => {},
+  }}
+/>
+
+<Story
+  name="With invalid imageURL and no name (no JavaScript)"
+  tags={["!autodocs"]}
+  args={{
+    userAvatarUrl: "invalid-url",
+    onerror: () => {},
   }}
 />
