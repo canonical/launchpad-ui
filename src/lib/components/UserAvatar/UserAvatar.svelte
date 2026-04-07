@@ -3,6 +3,7 @@
   import { UserIcon } from "@canonical/svelte-icons";
   import type { UserAvatarProps } from "./types.js";
   import "./styles.css";
+  import { getInitials } from "./utils/getInitials.js";
 
   const componentCssClassName = "ds user-avatar";
 
@@ -14,16 +15,7 @@
     ...rest
   }: UserAvatarProps = $props();
 
-  const userInitials = $derived(
-    userName
-      ? userName
-          .split(" ")
-          .filter((word) => word.length > 0)
-          .slice(0, 2)
-          .map((word) => word[0])
-          .join("")
-      : null,
-  );
+  const userInitials = $derived(userName ? getInitials(userName) : null);
 
   let imageError = $state(false);
 </script>
