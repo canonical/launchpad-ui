@@ -1,7 +1,7 @@
 <!-- @canonical/generator-ds 0.10.0-experimental.2 -->
 <script lang="ts">
+  import { useIsMounted } from "@canonical/svelte-ds-app-launchpad";
   import { SearchBox } from "$lib/components/SearchBox/index.js";
-  import { useIsMounted } from "$lib/useIsMounted.svelte.js";
   import { getComboboxContext } from "../../context.js";
   import type { SearchProps } from "./types.js";
   import { getSiblingOptionId } from "./utils/getSiblingOptionId.js";

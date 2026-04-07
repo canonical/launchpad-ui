@@ -1,8 +1,8 @@
 <!-- @canonical/generator-ds 0.10.0-experimental.2 -->
 
 <script lang="ts">
+  import { Button } from "@canonical/svelte-ds-app-launchpad";
   import { CloseIcon } from "@canonical/svelte-icons";
-  import { Button } from "../../../../../../Button/index.js";
   import type { CloseButtonProps } from "./types.js";
 
   const componentCssClassName = "ds dialog-content-close-button";

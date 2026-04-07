@@ -1,11 +1,11 @@
 <!-- @canonical/generator-ds 0.10.0-experimental.4 -->
 
 <script lang="ts">
-  import { SearchIcon } from "@canonical/svelte-icons";
   import {
     ButtonPrimitive,
     InputPrimitive,
-  } from "$lib/components/common/index.js";
+  } from "@canonical/svelte-ds-app-launchpad/internal";
+  import { SearchIcon } from "@canonical/svelte-icons";
   import type { SearchBoxProps } from "./types.js";
 
   const componentCssClassName = "ds search-box";

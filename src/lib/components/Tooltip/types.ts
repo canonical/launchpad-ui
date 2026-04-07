@@ -1,9 +1,9 @@
 /* @canonical/generator-ds 0.10.0-experimental.3 */
 
+import type { PositionArea } from "@canonical/svelte-ds-app-launchpad";
 import type { Snippet } from "svelte";
 import type { Attachment } from "svelte/attachments";
 import type { SvelteHTMLElements } from "svelte/elements";
-import type { PositionArea } from "$lib/usePositionArea.svelte.js";
 
 type BaseProps = SvelteHTMLElements["div"];
 

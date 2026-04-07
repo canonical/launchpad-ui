@@ -1,7 +1,7 @@
 <!-- @canonical/generator-ds 0.10.0-experimental.2 -->
 
 <script lang="ts">
-  import { useIsMounted } from "$lib/useIsMounted.svelte.js";
+  import { useIsMounted } from "@canonical/svelte-ds-app-launchpad";
   import { isEventTargetInElement } from "$lib/utils/index.js";
   import type { ModalMethods, ModalProps } from "./types.js";
   import "./styles.css";

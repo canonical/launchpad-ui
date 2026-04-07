@@ -1,7 +1,7 @@
 <script module lang="ts">
+  import { DateTime } from "@canonical/svelte-ds-app-launchpad";
   import { SettingsIcon } from "@canonical/svelte-icons";
   import { defineMeta } from "@storybook/addon-svelte-csf";
-  import { DateTime } from "$lib/components/DateTime/index.js";
   import { FlagIcon, TextIcon } from "$lib/components/icons/index.js";
   import { Timeline } from "./index.js";
 

@@ -1,6 +1,6 @@
 /* @canonical/generator-ds 0.10.0-experimental.3 */
+import type { ButtonProps } from "@canonical/svelte-ds-app-launchpad";
 import type { Snippet } from "svelte";
-import type { ButtonProps } from "$lib/components/Button/index.js";
 import type { Shortcut } from "$lib/shortcuts/index.js";
 
 export type ActionButtonProps = Omit<

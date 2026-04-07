@@ -1,8 +1,8 @@
 <!-- @canonical/generator-ds 0.10.0-experimental.5 -->
 
 <script lang="ts">
+  import { ButtonPrimitive } from "@canonical/svelte-ds-app-launchpad/internal";
   import { ChevronLeftIcon, ChevronRightIcon } from "@canonical/svelte-icons";
-  import { ButtonPrimitive } from "$lib/components/common/index.js";
   import {
     SkipToEndIcon,
     SkipToStartIcon,

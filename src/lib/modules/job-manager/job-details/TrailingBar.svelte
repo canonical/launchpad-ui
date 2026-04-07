@@ -1,7 +1,7 @@
 <!-- @canonical/generator-ds 0.10.0-experimental.5 -->
 
 <script lang="ts">
-  import { Spinner } from "$lib/components/index.js";
+  import { Spinner } from "@canonical/svelte-ds-app-launchpad";
 
   let { trailingMinutes }: { trailingMinutes: number } = $props();
 </script>

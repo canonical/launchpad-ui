@@ -1,7 +1,7 @@
 <!-- @canonical/generator-ds 0.10.0-experimental.0 -->
 
 <script lang="ts">
-  import { ButtonPrimitive } from "../../ButtonPrimitive/index.js";
+  import { ButtonPrimitive } from "@canonical/svelte-ds-app-launchpad/internal";
   import { OptionContent } from "../common/index.js";
   import type { ButtonOptionProps } from "./types.js";
   import "../option.css";

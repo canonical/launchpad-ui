@@ -1,7 +1,7 @@
 /* @canonical/generator-ds 0.10.0-experimental.3 */
 
+import type { ModifierFamily } from "@canonical/svelte-ds-app-launchpad";
 import type { HTMLSelectAttributes } from "svelte/elements";
-import type { ModifierFamily } from "$lib/modifier-families";
 
 type BaseProps = Omit<HTMLSelectAttributes, "value">;
 

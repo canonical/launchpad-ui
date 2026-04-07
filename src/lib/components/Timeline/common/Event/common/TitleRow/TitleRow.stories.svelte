@@ -1,7 +1,7 @@
 <script module lang="ts">
+  import { RelativeDateTime } from "@canonical/svelte-ds-app-launchpad";
   import { defineMeta } from "@storybook/addon-svelte-csf";
   import type { Snippet } from "svelte";
-  import { RelativeDateTime } from "$lib/components/RelativeDateTime/index.js";
   import TitleRow from "./TitleRow.svelte";
 
   const { Story } = defineMeta({

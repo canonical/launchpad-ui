@@ -1,7 +1,7 @@
 <!-- @canonical/generator-ds 0.10.0-experimental.3 -->
 
 <script lang="ts">
-  import { ButtonPrimitive } from "$lib/components/common/index.js";
+  import { ButtonPrimitive } from "@canonical/svelte-ds-app-launchpad/internal";
   import type { NavigationItemProps } from "./types.js";
 
   const componentCssClassName = "ds navigation-item";

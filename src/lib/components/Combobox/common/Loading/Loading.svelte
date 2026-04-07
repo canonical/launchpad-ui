@@ -1,8 +1,8 @@
 <!-- @canonical/generator-ds 0.10.0-experimental.2 -->
 
 <script lang="ts">
+  import { Spinner } from "@canonical/svelte-ds-app-launchpad";
   import { onMount } from "svelte";
-  import { Spinner } from "$lib/components/Spinner/index.js";
   import { getComboboxContext } from "../../context.js";
   import type { LoadingProps } from "./types.js";
 

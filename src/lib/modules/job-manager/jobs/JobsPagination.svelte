@@ -1,10 +1,11 @@
 <script lang="ts">
+  import { Button } from "@canonical/svelte-ds-app-launchpad";
   import type {
     HTMLInputAttributes,
     HTMLSelectAttributes,
   } from "svelte/elements";
   import type { JobsListMetadata } from "$lib/api/job-manager/types.js";
-  import { Button, Pagination } from "$lib/components/index.js";
+  import { Pagination } from "$lib/components/index.js";
   import { QueryParamHiddenInput } from "$lib/launchpad-components/index.js";
   import {
     jobsTableLimitDefault,

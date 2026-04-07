@@ -1,6 +1,6 @@
 <script module lang="ts">
+  import { RelativeDateTime } from "@canonical/svelte-ds-app-launchpad";
   import { defineMeta } from "@storybook/addon-svelte-csf";
-  import { RelativeDateTime } from "$lib/components/RelativeDateTime/index.js";
   import { FlagIcon } from "$lib/components/icons/index.js";
   import { Timeline } from "../../index.js";
   import Event from "./Event.svelte";

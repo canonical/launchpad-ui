@@ -1,10 +1,10 @@
 <!-- @canonical/generator-ds 0.10.0-experimental.2 -->
 
 <script lang="ts">
+  import { useIsMounted } from "@canonical/svelte-ds-app-launchpad";
   import { onMount, untrack } from "svelte";
   import type { Attachment } from "svelte/attachments";
   import { RadioOption } from "$lib/components/common/index.js";
-  import { useIsMounted } from "$lib/useIsMounted.svelte.js";
   import { getComboboxContext } from "../../context.js";
   import type { RadioOptionProps } from "./types.js";
 

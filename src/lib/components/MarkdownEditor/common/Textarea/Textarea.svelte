@@ -1,7 +1,7 @@
 <!-- @canonical/generator-ds 0.10.0-experimental.3 -->
 
 <script lang="ts">
-  import { Textarea } from "$lib/components/Textarea/index.js";
+  import { Textarea } from "@canonical/svelte-ds-app-launchpad";
   import { getMarkdownEditorContext } from "../../context.js";
   import type { TextareaProps } from "./types.js";
   import { applyAutoCompletions } from "./utils/index.js";

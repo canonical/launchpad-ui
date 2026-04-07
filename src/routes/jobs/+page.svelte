@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Spinner } from "$lib/components/index.js";
+  import { Spinner } from "@canonical/svelte-ds-app-launchpad";
   import { Whoops } from "$lib/launchpad-components/index.js";
   import QueueTable from "$lib/modules/job-manager/jobs/QueueTable.svelte";
   import {

@@ -1,7 +1,7 @@
 <!-- @canonical/generator-ds 0.10.0-experimental.2 -->
 
 <script lang="ts">
-  import { Link } from "$lib/components/Link/index.js";
+  import { Link } from "@canonical/svelte-ds-app-launchpad";
   import type { HiddenEventsProps } from "./types.js";
 
   const componentCssClassName = "ds hidden-events";

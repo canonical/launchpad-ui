@@ -1,10 +1,10 @@
-import { flip, offset } from "@floating-ui/dom";
-import type { ComputePositionConfig, Placement } from "@floating-ui/dom";
 import {
   positionAreaFallbackMap,
   useFloatingUI,
-} from "$lib/usePositionArea.svelte.js";
-import type { PositionArea } from "$lib/usePositionArea.svelte.js";
+} from "@canonical/svelte-ds-app-launchpad";
+import type { PositionArea } from "@canonical/svelte-ds-app-launchpad";
+import { flip, offset } from "@floating-ui/dom";
+import type { ComputePositionConfig, Placement } from "@floating-ui/dom";
 
 /**
  * Compute reactive tooltip positioning using Floating UI, with optional automatic flipping.

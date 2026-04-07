@@ -1,7 +1,7 @@
 <!-- @canonical/generator-ds 0.10.0-experimental.5 -->
 
 <script lang="ts">
-  import { DateTime } from "$lib/components/index.js";
+  import { DateTime } from "@canonical/svelte-ds-app-launchpad";
   import type { DateTimeProps } from "./types.js";
 
   const props: DateTimeProps = $props();
