@@ -139,14 +139,17 @@ describe("UserAvatar component", () => {
         userAvatarUrl: "invalid-url",
       });
 
-      const imageElement = page.getByRole("img", { name: "User avatar" });
+      const imageElement = page.getByRole("img", {
+        name: "User avatar",
+        exact: true,
+      });
       imageElement.element().dispatchEvent(new Event("error"));
 
       await expect
         .element(page.getByLabelText("User avatar icon"))
         .toBeInTheDocument();
       await expect
-        .element(page.getByRole("img", { name: "User avatar" }))
+        .element(page.getByRole("img", { name: "User avatar", exact: true }))
         .not.toBeInTheDocument();
       expect(page.container.querySelector("abbr")).toBeNull();
     });
