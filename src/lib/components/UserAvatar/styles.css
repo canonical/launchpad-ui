@@ -43,6 +43,7 @@
       place-content: center;
       content: attr(data-initials);
       text-transform: uppercase;
+      user-select: none;
     }
   }
 
