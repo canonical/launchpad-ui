@@ -1,7 +1,9 @@
 <script lang="ts">
-  import { UserIcon } from "@canonical/svelte-icons";
   /* @canonical/generator-ds 0.9.0-experimental.22 */
+  import { UserIcon } from "@canonical/svelte-icons";
   import type { UserAvatarProps } from "./types.js";
+  import "./styles.css";
+  import { getInitials } from "./utils/index.js";
 
   const componentCssClassName = "ds user-avatar";
 
@@ -12,99 +14,41 @@
     size = "medium",
     ...rest
   }: UserAvatarProps = $props();
-  const avatarProps = $derived({
-    ...rest,
-    class: [componentCssClassName, className, size],
-  });
+
+  const userInitials = $derived(userName ? getInitials(userName) : null);
+
+  let imageError = $state(false);
 </script>
 
-{#if userAvatarUrl}
-  <!--
-  Testing shows that on both Chrome and Firefox, the PNG and JPEG images are displayed correctly, when the type is set to "image/png".
-  SVGs are displayed correctly by Chrome, but Firefox immediately resorts to the fallback.
-  -->
-  <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
-  <!-- Add `tabindex="-1"` for firefox, where <object> can be keyboard-focused -->
-  <object
-    data={userAvatarUrl}
-    title={userName}
-    role="img"
-    aria-label={!userName ? "User avatar" : undefined}
-    type="image/png"
-    tabindex={-1}
-    {...avatarProps}
-  >
-    {@render avatarFallback(true)}
-  </object>
+{#if userAvatarUrl && !imageError}
+  <img
+    class={[componentCssClassName, size, className]}
+    src={userAvatarUrl}
+    alt={userName ? `${userName}'s avatar` : "User avatar"}
+    title={userName || undefined}
+    data-initials={userInitials}
+    onerror={() => (imageError = true)}
+    {...rest}
+  />
 {:else}
-  <span data-testid="user-avatar" {...avatarProps}>
-    {@render avatarFallback()}
-  </span>
+  <div class={[componentCssClassName, "no-image", size, className]} {...rest}>
+    {#if userName}
+      <abbr title={userName}>{userInitials}</abbr>
+    {:else}
+      <UserIcon aria-label="User avatar icon" />
+    {/if}
+  </div>
 {/if}
-
-{#snippet avatarFallback(ariaHidden: boolean = false)}
-  {#if userName}
-    <abbr title={userName} aria-hidden={ariaHidden}
-      >{userName
-        .split(" ")
-        .slice(0, 2)
-        .map((word) => word[0])
-        .join("")}</abbr
-    >
-  {:else}
-    <UserIcon aria-label="User avatar" aria-hidden={ariaHidden} />
-  {/if}
-{/snippet}
 
 <!-- @component
 `UserAvatar` A component that displays a user's avatar.
 
 The avatar will display the user's image if available and able to be loaded, otherwise it will display the first two user's initials. If neither is available, it will display a default icon placeholder.
 
+In case JavaScript is disabled, and the image at `userAvatarUrl` fails to load, the component will provide a fallback: displaying the user's initials when `userName` is provided, or `?` when it is not.
+
 ## Example Usage
 ```svelte
-<UserAvatar user={{ imageUrl: "https://example.com/avatar.png", name: "John Doe" }} />
+<UserAvatar userName="John Doe" userAvatarUrl="https://example.com/avatar.png" />
 ```
 -->
-
-<style>
-  .ds.user-avatar {
-    --color-background-user-avatar: var(--lp-color-background-alt);
-    --color-border-user-avatar: var(--lp-color-border-default);
-    --dimension-border-width-user-avatar: var(
-      --lp-dimension-stroke-thickness-default
-    );
-
-    display: inline-grid;
-    place-content: center;
-    overflow: hidden;
-    line-height: 1;
-    flex: none;
-    user-select: none;
-
-    border: var(--dimension-border-width-user-avatar) solid
-      var(--color-border-user-avatar);
-    background-color: var(--color-background-user-avatar);
-
-    width: var(--lp-dimension-size-m);
-    height: var(--lp-dimension-size-m);
-    font: var(--lp-typography-paragraph-default-strong);
-
-    &.small {
-      width: var(--lp-dimension-size-s);
-      height: var(--lp-dimension-size-s);
-      font: var(--lp-typography-paragraph-s-strong);
-    }
-
-    &.large {
-      width: var(--lp-dimension-size-l);
-      height: var(--lp-dimension-size-l);
-      font: var(--lp-typography-h5);
-    }
-
-    > abbr {
-      text-transform: uppercase;
-      text-decoration: none;
-    }
-  }
-</style>

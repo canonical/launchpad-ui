@@ -2,7 +2,7 @@
   import { defineMeta } from "@storybook/addon-svelte-csf";
   import UserAvatar from "./UserAvatar.svelte";
 
-  const userAvatarUrl = "https://i.pravatar.cc/150?img=68";
+  const userAvatarUrl = "https://assets.ubuntu.com/v1/fca94c45-snap+icon.png";
 
   const { Story } = defineMeta({
     title: "Components/UserAvatar",
@@ -17,7 +17,7 @@
   {#snippet template(args)}
     <div class="row">
       {#each ["small", "medium", "large"] as const as size (size)}
-        <UserAvatar {...args} {size} userName={`John Doe (${size})`} />
+        <UserAvatar {...args} {size} userName="John Doe" />
       {/each}
     </div>
     <br />
@@ -32,7 +32,7 @@
 <Story name="Without user data" args={{ userName: undefined }} />
 
 <Story
-  name="With invalid imageURL"
+  name="When avatar fails to load"
   args={{
     userName: "That's Not An Image",
     userAvatarUrl: "invalid-url",
@@ -40,14 +40,14 @@
 />
 
 <Story
-  name="Without imageURL"
+  name="Without avatar URL"
   args={{
     userName: "Jane Doe",
   }}
 />
 
 <Story
-  name="With invalid imageURL and no name"
+  name="When avatar fails to load and no name is provided"
   args={{
     userAvatarUrl: "invalid-url",
   }}
@@ -58,5 +58,26 @@
   tags={["!autodocs"]}
   args={{
     userName: "Lorem Ipsum Dolor Sit Amet Consectetur Adipiscing Elit",
+  }}
+/>
+
+<!-- Simulate no JavaScript environment by overriding the onerror handler -->
+
+<Story
+  name="When avatar fails to load (no JavaScript)"
+  tags={["!autodocs"]}
+  args={{
+    userAvatarUrl: "invalid-url",
+    userName: "John Doe",
+    onerror: () => {},
+  }}
+/>
+
+<Story
+  name="When avatar fails to load and no name is provided (no JavaScript)"
+  tags={["!autodocs"]}
+  args={{
+    userAvatarUrl: "invalid-url",
+    onerror: () => {},
   }}
 />
