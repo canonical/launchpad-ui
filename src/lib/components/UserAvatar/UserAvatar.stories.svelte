@@ -2,7 +2,7 @@
   import { defineMeta } from "@storybook/addon-svelte-csf";
   import UserAvatar from "./UserAvatar.svelte";
 
-  const userAvatarUrl = "https://i.pravatar.cc/150?img=68";
+  const userAvatarUrl = "https://assets.ubuntu.com/v1/fca94c45-snap+icon.png";
 
   const { Story } = defineMeta({
     title: "Components/UserAvatar",

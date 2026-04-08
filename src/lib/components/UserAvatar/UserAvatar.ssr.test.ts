@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 import Component from "./UserAvatar.svelte";
 
 describe("UserAvatar SSR", () => {
-  const avatarUrl = "https://i.pravatar.cc/150?img=68";
+  const avatarUrl = "https://assets.ubuntu.com/v1/fca94c45-snap+icon.png";
 
   const baseProps = {
     "data-testid": "user-avatar",

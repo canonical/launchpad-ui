@@ -6,7 +6,7 @@ import { render } from "vitest-browser-svelte";
 import Component from "./UserAvatar.svelte";
 
 describe("UserAvatar component", () => {
-  const avatarUrl = "https://i.pravatar.cc/150?img=68";
+  const avatarUrl = "https://assets.ubuntu.com/v1/fca94c45-snap+icon.png";
 
   const baseProps = {
     "data-testid": "user-avatar",
