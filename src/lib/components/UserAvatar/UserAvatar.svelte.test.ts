@@ -64,7 +64,7 @@ describe("UserAvatar component", () => {
       await expect.element(element).toHaveAttribute("title", "John Doe");
       await expect.element(element).toHaveAttribute("data-initials");
       await expect
-        .element(page.getByLabelText("User icon"))
+        .element(page.getByLabelText("User avatar icon"))
         .not.toBeInTheDocument();
       expect(page.container.querySelector("abbr")).toBeNull();
     });
@@ -82,7 +82,7 @@ describe("UserAvatar component", () => {
       await expect.element(element).not.toHaveAttribute("title");
       await expect.element(element).not.toHaveAttribute("data-initials");
       await expect
-        .element(page.getByLabelText("User icon"))
+        .element(page.getByLabelText("User avatar icon"))
         .not.toBeInTheDocument();
       expect(page.container.querySelector("abbr")).toBeNull();
     });
@@ -94,7 +94,7 @@ describe("UserAvatar component", () => {
 
       await expect.element(page.getByTitle("John Doe")).toBeInTheDocument();
       await expect
-        .element(page.getByLabelText("User icon"))
+        .element(page.getByLabelText("User avatar icon"))
         .not.toBeInTheDocument();
       await expect.element(page.getByRole("img")).not.toBeInTheDocument();
     });
@@ -105,7 +105,7 @@ describe("UserAvatar component", () => {
       const page = render(Component, { ...baseProps });
 
       await expect
-        .element(page.getByLabelText("User icon"))
+        .element(page.getByLabelText("User avatar icon"))
         .toBeInTheDocument();
       expect(page.getByTestId("user-avatar").element().tagName).toBe("DIV");
       expect(page.container.querySelector("img")).toBeNull();
@@ -129,7 +129,7 @@ describe("UserAvatar component", () => {
         .element(page.getByRole("img", { name: "John Doe's avatar" }))
         .not.toBeInTheDocument();
       await expect
-        .element(page.getByLabelText("User icon"))
+        .element(page.getByLabelText("User avatar icon"))
         .not.toBeInTheDocument();
     });
 
@@ -143,7 +143,7 @@ describe("UserAvatar component", () => {
       imageElement.element().dispatchEvent(new Event("error"));
 
       await expect
-        .element(page.getByLabelText("User icon"))
+        .element(page.getByLabelText("User avatar icon"))
         .toBeInTheDocument();
       await expect
         .element(page.getByRole("img", { name: "User avatar" }))
@@ -168,7 +168,7 @@ describe("UserAvatar component", () => {
         await expect.element(imageElement).toBeInTheDocument();
         await expect.element(imageElement).toHaveAttribute("data-initials");
         await expect
-          .element(page.getByLabelText("User icon"))
+          .element(page.getByLabelText("User avatar icon"))
           .not.toBeInTheDocument();
       });
 
@@ -185,7 +185,7 @@ describe("UserAvatar component", () => {
         await expect.element(imageElement).toBeInTheDocument();
         await expect.element(imageElement).not.toHaveAttribute("data-initials");
         await expect
-          .element(page.getByLabelText("User icon"))
+          .element(page.getByLabelText("User avatar icon"))
           .not.toBeInTheDocument();
       });
     });

@@ -41,7 +41,7 @@ describe("UserAvatar SSR", () => {
       expect(element.getAttribute("title")).toBe("John Doe");
       expect(element.getAttribute("data-initials")).toBeTruthy();
       expect(page.getByTestId("user-avatar").querySelector("abbr")).toBeNull();
-      expect(page.queryByLabelText("User icon")).toBeNull();
+      expect(page.queryByLabelText("User avatar icon")).toBeNull();
     });
 
     it("when userAvatarUrl is provided without userName", () => {
@@ -58,7 +58,7 @@ describe("UserAvatar SSR", () => {
       expect(element.getAttribute("title")).toBeNull();
       expect(element.getAttribute("data-initials")).toBeNull();
       expect(page.getByTestId("user-avatar").querySelector("abbr")).toBeNull();
-      expect(page.queryByLabelText("User icon")).toBeNull();
+      expect(page.queryByLabelText("User avatar icon")).toBeNull();
     });
   });
 
@@ -78,7 +78,7 @@ describe("UserAvatar SSR", () => {
         "John Doe",
       );
       expect(element.querySelector("img")).toBeNull();
-      expect(page.queryByLabelText("User icon")).toBeNull();
+      expect(page.queryByLabelText("User avatar icon")).toBeNull();
     });
 
     it("when userAvatarUrl is an empty string and userName is provided", () => {
@@ -97,7 +97,7 @@ describe("UserAvatar SSR", () => {
         "John Doe",
       );
       expect(element.querySelector("img")).toBeNull();
-      expect(page.queryByLabelText("User icon")).toBeNull();
+      expect(page.queryByLabelText("User avatar icon")).toBeNull();
     });
   });
 
@@ -110,7 +110,7 @@ describe("UserAvatar SSR", () => {
       expect(element.classList).toContain("ds");
       expect(element.classList).toContain("user-avatar");
       expect(element.classList).toContain("no-image");
-      expect(page.getByLabelText("User icon")).toBeInstanceOf(
+      expect(page.getByLabelText("User avatar icon")).toBeInstanceOf(
         page.window.SVGElement,
       );
       expect(element.querySelector("img")).toBeNull();
@@ -128,7 +128,7 @@ describe("UserAvatar SSR", () => {
 
       expect(element).toBeInstanceOf(page.window.HTMLDivElement);
       expect(element.classList).toContain("no-image");
-      expect(page.getByLabelText("User icon")).toBeInstanceOf(
+      expect(page.getByLabelText("User avatar icon")).toBeInstanceOf(
         page.window.SVGElement,
       );
       expect(element.querySelector("img")).toBeNull();
@@ -151,7 +151,7 @@ describe("UserAvatar SSR", () => {
       expect(element.getAttribute("data-initials")).toBeTruthy();
       expect(element.getAttribute("title")).toBe("John Doe");
       expect(page.getByTestId("user-avatar").querySelector("abbr")).toBeNull();
-      expect(page.queryByLabelText("User icon")).toBeNull();
+      expect(page.queryByLabelText("User avatar icon")).toBeNull();
     });
 
     it("does not have icon fallback hooks for no-JS image failure without userName", () => {
@@ -166,7 +166,7 @@ describe("UserAvatar SSR", () => {
       expect(element).toBeInstanceOf(page.window.HTMLImageElement);
       expect(element.getAttribute("data-initials")).toBeNull();
       expect(page.getByTestId("user-avatar").querySelector("abbr")).toBeNull();
-      expect(page.queryByLabelText("User icon")).toBeNull();
+      expect(page.queryByLabelText("User avatar icon")).toBeNull();
     });
   });
 });
