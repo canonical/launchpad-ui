@@ -30,20 +30,26 @@
 
     /*
     A fallback for when there is no JS and the image cannot be loaded.
-    
-    Currently, the no-JS image load fallback only show the initials and triggers when the userName is provided. The icon fallback when there is no userName could be implemented, but it would require either
+     
+    When userName is provided, the initials are displayed. When userName is not provided, a "?" is displayed.
+    Ideally this would be a user icon instead of "?", but that would require either
     - a base64 encoded SVG, that would bloat CSS (rather unnecessarily, for the rare case of no userName and image load failure),
     - or a url to a static asset (difficult to achieve for a component library without making assumptions on the hosting app's bundler and asset management).
     */
-    &[data-initials]::after {
+    &::after {
       position: absolute;
       inset: 0;
       background-color: inherit;
       display: grid;
       place-content: center;
-      content: attr(data-initials);
       text-transform: uppercase;
       user-select: none;
+
+      content: "?";
+    }
+
+    &[data-initials]::after {
+      content: attr(data-initials);
     }
   }
 

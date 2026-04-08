@@ -45,7 +45,7 @@
 
 The avatar will display the user's image if available and able to be loaded, otherwise it will display the first two user's initials. If neither is available, it will display a default icon placeholder.
 
-In case JavaScript is disabled, and the image at `userAvatarUrl` fails to load, the component will provide a fallback (displaying the user's initials) only if the `userName` is provided.
+In case JavaScript is disabled, and the image at `userAvatarUrl` fails to load, the component will provide a fallback: displaying the user's initials when `userName` is provided, or `?` when it is not.
 
 ## Example Usage
 ```svelte
