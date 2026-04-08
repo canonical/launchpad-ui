@@ -33,7 +33,10 @@
       {/snippet}
       Implementation of a new feature for Launchpad bug templates
     </Timeline.Event>
-    <Timeline.Event marker={TextIcon}>
+    <Timeline.Event>
+      {#snippet marker()}
+        <TextIcon />
+      {/snippet}
       {#snippet titleRow()}
         <Timeline.Event.TitleRow leadingText={user.userName}>
           did things that are really complex and will probably take a while to
@@ -68,7 +71,10 @@
         </Timeline.Event.TitleRow>
       {/snippet}
     </Timeline.Event>
-    <Timeline.Event marker={FlagIcon} markerSize="small">
+    <Timeline.Event markerSize="small">
+      {#snippet marker()}
+        <FlagIcon />
+      {/snippet}
       {#snippet titleRow()}
         <Timeline.Event.TitleRow leadingText={user.userName}>
           raised a flag
@@ -80,7 +86,10 @@
       The flag was raised
     </Timeline.Event>
     <Timeline.HiddenEvents numHidden={3} showAllHref="?show-all" />
-    <Timeline.Event marker={SettingsIcon} markerSize="large">
+    <Timeline.Event markerSize="large">
+      {#snippet marker()}
+        <SettingsIcon />
+      {/snippet}
       {#snippet titleRow()}
         <Timeline.Event.TitleRow>
           The MP was <span style="color: var(--lp-color-text-default)"

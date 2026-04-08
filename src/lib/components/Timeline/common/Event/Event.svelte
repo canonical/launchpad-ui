@@ -32,8 +32,7 @@
 >
   <div class="marker" aria-hidden="true">
     {#if typeof marker === "function"}
-      {@const Icon = marker}
-      <Icon />
+      {@render marker()}
     {:else if marker}
       <UserAvatar {...marker} />
     {/if}
