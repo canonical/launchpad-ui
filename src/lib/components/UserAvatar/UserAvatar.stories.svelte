@@ -32,7 +32,7 @@
 <Story name="Without user data" args={{ userName: undefined }} />
 
 <Story
-  name="With invalid imageURL"
+  name="When avatar fails to load"
   args={{
     userName: "That's Not An Image",
     userAvatarUrl: "invalid-url",
@@ -40,14 +40,14 @@
 />
 
 <Story
-  name="Without imageURL"
+  name="Without avatar URL"
   args={{
     userName: "Jane Doe",
   }}
 />
 
 <Story
-  name="With invalid imageURL and no name"
+  name="When avatar fails to load and no name is provided"
   args={{
     userAvatarUrl: "invalid-url",
   }}
@@ -64,7 +64,7 @@
 <!-- Simulate no JavaScript environment by overriding the onerror handler -->
 
 <Story
-  name="With invalid imageURL (no JavaScript)"
+  name="When avatar fails to load (no JavaScript)"
   tags={["!autodocs"]}
   args={{
     userAvatarUrl: "invalid-url",
@@ -74,7 +74,7 @@
 />
 
 <Story
-  name="With invalid imageURL and no name (no JavaScript)"
+  name="When avatar fails to load and no name is provided (no JavaScript)"
   tags={["!autodocs"]}
   args={{
     userAvatarUrl: "invalid-url",
