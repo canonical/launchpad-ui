@@ -1,29 +1,9 @@
 .ds.timeline-hidden-events {
-  --border-block-timeline-hidden-events: var(
-      --lp-dimension-stroke-thickness-default
-    )
-    solid var(--lp-color-border-default);
-  --dimension-padding-block-timeline-hidden-events: var(
-    --lp-dimension-spacing-block-xs
-  );
-  --dimension-padding-inline-timeline-hidden-events: var(
-    --lp-dimension-spacing-inline-m
-  );
-
-  --typography-timeline-hidden-events-text: var(
-    --lp-typography-paragraph-xs-strong
-  );
-  --typography-timeline-hidden-events-links: var(--lp-typography-paragraph-xs);
-  --dimension-gap-timeline-hidden-events: var(--lp-dimension-spacing-inline-xs);
-  --color-text-timeline-hidden-events-links-separator: var(
-    --lp-color-text-muted
-  );
-
   position: relative;
   grid-column: 1 / -1;
   display: grid;
   grid-template-columns: subgrid;
-  font: var(--typography-timeline-hidden-events-text);
+  font: var(--lp-typography-paragraph-xs-strong);
 
   &:not(:last-child)::after {
     /* Line spanning to the next element */
@@ -43,10 +23,11 @@
     justify-self: start;
     display: flex;
     align-items: center;
-    gap: var(--dimension-gap-timeline-hidden-events);
-    padding-block: var(--dimension-padding-block-timeline-hidden-events);
-    padding-inline: var(--dimension-padding-inline-timeline-hidden-events);
-    border-block: var(--border-block-timeline-hidden-events);
+    gap: var(--lp-dimension-spacing-inline-xs);
+    padding-block: var(--lp-dimension-spacing-block-xs);
+    padding-inline: var(--lp-dimension-spacing-inline-m);
+    border-block: var(--lp-dimension-stroke-thickness-default) solid
+      var(--lp-color-border-default);
   }
 
   &:first-child {
@@ -62,12 +43,12 @@
   }
 
   .show-link {
-    font: var(--typography-timeline-hidden-events-links);
+    font: var(--lp-typography-paragraph-xs);
   }
 
   .link-separator::before {
     /* Can't be on links, as it would get underlined on hover */
     content: "•" / "";
-    color: var(--color-text-timeline-hidden-events-links-separator);
+    color: var(--lp-color-text-muted);
   }
 }

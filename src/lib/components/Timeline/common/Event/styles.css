@@ -1,16 +1,4 @@
 .ds.timeline-event {
-  /* Marker */
-  --color-background-timeline-marker: var(--lp-color-background-alt);
-  --border-timeline-marker: var(--lp-dimension-stroke-thickness-default) solid
-    var(--lp-color-border-default);
-  --dimension-size-timeline-marker-empty: var(--lp-dimension-size-xxxs);
-  --dimension-size-timeline-marker-small: var(--lp-dimension-size-s);
-  --dimension-size-timeline-marker-large: var(--lp-dimension-size-l);
-
-  /* Title row */
-  --dimension-margin-block-end-timeline-event-title-row: var(
-    --lp-dimension-spacing-block-xs
-  );
   --typography-line-height-timeline-event-title-row: var(
     --lp-typography-line-height-s
   );
@@ -25,15 +13,15 @@
   }
 
   &.marker-small {
-    --marker-size: var(--dimension-size-timeline-marker-small);
+    --marker-size: var(--lp-dimension-size-s);
   }
 
   &.marker-large {
-    --marker-size: var(--dimension-size-timeline-marker-large);
+    --marker-size: var(--lp-dimension-size-l);
   }
 
   &.marker-empty {
-    --marker-size: var(--dimension-size-timeline-marker-empty);
+    --marker-size: var(--lp-dimension-size-xxxs);
   }
 
   &.with-title-row {
@@ -92,8 +80,9 @@
 
     width: var(--marker-size);
     height: var(--marker-size);
-    border: var(--border-timeline-marker);
-    background-color: var(--color-background-timeline-marker);
+    border: var(--lp-dimension-stroke-thickness-default) solid
+      var(--lp-color-border-default);
+    background-color: var(--lp-color-background-alt);
 
     margin-block-start: var(--marker-alignment-adjustment);
 
@@ -117,9 +106,7 @@
       );
 
       &:not(:only-child) {
-        margin-block-end: var(
-          --dimension-margin-block-end-timeline-event-title-row
-        );
+        margin-block-end: var(--lp-dimension-spacing-block-xs);
       }
     }
   }
