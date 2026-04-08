@@ -2,6 +2,7 @@
 
 <script lang="ts">
   import type { TimelineProps } from "./types.js";
+  import "./styles.css";
 
   const componentCssClassName = "ds timeline";
 
@@ -43,22 +44,3 @@
 </Timeline>
 ```
 -->
-
-<style>
-  .ds.timeline {
-    --dimension-gap-row-timeline: calc(var(--lp-dimension-spacing-block-s) * 2);
-    --dimension-gap-column-timeline: var(--lp-dimension-spacing-inline-m);
-
-    --color-background-timeline-line: var(--lp-color-border-default);
-    --dimension-width-timeline-line: var(
-      --lp-dimension-stroke-thickness-default
-    );
-
-    display: grid;
-    grid-template-columns: [marker-start] auto [marker-end content-start] 1fr [content-end];
-    list-style: none;
-
-    row-gap: var(--dimension-gap-row-timeline);
-    column-gap: var(--dimension-gap-column-timeline);
-  }
-</style>

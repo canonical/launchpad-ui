@@ -1,9 +1,10 @@
 <!-- @canonical/generator-ds 0.10.0-experimental.2 -->
 
 <script lang="ts">
+  import "./styles.css";
   import type { TitleRowProps } from "./types.js";
 
-  const componentCssClassName = "ds title-row";
+  const componentCssClassName = "ds timeline-title-row";
 
   let {
     class: className,
@@ -43,52 +44,3 @@
 </Timeline.Event.TitleRow>
 ```
 -->
-
-<style>
-  .ds.title-row {
-    --typography-timeline-event-title-row: var(--lp-typography-paragraph-s);
-    --color-text-timeline-event-title-row-leading-text: var(
-      --lp-color-text-default
-    );
-    --color-text-timeline-event-title-row-date: var(--lp-color-text-muted);
-    --color-text-timeline-event-title-row-description: var(
-      --lp-color-text-muted
-    );
-    --dimension-gap-timeline-event-title-row: var(
-      --lp-dimension-spacing-inline-xs
-    );
-    /* TODO(@Enzo): Add a missing token */
-    --dimension-basis-timeline-event-title-row-description: 10rem;
-
-    display: flex;
-    align-items: baseline;
-
-    font: var(--typography-timeline-event-title-row);
-    line-height: var(--typography-line-height-timeline-event-title-row);
-    gap: var(--dimension-gap-timeline-event-title-row);
-
-    > .content {
-      display: flex;
-      flex-grow: 1;
-      align-items: baseline;
-      flex-wrap: wrap;
-
-      gap: var(--dimension-gap-timeline-event-title-row);
-
-      > .leading-text {
-        color: var(--color-text-timeline-event-title-row-leading-text);
-      }
-
-      > .description {
-        color: var(--color-text-timeline-event-title-row-description);
-        flex-basis: var(--dimension-basis-timeline-event-title-row-description);
-        flex-grow: 1;
-      }
-    }
-
-    > .date {
-      color: var(--color-text-timeline-event-title-row-date);
-      flex: none;
-    }
-  }
-</style>

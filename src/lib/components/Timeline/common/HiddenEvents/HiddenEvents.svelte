@@ -2,9 +2,10 @@
 
 <script lang="ts">
   import { Link } from "@canonical/svelte-ds-app-launchpad";
+  import "./styles.css";
   import type { HiddenEventsProps } from "./types.js";
 
-  const componentCssClassName = "ds hidden-events";
+  const componentCssClassName = "ds timeline-hidden-events";
 
   let {
     class: className,
@@ -39,83 +40,3 @@
 <Timeline.HiddenEvents numHidden={888} showMoreHref="?showMore" showAllHref="?showAll" />
 ```
 -->
-
-<style>
-  .ds.hidden-events {
-    --border-block-timeline-hidden-events: var(
-        --lp-dimension-stroke-thickness-default
-      )
-      solid var(--lp-color-border-default);
-    --dimension-padding-block-timeline-hidden-events: var(
-      --lp-dimension-spacing-block-xs
-    );
-    --dimension-padding-inline-timeline-hidden-events: var(
-      --lp-dimension-spacing-inline-m
-    );
-
-    --typography-timeline-hidden-events-text: var(
-      --lp-typography-paragraph-xs-strong
-    );
-    --typography-timeline-hidden-events-links: var(
-      --lp-typography-paragraph-xs
-    );
-    --dimension-gap-timeline-hidden-events: var(
-      --lp-dimension-spacing-inline-xs
-    );
-    --color-text-timeline-hidden-events-links-separator: var(
-      --lp-color-text-muted
-    );
-
-    position: relative;
-    grid-column: 1 / -1;
-    display: grid;
-    grid-template-columns: subgrid;
-    font: var(--typography-timeline-hidden-events-text);
-
-    &:not(:last-child)::after {
-      /* Line spanning to the next element */
-      content: "";
-      position: absolute;
-      display: block;
-      grid-column: marker;
-      background-color: var(--color-background-timeline-line);
-      width: var(--dimension-width-timeline-line);
-      justify-self: center;
-      height: var(--dimension-gap-row-timeline);
-      top: 100%;
-    }
-
-    > div {
-      grid-column: 1 / -1;
-      justify-self: start;
-      display: flex;
-      align-items: center;
-      gap: var(--dimension-gap-timeline-hidden-events);
-      padding-block: var(--dimension-padding-block-timeline-hidden-events);
-      padding-inline: var(--dimension-padding-inline-timeline-hidden-events);
-      border-block: var(--border-block-timeline-hidden-events);
-    }
-
-    &:first-child {
-      > div {
-        border-block-start: none;
-      }
-    }
-
-    &:last-child {
-      > div {
-        border-block-end: none;
-      }
-    }
-
-    :global(.show-link) {
-      font: var(--typography-timeline-hidden-events-links);
-    }
-
-    .link-separator::before {
-      /* Can't be on links, as it would get underlined on hover */
-      content: "•" / "";
-      color: var(--color-text-timeline-hidden-events-links-separator);
-    }
-  }
-</style>
