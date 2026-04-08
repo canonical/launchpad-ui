@@ -3,7 +3,7 @@
   import { UserIcon } from "@canonical/svelte-icons";
   import type { UserAvatarProps } from "./types.js";
   import "./styles.css";
-  import { getInitials } from "./utils/getInitials.js";
+  import { getInitials } from "./utils/index.js";
 
   const componentCssClassName = "ds user-avatar";
 
