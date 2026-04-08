@@ -51,7 +51,7 @@ describe("Event SSR", () => {
       });
       const element = componentLocator(page);
       expect(element.classList).toContain("ds");
-      expect(element.classList).toContain("event");
+      expect(element.classList).toContain("timeline-event");
       expect(element.classList).toContain("test-class");
     });
 

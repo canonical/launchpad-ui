@@ -56,7 +56,7 @@ describe("TitleRow component", () => {
       const page = render(Component, { ...baseProps, class: "test-class" });
       const element = componentLocator(page);
       await expect.element(element).toHaveClass("ds");
-      await expect.element(element).toHaveClass("title-row");
+      await expect.element(element).toHaveClass("timeline-title-row");
       await expect.element(element).toHaveClass("test-class");
     });
   });

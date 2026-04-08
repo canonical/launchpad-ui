@@ -46,7 +46,7 @@ describe("HiddenEvents SSR", () => {
       });
       const element = componentLocator(page);
       expect(element.classList).toContain("ds");
-      expect(element.classList).toContain("hidden-events");
+      expect(element.classList).toContain("timeline-hidden-events");
       expect(element.classList).toContain("test-class");
     });
 
