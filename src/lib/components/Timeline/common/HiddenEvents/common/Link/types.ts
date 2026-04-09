@@ -2,4 +2,4 @@
 
 import type { LinkProps as BaseLinkProps } from "@canonical/svelte-ds-app-launchpad";
 
-export type LinkProps = BaseLinkProps;
+export type LinkProps = Omit<BaseLinkProps, "soft">;
