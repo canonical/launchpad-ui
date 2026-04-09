@@ -40,7 +40,9 @@
       </Timeline.TitleRow>
     {/snippet}
   </Timeline.Event>
-  <Timeline.HiddenEvents numHidden={3} showAllHref="?show-all" />
+  <Timeline.HiddenEvents numHidden={3}>
+    <Timeline.HiddenEvents.Link href="?show-all">Show all</Timeline.HiddenEvents.Link>
+  </Timeline.HiddenEvents>
 </Timeline>
 ```
 -->

@@ -1,6 +1,7 @@
 /* @canonical/generator-ds 0.10.0-experimental.5 */
 
 import type { ComponentProps } from "svelte";
+import { createRawSnippet } from "svelte";
 import { describe, expect, it } from "vitest";
 import type { Locator } from "vitest/browser";
 import { render } from "vitest-browser-svelte";
@@ -58,31 +59,23 @@ describe("HiddenEvents component", () => {
         await expect.element(page.getByRole("link")).not.toBeInTheDocument();
       });
 
-      it("with show more link", async () => {
+      it("renders child links", async () => {
         const page = render(Component, {
           ...baseProps,
-          showMoreHref: "/show-more",
+          children: hiddenLinks([["Show more", "/show-more"]]),
         });
         await expect
-          .element(page.getByRole("link"))
+          .element(page.getByRole("link", { name: "Show more" }))
           .toHaveAttribute("href", "/show-more");
       });
 
-      it("with show all link", async () => {
+      it("renders multiple child links", async () => {
         const page = render(Component, {
           ...baseProps,
-          showAllHref: "/show-all",
-        });
-        await expect
-          .element(page.getByRole("link"))
-          .toHaveAttribute("href", "/show-all");
-      });
-
-      it("with both links at once", async () => {
-        const page = render(Component, {
-          ...baseProps,
-          showMoreHref: "/show-more",
-          showAllHref: "/show-all",
+          children: hiddenLinks([
+            ["Show more", "/show-more"],
+            ["Show all", "/show-all"],
+          ]),
         });
         await expect
           .element(page.getByRole("link", { name: "Show more" }))
@@ -94,6 +87,20 @@ describe("HiddenEvents component", () => {
     });
   });
 });
+
+function hiddenLinks(
+  links: Array<[label: string, href: string]>,
+): NonNullable<ComponentProps<typeof Component>["children"]> {
+  return createRawSnippet(() => ({
+    render: () =>
+      `<span>${links
+        .map(
+          ([label, href]) =>
+            `<span class="link-separator" aria-hidden="true"></span><a href="${href}" class="show-link">${label}</a>`,
+        )
+        .join("")}</span>`,
+  }));
+}
 
 function componentLocator(page: RenderResult<typeof Component>): Locator {
   return page.getByRole("listitem");

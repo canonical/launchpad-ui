@@ -85,7 +85,11 @@
       {/snippet}
       The flag was raised
     </Timeline.Event>
-    <Timeline.HiddenEvents numHidden={3} showAllHref="?show-all" />
+    <Timeline.HiddenEvents numHidden={3}>
+      <Timeline.HiddenEvents.Link href="?show-all"
+        >Show all</Timeline.HiddenEvents.Link
+      >
+    </Timeline.HiddenEvents>
     <Timeline.Event markerSize="large">
       {#snippet marker()}
         <SettingsIcon />
@@ -106,10 +110,13 @@
         Content goes here
       </div>
     </Timeline.Event>
-    <Timeline.HiddenEvents
-      numHidden={888}
-      showMoreHref="?show-more"
-      showAllHref="?show-all"
-    />
+    <Timeline.HiddenEvents numHidden={888}>
+      <Timeline.HiddenEvents.Link href="?show-more"
+        >Show more</Timeline.HiddenEvents.Link
+      >
+      <Timeline.HiddenEvents.Link href="?show-all"
+        >Show all</Timeline.HiddenEvents.Link
+      >
+    </Timeline.HiddenEvents>
   </Timeline>
 </Story>

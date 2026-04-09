@@ -22,8 +22,6 @@
     grid-column: 1 / -1;
     justify-self: start;
     display: flex;
-    align-items: center;
-    gap: var(--lp-dimension-spacing-inline-xs);
     padding-block: var(--lp-dimension-spacing-block-xs);
     padding-inline: var(--lp-dimension-spacing-inline-m);
     border-block: var(--lp-dimension-stroke-thickness-default) solid
@@ -40,15 +38,5 @@
     > div {
       border-block-end: none;
     }
-  }
-
-  .show-link {
-    font: var(--lp-typography-paragraph-xs);
-  }
-
-  .link-separator::before {
-    /* Can't be on links, as it would get underlined on hover */
-    content: "•" / "";
-    color: var(--lp-color-text-muted);
   }
 }

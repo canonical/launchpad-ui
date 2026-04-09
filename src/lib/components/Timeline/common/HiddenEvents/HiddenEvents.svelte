@@ -1,7 +1,6 @@
 <!-- @canonical/generator-ds 0.10.0-experimental.2 -->
 
 <script lang="ts">
-  import { Link } from "@canonical/svelte-ds-app-launchpad";
   import "./styles.css";
   import type { HiddenEventsProps } from "./types.js";
 
@@ -9,9 +8,8 @@
 
   let {
     class: className,
+    children,
     numHidden,
-    showMoreHref,
-    showAllHref,
     ...rest
   }: HiddenEventsProps = $props();
 </script>
@@ -21,14 +19,7 @@
     <span>
       {numHidden} hidden
     </span>
-    {#if showMoreHref}
-      <span class="link-separator" aria-hidden="true"></span>
-      <Link href={showMoreHref} class="show-link">Show more</Link>
-    {/if}
-    {#if showAllHref}
-      <span class="link-separator" aria-hidden="true"></span>
-      <Link href={showAllHref} class="show-link">Show all</Link>
-    {/if}
+    {@render children?.()}
   </div>
 </li>
 
@@ -37,6 +28,8 @@
 
 ## Example Usage
 ```svelte
-<Timeline.HiddenEvents numHidden={888} showMoreHref="?showMore" showAllHref="?showAll" />
+<Timeline.HiddenEvents numHidden={888}>
+  <Timeline.HiddenEvents.Link href="?showAll">Show all</Timeline.HiddenEvents.Link>
+</Timeline.HiddenEvents>
 ```
 -->

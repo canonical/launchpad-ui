@@ -1,5 +1,6 @@
 /* @canonical/generator-ds 0.10.0-experimental.2 */
 
+import type { Snippet } from "svelte";
 import type { SvelteHTMLElements } from "svelte/elements";
 import type { WithoutChildren } from "$lib/type-utils.js";
 
@@ -11,11 +12,7 @@ export interface HiddenEventsProps extends BaseProps {
    */
   numHidden: number;
   /**
-   * The URL to show more hidden events.
+   * Link content to render alongside the hidden events count.
    */
-  showMoreHref?: string;
-  /**
-   * The URL to show all hidden events.
-   */
-  showAllHref?: string;
+  children?: Snippet<[]>;
 }

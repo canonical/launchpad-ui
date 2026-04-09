@@ -15,6 +15,7 @@ export { Timeline };
 export * from "./types.js";
 export type {
   EventProps,
+  HiddenEventsLinkProps,
   HiddenEventsProps,
   TitleRowProps,
 } from "./common/index.js";
