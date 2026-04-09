@@ -9,6 +9,8 @@ import Component from "./UserChip.svelte";
 describe("UserChip SSR", () => {
   const baseProps = {
     userName: "John Doe",
+    userAvatarUrl: "https://assets.ubuntu.com/v1/fca94c45-snap+icon.png",
+    "data-testid": "user-chip",
   } satisfies ComponentProps<typeof Component>;
 
   describe("basics", () => {
@@ -55,69 +57,42 @@ describe("UserChip SSR", () => {
     });
   });
 
-  describe("renders", () => {
-    it("with the user's name", () => {
+  describe("avatar", () => {
+    it("renders by default", () => {
       const page = render(Component, {
         props: {
           ...baseProps,
-          userName: "John Doe",
         },
       });
-      expect(page.getByText("John Doe")).toBeInstanceOf(
-        page.window.HTMLElement,
-      );
+      expect(avatarLocator(page)).not.toBeNull();
     });
 
-    it("with avatar by default", () => {
+    it("renders when showAvatar is true", () => {
       const page = render(Component, {
         props: {
           ...baseProps,
-          userName: "John Doe",
-        },
-      });
-      expect(page.container.querySelector(".ds.user-avatar")).toBeInstanceOf(
-        page.window.HTMLElement,
-      );
-    });
-
-    it("with avatar when showAvatar is explicitly true", () => {
-      const page = render(Component, {
-        props: {
-          ...baseProps,
-          userName: "John Doe",
           showAvatar: true,
         },
       });
-      expect(page.container.querySelector(".ds.user-avatar")).toBeInstanceOf(
-        page.window.HTMLElement,
-      );
+      expect(avatarLocator(page)).not.toBeNull();
     });
 
-    it("without avatar when showAvatar is false", () => {
+    it("doesn't render when showAvatar is false", () => {
       const page = render(Component, {
         props: {
           ...baseProps,
-          userName: "John Doe",
           showAvatar: false,
         },
       });
-      expect(page.container.querySelector(".ds.user-avatar")).toBeNull();
-    });
-
-    it("applies modifiers", () => {
-      const page = render(Component, {
-        props: {
-          ...baseProps,
-          userName: "John Doe",
-          size: "small",
-        },
-      });
-      const element = componentLocator(page);
-      expect(element.classList).toContain("small");
+      expect(avatarLocator(page)).toBeNull();
     });
   });
 });
 
 function componentLocator(page: RenderResult): HTMLElement {
   return page.getByTestId("user-chip");
+}
+
+function avatarLocator(page: RenderResult): HTMLElement | null {
+  return page.queryByRole("img");
 }

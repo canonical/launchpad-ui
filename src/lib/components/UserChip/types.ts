@@ -5,6 +5,10 @@ import type { UserAvatarProps } from "$lib/components/UserAvatar/index.js";
 export interface UserChipProps extends UserAvatarProps {
   /** The user's name */
   userName: string;
-  /** Whether to show the avatar or not */
+  /**
+   * Whether to show the avatar or not
+   *
+   * @default true
+   */
   showAvatar?: boolean;
 }

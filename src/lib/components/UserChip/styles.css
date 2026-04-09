@@ -1,0 +1,16 @@
+.ds.user-chip {
+  display: inline-flex;
+  align-items: center;
+
+  font: var(--lp-typography-paragraph-default-strong);
+  gap: var(--lp-dimension-spacing-inline-xs);
+
+  &.small {
+    font: var(--lp-typography-paragraph-s-strong);
+    gap: var(--lp-dimension-spacing-inline-xxs);
+  }
+
+  &.large {
+    font: var(--lp-typography-h5);
+  }
+}

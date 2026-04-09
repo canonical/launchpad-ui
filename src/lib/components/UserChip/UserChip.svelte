@@ -3,6 +3,7 @@
 <script lang="ts">
   import { UserAvatar } from "$lib/components/UserAvatar/index.js";
   import type { UserChipProps } from "./types.js";
+  import "./styles.css";
 
   const componentCssClassName = "ds user-chip";
 
@@ -16,13 +17,9 @@
   }: UserChipProps = $props();
 </script>
 
-<div
-  class={[componentCssClassName, className, size]}
-  data-testid="user-chip"
-  {...rest}
->
+<div class={[componentCssClassName, className, size]} {...rest}>
   {#if showAvatar}
-    <UserAvatar {userName} {userAvatarUrl} {size} aria-hidden="true" />
+    <UserAvatar {userName} {userAvatarUrl} {size} />
   {/if}
   <span>
     {userName}
@@ -37,22 +34,3 @@
 <UserChip userName="John Doe" userAvatarUrl="https://example.com/avatar.png" />
 ```
 -->
-
-<style>
-  .ds.user-chip {
-    display: inline-flex;
-    align-items: center;
-
-    font: var(--lp-typography-paragraph-default-strong);
-    gap: var(--lp-dimension-spacing-inline-xs);
-
-    &.small {
-      font: var(--lp-typography-paragraph-s-strong);
-      gap: var(--lp-dimension-spacing-inline-xxs);
-    }
-
-    &.large {
-      font: var(--lp-typography-h5);
-    }
-  }
-</style>
