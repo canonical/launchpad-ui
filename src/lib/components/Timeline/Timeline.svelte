@@ -30,7 +30,10 @@
     {/snippet}
     Description of the stuff that was done.
   </Timeline.Event>
-  <Timeline.Event marker="text">
+  <Timeline.Event>
+    {#snippet marker()}
+      <FlagIcon />
+    {/snippet}
     {#snippet titleRow()}
       <Timeline.TitleRow leadingText="Alvarez Daniella">
         did other amazing things

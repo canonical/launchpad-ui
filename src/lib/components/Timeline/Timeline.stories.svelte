@@ -13,7 +13,7 @@
 
   const user = {
     userName: "Alvarez Daniella",
-    userAvatarUrl: "https://i.pravatar.cc/150?img=48",
+    userAvatarUrl: "https://assets.ubuntu.com/v1/fca94c45-snap+icon.png",
   };
 
   const today = new Date();
