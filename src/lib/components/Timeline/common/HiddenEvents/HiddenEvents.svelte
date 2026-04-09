@@ -22,14 +22,3 @@
     {@render children?.()}
   </div>
 </li>
-
-<!-- @component
-`HiddenEvents` component provides a way to inform the user, that not all events are visible in the timeline. It displays a message indicating the number of events hidden from the view and optionally allows the user to display more or all the hidden events.
-
-## Example Usage
-```svelte
-<Timeline.HiddenEvents numHidden={888}>
-  <Timeline.HiddenEvents.Link href="?showAll">Show all</Timeline.HiddenEvents.Link>
-</Timeline.HiddenEvents>
-```
--->

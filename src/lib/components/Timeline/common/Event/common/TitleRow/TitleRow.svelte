@@ -30,17 +30,3 @@
   </span>
   <span class="date">{@render date()}</span>
 </div>
-
-<!-- @component
-`Timeline.Event.TitleRow` is used to display a title row within a timeline event.
-
-## Example Usage
-```svelte
-<Timeline.Event.TitleRow leadingText="Alvarez Daniella">
-  added labels: Don't merge, Maintenance, Review: QA needed
-  {#snippet date()}
-    <DateTime date="2023-03-15" />
-  {/snippet}
-</Timeline.Event.TitleRow>
-```
--->

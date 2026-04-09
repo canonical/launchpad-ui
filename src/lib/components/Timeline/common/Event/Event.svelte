@@ -52,26 +52,3 @@
     </div>
   {/if}
 </li>
-
-<!-- @component
-`Timeline.Event` is a component that represents a single event on the timeline. It displays a marker that can optionally show an icon or an avatar (both can either be `small` or `large`).
-
-The marker and the first line of the optional `titleRow` are meant to be aligned vertically. This is automatically handled if `<Timeline.Event.TitleRow>` is used. If you wish to provide other content and want this behavior to persist, override `--typography-line-height-timeline-event-title-row` CSS variable with the line height of your content.
-
-## Example Usage
-```svelte
-<Timeline.Event marker="flag" markerSize="small">
-  {#snippet titleRow()}
-    <Timeline.Event.TitleRow
-      leadingText="Alvarez Daniella"
-    >
-      did something
-      {#snippet date()}
-        <DateTime date="2023-03-15" />
-      {/snippet}
-    </Timeline.Event.TitleRow>
-  {/snippet}
-  and here is some additional content.
-</Timeline.Event>
-```
--->

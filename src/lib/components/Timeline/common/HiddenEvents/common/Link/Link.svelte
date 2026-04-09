@@ -13,14 +13,3 @@
 <!-- A separate element instead of a pseudo-element on the link, so it doesn't get underlined on hover -->
 <span class="{componentCssClassName}-separator" aria-hidden="true">•</span>
 <Link class={[componentCssClassName, className]} {...rest} />
-
-<!-- @component
-`Timeline.HiddenEvents.Link` wraps the `Link` for use inside `Timeline.HiddenEvents`.
-
-## Example Usage
-```svelte
-<Timeline.HiddenEvents numHidden={3}>
-  <Timeline.HiddenEvents.Link href="?showAll">Show all</Timeline.HiddenEvents.Link>
-</Timeline.HiddenEvents>
-```
--->
