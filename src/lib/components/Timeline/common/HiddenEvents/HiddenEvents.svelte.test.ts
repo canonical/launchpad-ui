@@ -6,6 +6,7 @@ import type { Locator } from "vitest/browser";
 import { render } from "vitest-browser-svelte";
 import type { RenderResult } from "vitest-browser-svelte";
 import Component from "./HiddenEvents.svelte";
+import { multipleLinks, oneLink } from "./test.fixtures.svelte";
 
 describe("HiddenEvents component", () => {
   const baseProps = {
@@ -34,7 +35,7 @@ describe("HiddenEvents component", () => {
       const page = render(Component, { ...baseProps, class: "test-class" });
       const element = componentLocator(page);
       await expect.element(element).toHaveClass("ds");
-      await expect.element(element).toHaveClass("hidden-events");
+      await expect.element(element).toHaveClass("timeline-hidden-events");
       await expect.element(element).toHaveClass("test-class");
     });
 
@@ -58,31 +59,20 @@ describe("HiddenEvents component", () => {
         await expect.element(page.getByRole("link")).not.toBeInTheDocument();
       });
 
-      it("with show more link", async () => {
+      it("renders child links", async () => {
         const page = render(Component, {
           ...baseProps,
-          showMoreHref: "/show-more",
+          children: oneLink,
         });
         await expect
-          .element(page.getByRole("link"))
+          .element(page.getByRole("link", { name: "Show more" }))
           .toHaveAttribute("href", "/show-more");
       });
 
-      it("with show all link", async () => {
+      it("renders multiple child links", async () => {
         const page = render(Component, {
           ...baseProps,
-          showAllHref: "/show-all",
-        });
-        await expect
-          .element(page.getByRole("link"))
-          .toHaveAttribute("href", "/show-all");
-      });
-
-      it("with both links at once", async () => {
-        const page = render(Component, {
-          ...baseProps,
-          showMoreHref: "/show-more",
-          showAllHref: "/show-all",
+          children: multipleLinks,
         });
         await expect
           .element(page.getByRole("link", { name: "Show more" }))

@@ -13,7 +13,7 @@
 
   const user = {
     userName: "Alvarez Daniella",
-    userAvatarUrl: "https://i.pravatar.cc/150?img=48",
+    userAvatarUrl: "https://assets.ubuntu.com/v1/fca94c45-snap+icon.png",
   };
 
   const today = new Date();
@@ -33,7 +33,10 @@
       {/snippet}
       Implementation of a new feature for Launchpad bug templates
     </Timeline.Event>
-    <Timeline.Event marker={TextIcon}>
+    <Timeline.Event>
+      {#snippet marker()}
+        <TextIcon />
+      {/snippet}
       {#snippet titleRow()}
         <Timeline.Event.TitleRow leadingText={user.userName}>
           did things that are really complex and will probably take a while to
@@ -68,7 +71,10 @@
         </Timeline.Event.TitleRow>
       {/snippet}
     </Timeline.Event>
-    <Timeline.Event marker={FlagIcon} markerSize="small">
+    <Timeline.Event markerSize="small">
+      {#snippet marker()}
+        <FlagIcon />
+      {/snippet}
       {#snippet titleRow()}
         <Timeline.Event.TitleRow leadingText={user.userName}>
           raised a flag
@@ -79,8 +85,15 @@
       {/snippet}
       The flag was raised
     </Timeline.Event>
-    <Timeline.HiddenEvents numHidden={3} showAllHref="?show-all" />
-    <Timeline.Event marker={SettingsIcon} markerSize="large">
+    <Timeline.HiddenEvents numHidden={3}>
+      <Timeline.HiddenEvents.Link href="?show-all"
+        >Show all</Timeline.HiddenEvents.Link
+      >
+    </Timeline.HiddenEvents>
+    <Timeline.Event markerSize="large">
+      {#snippet marker()}
+        <SettingsIcon />
+      {/snippet}
       {#snippet titleRow()}
         <Timeline.Event.TitleRow>
           The MP was <span style="color: var(--lp-color-text-default)"
@@ -97,10 +110,13 @@
         Content goes here
       </div>
     </Timeline.Event>
-    <Timeline.HiddenEvents
-      numHidden={888}
-      showMoreHref="?show-more"
-      showAllHref="?show-all"
-    />
+    <Timeline.HiddenEvents numHidden={888}>
+      <Timeline.HiddenEvents.Link href="?show-more"
+        >Show more</Timeline.HiddenEvents.Link
+      >
+      <Timeline.HiddenEvents.Link href="?show-all"
+        >Show all</Timeline.HiddenEvents.Link
+      >
+    </Timeline.HiddenEvents>
   </Timeline>
 </Story>

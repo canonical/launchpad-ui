@@ -1,6 +1,5 @@
 /* @canonical/generator-ds 0.10.0-experimental.5 */
 
-import { AnchorIcon } from "@canonical/svelte-icons";
 import { createRawSnippet } from "svelte";
 import type { ComponentProps } from "svelte";
 import { describe, expect, it } from "vitest";
@@ -42,7 +41,7 @@ describe("Event component", () => {
       const page = render(Component, { ...baseProps, class: "test-class" });
       const element = componentLocator(page);
       await expect.element(element).toHaveClass("ds");
-      await expect.element(element).toHaveClass("event");
+      await expect.element(element).toHaveClass("timeline-event");
       await expect.element(element).toHaveClass("test-class");
     });
 
@@ -81,7 +80,7 @@ describe("Event component", () => {
       it("small", async () => {
         const page = render(Component, {
           ...baseProps,
-          marker: AnchorIcon,
+          marker: { userName: "John Doe" },
           markerSize: "small",
         });
         const element = componentLocator(page);

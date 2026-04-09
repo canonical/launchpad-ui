@@ -5,6 +5,7 @@ import type { RenderResult } from "@canonical/svelte-ssr-test";
 import type { ComponentProps } from "svelte";
 import { describe, expect, it } from "vitest";
 import Component from "./HiddenEvents.svelte";
+import { multipleLinks, oneLink } from "./test.fixtures.svelte";
 
 describe("HiddenEvents SSR", () => {
   const baseProps = {
@@ -46,7 +47,7 @@ describe("HiddenEvents SSR", () => {
       });
       const element = componentLocator(page);
       expect(element.classList).toContain("ds");
-      expect(element.classList).toContain("hidden-events");
+      expect(element.classList).toContain("timeline-hidden-events");
       expect(element.classList).toContain("test-class");
     });
 
@@ -63,22 +64,31 @@ describe("HiddenEvents SSR", () => {
   });
 
   describe("Links", () => {
-    it("renders show more", () => {
+    it("renders child links", () => {
       const page = render(Component, {
-        props: { ...baseProps, showMoreHref: "/show-more" },
+        props: {
+          ...baseProps,
+          children: oneLink,
+        },
       });
       const link = page.getByRole("link");
       expect(link.textContent).toContain("Show more");
       expect(link.getAttribute("href")).toBe("/show-more");
     });
 
-    it("renders show all", () => {
+    it("renders multiple child links", () => {
       const page = render(Component, {
-        props: { ...baseProps, showAllHref: "/show-all" },
+        props: {
+          ...baseProps,
+          children: multipleLinks,
+        },
       });
-      const link = page.getByRole("link");
-      expect(link.textContent).toContain("Show all");
-      expect(link.getAttribute("href")).toBe("/show-all");
+      const links = page.getAllByRole("link");
+      expect(links).toHaveLength(2);
+      expect(links[0].textContent).toContain("Show more");
+      expect(links[0].getAttribute("href")).toBe("/show-more");
+      expect(links[1].textContent).toContain("Show all");
+      expect(links[1].getAttribute("href")).toBe("/show-all");
     });
   });
 });

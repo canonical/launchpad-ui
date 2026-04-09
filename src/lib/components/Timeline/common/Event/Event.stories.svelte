@@ -28,6 +28,10 @@
   <RelativeDateTime date="2023-03-15" />
 {/snippet}
 
+{#snippet flagIcon()}
+  <FlagIcon />
+{/snippet}
+
 <Story name="Default">
   {#snippet template({ children: _, titleRow: __, ...args })}
     <Timeline>
@@ -50,7 +54,7 @@
       control: false,
     },
   }}
-  args={{ marker: FlagIcon }}
+  args={{ marker: flagIcon }}
 >
   {#snippet template({ children: _, titleRow: __, ...args })}
     <Timeline>
@@ -82,7 +86,7 @@
   args={{
     marker: {
       userName: "Alvarez Daniella",
-      userAvatarUrl: "https://i.pravatar.cc/150?img=48",
+      userAvatarUrl: "https://assets.ubuntu.com/v1/fca94c45-snap+icon.png",
     },
   }}
 >

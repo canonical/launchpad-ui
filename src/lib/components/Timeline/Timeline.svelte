@@ -2,6 +2,7 @@
 
 <script lang="ts">
   import type { TimelineProps } from "./types.js";
+  import "./styles.css";
 
   const componentCssClassName = "ds timeline";
 
@@ -29,7 +30,10 @@
     {/snippet}
     Description of the stuff that was done.
   </Timeline.Event>
-  <Timeline.Event marker="text">
+  <Timeline.Event>
+    {#snippet marker()}
+      <FlagIcon />
+    {/snippet}
     {#snippet titleRow()}
       <Timeline.TitleRow leadingText="Alvarez Daniella">
         did other amazing things
@@ -39,26 +43,9 @@
       </Timeline.TitleRow>
     {/snippet}
   </Timeline.Event>
-  <Timeline.HiddenEvents numHidden={3} showAllHref="?show-all" />
+  <Timeline.HiddenEvents numHidden={3}>
+    <Timeline.HiddenEvents.Link href="?show-all">Show all</Timeline.HiddenEvents.Link>
+  </Timeline.HiddenEvents>
 </Timeline>
 ```
 -->
-
-<style>
-  .ds.timeline {
-    --dimension-gap-row-timeline: calc(var(--lp-dimension-spacing-block-s) * 2);
-    --dimension-gap-column-timeline: var(--lp-dimension-spacing-inline-m);
-
-    --color-background-timeline-line: var(--lp-color-border-default);
-    --dimension-width-timeline-line: var(
-      --lp-dimension-stroke-thickness-default
-    );
-
-    display: grid;
-    grid-template-columns: [marker-start] auto [marker-end content-start] 1fr [content-end];
-    list-style: none;
-
-    row-gap: var(--dimension-gap-row-timeline);
-    column-gap: var(--dimension-gap-column-timeline);
-  }
-</style>

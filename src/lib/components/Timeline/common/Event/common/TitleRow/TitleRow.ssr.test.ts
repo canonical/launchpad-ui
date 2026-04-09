@@ -64,7 +64,7 @@ describe("TitleRow SSR", () => {
       });
       const element = componentLocator(page);
       expect(element.classList.contains("ds")).toBe(true);
-      expect(element.classList.contains("title-row")).toBe(true);
+      expect(element.classList.contains("timeline-title-row")).toBe(true);
       expect(element.classList.contains("test-class")).toBe(true);
     });
   });
