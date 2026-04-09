@@ -3,9 +3,9 @@
 import { render } from "@canonical/svelte-ssr-test";
 import type { RenderResult } from "@canonical/svelte-ssr-test";
 import type { ComponentProps } from "svelte";
-import { createRawSnippet } from "svelte";
 import { describe, expect, it } from "vitest";
 import Component from "./HiddenEvents.svelte";
+import { multipleLinks, oneLink } from "./test.fixtures.svelte";
 
 describe("HiddenEvents SSR", () => {
   const baseProps = {
@@ -68,7 +68,7 @@ describe("HiddenEvents SSR", () => {
       const page = render(Component, {
         props: {
           ...baseProps,
-          children: hiddenLinks([["Show more", "/show-more"]]),
+          children: oneLink,
         },
       });
       const link = page.getByRole("link");
@@ -80,10 +80,7 @@ describe("HiddenEvents SSR", () => {
       const page = render(Component, {
         props: {
           ...baseProps,
-          children: hiddenLinks([
-            ["Show more", "/show-more"],
-            ["Show all", "/show-all"],
-          ]),
+          children: multipleLinks,
         },
       });
       const links = page.getAllByRole("link");
@@ -95,18 +92,6 @@ describe("HiddenEvents SSR", () => {
     });
   });
 });
-
-function hiddenLinks(links: Array<[label: string, href: string]>) {
-  return createRawSnippet(() => ({
-    render: () =>
-      `<span>${links
-        .map(
-          ([label, href]) =>
-            `<span class="link-separator" aria-hidden="true"></span><a href="${href}" class="show-link">${label}</a>`,
-        )
-        .join("")}</span>`,
-  }));
-}
 
 function componentLocator(page: RenderResult): HTMLLIElement {
   return page.getByRole("listitem");

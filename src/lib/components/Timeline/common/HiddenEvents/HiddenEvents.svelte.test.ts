@@ -1,12 +1,12 @@
 /* @canonical/generator-ds 0.10.0-experimental.5 */
 
 import type { ComponentProps } from "svelte";
-import { createRawSnippet } from "svelte";
 import { describe, expect, it } from "vitest";
 import type { Locator } from "vitest/browser";
 import { render } from "vitest-browser-svelte";
 import type { RenderResult } from "vitest-browser-svelte";
 import Component from "./HiddenEvents.svelte";
+import { multipleLinks, oneLink } from "./test.fixtures.svelte";
 
 describe("HiddenEvents component", () => {
   const baseProps = {
@@ -62,7 +62,7 @@ describe("HiddenEvents component", () => {
       it("renders child links", async () => {
         const page = render(Component, {
           ...baseProps,
-          children: hiddenLinks([["Show more", "/show-more"]]),
+          children: oneLink,
         });
         await expect
           .element(page.getByRole("link", { name: "Show more" }))
@@ -72,10 +72,7 @@ describe("HiddenEvents component", () => {
       it("renders multiple child links", async () => {
         const page = render(Component, {
           ...baseProps,
-          children: hiddenLinks([
-            ["Show more", "/show-more"],
-            ["Show all", "/show-all"],
-          ]),
+          children: multipleLinks,
         });
         await expect
           .element(page.getByRole("link", { name: "Show more" }))
@@ -87,20 +84,6 @@ describe("HiddenEvents component", () => {
     });
   });
 });
-
-function hiddenLinks(
-  links: Array<[label: string, href: string]>,
-): NonNullable<ComponentProps<typeof Component>["children"]> {
-  return createRawSnippet(() => ({
-    render: () =>
-      `<span>${links
-        .map(
-          ([label, href]) =>
-            `<span class="link-separator" aria-hidden="true"></span><a href="${href}" class="show-link">${label}</a>`,
-        )
-        .join("")}</span>`,
-  }));
-}
 
 function componentLocator(page: RenderResult<typeof Component>): Locator {
   return page.getByRole("listitem");
