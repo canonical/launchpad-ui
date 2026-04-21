@@ -3,7 +3,7 @@
 <script lang="ts">
   import { ButtonPrimitive } from "@canonical/svelte-ds-app-launchpad/internal";
   import { getTHContext } from "../../context.js";
-  import { SortIndicator } from "../common/index.js";
+  import { SortIndicator } from "./common/index.js";
   import type { SortButtonProps } from "./types.js";
   import "./styles.css";
 
