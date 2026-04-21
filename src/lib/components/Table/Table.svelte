@@ -2,6 +2,7 @@
 
 <script lang="ts">
   import type { TableProps } from "./types.js";
+  import "./styles.css";
 
   const componentCssClassName = "ds table";
 
@@ -49,57 +50,3 @@
 </Table>
 ```
 -->
-
-<style>
-  table {
-    border-collapse: collapse;
-
-    --border-table-row: var(--lp-dimension-stroke-thickness-default) solid
-      var(--lp-color-border-low-contrast);
-    --border-table-header-cell: var(--lp-dimension-stroke-thickness-default)
-      solid var(--lp-color-border-default);
-    --dimension-padding-block-table-cell: var(--lp-dimension-spacing-block-xs);
-    --dimension-padding-inline-table-cell: var(
-      --lp-dimension-spacing-inline-xs
-    );
-
-    :global {
-      thead,
-      tr:not(:last-child) {
-        border-bottom: var(--border-table-row);
-      }
-
-      tfoot {
-        border-top: var(--border-table-row);
-      }
-
-      thead th {
-        position: relative;
-
-        &:not(:last-child)::after {
-          content: "";
-          position: absolute;
-          right: 0;
-          top: var(--dimension-padding-block-table-cell);
-          border-left: var(--border-table-header-cell);
-          height: calc(100% - var(--dimension-padding-block-table-cell) * 2);
-        }
-      }
-
-      th,
-      td {
-        text-align: left;
-        padding-inline: var(--dimension-padding-inline-table-cell);
-        padding-block: var(--dimension-padding-block-table-cell);
-      }
-
-      th {
-        font: var(--lp-typography-paragraph-s-strong);
-      }
-
-      td {
-        font: var(--lp-typography-paragraph-s);
-      }
-    }
-  }
-</style>
