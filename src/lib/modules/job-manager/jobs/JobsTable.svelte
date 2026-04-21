@@ -15,8 +15,6 @@
     tableId: string;
   } = $props();
 
-  const id = $props.id();
-
   const sort = $derived.by(() => {
     const sort = page.url.searchParams.get(JobsQueryParam.Sort);
 
@@ -87,17 +85,13 @@
   <thead>
     <tr>
       {#each headerCells as { key, label, sortable } (key)}
-        {@const headerCellLabelId = `${id}-header-cell-${key}`}
         {#if sortable}
           <Table.TH
-            aria-labelledby={headerCellLabelId}
             sortDirection={// FIXME: $state.eager doesn't provide the value in SSR render, so if used the sort indicators aren't rendered in no-js. Investigate.
             // $state.eager(
             sort?.field === key ? sort.direction : undefined}
           >
-            <span id={headerCellLabelId}>
-              {label}
-            </span>
+            {label}
             {#snippet action()}
               <Table.TH.SortButton
                 aria-label={sortLinkLabel(key, label)}

@@ -3,7 +3,7 @@ import { TH } from "./common/index.js";
 
 const Table = TableRoot as typeof TableRoot & {
   /**
-   * A table header cell component that can display sortable columns.
+   * A table header cell component meant to be used for sortable columns.
    *
    * @example
    * ```svelte

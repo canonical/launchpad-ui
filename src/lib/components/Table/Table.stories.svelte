@@ -146,7 +146,7 @@
     </tbody>
     <tfoot>
       <tr>
-        <th colspan="4" style="text-align: right;">Total Balance</th>
+        <th colspan="4" scope="row" style="text-align: end;">Total Balance</th>
         <td>
           {totalBalance.toLocaleString("en-US", {
             style: "currency",
@@ -288,7 +288,7 @@
     </tbody>
     <tfoot>
       <tr>
-        <th colspan="4" style="text-align: right;">Total Balance</th>
+        <th colspan="4" scope="row" style="text-align: end;">Total Balance</th>
         <td>
           {totalBalance.toLocaleString("en-US", {
             style: "currency",

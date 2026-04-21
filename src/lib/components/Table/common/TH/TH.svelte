@@ -15,6 +15,8 @@
     ...rest
   }: THProps = $props();
 
+  const cellContentId = $props.id();
+
   setTHContext({
     get sortDirection() {
       return sortDirection;
@@ -25,10 +27,12 @@
 <th
   class={[componentCssClassName, className]}
   aria-sort={sortDirection}
+  // Omit actions from the cell's accessible name. Otherwise, when user navigates the table, the sort button's label (e.g. "Sort by Name ascending") would be included every time when a screen reader announces associated header cell.
+  aria-labelledby={cellContentId}
   {...rest}
 >
   <div>
-    <span>
+    <span id={cellContentId}>
       {@render children?.()}
     </span>
     {@render action?.()}
