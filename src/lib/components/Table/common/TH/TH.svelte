@@ -3,6 +3,7 @@
 <script lang="ts">
   import { setTHContext } from "./context.js";
   import type { THProps } from "./types.js";
+  import "./styles.css";
 
   const componentCssClassName = "ds table-th";
 
@@ -14,6 +15,8 @@
     ...rest
   }: THProps = $props();
 
+  const cellContentId = $props.id();
+
   setTHContext({
     get sortDirection() {
       return sortDirection;
@@ -24,41 +27,14 @@
 <th
   class={[componentCssClassName, className]}
   aria-sort={sortDirection}
+  // Omit actions from the cell's accessible name. Otherwise, when user navigates the table, the sort button's label (e.g. "Sort by Name ascending") would be included every time when a screen reader announces associated header cell.
+  aria-labelledby={cellContentId}
   {...rest}
 >
   <div>
-    <span>
+    <span id={cellContentId}>
       {@render children?.()}
     </span>
     {@render action?.()}
   </div>
 </th>
-
-<style>
-  .ds.table-th {
-    div {
-      display: flex;
-      flex-flow: row wrap;
-      align-items: center;
-      justify-content: space-between;
-      gap: var(--lp-dimension-spacing-inline-xxs);
-    }
-
-    &:not([aria-sort]),
-    &[aria-sort="none"] {
-      :global(.ds.table-th-sort) {
-        opacity: 0;
-      }
-
-      &:hover {
-        :global(.ds.table-th-sort) {
-          opacity: 1;
-        }
-      }
-
-      :global(.ds.table-th-sort:focus-visible) {
-        opacity: 1;
-      }
-    }
-  }
-</style>

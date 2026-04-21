@@ -3,8 +3,9 @@
 <script lang="ts">
   import { ButtonPrimitive } from "@canonical/svelte-ds-app-launchpad/internal";
   import { getTHContext } from "../../context.js";
-  import { SortIndicator } from "../common/index.js";
+  import { SortIndicator } from "./common/index.js";
   import type { SortButtonProps } from "./types.js";
+  import "./styles.css";
 
   const componentCssClassName = "ds table-th-sort";
 
@@ -23,26 +24,3 @@
 >
   <SortIndicator />
 </ButtonPrimitive>
-
-<style>
-  :global(.ds.table-th-sort) {
-    padding: var(--lp-dimension-spacing-block-xxxs)
-      var(--lp-dimension-spacing-inline-xxxs);
-    background: none;
-    border: none;
-    cursor: pointer;
-    min-width: fit-content;
-
-    font-size: var(--lp-typography-font-size-m);
-    color: var(--lp-color-icon-status-queued);
-
-    --color-background-button-hover: transparent;
-    --color-background-button-active: transparent;
-
-    &:hover,
-    &:focus-visible,
-    &.sorted {
-      color: var(--lp-color-text-default);
-    }
-  }
-</style>

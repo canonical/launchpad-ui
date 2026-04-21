@@ -3,7 +3,7 @@
 <script lang="ts">
   import { ArrowDownIcon, ArrowUpIcon } from "@canonical/svelte-icons";
   import { SortIcon } from "$lib/components/icons/index.js";
-  import { getTHContext } from "../../../context.js";
+  import { getTHContext } from "../../../../context.js";
 
   const thContext = getTHContext();
 </script>
