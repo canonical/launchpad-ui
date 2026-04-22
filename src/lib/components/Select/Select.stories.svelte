@@ -64,16 +64,13 @@
   -->
   {#snippet template(args)}
     <div class="row">
-      <div>
-        <label for="single-distro">Choose a distro</label>
-        <br />
-        <Select bind:value id="single-distro" {...args}>
-          <option value="" disabled selected>Select an option</option>
-          <option value="cosmic-cuttlefish">Cosmic Cuttlefish</option>
-          <option value="bionic-beaver">Bionic Beaver</option>
-          <option value="xenial-xerus">Xenial Xerus</option>
-        </Select>
-      </div>
+      <label for="single-distro">Your favorite release:</label>
+      <Select bind:value id="single-distro" {...args}>
+        <option value="" disabled selected>Select an option</option>
+        <option value="cosmic-cuttlefish">Cosmic Cuttlefish</option>
+        <option value="bionic-beaver">Bionic Beaver</option>
+        <option value="xenial-xerus">Xenial Xerus</option>
+      </Select>
       <div>Current value: <code>{value}</code></div>
     </div>
   {/snippet}
@@ -87,16 +84,14 @@
   -->
   {#snippet template(args)}
     <div class="row">
-      <div>
-        <label for="multiple-distros">Choose your favorite distros</label>
-        <br />
-        <Select bind:value={values} multiple id="multiple-distros" {...args}>
-          <option value="" disabled>Select...</option>
-          <option value="cosmic-cuttlefish">Cosmic Cuttlefish</option>
-          <option value="bionic-beaver">Bionic Beaver</option>
-          <option value="xenial-xerus">Xenial Xerus</option>
-        </Select>
-      </div>
+      <label for="multiple-distros">Your favorite releases:</label>
+      <Select bind:value={values} multiple id="multiple-distros" {...args}>
+        <option value="cosmic-cuttlefish">Cosmic Cuttlefish</option>
+        <option value="bionic-beaver">Bionic Beaver</option>
+        <option value="xenial-xerus">Xenial Xerus</option>
+        <option value="focal-fossa">Focal Fossa</option>
+        <option value="jammy-jellyfish">Jammy Jellyfish</option>
+      </Select>
       <div>Current value: <code>{JSON.stringify(values)}</code></div>
     </div>
   {/snippet}
@@ -111,7 +106,7 @@
   {/snippet}
 </Story>
 
-<Story name="Invalid" args={{ required: true, value: "" }}>
+<Story name="Invalid" args={{ "aria-invalid": true }}>
   {#snippet template(args)}
     <Select {...args}>
       <option value="" disabled selected>Select an option</option>

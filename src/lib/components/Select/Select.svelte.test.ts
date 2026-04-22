@@ -13,6 +13,7 @@ describe("Select component", () => {
     children: createRawSnippet(() => ({
       render: () => `<option value="1">Option 1</option>`,
     })),
+    "data-testid": "select-root",
   } satisfies ComponentProps<typeof Component>;
 
   it("renders", async () => {
@@ -61,7 +62,7 @@ describe("Select component", () => {
 });
 
 function componentLocator(page: RenderResult<typeof Component>): Locator {
-  return page.getByTestId("select");
+  return page.getByTestId("select-root");
 }
 
 function selectLocator(page: RenderResult<typeof Component>): Locator {

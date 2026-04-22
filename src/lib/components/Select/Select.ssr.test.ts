@@ -12,6 +12,7 @@ describe("Select SSR", () => {
     children: createRawSnippet(() => ({
       render: () => `<option value="1">Option 1</option>`,
     })),
+    "data-testid": "select-root",
   } satisfies ComponentProps<typeof Component>;
 
   describe("basics", () => {
@@ -83,7 +84,7 @@ describe("Select SSR", () => {
 });
 
 function componentLocator(page: RenderResult): HTMLElement {
-  return page.getByTestId("select");
+  return page.getByTestId("select-root");
 }
 
 function selectLocator(page: RenderResult): HTMLSelectElement {

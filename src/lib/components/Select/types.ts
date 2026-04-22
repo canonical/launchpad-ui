@@ -3,19 +3,18 @@
 import type { ModifierFamily } from "@canonical/svelte-ds-app-launchpad";
 import type { HTMLSelectAttributes } from "svelte/elements";
 
-type BaseProps = Omit<HTMLSelectAttributes, "value">;
-
-export interface SelectProps extends BaseProps, ModifierFamily<"severity"> {
+export interface SelectProps
+  extends HTMLSelectAttributes, ModifierFamily<"severity"> {
   /**
    * The value of the select.
    *
-   * @bindable
+   * **@bindable**
    */
   value?: HTMLSelectAttributes["value"];
   /**
    * The ref of the select.
    *
-   * @bindable
+   * **@bindable**
    */
   ref?: HTMLSelectElement;
   density?: "dense" | "medium";
