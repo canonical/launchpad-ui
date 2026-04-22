@@ -141,16 +141,16 @@
     <h2 class="section-header">Commands</h2>
     <CommandList>
       {#each job.commands as command, i (i)}
-        <!-- 
+        <!--
         TODO(job-manager):
-          - pass command status
+          - pass precise command status (currently derived from job status)
           - command not as `unknown` but proper type
           - link command to log entry
-        
+
         TODO: Syntax highlighting for command
       -->
         <CommandList.Command
-          status={null}
+          status={job.status}
           command={command as string}
           href={undefined}
         />
