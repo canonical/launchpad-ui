@@ -1,10 +1,9 @@
 /* @canonical/generator-ds 0.10.0-experimental.3 */
 
-import type { ModifierFamily } from "@canonical/svelte-ds-app-launchpad";
+import type { ModifierFamilyValues } from "@canonical/svelte-ds-app-launchpad";
 import type { HTMLSelectAttributes } from "svelte/elements";
 
-export interface SelectProps
-  extends HTMLSelectAttributes, ModifierFamily<"severity"> {
+export interface SelectProps extends HTMLSelectAttributes {
   /**
    * The value of the select.
    *
@@ -18,4 +17,5 @@ export interface SelectProps
    */
   ref?: HTMLSelectElement;
   density?: "dense" | "medium";
+  severity?: ModifierFamilyValues["severity"] | "base";
 }

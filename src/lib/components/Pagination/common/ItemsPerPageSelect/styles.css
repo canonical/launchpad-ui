@@ -5,10 +5,6 @@
   padding-inline-start: var(--lp-dimension-spacing-inline-xs);
 
   > .select {
-    > select {
-      background-color: transparent;
-      border: none;
-      font: var(--lp-typography-paragraph-s);
-    }
+    font: var(--lp-typography-paragraph-s);
   }
 }

@@ -112,4 +112,15 @@
     margin-inline-end: var(--dimension-padding-inline-select-input);
     pointer-events: none;
   }
+
+  &.base {
+    --lp-color-background-secondary-hover-context: initial;
+    --lp-color-background-secondary-active-context: initial;
+    --lp-color-background-secondary-context: transparent;
+    --lp-color-border-secondary-context: initial;
+
+    > select {
+      border: none;
+    }
+  }
 }

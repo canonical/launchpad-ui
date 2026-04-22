@@ -1,4 +1,5 @@
 <script module lang="ts">
+  import { MODIFIER_FAMILIES } from "@canonical/svelte-ds-app-launchpad";
   import { defineMeta } from "@storybook/addon-svelte-csf";
   import Select from "./Select.svelte";
 
@@ -41,7 +42,6 @@
     },
   });
 
-  let value = $state<string>();
   let values = $state<string[]>([]);
 </script>
 
@@ -56,22 +56,19 @@
   {/snippet}
 </Story>
 
-<Story name="Single option">
-  <!--
-    <script lang="ts">
-      let value = $state("");
-    </script>
-  -->
-  {#snippet template(args)}
-    <div class="row">
-      <label for="single-distro">Your favorite release:</label>
-      <Select bind:value id="single-distro" {...args}>
-        <option value="" disabled selected>Select an option</option>
-        <option value="cosmic-cuttlefish">Cosmic Cuttlefish</option>
-        <option value="bionic-beaver">Bionic Beaver</option>
-        <option value="xenial-xerus">Xenial Xerus</option>
-      </Select>
-      <div>Current value: <code>{value}</code></div>
+<Story name="Severities" argTypes={{ severity: { control: false } }}>
+  {#snippet template({ children: _, severity: __, ...args })}
+    <div
+      style="display: grid; grid-template-columns: min-content; gap: 0.5rem;"
+    >
+      {#each [...MODIFIER_FAMILIES.severity, "base"] as const as severity (severity)}
+        <Select {...args} {severity}>
+          <option value="" disabled selected>{severity || "base"}</option>
+          <option value="cosmic-cuttlefish">Cosmic Cuttlefish</option>
+          <option value="bionic-beaver">Bionic Beaver</option>
+          <option value="xenial-xerus">Xenial Xerus</option>
+        </Select>
+      {/each}
     </div>
   {/snippet}
 </Story>
@@ -85,15 +82,15 @@
   {#snippet template(args)}
     <div class="row">
       <label for="multiple-distros">Your favorite releases:</label>
-      <Select bind:value={values} multiple id="multiple-distros" {...args}>
+      <Select bind:value={values} id="multiple-distros" {...args}>
         <option value="cosmic-cuttlefish">Cosmic Cuttlefish</option>
         <option value="bionic-beaver">Bionic Beaver</option>
         <option value="xenial-xerus">Xenial Xerus</option>
         <option value="focal-fossa">Focal Fossa</option>
         <option value="jammy-jellyfish">Jammy Jellyfish</option>
       </Select>
-      <div>Current value: <code>{JSON.stringify(values)}</code></div>
     </div>
+    <div>Current value: <code>{JSON.stringify(values)}</code></div>
   {/snippet}
 </Story>
 
