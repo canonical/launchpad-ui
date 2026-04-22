@@ -68,10 +68,11 @@
       <Select
         id="{id}-arch"
         name={JobsQueryParam.FilterArchitecture}
-        class="select"
         onchange={updateFilters}
         aria-controls={tableId}
         value={architectureFilterValue ?? ""}
+        severity="base"
+        style="font: var(--lp-typography-paragraph-s);"
       >
         <option value="">All</option>
         {#each architectureValues as arch (arch)}
@@ -84,10 +85,11 @@
       <Select
         id="{id}-status"
         name={JobsQueryParam.FilterStatus}
-        class="select"
         onchange={updateFilters}
         aria-controls={tableId}
         value={statusFilterValue ?? ""}
+        severity="base"
+        style="font: var(--lp-typography-paragraph-s);"
       >
         <option value="">All</option>
         {#each jobStatusValues as status (status)}
@@ -127,15 +129,6 @@
 
     label {
       color: var(--lp-color-text-muted);
-    }
-
-    :global {
-      /* TODO: Artificial specificity boost due to scoping + ds class selector. Remove when Select upstreamed */
-      .select.select select {
-        background-color: transparent;
-        border: none;
-        font: var(--lp-typography-paragraph-s);
-      }
     }
   }
 </style>

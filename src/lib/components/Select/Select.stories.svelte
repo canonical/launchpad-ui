@@ -1,4 +1,5 @@
 <script module lang="ts">
+  import { MODIFIER_FAMILIES } from "@canonical/svelte-ds-app-launchpad";
   import { defineMeta } from "@storybook/addon-svelte-csf";
   import Select from "./Select.svelte";
 
@@ -41,7 +42,6 @@
     },
   });
 
-  let value = $state<string>();
   let values = $state<string[]>([]);
 </script>
 
@@ -56,25 +56,19 @@
   {/snippet}
 </Story>
 
-<Story name="Single option">
-  <!--
-    <script lang="ts">
-      let value = $state("");
-    </script>
-  -->
-  {#snippet template(args)}
-    <div class="row">
-      <div>
-        <label for="single-distro">Choose a distro</label>
-        <br />
-        <Select bind:value id="single-distro" {...args}>
-          <option value="" disabled selected>Select an option</option>
+<Story name="Severities" argTypes={{ severity: { control: false } }}>
+  {#snippet template({ children: _, severity: __, ...args })}
+    <div
+      style="display: grid; grid-template-columns: min-content; gap: 0.5rem;"
+    >
+      {#each [...MODIFIER_FAMILIES.severity, "base"] as const as severity (severity)}
+        <Select {...args} {severity}>
+          <option value="" disabled selected>{severity || "base"}</option>
           <option value="cosmic-cuttlefish">Cosmic Cuttlefish</option>
           <option value="bionic-beaver">Bionic Beaver</option>
           <option value="xenial-xerus">Xenial Xerus</option>
         </Select>
-      </div>
-      <div>Current value: <code>{value}</code></div>
+      {/each}
     </div>
   {/snippet}
 </Story>
@@ -87,18 +81,16 @@
   -->
   {#snippet template(args)}
     <div class="row">
-      <div>
-        <label for="multiple-distros">Choose your favorite distros</label>
-        <br />
-        <Select bind:value={values} multiple id="multiple-distros" {...args}>
-          <option value="" disabled>Select...</option>
-          <option value="cosmic-cuttlefish">Cosmic Cuttlefish</option>
-          <option value="bionic-beaver">Bionic Beaver</option>
-          <option value="xenial-xerus">Xenial Xerus</option>
-        </Select>
-      </div>
-      <div>Current value: <code>{JSON.stringify(values)}</code></div>
+      <label for="multiple-distros">Your favorite releases:</label>
+      <Select bind:value={values} id="multiple-distros" {...args}>
+        <option value="cosmic-cuttlefish">Cosmic Cuttlefish</option>
+        <option value="bionic-beaver">Bionic Beaver</option>
+        <option value="xenial-xerus">Xenial Xerus</option>
+        <option value="focal-fossa">Focal Fossa</option>
+        <option value="jammy-jellyfish">Jammy Jellyfish</option>
+      </Select>
     </div>
+    <div>Current value: <code>{JSON.stringify(values)}</code></div>
   {/snippet}
 </Story>
 
@@ -111,7 +103,7 @@
   {/snippet}
 </Story>
 
-<Story name="Invalid" args={{ required: true, value: "" }}>
+<Story name="Invalid" args={{ "aria-invalid": true }}>
   {#snippet template(args)}
     <Select {...args}>
       <option value="" disabled selected>Select an option</option>
