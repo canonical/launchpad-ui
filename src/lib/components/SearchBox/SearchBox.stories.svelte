@@ -7,7 +7,28 @@
     tags: ["autodocs"],
     component: SearchBox,
     argTypes: {
-      onclick: { control: false },
+      value: {
+        control: { type: "text" },
+        description: "The value of the search box.\n\n**@bindable**",
+        table: {
+          category: "properties",
+          type: { summary: "string" },
+        },
+        defaultValue: "",
+      },
+      placeholder: {
+        control: { type: "text" },
+        description:
+          "The placeholder text displayed in the search box when it is empty.",
+        table: {
+          category: "properties",
+          type: { summary: "string" },
+        },
+        defaultValue: "",
+      },
+      onSearchButtonClick: {
+        control: { disable: true },
+      },
     },
     args: {
       "aria-label": "Search articles",

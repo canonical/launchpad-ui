@@ -1,17 +1,12 @@
 /* @canonical/generator-ds 0.10.0-experimental.4 */
 
-import type { HTMLInputAttributes, MouseEventHandler } from "svelte/elements";
+import type { TextInputPrimitiveProps } from "@canonical/svelte-ds-app-launchpad/internal";
+import type { MouseEventHandler } from "svelte/elements";
 
 export interface SearchBoxProps extends Omit<
-  HTMLInputAttributes,
-  "children" | "onclick" | "type"
+  TextInputPrimitiveProps,
+  "children" | "type"
 > {
-  /**
-   * The value of the search input.
-   *
-   * **@bindable**
-   */
-  value?: string;
   /**
    * The accessible name for the input.
    *
@@ -21,7 +16,7 @@ export interface SearchBoxProps extends Omit<
   /**
    * Click event handler for the search button.
    */
-  onclick?: MouseEventHandler<HTMLButtonElement>;
+  onSearchButtonClick?: MouseEventHandler<HTMLButtonElement>;
   /**
    * Whether to apply the invalid styles to the input when the input fails validation (e.g., required but empty).
    */

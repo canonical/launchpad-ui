@@ -51,6 +51,7 @@ vi.mock("./utils/getSiblingOptionId.js", () => {
 describe("Search component", () => {
   const baseProps = {
     "aria-label": "Search",
+    "data-testid": "search-box",
   } satisfies ComponentProps<typeof Component>;
 
   it("renders", async () => {
