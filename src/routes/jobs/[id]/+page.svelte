@@ -121,7 +121,7 @@
       </div>
     {:else}
       <NoLogs
-        message="The log stream will appear here once the build starts."
+        message="The log will appear here once it is available."
       />
     {/if}
   </section>
