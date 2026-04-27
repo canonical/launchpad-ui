@@ -1,10 +1,9 @@
 import { sveltekit } from "@sveltejs/kit/vite";
 import { playwright } from "@vitest/browser-playwright";
-import devtoolsJson from "vite-plugin-devtools-json";
 import { defineConfig } from "vitest/config";
 
 export default defineConfig({
-  plugins: [sveltekit(), devtoolsJson()],
+  plugins: [sveltekit()],
   test: {
     environment: "node",
     include: ["src/**/*.tests.ts"],
