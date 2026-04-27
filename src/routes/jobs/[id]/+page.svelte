@@ -120,9 +120,7 @@
         {/if}
       </div>
     {:else}
-      <NoLogs
-        message="The log will appear here once it is available."
-      />
+      <NoLogs message="The log will appear here once it is available." />
     {/if}
   </section>
 </main>
