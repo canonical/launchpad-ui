@@ -1,0 +1,1 @@
+- [ ] `eslint` has to stay at `^9` until `eslint-plugin-import` supports v10. See [import-js/eslint-plugin-import#3227](https://github.com/import-js/eslint-plugin-import/issues/3227).
