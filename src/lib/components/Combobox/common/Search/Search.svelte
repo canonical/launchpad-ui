@@ -21,9 +21,8 @@
     onkeydownProp?.(event);
     if (!comboboxContext || !comboboxContext.listBoxElement) return;
 
-    let nextId: string | null = null;
     if (event.key === "ArrowDown" || event.key === "ArrowUp") {
-      nextId = getSiblingOptionId(
+      const nextId = getSiblingOptionId(
         comboboxContext.listBoxElement,
         comboboxContext.activeDescendant,
         event.key === "ArrowDown" ? "next" : "previous",
