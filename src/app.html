@@ -6,14 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     %sveltekit.head%
   </head>
-  <!--
-    For some unknown reason, preloading links (sometimes) causes the pages' data coming from their server load functions to be undefined if read in a reactive context.
-
-    Likely the issue will be resolved by: https://github.com/sveltejs/svelte/pull/17335.
-
-    TODO: Re-enable preloading when the above is fixed. If the above PR does not help - file a new issue.
+  <!-- 
+    At the moment, SvelteKit doesn't seem to be forking on link hover to preload data of remote queries that depend on the URL state. Investigate whether this is intended. If not maybe it's better to stick with load functions after all?
   -->
-  <body data-sveltekit-preload-data="off">
+  <body data-sveltekit-preload-data="hover">
     <div style="display: contents">%sveltekit.body%</div>
   </body>
 </html>
