@@ -11,14 +11,22 @@
     NoLogs,
     TrailingBar,
   } from "$lib/modules/job-manager/job-details/index.js";
+  import {
+    getJobDetails,
+    getJobLog,
+  } from "$lib/modules/job-manager/job-details/job-details.remote.js";
   import { useFullScreen } from "$lib/modules/job-manager/useFullScreen.svelte.js";
   import type { PageProps } from "./$types";
   import { browser } from "$app/environment";
   import { resolve } from "$app/paths";
 
-  let { data }: PageProps = $props();
+  let { params }: PageProps = $props();
 
-  const job = $derived(data.job);
+  const jobQuery = $derived(getJobDetails(params.id));
+  const logQuery = $derived(getJobLog(params.id));
+
+  const job = $derived(await jobQuery);
+  const log = $derived(await logQuery);
 
   let wrapLines = $state(false);
   let timeZone = $state<TimeZone>("UTC");
@@ -28,7 +36,7 @@
   const logBottomId = "log-bottom";
 
   const fullScreen = useFullScreen();
-  const defaultLog = $derived(
+  const defaultLogData = $derived(
     job.objects?.find(
       (obj) =>
         obj.object_type === "log" && obj.filename === defaultLogObjectName,
@@ -36,12 +44,12 @@
   );
 
   function defaultLogHref(inline: boolean) {
-    if (!defaultLog) return undefined;
+    if (!defaultLogData) return undefined;
 
     return jobManagerHref("/v1/jobs/{job_id}/object/{object_name}", {
       path: {
         job_id: job.id,
-        object_name: defaultLog.filename,
+        object_name: defaultLogData.filename,
       },
       query: {
         inline,
@@ -80,7 +88,7 @@
   {/if}
   <section class="log-container" class:log-full-screen={fullScreen.isEnabled}>
     <h2 class="visually-hidden" id={logHeaderId}>Log</h2>
-    {#if data.log.length}
+    {#if log.length}
       <LogHeader
         bind:wrapLines
         bind:timeZone
@@ -99,11 +107,11 @@
           {wrapLines}
           hideTimestamps={!showTimestamps}
         >
-          {#each data.log as { timestamp, message }, i (i)}
+          {#each log as { timestamp, message }, i (i)}
             <Log.Line
               id={i === 0
                 ? logTopId
-                : i === data.log.length - 1
+                : i === log.length - 1
                   ? logBottomId
                   : undefined}
               line={i + 1}
