@@ -5,11 +5,11 @@ import {
 } from "$lib/api/job-manager/types.js";
 
 export const architectureFilterSchema = v.fallback(
-  v.nullable(v.picklist(architectureValues)),
+  v.nullable(v.pipe(v.string(), v.picklist(architectureValues))),
   null,
 );
 
 export const statusFilterSchema = v.fallback(
-  v.nullable(v.picklist(jobStatusValues)),
+  v.nullable(v.pipe(v.string(), v.picklist(jobStatusValues))),
   null,
 );

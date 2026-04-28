@@ -1,19 +1,33 @@
 <script lang="ts">
   import { Spinner } from "@canonical/svelte-ds-app-launchpad";
-  import { Whoops } from "$lib/launchpad-components/index.js";
+  import Whoops from "$lib/launchpad-components/Whoops.svelte";
   import QueueTable from "$lib/modules/job-manager/jobs/QueueTable.svelte";
   import {
     JobsFilters,
     JobsPagination,
+    JobsQueryParam,
     JobsTable,
     toPageNumber,
   } from "$lib/modules/job-manager/jobs/index.js";
-  import type { PageProps } from "./$types.js";
+  import { getJobs } from "$lib/modules/job-manager/jobs/jobs.remote.js";
   import { browser } from "$app/environment";
-
-  let { data }: PageProps = $props();
+  import { page } from "$app/state";
 
   const tableId = $props.id();
+
+  const jobsQuery = $derived(
+    getJobs({
+      page: page.url.searchParams.get(JobsQueryParam.Page),
+      limit: page.url.searchParams.get(JobsQueryParam.Limit),
+      sort: page.url.searchParams.get(JobsQueryParam.Sort),
+      filters: {
+        architecture: page.url.searchParams.get(
+          JobsQueryParam.FilterArchitecture,
+        ),
+        status: page.url.searchParams.get(JobsQueryParam.FilterStatus),
+      },
+    }),
+  );
 </script>
 
 <main>
@@ -23,10 +37,11 @@
       The Launchpad build farm is an open-source system for building and testing
       packages.
     </p>
-    <QueueTable capacities={data.capacity.architectures} class="queue-table" />
+    <QueueTable class="queue-table" />
     <h2>Builds</h2>
     <JobsFilters {tableId} />
   </div>
+
   <!--
     This is quite interesting. If you just return the awaited data from a load function, you won't navigate to the page until the fetch completes. Returning a promise allows you to stream the response to the client. However, this means that you won't ever see the data if you don't have JS enabled (no way to consume the stream).
     
@@ -38,11 +53,8 @@
 
     NOTE: If we want to have the pending state being displayed during page/subpage navigation, the boundary has to exist in the +page.svelte file itself, as boundaries in +layout.svelte will not be recreated during navigation (see: https://svelte.dev/docs/svelte/svelte-boundary#Properties-pending).
   -->
-  <svelte:boundary
-    pending={browser ? pending : undefined}
-    onerror={(e) => console.error(e)}
-  >
-    {@const { data: jobs, metadata } = await data.jobsPromise}
+  <svelte:boundary pending={browser ? pending : undefined}>
+    {@const { data: jobs, metadata } = await jobsQuery}
     <div class="jobs-table-wrapper">
       <JobsTable {jobs} {tableId} />
       {#if metadata.total_count === 0}
@@ -57,8 +69,8 @@
     <div class="jobs-pagination-wrapper">
       <JobsPagination {metadata} {tableId} numJobs={jobs.length} />
     </div>
-    {#snippet failed()}
-      <Whoops status={500} message="Failed to load jobs" />
+    {#snippet failed(error)}
+      <Whoops {error} />
     {/snippet}
   </svelte:boundary>
 </main>

@@ -1,13 +1,11 @@
 import type { ValidationError } from "./types";
 
-export const extractErrorMessage = <
-  T extends
+export const extractErrorMessage = (
+  error:
     | {
         detail?: ValidationError[] | string;
       }
     | string,
->(
-  error: T,
 ) => {
   if (typeof error === "string") {
     return error;

@@ -10,6 +10,7 @@ const config = {
     adapter: adapter(),
     experimental: {
       remoteFunctions: true,
+      handleRenderingErrors: true,
     },
   },
   compilerOptions: {

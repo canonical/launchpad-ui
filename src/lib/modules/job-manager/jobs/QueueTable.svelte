@@ -1,18 +1,12 @@
 <script lang="ts">
-  import type {
-    CapacityArchitectureEntry,
-    JobStatus,
-    RunnerStatus,
-  } from "$lib/api/job-manager/types.js";
+  import type { JobStatus, RunnerStatus } from "$lib/api/job-manager/types.js";
+  import { getCapacity } from "./jobs.remote.js";
 
-  const {
-    capacities: rawCapacities,
-    class: className,
-  }: { capacities: CapacityArchitectureEntry[]; class?: string } = $props();
+  const { class: className }: { class?: string } = $props();
 
   // TODO: This can be removed once https://warthogs.atlassian.net/browse/LP-3772 is resolved
   const capacities = $derived(
-    rawCapacities.map((capacity) => ({
+    (await getCapacity()).architectures.map((capacity) => ({
       ...capacity,
       runners: {
         ...capacity.runners,
