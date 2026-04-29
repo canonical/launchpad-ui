@@ -9,6 +9,7 @@ import Component from "./Search.svelte";
 describe("Search SSR", () => {
   const baseProps = {
     "aria-label": "Search",
+    "data-testid": "search-box",
   } satisfies ComponentProps<typeof Component>;
 
   describe("basics", () => {

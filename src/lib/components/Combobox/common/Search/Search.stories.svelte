@@ -24,7 +24,7 @@
 <Story
   name="With invalid styles"
   args={{
-    invalidStyled: true,
+    shouldRenderInvalidStyles: true,
     placeholder: "Type at least 3 characters",
     required: true,
     minlength: 3,

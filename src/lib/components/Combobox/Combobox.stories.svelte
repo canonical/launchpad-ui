@@ -1,8 +1,11 @@
 <script module lang="ts">
-  import { Button, Popover } from "@canonical/svelte-ds-app-launchpad";
+  import {
+    Button,
+    Popover,
+    UserAvatar,
+  } from "@canonical/svelte-ds-app-launchpad";
   import { InformationIcon } from "@canonical/svelte-icons";
   import { defineMeta } from "@storybook/addon-svelte-csf";
-  import { UserAvatar } from "$lib/components/UserAvatar/index.js";
   import { Combobox } from "./index.js";
 
   const { Story } = defineMeta({

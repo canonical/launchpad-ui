@@ -1,7 +1,7 @@
 <!-- @canonical/generator-ds 0.9.1-experimental.0 -->
 
 <script lang="ts">
-  import { UserAvatar } from "$lib/components/UserAvatar/index.js";
+  import { UserAvatar } from "@canonical/svelte-ds-app-launchpad";
   import type { UserChipProps } from "./types.js";
 
   const componentCssClassName = "ds user-chip";
