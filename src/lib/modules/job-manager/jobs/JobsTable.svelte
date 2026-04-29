@@ -1,7 +1,7 @@
 <script lang="ts">
-  import { Link } from "@canonical/svelte-ds-app-launchpad";
+  import { Link, Table } from "@canonical/svelte-ds-app-launchpad";
   import type { JobRead } from "$lib/api/job-manager/types.js";
-  import { Table, UserChip } from "$lib/components/index.js";
+  import { UserChip } from "$lib/components/index.js";
   import { DateTime, JobStatusIcon } from "$lib/launchpad-components/index.js";
   import { JobsQueryParam } from "./queryParams.js";
   import { resolve } from "$app/paths";
@@ -87,7 +87,7 @@
       {#each headerCells as { key, label, sortable } (key)}
         {#if sortable}
           <Table.TH
-            sortDirection={// FIXME: $state.eager doesn't provide the value in SSR render, so if used the sort indicators aren't rendered in no-js. Investigate.
+            aria-sort={// FIXME: $state.eager doesn't provide the value in SSR render, so if used the sort indicators aren't rendered in no-js. Investigate.
             // $state.eager(
             sort?.field === key ? sort.direction : undefined}
           >

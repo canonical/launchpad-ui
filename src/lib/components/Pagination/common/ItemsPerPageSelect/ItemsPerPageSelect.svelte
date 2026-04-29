@@ -1,7 +1,7 @@
 <!-- @canonical/generator-ds 0.10.0-experimental.5 -->
 
 <script lang="ts">
-  import { Select } from "$lib/components/Select/index.js";
+  import { Select } from "@canonical/svelte-ds-app-launchpad";
   import { getPaginationContext } from "../../context.js";
   import type { ItemsPerPageSelectProps } from "./types.js";
   import "./styles.css";

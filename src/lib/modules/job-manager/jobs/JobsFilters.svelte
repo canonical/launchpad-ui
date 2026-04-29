@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Button } from "@canonical/svelte-ds-app-launchpad";
+  import { Button, Select } from "@canonical/svelte-ds-app-launchpad";
   import { CloseIcon } from "@canonical/svelte-icons";
   import type { HTMLSelectAttributes } from "svelte/elements";
   import * as v from "valibot";
@@ -7,7 +7,6 @@
     architectureValues,
     jobStatusValues,
   } from "$lib/api/job-manager/types.js";
-  import { Select } from "$lib/components/index.js";
   import { QueryParamHiddenInput } from "$lib/launchpad-components/index.js";
   import { architectureFilterSchema, statusFilterSchema } from "./filtering.js";
   import { JobsQueryParam } from "./queryParams.js";
