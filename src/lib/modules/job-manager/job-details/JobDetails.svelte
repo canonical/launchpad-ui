@@ -8,7 +8,7 @@
   import { DownloadIcon, FileIcon } from "@canonical/svelte-icons";
   import { jobManagerHref } from "$lib/api/job-manager/hrefClient.js";
   import type { JobRead } from "$lib/api/job-manager/types.js";
-  import { UserChip } from "$lib/components/index.js";
+  import { Accordion, UserChip } from "$lib/components/index.js";
   import {
     CommandList,
     DateTime,
@@ -137,11 +137,63 @@
       {/snippet}
     </PartialListDisclosure>
   </section>
-  <section>
-    <h2 class="section-header">Commands</h2>
-    <CommandList>
-      {#each job.commands as command, i (i)}
-        <!--
+  <Accordion class="job-accordion">
+    {#if artifacts?.length}
+      <Accordion.Item class="job-section">
+        {#snippet heading()}
+          <div class="artifacts-header">
+            <h2>{artifacts.length} Artifacts</h2>
+            <Button
+              href={jobManagerHref("/v1/jobs/{job_id}/artifacts/download", {
+                path: { job_id: job.id },
+              })}
+              density="dense"
+              severity="base"
+              download
+              target="_blank"
+              rel="noopener noreferrer"
+              onclick={(event: MouseEvent) => event.stopPropagation()}
+            >
+              {#snippet iconLeft()}
+                <DownloadIcon />
+              {/snippet}
+              Download All
+            </Button>
+          </div>
+        {/snippet}
+        <ul class="artifacts">
+          {#each artifacts as { size_bytes, object_type, filename } (`${object_type}/${filename}`)}
+            <li>
+              <Link
+                href={jobManagerHref("/v1/jobs/{job_id}/object/{object_name}", {
+                  path: {
+                    job_id: job.id,
+                    object_name: filename,
+                  },
+                })}
+                download
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <span class="icon-aligner">
+                  <FileIcon aria-hidden="true" />
+                </span>
+                <span class="artifact-name">
+                  {filename} ({bytesToHumanReadable(size_bytes ?? 0)})
+                </span>
+              </Link>
+            </li>
+          {/each}
+        </ul>
+      </Accordion.Item>
+    {/if}
+    <Accordion.Item class="job-section" open>
+      {#snippet heading()}
+        <h2>Commands</h2>
+      {/snippet}
+      <CommandList>
+        {#each job.commands as command, i (i)}
+          <!--
         TODO(job-manager):
           - pass precise command status (currently derived from job status)
           - command not as `unknown` but proper type
@@ -149,63 +201,15 @@
 
         TODO: Syntax highlighting for command
       -->
-        <CommandList.Command
-          status={job.status}
-          command={command as string}
-          href={undefined}
-        />
-      {/each}
-    </CommandList>
-  </section>
-  {#if artifacts?.length}
-    <section>
-      <div
-        class="section-header"
-        style="display: flex; justify-content: space-between; align-items: center;"
-      >
-        <h2>Artifacts</h2>
-        <Button
-          href={jobManagerHref("/v1/jobs/{job_id}/artifacts/download", {
-            path: { job_id: job.id },
-          })}
-          density="dense"
-          severity="base"
-          download
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          {#snippet iconLeft()}
-            <DownloadIcon />
-          {/snippet}
-          Download All
-        </Button>
-      </div>
-      <ul class="artifacts">
-        {#each artifacts as { size_bytes, object_type, filename } (`${object_type}/${filename}`)}
-          <li>
-            <Link
-              href={jobManagerHref("/v1/jobs/{job_id}/object/{object_name}", {
-                path: {
-                  job_id: job.id,
-                  object_name: filename,
-                },
-              })}
-              download
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <span class="icon-aligner">
-                <FileIcon aria-hidden="true" />
-              </span>
-              <span class="artifact-name">
-                {filename} ({bytesToHumanReadable(size_bytes ?? 0)})
-              </span>
-            </Link>
-          </li>
+          <CommandList.Command
+            status={job.status}
+            command={command as string}
+            href={undefined}
+          />
         {/each}
-      </ul>
-    </section>
-  {/if}
+      </CommandList>
+    </Accordion.Item>
+  </Accordion>
 </div>
 
 <style>
@@ -234,14 +238,31 @@
       margin-block-start: var(--lp-dimension-spacing-block-l);
     }
 
-    section + section {
-      margin-block-start: var(--lp-dimension-spacing-block-m);
-      padding-block-start: var(--lp-dimension-spacing-block-m);
-      border-block-start: var(--border-section-separator);
+    section {
+      padding-block-end: var(--lp-dimension-spacing-block-m);
+      border-block-end: var(--border-section-separator);
     }
 
-    .section-header {
-      margin-block-end: var(--lp-dimension-spacing-block-m);
+    :global(.job-accordion) {
+      --dimension-border-thickness-accordion: 0;
+      --dimension-radius-accordion: 0;
+    }
+
+    :global(.job-section) {
+      --color-border-accordion-item: var(--lp-color-border-low-contrast);
+      --dimension-padding-inline-accordion-summary: 0;
+      --dimension-padding-inline-accordion-content: 0;
+      --color-background-accordion-summary-hover: transparent;
+      --color-background-accordion-summary-active: transparent;
+    }
+
+    .artifacts-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--lp-dimension-spacing-inline-xs);
+      flex: 1;
+      min-width: 0;
     }
 
     .artifacts {
