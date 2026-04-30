@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Breadcrumbs } from "@canonical/svelte-ds-app-launchpad";
+  import { Breadcrumbs, Link } from "@canonical/svelte-ds-app-launchpad";
   import { MediaQuery } from "svelte/reactivity";
   import { defaultLogObjectName } from "$lib/api/job-manager/constants.js";
   import { jobManagerHref } from "$lib/api/job-manager/hrefClient.js";
@@ -24,8 +24,7 @@
   let timeZone = $state<TimeZone>("UTC");
   let showTimestamps = $state(true);
 
-  const logTopId = "log-top";
-  const logBottomId = "log-bottom";
+  const logLineId = (lineNumber: number) => `log-line-${lineNumber}`;
 
   const fullScreen = useFullScreen();
   const defaultLog = $derived(
@@ -57,11 +56,17 @@
   As a workaround, we detect this case and instead of scrolling to the top of the log, we scroll to the log header above it, which is outside of the overflow container.
 
   TODO: This can be removed once the bug is fixed in Chrome.
+
+  Update 2026-04-30: Fixed in Chrome 146;
   */
   const logHeaderId = "log-header";
   const needsFallbackScrollMarginFix = $derived(
     browser &&
       (window as { chrome?: unknown })?.chrome &&
+      parseInt(
+        navigator.userAgent.match(/Chrom(e|ium)\/(\d+)/)?.[2] ?? "0",
+        10,
+      ) < 146 &&
       !fullScreen.isEnabled &&
       new MediaQuery("max-width: 1036px").current,
   );
@@ -89,8 +94,8 @@
         downloadLogUrl={defaultLogHref(false)}
         scrollToTopHref={needsFallbackScrollMarginFix
           ? `#${logHeaderId}`
-          : `#${logTopId}`}
-        scrollToBottomHref={`#${logBottomId}`}
+          : `#${logLineId(1)}`}
+        scrollToBottomHref={`#${logLineId(data.log.length)}`}
       />
       <div class="log-contents">
         <Log
@@ -100,15 +105,13 @@
           hideTimestamps={!showTimestamps}
         >
           {#each data.log as { timestamp, message }, i (i)}
-            <Log.Line
-              id={i === 0
-                ? logTopId
-                : i === data.log.length - 1
-                  ? logBottomId
-                  : undefined}
-              line={i + 1}
-              {timestamp}>{message}</Log.Line
-            >
+            {@const lineNumber = i + 1}
+            <Log.Line id={logLineId(lineNumber)} {timestamp}>
+              {#snippet line()}
+                <Link href="#{logLineId(lineNumber)}" soft>{lineNumber}</Link>
+              {/snippet}
+              {message}
+            </Log.Line>
           {/each}
         </Log>
         {#if job.status === "EXECUTING" && job.started_at}
@@ -164,6 +167,15 @@
     &.log-full-screen {
       border-inline-start: none;
     }
+
+    :global {
+      [href^="#log-line-"] {
+        &:hover,
+        &:focus-visible {
+          color: var(--lp-color-text-default);
+        }
+      }
+    }
   }
 
   @media (max-width: 1036px) {
@@ -181,7 +193,7 @@
         border-block-start: var(--border-section-separator);
 
         :global {
-          #log-top {
+          [id^="log-line-"] {
             scroll-margin-top: var(--header-height);
           }
         }
