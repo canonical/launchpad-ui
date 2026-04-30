@@ -76,7 +76,7 @@ export interface paths {
          *         job_id: Unique identifier of the job
          *         db: Database session dependency
          *         token: Optional API access token for authorization (required for
-         *         private jobs)
+         *             private jobs)
          *
          *     Returns:
          *         JobRead: The requested job object
@@ -132,8 +132,8 @@ export interface paths {
          *         db: Database session dependency
          *
          *     Returns:
-         *         dict: Health status information including CPU, RAM, disk usage, and job
-         *             status
+         *         dict: Health status information including CPU, RAM, disk usage,
+         *             and job status
          *
          *     Raises:
          *         HTTPException 401: If authorization token is invalid or missing
@@ -191,11 +191,9 @@ export interface paths {
          *         dict: Confirmation message of job cancellation
          *
          *     Raises:
-         *         HTTPException 400: If job cannot be cancelled or is already in final
-         *             state
+         *         HTTPException 400: If job is already in a final state
          *         HTTPException 401: If job is private and no valid token is provided
-         *         HTTPException 403: If user doesn't have permission to cancel private
-         *             job
+         *         HTTPException 403: If user doesn't have permission to cancel the job
          *         HTTPException 404: If job is not found
          */
         put: operations["cancel_job_v1_jobs__job_id__cancel_put"];
@@ -221,23 +219,27 @@ export interface paths {
          *         job_id: Unique identifier of the job
          *         object_name: Path to the object, with format: {type}/{filename}
          *                      where type is 'artifact', 'log', or 'metadata'
-         *                      (URL-encoded). Also supports legacy format without type.
+         *                      (URL-encoded). Also supports legacy format without
+         *                      type.
          *         inline: If True, display inline in browser
          *                 (Content-Disposition: inline) and force text/plain for
          *                 files listed in the job's log_urls. Defaults to False.
-         *         omit_content_length: If True, do not include Content-Length header.
+         *         omit_content_length: If True, do not include Content-Length
+         *             header.
          *         db: Database session dependency
          *
          *     Returns:
-         *         StreamingResponse: Stream of the requested object data with appropriate
-         *             headers
+         *         StreamingResponse: Stream of the requested object data with
+         *             appropriate headers
          *
          *     Raises:
-         *         HTTPException 401: If job is private and no valid token is provided
-         *         HTTPException 403: If user doesn't have permission to view private job
-         *                            or access validation fails
+         *         HTTPException 401: If job is private and no valid token is
+         *             provided
+         *         HTTPException 403: If user doesn't have permission to view
+         *             private job or access validation fails
          *         HTTPException 404: If job or object is not found
-         *         HTTPException 500: If object cannot be accessed or S3 error occurs
+         *         HTTPException 500: If object cannot be accessed or S3 error
+         *             occurs
          */
         get: operations["download_object_v1_jobs__job_id__object__object_name__get"];
         put?: never;
@@ -246,8 +248,7 @@ export interface paths {
         options?: never;
         /**
          * Get Object Metadata
-         * @description Get metadata (headers only) for an artifact or object associated with a
-         *     job.
+         * @description Get metadata (headers only) for an object associated with a job.
          *
          *     Args:
          *         job_id: Unique identifier of the job
@@ -258,14 +259,15 @@ export interface paths {
          *             private jobs)
          *
          *     Returns:
-         *         JSONResponse: Empty response with Content-Type and Content-Length
+         *         Response: Empty response with Content-Type and Content-Length
          *             headers
          *
          *     Raises:
          *         HTTPException 404: If job or object is not found
-         *         HTTPException 401: If job is private and no valid token is provided
-         *         HTTPException 403: If user doesn't have permission to view private job
-         *                            or access validation fails
+         *         HTTPException 401: If job is private and no valid token is
+         *             provided
+         *         HTTPException 403: If user doesn't have permission to view the
+         *             private job or access validation fails
          *         HTTPException 500: If object cannot be accessed
          */
         head: operations["get_object_metadata_v1_jobs__job_id__object__object_name__head"];
@@ -290,13 +292,17 @@ export interface paths {
          *             private jobs)
          *
          *     Returns:
-         *         StreamingResponse: Stream of a zip file containing all job artifacts
+         *         StreamingResponse: Stream of a zip file containing all job
+         *             artifacts
          *
          *     Raises:
-         *         HTTPException 401: If job is private and no valid token is provided
-         *         HTTPException 403: If user doesn't have permission to view private job
+         *         HTTPException 401: If job is private and no valid token is
+         *             provided
+         *         HTTPException 403: If user doesn't have permission to view
+         *             private job
          *         HTTPException 404: If job is not found or has no artifacts
-         *         HTTPException 500: If artifacts cannot be accessed or S3 error occurs
+         *         HTTPException 500: If artifacts cannot be accessed or S3 error
+         *             occurs
          */
         get: operations["download_all_artifacts_v1_jobs__job_id__artifacts_download_get"];
         put?: never;
@@ -320,7 +326,7 @@ export interface paths {
          * Generate Token
          * @description Generate a JWT token for job authentication and set up SSH keys.
          *
-         *     SSH keys are now stored in the database with encryption for the private
+         *     SSH keys are stored in the database with encryption for the private
          *     key, enabling multi-instance deployments without shared filesystem
          *     requirements.
          *
@@ -328,7 +334,7 @@ export interface paths {
          *         job_id: Unique identifier of the job
          *         request: FastAPI request object potentially containing SSH keys
          *         db: Database session dependency
-         *         token: API access token for authorization
+         *         _: API access token for authorization
          *
          *     Returns:
          *         dict: Contains the generated JWT token
@@ -623,11 +629,18 @@ export interface paths {
          * Health Check
          * @description Health check endpoint for monitoring service status.
          *
-         *     This endpoint can be used by monitoring tools and load balancers to
-         *     verify the service is operational.
+         *     Probes all core dependencies (database, object storage when
+         *     configured) and returns a structured payload with individual
+         *     and aggregate status values.
+         *
+         *     The global status is ``operational`` only when every tracked
+         *     dependency is fully functional.  Any issue raises it to
+         *     ``degraded`` or ``outage``.
          *
          *     Returns:
-         *         dict: Contains status indicating service health
+         *         HealthResponse: Structured health payload with global
+         *             status, optional message, and per-dependency details.
+         *             Returns HTTP 503 when the global status is ``outage``.
          */
         get: operations["health_check_health_get"];
         put?: never;
@@ -723,10 +736,45 @@ export interface components {
                 [key: string]: number;
             };
         };
+        /**
+         * DependencyHealth
+         * @description Health status of a single tracked dependency.
+         *
+         *     Attributes:
+         *         status: Current health status of the dependency.
+         *         message: Optional human-readable detail, e.g. an error
+         *             summary.  Omitted from the response when ``None``.
+         */
+        DependencyHealth: {
+            status: components["schemas"]["ServiceStatus"];
+            /** Message */
+            message?: string | null;
+        };
         /** HTTPValidationError */
         HTTPValidationError: {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
+        };
+        /**
+         * HealthResponse
+         * @description Structured payload returned by the /health endpoint.
+         *
+         *     Attributes:
+         *         status: Aggregate status computed as the worst individual
+         *             dependency status.
+         *         message: Optional human-readable summary describing which
+         *             dependencies are affected.  Omitted when all
+         *             dependencies are operational.
+         *         details: Per-dependency health keyed by display name.
+         */
+        HealthResponse: {
+            status: components["schemas"]["ServiceStatus"];
+            /** Message */
+            message?: string | null;
+            /** Details */
+            details: {
+                [key: string]: components["schemas"]["DependencyHealth"];
+            };
         };
         /**
          * JobCreate
@@ -826,6 +874,12 @@ export interface components {
              * @example large
              */
             vm_size: string;
+            /**
+             * @example {
+             *       "gpu": true
+             *     }
+             */
+            runner_options?: components["schemas"]["RunnerOptions"];
             /**
              * Private
              * @default false
@@ -1000,6 +1054,12 @@ export interface components {
              * @example large
              */
             vm_size: string;
+            /**
+             * @example {
+             *       "gpu": true
+             *     }
+             */
+            runner_options?: components["schemas"]["RunnerOptions"];
             /**
              * Private
              * @default false
@@ -1268,6 +1328,22 @@ export interface components {
             job_id?: number | null;
             job_status?: components["schemas"]["JobStatus"] | null;
         };
+        /**
+         * RunnerOptions
+         * @description Runner configuration options for a job.
+         *
+         *     Attributes:
+         *         gpu: Whether the job requires a GPU-enabled runner.
+         */
+        RunnerOptions: {
+            /**
+             * Gpu
+             * @description Require a GPU-enabled runner.
+             * @default false
+             * @example true
+             */
+            gpu: boolean;
+        };
         /** RunnerRegisterResponse */
         RunnerRegisterResponse: {
             /** Id */
@@ -1291,6 +1367,15 @@ export interface components {
          * @enum {string}
          */
         Series: "bionic" | "focal" | "jammy" | "mantic" | "noble";
+        /**
+         * ServiceStatus
+         * @description Possible statuses for a tracked service dependency.
+         *
+         *     Members are ordered from least to most severe:
+         *     ``operational`` < ``degraded`` < ``outage``.
+         * @enum {string}
+         */
+        ServiceStatus: "operational" | "degraded" | "outage";
         /** ValidationError */
         ValidationError: {
             /** Location */
@@ -1316,7 +1401,9 @@ export type CapacityArchitectureEntry = components['schemas']['CapacityArchitect
 export type CapacityJobsStats = components['schemas']['CapacityJobsStats'];
 export type CapacityResponse = components['schemas']['CapacityResponse'];
 export type CapacityRunnersStats = components['schemas']['CapacityRunnersStats'];
+export type DependencyHealth = components['schemas']['DependencyHealth'];
 export type HttpValidationError = components['schemas']['HTTPValidationError'];
+export type HealthResponse = components['schemas']['HealthResponse'];
 export type JobCreate = components['schemas']['JobCreate'];
 export type JobObjectRead = components['schemas']['JobObjectRead'];
 export type JobPriorityUpdate = components['schemas']['JobPriorityUpdate'];
@@ -1330,9 +1417,11 @@ export type RunnerHealthResponse = components['schemas']['RunnerHealthResponse']
 export type RunnerHealthUpdate = components['schemas']['RunnerHealthUpdate'];
 export type RunnerHealthUpdateResponse = components['schemas']['RunnerHealthUpdateResponse'];
 export type RunnerListItem = components['schemas']['RunnerListItem'];
+export type RunnerOptions = components['schemas']['RunnerOptions'];
 export type RunnerRegisterResponse = components['schemas']['RunnerRegisterResponse'];
 export type RunnerStatus = components['schemas']['RunnerStatus'];
 export type Series = components['schemas']['Series'];
+export type ServiceStatus = components['schemas']['ServiceStatus'];
 export type ValidationError = components['schemas']['ValidationError'];
 export type $defs = Record<string, never>;
 export interface operations {
@@ -2004,7 +2093,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": unknown;
+                    "application/json": components["schemas"]["HealthResponse"];
                 };
             };
         };
@@ -2023,3 +2112,4 @@ export const jobStatusValues: ReadonlyArray<FlattenedDeepRequired<components>["s
 export const objectTypeValues: ReadonlyArray<FlattenedDeepRequired<components>["schemas"]["ObjectType"]> = ["artifact", "log", "metadata"];
 export const runnerStatusValues: ReadonlyArray<FlattenedDeepRequired<components>["schemas"]["RunnerStatus"]> = ["CREATING", "IDLE", "BUSY", "REBUILDING", "DELETING", "ERROR"];
 export const seriesValues: ReadonlyArray<FlattenedDeepRequired<components>["schemas"]["Series"]> = ["bionic", "focal", "jammy", "mantic", "noble"];
+export const serviceStatusValues: ReadonlyArray<FlattenedDeepRequired<components>["schemas"]["ServiceStatus"]> = ["operational", "degraded", "outage"];

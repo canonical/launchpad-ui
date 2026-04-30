@@ -1,4 +1,4 @@
-# Source commit: 8de5dc294dbf3cd342829d479b3a942c49eb7691 (job-manager:main)
+# Source commit: cf31428ba2c455fb7610fe1276be83d737e66542 (~ikoruk/job-manager:health-check)
 openapi: 3.1.0
 info:
   title: Job Manager API
@@ -189,7 +189,7 @@ paths:
             job_id: Unique identifier of the job
             db: Database session dependency
             token: Optional API access token for authorization (required for
-            private jobs)
+                private jobs)
 
         Returns:
             JobRead: The requested job object
@@ -332,8 +332,8 @@ paths:
             db: Database session dependency
 
         Returns:
-            dict: Health status information including CPU, RAM, disk usage, and job
-                status
+            dict: Health status information including CPU, RAM, disk usage,
+                and job status
 
         Raises:
             HTTPException 401: If authorization token is invalid or missing
@@ -375,11 +375,9 @@ paths:
             dict: Confirmation message of job cancellation
 
         Raises:
-            HTTPException 400: If job cannot be cancelled or is already in final
-                state
+            HTTPException 400: If job is already in a final state
             HTTPException 401: If job is private and no valid token is provided
-            HTTPException 403: If user doesn't have permission to cancel private
-                job
+            HTTPException 403: If user doesn't have permission to cancel the job
             HTTPException 404: If job is not found
       operationId: cancel_job_v1_jobs__job_id__cancel_put
       parameters:
@@ -413,23 +411,27 @@ paths:
             job_id: Unique identifier of the job
             object_name: Path to the object, with format: {type}/{filename}
                          where type is 'artifact', 'log', or 'metadata'
-                         (URL-encoded). Also supports legacy format without type.
+                         (URL-encoded). Also supports legacy format without
+                         type.
             inline: If True, display inline in browser
                     (Content-Disposition: inline) and force text/plain for
                     files listed in the job's log_urls. Defaults to False.
-            omit_content_length: If True, do not include Content-Length header.
+            omit_content_length: If True, do not include Content-Length
+                header.
             db: Database session dependency
 
         Returns:
-            StreamingResponse: Stream of the requested object data with appropriate
-                headers
+            StreamingResponse: Stream of the requested object data with
+                appropriate headers
 
         Raises:
-            HTTPException 401: If job is private and no valid token is provided
-            HTTPException 403: If user doesn't have permission to view private job
-                               or access validation fails
+            HTTPException 401: If job is private and no valid token is
+                provided
+            HTTPException 403: If user doesn't have permission to view
+                private job or access validation fails
             HTTPException 404: If job or object is not found
-            HTTPException 500: If object cannot be accessed or S3 error occurs
+            HTTPException 500: If object cannot be accessed or S3 error
+                occurs
       operationId: download_object_v1_jobs__job_id__object__object_name__get
       parameters:
       - name: job_id
@@ -479,8 +481,7 @@ paths:
       - jobs
       summary: Get Object Metadata
       description: |-
-        Get metadata (headers only) for an artifact or object associated with a
-        job.
+        Get metadata (headers only) for an object associated with a job.
 
         Args:
             job_id: Unique identifier of the job
@@ -491,14 +492,15 @@ paths:
                 private jobs)
 
         Returns:
-            JSONResponse: Empty response with Content-Type and Content-Length
+            Response: Empty response with Content-Type and Content-Length
                 headers
 
         Raises:
             HTTPException 404: If job or object is not found
-            HTTPException 401: If job is private and no valid token is provided
-            HTTPException 403: If user doesn't have permission to view private job
-                               or access validation fails
+            HTTPException 401: If job is private and no valid token is
+                provided
+            HTTPException 403: If user doesn't have permission to view the
+                private job or access validation fails
             HTTPException 500: If object cannot be accessed
       operationId: get_object_metadata_v1_jobs__job_id__object__object_name__head
       parameters:
@@ -541,13 +543,17 @@ paths:
                 private jobs)
 
         Returns:
-            StreamingResponse: Stream of a zip file containing all job artifacts
+            StreamingResponse: Stream of a zip file containing all job
+                artifacts
 
         Raises:
-            HTTPException 401: If job is private and no valid token is provided
-            HTTPException 403: If user doesn't have permission to view private job
+            HTTPException 401: If job is private and no valid token is
+                provided
+            HTTPException 403: If user doesn't have permission to view
+                private job
             HTTPException 404: If job is not found or has no artifacts
-            HTTPException 500: If artifacts cannot be accessed or S3 error occurs
+            HTTPException 500: If artifacts cannot be accessed or S3 error
+                occurs
       operationId: download_all_artifacts_v1_jobs__job_id__artifacts_download_get
       parameters:
       - name: job_id
@@ -576,7 +582,7 @@ paths:
       description: |-
         Generate a JWT token for job authentication and set up SSH keys.
 
-        SSH keys are now stored in the database with encryption for the private
+        SSH keys are stored in the database with encryption for the private
         key, enabling multi-instance deployments without shared filesystem
         requirements.
 
@@ -584,7 +590,7 @@ paths:
             job_id: Unique identifier of the job
             request: FastAPI request object potentially containing SSH keys
             db: Database session dependency
-            token: API access token for authorization
+            _: API access token for authorization
 
         Returns:
             dict: Contains the generated JWT token
@@ -942,18 +948,26 @@ paths:
       description: |-
         Health check endpoint for monitoring service status.
 
-        This endpoint can be used by monitoring tools and load balancers to
-        verify the service is operational.
+        Probes all core dependencies (database, object storage when
+        configured) and returns a structured payload with individual
+        and aggregate status values.
+
+        The global status is ``operational`` only when every tracked
+        dependency is fully functional.  Any issue raises it to
+        ``degraded`` or ``outage``.
 
         Returns:
-            dict: Contains status indicating service health
+            HealthResponse: Structured health payload with global
+                status, optional message, and per-dependency details.
+                Returns HTTP 503 when the global status is ``outage``.
       operationId: health_check_health_get
       responses:
         '200':
           description: Successful Response
           content:
             application/json:
-              schema: {}
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
 components:
   schemas:
     Architecture:
@@ -1062,6 +1076,26 @@ components:
       - status_counts
       title: CapacityRunnersStats
       description: Runner statistics for a given architecture.
+    DependencyHealth:
+      properties:
+        status:
+          $ref: '#/components/schemas/ServiceStatus'
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+      type: object
+      required:
+      - status
+      title: DependencyHealth
+      description: |-
+        Health status of a single tracked dependency.
+
+        Attributes:
+            status: Current health status of the dependency.
+            message: Optional human-readable detail, e.g. an error
+                summary.  Omitted from the response when ``None``.
     HTTPValidationError:
       properties:
         detail:
@@ -1071,6 +1105,35 @@ components:
           title: Detail
       type: object
       title: HTTPValidationError
+    HealthResponse:
+      properties:
+        status:
+          $ref: '#/components/schemas/ServiceStatus'
+        message:
+          anyOf:
+          - type: string
+          - type: 'null'
+          title: Message
+        details:
+          additionalProperties:
+            $ref: '#/components/schemas/DependencyHealth'
+          type: object
+          title: Details
+      type: object
+      required:
+      - status
+      - details
+      title: HealthResponse
+      description: |-
+        Structured payload returned by the /health endpoint.
+
+        Attributes:
+            status: Aggregate status computed as the worst individual
+                dependency status.
+            message: Optional human-readable summary describing which
+                dependencies are affected.  Omitted when all
+                dependencies are operational.
+            details: Per-dependency health keyed by display name.
     JobCreate:
       properties:
         title:
@@ -1156,6 +1219,10 @@ components:
           default: ''
           examples:
           - large
+        runner_options:
+          $ref: '#/components/schemas/RunnerOptions'
+          examples:
+          - gpu: true
         private:
           type: boolean
           title: Private
@@ -1333,6 +1400,10 @@ components:
           default: ''
           examples:
           - large
+        runner_options:
+          $ref: '#/components/schemas/RunnerOptions'
+          examples:
+          - gpu: true
         private:
           type: boolean
           title: Private
@@ -1669,6 +1740,23 @@ components:
       - status
       title: RunnerListItem
       description: Model for runner list item.
+    RunnerOptions:
+      properties:
+        gpu:
+          type: boolean
+          title: Gpu
+          description: Require a GPU-enabled runner.
+          default: false
+          examples:
+          - true
+      additionalProperties: false
+      type: object
+      title: RunnerOptions
+      description: |-
+        Runner configuration options for a job.
+
+        Attributes:
+            gpu: Whether the job requires a GPU-enabled runner.
     RunnerRegisterResponse:
       properties:
         id:
@@ -1709,6 +1797,18 @@ components:
       - noble
       title: Series
       description: Supported Ubuntu series.
+    ServiceStatus:
+      type: string
+      enum:
+      - operational
+      - degraded
+      - outage
+      title: ServiceStatus
+      description: |-
+        Possible statuses for a tracked service dependency.
+
+        Members are ordered from least to most severe:
+        ``operational`` < ``degraded`` < ``outage``.
     ValidationError:
       properties:
         loc:

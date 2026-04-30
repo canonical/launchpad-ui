@@ -2,6 +2,7 @@
   import { Spinner } from "@canonical/svelte-ds-app-launchpad";
   import { Whoops } from "$lib/launchpad-components/index.js";
   import QueueTable from "$lib/modules/job-manager/jobs/QueueTable.svelte";
+  import SystemStatus from "$lib/modules/job-manager/jobs/SystemStatus.svelte";
   import {
     JobsFilters,
     JobsPagination,
@@ -18,12 +19,22 @@
 
 <main>
   <div class="top-section">
-    <h1>Launchpad Build farm</h1>
-    <p class="description">
-      The Launchpad build farm is an open-source system for building and testing
-      packages.
-    </p>
-    <QueueTable capacities={data.capacity.architectures} class="queue-table" />
+    <div class="status-capacity-wrapper">
+      <SystemStatus health={data.health} />
+      <div class="info">
+        <h1>Launchpad Build farm</h1>
+        <p class="description">
+          The Launchpad build farm is an open-source system for building and
+          testing packages.
+        </p>
+        {#if data.capacity}
+          <QueueTable
+            capacities={data.capacity.architectures}
+            class="queue-table"
+          />
+        {/if}
+      </div>
+    </div>
     <h2>Builds</h2>
     <JobsFilters {tableId} />
   </div>
@@ -88,6 +99,32 @@
 
     position: sticky;
     left: 0;
+
+    .status-capacity-wrapper {
+      display: flex;
+      flex-direction: column;
+      gap: var(--lp-dimension-spacing-block-l);
+
+      :global(.system-status) {
+        max-width: 524px;
+        align-self: stretch;
+      }
+
+      .info {
+        flex: 1;
+      }
+
+      @media (min-width: 1037px) {
+        flex-direction: row-reverse;
+        justify-content: space-between;
+        gap: var(--lp-dimension-spacing-inline-l);
+
+        :global(.system-status) {
+          align-self: start;
+          flex-basis: 318px;
+        }
+      }
+    }
 
     h1 {
       font: var(--lp-typography-h3);
