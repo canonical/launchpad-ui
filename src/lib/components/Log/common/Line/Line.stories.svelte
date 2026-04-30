@@ -26,6 +26,15 @@
     hideTimestamp: false,
     wrapLines: false,
   });
+
+  function highlightLine(hash: string | null) {
+    if (!hash) return;
+    location.hash = "#__storybook-reset__";
+
+    requestAnimationFrame(() => {
+      location.hash = hash;
+    });
+  }
 </script>
 
 <Story name="Default">
@@ -57,17 +66,31 @@ java.sql.SQLTimeoutException: Connection timed out
   {/snippet}
 </Story>
 
+<!-- `Log.Line` supports highlighting a line using the :target pseudo-class. If a line's id matches the URL hash, it will be highlighted for 5 seconds. Click the line number to see this in action. -->
+
 <Story
-  name="With link as line number"
+  name="With link as line number and :target highlight"
   argTypes={{ line: { control: { disable: true } } }}
 >
   {#snippet template({ children: _, line: __, ...args })}
     <Log>
       <Log.Line id="line-140" {...args}>
         {#snippet line()}
-          <Link href="#line-140" soft>140</Link>
+          <Link
+            href="#line-140"
+            soft
+            onclick={(e) => {
+              // This onclick is for storybook's presentation purposes only to simulate native behavior.
+              // In a real application, the browser's native fragment navigation would:
+              // 1. Update the URL hash to `#line-140`
+              // 2. Scroll the element with id `line-140` into view
+              // 3. Apply the :target styles to the element with id `line-140` (the `Log.Line` component in this case)
+              e.preventDefault();
+              highlightLine(e.currentTarget.getAttribute("href"));
+            }}>140</Link
+          >
         {/snippet}
-        User login failed due to invalid credentials.
+        Click the line number to highlight this line using the :target pseudo-class.
       </Log.Line>
     </Log>
   {/snippet}

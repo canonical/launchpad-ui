@@ -1,4 +1,5 @@
 <script module lang="ts">
+  import { Link } from "@canonical/svelte-ds-app-launchpad";
   import { defineMeta } from "@storybook/addon-svelte-csf";
   import { Log } from "./index.js";
 
@@ -522,11 +523,52 @@
   ] as const;
 </script>
 
+<script lang="ts">
+  function highlightLine(hash: string | null) {
+    if (!hash) return;
+    location.hash = "#__storybook-reset__";
+
+    requestAnimationFrame(() => {
+      location.hash = hash;
+    });
+  }
+</script>
+
 <Story name="Default">
   {#snippet template({ children: _, ...args })}
     <Log {...args} style="max-height: 600px;" tabindex={0}>
       {#each fakeLogs as { message, ...rest }, i (i)}
         <Log.Line line={i + 1} {...rest}>
+          {message}
+        </Log.Line>
+      {/each}
+    </Log>
+  {/snippet}
+</Story>
+
+<!-- `Log.Line` supports highlighting a line using the :target pseudo-class. If a line's id matches the URL hash, it will be highlighted for 5 seconds. Click the line number to see this in action. -->
+
+<Story name="With :target line highlight">
+  {#snippet template({ children: _, ...args })}
+    <Log {...args} style="max-height: 600px;" tabindex={0}>
+      {#each fakeLogs as { message, ...rest }, i (i)}
+        {@const lineId = `log-line-${i + 1}`}
+        <Log.Line id={lineId} {...rest}>
+          {#snippet line()}
+            <Link
+              href={`#${lineId}`}
+              soft
+              onclick={(e) => {
+                // This onclick is for Storybook's presentation purposes only to simulate native behavior.
+                // In a real application, the browser's native fragment navigation would:
+                // 1. Update the URL hash to the line's id
+                // 2. Scroll the element into view
+                // 3. Apply the :target styles to the Log.Line with that id
+                e.preventDefault();
+                highlightLine(e.currentTarget.getAttribute("href"));
+              }}>{i + 1}</Link
+            >
+          {/snippet}
           {message}
         </Log.Line>
       {/each}
