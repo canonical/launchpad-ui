@@ -1,6 +1,10 @@
 import { error } from "@sveltejs/kit";
 import * as v from "valibot";
 import { jobManager } from "$lib/api/job-manager/client.js";
+import type {
+  HealthResponse,
+  ServiceStatus,
+} from "$lib/api/job-manager/types.js";
 import { extractErrorMessage } from "$lib/api/job-manager/utils.js";
 import {
   JobsQueryParam,
@@ -16,13 +20,42 @@ import type { PageServerLoad } from "./$types";
 // A workaround would be to catch the errors in the remote function and return a result object with either data or error, but this doesn't play nicely with the intended way of using remote functions (i.e. call where needed) requiring either an error check everywhere where used (terrible DX) or a centralized call (= a load function once again).
 // Until that's fixed, it seems to make more sense to stick with the load function instead.
 export const load = (async ({ fetch, url }) => {
-  const capacity = await jobManager.GET("/v1/capacity", { fetch });
+  const capacityPromise = jobManager.GET("/v1/capacity", { fetch });
+  const systemStatusPromise = jobManager.GET("/health", { fetch });
 
-  if (capacity.error) {
-    // FIXME: What to do here?
-    // @ts-expect-error - The schema defines this endpoint as errorless, hence TS complains, but a 500 error could still happen, couldn't it?
-    error(capacity.response.status, extractErrorMessage(capacity.error));
-  }
+  const [capacity, systemStatus] = await Promise.all([
+    capacityPromise,
+    systemStatusPromise
+      .then((response): HealthResponse => {
+        if (response.error) {
+          // @ts-expect-error - The schema defines this endpoint as errorless, hence TS complains, but a 500 error could still happen, couldn't it?
+          throw response.error;
+        }
+
+        // @ts-expect-error Currently the health endpoint returns `{ status: "healthy" }` when healthy. When it supports detailed data and we upgrade the schema, this will be removed.
+        if ((response.data.status as ServiceStatus) === "healthy")
+          return {
+            status: "operational",
+            details: {},
+          };
+
+        return response.data;
+      })
+      .catch((error): HealthResponse => {
+        console.error(error);
+
+        return {
+          status: "outage",
+          message: "Unable to reach Job Manager API",
+          details: {
+            "Job Manager API": {
+              status: "outage",
+              message: extractErrorMessage(error),
+            },
+          },
+        };
+      }),
+  ]);
 
   const page = v.parse(
     jobsTablePageSchema,
@@ -61,5 +94,5 @@ export const load = (async ({ fetch, url }) => {
       return response.data;
     });
 
-  return { jobsPromise, capacity: capacity.data };
+  return { jobsPromise, capacity: capacity.data, health: systemStatus };
 }) satisfies PageServerLoad;
