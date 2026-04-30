@@ -52,10 +52,26 @@
     font: var(--lp-typography-code-s);
     color: var(--lp-color-text-default);
 
+    --log-line-background-color: var(--lp-color-background-alt);
+    --log-line-target-highlight-color: var(--lp-color-background-active);
+    --log-line-target-highlight-time: 5s;
+
     td,
     th {
+      padding-block: var(--lp-dimension-spacing-block-xxxs);
       font-weight: var(--lp-typography-weight-regular);
-      background-color: var(--lp-color-background-alt);
+      background-color: var(--log-line-background-color);
+    }
+
+    &:target {
+      td,
+      th {
+        animation:
+          target-highlight-hold var(--log-line-target-highlight-time) step-end
+            forwards,
+          target-highlight-fade var(--lp-transition-duration-sleepy) ease-out
+            var(--log-line-target-highlight-time) forwards;
+      }
     }
 
     .line-number {
@@ -86,5 +102,22 @@
     }
 
     /* TODO: Implement level-based styling when designs ready */
+  }
+
+  @keyframes target-highlight-hold {
+    from,
+    to {
+      background-color: var(--log-line-target-highlight-color);
+    }
+  }
+
+  @keyframes target-highlight-fade {
+    from {
+      background-color: var(--log-line-target-highlight-color);
+    }
+
+    to {
+      background-color: var(--log-line-background-color);
+    }
   }
 </style>

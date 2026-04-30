@@ -92,7 +92,6 @@
       display: grid;
       min-width: fit-content;
       grid-template-columns: [line-number-start] auto [line-number-end timestamp-start] max-content [timestamp-end content-start] 1fr [content-end];
-      row-gap: var(--lp-dimension-spacing-block-xxxs);
     }
   }
 </style>
