@@ -26,7 +26,13 @@
 </script>
 
 <tr class={[componentCssClassName, className]} {...rest}>
-  <th class="line-number" scope="row">{line}</th>
+  <th class="line-number" scope="row">
+    {#if typeof line === "number"}
+      {line}
+    {:else}
+      {@render line()}
+    {/if}
+  </th>
   {#if !logContext.hideTimestamp}
     <td class="timestamp">
       <time datetime={timestampDate.toISOString()}>{formattedTimestamp}</time>
