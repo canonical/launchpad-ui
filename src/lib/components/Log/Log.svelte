@@ -59,14 +59,19 @@
     line={1}
     timestamp="2024-10-27T10:00:59.400Z"
     level="info"
-    message="Application started successfully."
-  />
+  >
+    Starting database connection...
+  </Log.Line>
   <Log.Line
-    line={2}
+    id="line-2"
     timestamp="2024-10-27T10:05:12.300Z"
     level="error"
-    message="Failed to connect to database."
-  />
+  >
+    {#snippet line()}
+      <Link href="#line-2" soft>2</Link>
+    {/snippet}
+    Database connection failed: Connection timed out
+  </Log.Line>
 </Log>
 ```
 -->
@@ -87,7 +92,6 @@
       display: grid;
       min-width: fit-content;
       grid-template-columns: [line-number-start] auto [line-number-end timestamp-start] max-content [timestamp-end content-start] 1fr [content-end];
-      row-gap: var(--lp-dimension-spacing-block-xxxs);
     }
   }
 </style>

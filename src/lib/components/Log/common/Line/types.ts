@@ -9,7 +9,7 @@ export interface LineProps extends BaseProps {
   /**
    * The line number of the log entry.
    */
-  line: number;
+  line: number | Snippet<[]>;
   /**
    * The timestamp of the log entry.
    */

@@ -1,6 +1,5 @@
 <script lang="ts">
-  import { Breadcrumbs } from "@canonical/svelte-ds-app-launchpad";
-  import { MediaQuery } from "svelte/reactivity";
+  import { Breadcrumbs, Link } from "@canonical/svelte-ds-app-launchpad";
   import { defaultLogObjectName } from "$lib/api/job-manager/constants.js";
   import { jobManagerHref } from "$lib/api/job-manager/hrefClient.js";
   import { Log } from "$lib/components/index.js";
@@ -13,7 +12,7 @@
   } from "$lib/modules/job-manager/job-details/index.js";
   import { useFullScreen } from "$lib/modules/job-manager/useFullScreen.svelte.js";
   import type { PageProps } from "./$types";
-  import { browser } from "$app/environment";
+  import { useNeedsFallbackScrollMarginFix } from "./useNeedsFallbackScrollMarginFix.svelte.js";
   import { resolve } from "$app/paths";
 
   let { data }: PageProps = $props();
@@ -24,8 +23,7 @@
   let timeZone = $state<TimeZone>("UTC");
   let showTimestamps = $state(true);
 
-  const logTopId = "log-top";
-  const logBottomId = "log-bottom";
+  const logLineId = (lineNumber: number) => `log-line-${lineNumber}`;
 
   const fullScreen = useFullScreen();
   const defaultLog = $derived(
@@ -49,22 +47,9 @@
     });
   }
 
-  /* 
-  There is a bug in Chrome, that makes it ignore `scroll-margin` for global scroll on elements that have a parent with non-visible overflow. https://issues.chromium.org/issues/40074749
-  
-  This makes the first three lines of log hidden behind the sticky header when scrolling to top of log in mobile view with line wrapping disabled (log container overflow needed).
-
-  As a workaround, we detect this case and instead of scrolling to the top of the log, we scroll to the log header above it, which is outside of the overflow container.
-
-  TODO: This can be removed once the bug is fixed in Chrome.
-  */
   const logHeaderId = "log-header";
-  const needsFallbackScrollMarginFix = $derived(
-    browser &&
-      (window as { chrome?: unknown })?.chrome &&
-      !fullScreen.isEnabled &&
-      new MediaQuery("max-width: 1036px").current,
-  );
+  const needsFallbackScrollMarginFix =
+    useNeedsFallbackScrollMarginFix(fullScreen);
 </script>
 
 <main class:log-full-screen={fullScreen.isEnabled}>
@@ -87,10 +72,10 @@
         bind:showTimestamps
         viewLogUrl={defaultLogHref(true)}
         downloadLogUrl={defaultLogHref(false)}
-        scrollToTopHref={needsFallbackScrollMarginFix
+        scrollToTopHref={needsFallbackScrollMarginFix()
           ? `#${logHeaderId}`
-          : `#${logTopId}`}
-        scrollToBottomHref={`#${logBottomId}`}
+          : `#${logLineId(1)}`}
+        scrollToBottomHref={`#${logLineId(data.log.length)}`}
       />
       <div class="log-contents">
         <Log
@@ -100,15 +85,13 @@
           hideTimestamps={!showTimestamps}
         >
           {#each data.log as { timestamp, message }, i (i)}
-            <Log.Line
-              id={i === 0
-                ? logTopId
-                : i === data.log.length - 1
-                  ? logBottomId
-                  : undefined}
-              line={i + 1}
-              {timestamp}>{message}</Log.Line
-            >
+            {@const lineNumber = i + 1}
+            <Log.Line id={logLineId(lineNumber)} {timestamp}>
+              {#snippet line()}
+                <Link href="#{logLineId(lineNumber)}" soft>{lineNumber}</Link>
+              {/snippet}
+              {message}
+            </Log.Line>
           {/each}
         </Log>
         {#if job.status === "EXECUTING" && job.started_at}
@@ -164,6 +147,15 @@
     &.log-full-screen {
       border-inline-start: none;
     }
+
+    :global {
+      [href^="#log-line-"] {
+        &:hover,
+        &:focus-visible {
+          color: var(--lp-color-text-default);
+        }
+      }
+    }
   }
 
   @media (max-width: 1036px) {
@@ -181,7 +173,7 @@
         border-block-start: var(--border-section-separator);
 
         :global {
-          #log-top {
+          [id^="log-line-"] {
             scroll-margin-top: var(--header-height);
           }
         }
