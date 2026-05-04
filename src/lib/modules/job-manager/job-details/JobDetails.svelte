@@ -130,6 +130,7 @@
         <!-- TODO: Proper link-looking button -->
         <button
           {...toggleButtonProps}
+          class="link-button"
           style="margin-top: var(--lp-dimension-spacing-block-xs);"
         >
           {isExpanded ? "Show less" : "Show more"}
@@ -254,6 +255,21 @@
       --dimension-padding-inline-accordion-content: 0;
       --color-background-accordion-summary-hover: transparent;
       --color-background-accordion-summary-active: transparent;
+    }
+
+    .link-button {
+      background: none;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      font: inherit;
+      outline-offset: 0px;
+      text-decoration: none;
+      color: var(--lp-color-text-link-default);
+
+      &:hover {
+        text-decoration: underline;
+      }
     }
 
     .artifacts-header {
