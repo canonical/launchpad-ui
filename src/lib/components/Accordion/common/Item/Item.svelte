@@ -85,7 +85,6 @@ a snippet instead:
     --transition-duration-accordion: var(--lp-transition-duration-fast);
     --transition-timing-accordion: var(--lp-transition-timing-ease-out);
 
-    
     interpolate-size: allow-keywords;
 
     &::details-content {
@@ -114,7 +113,8 @@ a snippet instead:
 
     summary {
       cursor: pointer;
-      transition: background-color var(--transition-duration-accordion) var(--transition-timing-accordion);
+      transition: background-color var(--transition-duration-accordion)
+        var(--transition-timing-accordion);
 
       list-style: none;
       &::-webkit-details-marker {
