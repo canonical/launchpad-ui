@@ -1,10 +1,7 @@
 import type { Snippet } from "svelte";
 import type { HTMLDetailsAttributes } from "svelte/elements";
 
-export interface ItemProps extends Omit<
-  HTMLDetailsAttributes,
-  "children" | "name"
-> {
+export interface ItemProps extends HTMLDetailsAttributes {
   /**
    * Whether the item is open.
    *
@@ -19,5 +16,4 @@ export interface ItemProps extends Omit<
    * badges, multiple elements).
    */
   heading?: Snippet | string;
-  children?: Snippet;
 }
