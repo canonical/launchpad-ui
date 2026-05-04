@@ -22,7 +22,6 @@ vi.mock("../../context.js", () => {
 describe("Accordion.Item SSR", () => {
   const baseProps = {
     heading,
-    "data-testid": "item-root",
   } satisfies ComponentProps<typeof Component>;
 
   describe("basics", () => {
@@ -128,5 +127,5 @@ describe("Accordion.Item SSR", () => {
 });
 
 function componentLocator(page: RenderResult): HTMLElement {
-  return page.getByTestId("item-root");
+  return page.getByRole("group");
 }

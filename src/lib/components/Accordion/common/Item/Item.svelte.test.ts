@@ -1,6 +1,6 @@
 import { createRawSnippet } from "svelte";
 import type { ComponentProps } from "svelte";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import type { Locator } from "vitest/browser";
 import { render } from "vitest-browser-svelte";
 import type { RenderResult } from "vitest-browser-svelte";
@@ -23,7 +23,6 @@ vi.mock("../../context.js", () => {
 describe("Accordion.Item component", () => {
   const baseProps = {
     heading,
-    "data-testid": "item-root",
   } satisfies ComponentProps<typeof Component>;
 
   it("renders", async () => {
@@ -97,5 +96,5 @@ describe("Accordion.Item component", () => {
 });
 
 function componentLocator(page: RenderResult<typeof Component>): Locator {
-  return page.getByTestId("item-root");
+  return page.getByRole("group");
 }
