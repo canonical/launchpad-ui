@@ -1,10 +1,10 @@
 <script lang="ts">
   import {
-    Button,
     Chip,
     DescriptionList,
     Link,
   } from "@canonical/svelte-ds-app-launchpad";
+  import { ButtonPrimitive } from "@canonical/svelte-ds-app-launchpad/internal";
   import { DownloadIcon, FileIcon } from "@canonical/svelte-icons";
   import { jobManagerHref } from "$lib/api/job-manager/hrefClient.js";
   import type { JobRead } from "$lib/api/job-manager/types.js";
@@ -140,28 +140,10 @@
   </section>
   <Accordion>
     {#if artifacts?.length}
-      <section class="accordion-section">
+      <section class="accordion-section artifacts-section">
         <Accordion.Item contentBreakout>
           {#snippet heading()}
-            <!-- <div class="artifacts-header"> -->
             <h2>{artifacts.length} Artifacts</h2>
-            <!-- <Button
-              href={jobManagerHref("/v1/jobs/{job_id}/artifacts/download", {
-                path: { job_id: job.id },
-              })}
-              density="dense"
-              severity="base"
-              download
-              target="_blank"
-              rel="noopener noreferrer"
-              onclick={(event: MouseEvent) => event.stopPropagation()}
-            >
-              {#snippet iconLeft()}
-                <DownloadIcon />
-              {/snippet}
-              Download All
-            </Button>
-          </div> -->
           {/snippet}
           <ul class="artifacts">
             {#each artifacts as { size_bytes, object_type, filename } (`${object_type}/${filename}`)}
@@ -192,6 +174,19 @@
             {/each}
           </ul>
         </Accordion.Item>
+        <ButtonPrimitive
+          class="download-all-button"
+          href={jobManagerHref("/v1/jobs/{job_id}/artifacts/download", {
+            path: { job_id: job.id },
+          })}
+          download
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Download all artifacts"
+        >
+          <DownloadIcon />
+          <span class="button-text">Download All</span>
+        </ButtonPrimitive>
       </section>
     {/if}
     <section class="accordion-section">
@@ -202,13 +197,13 @@
         <CommandList class="command-list">
           {#each job.commands as command, i (i)}
             <!--
-        TODO(job-manager):
-          - pass precise command status (currently derived from job status)
-          - command not as `unknown` but proper type
-          - link command to log entry
+            TODO(job-manager):
+              - pass precise command status (currently derived from job status)
+              - command not as `unknown` but proper type
+              - link command to log entry
 
-        TODO: Syntax highlighting for command
-      -->
+            TODO: Syntax highlighting for command
+          -->
             <CommandList.Command
               status={job.status}
               command={command as string}
@@ -223,6 +218,8 @@
 
 <style>
   .details {
+    container: details / inline-size;
+
     grid-area: details;
     overflow: auto;
 
@@ -263,15 +260,6 @@
         text-decoration: underline;
       }
     }
-
-    /* .artifacts-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: var(--lp-dimension-spacing-inline-xs);
-      flex: 1;
-      min-width: 0;
-    } */
 
     .accordion-section {
       display: contents;
@@ -326,6 +314,38 @@
             .jump-to-element {
               grid-column: extra;
               align-self: start;
+            }
+          }
+        }
+      }
+    }
+
+    .artifacts-section {
+      :global {
+        .ds.accordion-item {
+          grid-row: 1;
+        }
+
+        .download-all-button {
+          grid-row: 1;
+          grid-column: 1 / -1;
+          place-self: start end;
+
+          margin-block-start: var(--lp-dimension-spacing-block-xs);
+          padding-block: 0;
+          min-block-size: 1lh;
+
+          background-color: transparent;
+          border: none;
+
+          display: flex;
+          align-items: center;
+          gap: var(--lp-dimension-spacing-inline-xs);
+
+          @container details (width < 300px) {
+            /* In very tight spaces, make the button icon-only */
+            .button-text {
+              display: none;
             }
           }
         }
