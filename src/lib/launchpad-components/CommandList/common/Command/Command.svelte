@@ -62,7 +62,6 @@
       }
 
       code {
-        /* TODO(@Enzo): Discuss wrapping/preserving white-space */
         word-break: break-word;
       }
     }
