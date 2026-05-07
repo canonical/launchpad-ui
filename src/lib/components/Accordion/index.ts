@@ -14,8 +14,7 @@ const Accordion = AccordionRoot as typeof AccordionRoot & {
    * </Accordion.Item>
    * ```
    *
-   * For a heading with rich markup (icons, badges, multiple elements), pass
-   * a snippet instead:
+   * For a heading with rich markup (icons, badges, multiple elements), pass a snippet instead:
    * ```svelte
    * <Accordion.Item>
    *   {#snippet heading()}
