@@ -3,10 +3,10 @@
 <script lang="ts">
   import type { CommandListProps } from "./types.js";
 
-  let { children }: CommandListProps = $props();
+  let { children, ...rest }: CommandListProps = $props();
 </script>
 
-<ol>
+<ol {...rest}>
   {@render children?.()}
 </ol>
 

@@ -1,0 +1,24 @@
+.ds.accordion,
+.ds.accordion-item {
+  /*
+    If Accordion.Item's are not used as standalone elements, make sure, the root defines the top level grid, so that all chevrons and any potential "list-markers" are aligned across the entire accordion
+  
+    Keep aligned between Accordion and Accordion.Item
+  */
+  display: grid;
+  --padding-inline-accordion: var(--lp-dimension-spacing-inline-m);
+  --column-gap-accordion: var(--lp-dimension-spacing-inline-m);
+  grid-template-columns:
+    var(--padding-inline-accordion)
+    [marker-start] minmax(var(--min-size-accordion-marker-track, auto), auto)
+    [marker-end]
+    var(--column-gap-accordion)
+    [content-start] 1fr [content-end];
+}
+
+.ds.accordion {
+  .ds.accordion-item {
+    grid-column: 1 / -1;
+    grid-template-columns: subgrid;
+  }
+}

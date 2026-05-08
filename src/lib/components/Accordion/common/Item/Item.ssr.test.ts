@@ -2,14 +2,26 @@ import { render } from "@canonical/svelte-ssr-test";
 import type { RenderResult } from "@canonical/svelte-ssr-test";
 import { createRawSnippet } from "svelte";
 import type { ComponentProps } from "svelte";
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import type { AccordionContext } from "../../types.js";
 import Component from "./Item.svelte";
 import { contentText, heading, headingText } from "./test.fixtures.svelte";
+
+let { name } = vi.hoisted(
+  (): AccordionContext => ({
+    name: undefined,
+  }),
+);
+
+vi.mock("../../context.js", () => {
+  return {
+    getAccordionContext: (): AccordionContext => ({ name }),
+  };
+});
 
 describe("Accordion.Item SSR", () => {
   const baseProps = {
     heading,
-    "data-testid": "item-root",
   } satisfies ComponentProps<typeof Component>;
 
   describe("basics", () => {
@@ -90,8 +102,30 @@ describe("Accordion.Item SSR", () => {
       expect(componentLocator(page).getAttribute(attribute)).toBe(expected);
     });
   });
+
+  describe("exclusive mode", () => {
+    afterEach(() => {
+      name = undefined;
+    });
+
+    it("gets a name attribute from the Accordion context", () => {
+      name = "test-name";
+      const page = render(Component, {
+        props: { ...baseProps },
+      });
+      expect(componentLocator(page).getAttribute("name")).toBe("test-name");
+    });
+
+    it("can override the Accordion context name with a prop", () => {
+      name = "test-name";
+      const page = render(Component, {
+        props: { ...baseProps, name: "override-name" },
+      });
+      expect(componentLocator(page).getAttribute("name")).toBe("override-name");
+    });
+  });
 });
 
 function componentLocator(page: RenderResult): HTMLElement {
-  return page.getByTestId("item-root");
+  return page.getByRole("group");
 }

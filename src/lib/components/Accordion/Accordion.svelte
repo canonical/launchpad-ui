@@ -5,7 +5,7 @@
     getSiblingElement,
   } from "$lib/utils/index.js";
 
-  const SUMMARY_SELECTOR = ":scope > .ds.accordion-item > summary";
+  const SUMMARY_SELECTOR = ".ds.accordion-item > summary";
 
   type NavParams = {
     containerElement: HTMLElement;
@@ -42,6 +42,7 @@
 <script lang="ts">
   import { setAccordionContext } from "./context.js";
   import type { AccordionProps } from "./types.js";
+  import "./styles.css";
 
   const componentCssClassName = "ds accordion";
 
@@ -122,23 +123,3 @@ navigation between item headers:
 The `heading` prop also accepts a snippet for richer markup; see
 `Accordion.Item` for details.
 -->
-
-<style>
-  .ds.accordion {
-    --color-background-accordion: var(--lp-color-background-default);
-    --color-border-accordion: var(--lp-color-border-default);
-    --dimension-border-thickness-accordion: var(
-      --lp-dimension-stroke-thickness-default
-    );
-    --dimension-radius-accordion: var(--lp-dimension-radius-medium);
-
-    display: flex;
-    flex-direction: column;
-
-    background-color: var(--color-background-accordion);
-    border: var(--dimension-border-thickness-accordion) solid
-      var(--color-border-accordion);
-    border-radius: var(--dimension-radius-accordion);
-    overflow: hidden;
-  }
-</style>

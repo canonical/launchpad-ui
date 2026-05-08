@@ -1,10 +1,10 @@
 <script lang="ts">
   import {
-    Button,
     Chip,
     DescriptionList,
     Link,
   } from "@canonical/svelte-ds-app-launchpad";
+  import { ButtonPrimitive } from "@canonical/svelte-ds-app-launchpad/internal";
   import { DownloadIcon, FileIcon } from "@canonical/svelte-icons";
   import { jobManagerHref } from "$lib/api/job-manager/hrefClient.js";
   import type { JobRead } from "$lib/api/job-manager/types.js";
@@ -57,7 +57,7 @@
       />
     </div>
   </div>
-  <section>
+  <section class="job-overview">
     <h2 class="visually-hidden">Details</h2>
     <PartialListDisclosure>
       {#snippet children(
@@ -138,83 +138,88 @@
       {/snippet}
     </PartialListDisclosure>
   </section>
-  <Accordion class="job-accordion">
+  <Accordion>
     {#if artifacts?.length}
-      <Accordion.Item class="job-section">
-        {#snippet heading()}
-          <div class="artifacts-header">
+      <section class="accordion-section artifacts-section">
+        <Accordion.Item contentBreakout>
+          {#snippet heading()}
             <h2>{artifacts.length} Artifacts</h2>
-            <Button
-              href={jobManagerHref("/v1/jobs/{job_id}/artifacts/download", {
-                path: { job_id: job.id },
-              })}
-              density="dense"
-              severity="base"
-              download
-              target="_blank"
-              rel="noopener noreferrer"
-              onclick={(event: MouseEvent) => event.stopPropagation()}
-            >
-              {#snippet iconLeft()}
-                <DownloadIcon />
-              {/snippet}
-              Download All
-            </Button>
-          </div>
-        {/snippet}
-        <ul class="artifacts">
-          {#each artifacts as { size_bytes, object_type, filename } (`${object_type}/${filename}`)}
-            <li>
-              <Link
-                href={jobManagerHref("/v1/jobs/{job_id}/object/{object_name}", {
-                  path: {
-                    job_id: job.id,
-                    object_name: filename,
-                  },
-                })}
-                download
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <span class="icon-aligner">
-                  <FileIcon aria-hidden="true" />
-                </span>
-                <span class="artifact-name">
-                  {filename} ({bytesToHumanReadable(size_bytes ?? 0)})
-                </span>
-              </Link>
-            </li>
-          {/each}
-        </ul>
-      </Accordion.Item>
+          {/snippet}
+          <ul class="artifacts">
+            {#each artifacts as { size_bytes, object_type, filename } (`${object_type}/${filename}`)}
+              <li>
+                <Link
+                  soft
+                  href={jobManagerHref(
+                    "/v1/jobs/{job_id}/object/{object_name}",
+                    {
+                      path: {
+                        job_id: job.id,
+                        object_name: filename,
+                      },
+                    },
+                  )}
+                  download
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <span class="icon-aligner">
+                    <FileIcon aria-hidden="true" />
+                  </span>
+                  <span class="artifact-name">
+                    {filename} ({bytesToHumanReadable(size_bytes ?? 0)})
+                  </span>
+                </Link>
+              </li>
+            {/each}
+          </ul>
+        </Accordion.Item>
+        <ButtonPrimitive
+          class="download-all-button"
+          href={jobManagerHref("/v1/jobs/{job_id}/artifacts/download", {
+            path: { job_id: job.id },
+          })}
+          download
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Download all artifacts"
+        >
+          <DownloadIcon />
+          <span class="button-text">Download All</span>
+        </ButtonPrimitive>
+      </section>
     {/if}
-    <Accordion.Item class="job-section" open>
-      {#snippet heading()}
-        <h2>Commands</h2>
-      {/snippet}
-      <CommandList>
-        {#each job.commands as command, i (i)}
-          <!--
-        TODO(job-manager):
-          - pass precise command status (currently derived from job status)
-          - command not as `unknown` but proper type
-          - link command to log entry
+    <section class="accordion-section">
+      <Accordion.Item open contentBreakout>
+        {#snippet heading()}
+          <h2>Commands</h2>
+        {/snippet}
+        <CommandList class="command-list">
+          {#each job.commands as command, i (i)}
+            <!--
+            TODO(job-manager):
+              - pass precise command status (currently derived from job status)
+              - command not as `unknown` but proper type
+              - link command to log entry
 
-        TODO: Syntax highlighting for command
-      -->
-          <CommandList.Command
-            status={job.status}
-            command={command as string}
-            href={undefined}
-          />
-        {/each}
-      </CommandList>
-    </Accordion.Item>
+            TODO: Syntax highlighting for command
+          -->
+            <CommandList.Command
+              status={job.status}
+              command={command as string}
+              href={undefined}
+            />
+          {/each}
+        </CommandList>
+      </Accordion.Item>
+    </section>
   </Accordion>
 </div>
 
 <style>
   .details {
+    container: details / inline-size;
+
     grid-area: details;
     overflow: auto;
 
@@ -235,26 +240,10 @@
       margin-block-start: var(--lp-dimension-spacing-block-xs);
     }
 
-    section:first-of-type {
+    .job-overview {
       margin-block-start: var(--lp-dimension-spacing-block-l);
-    }
-
-    section {
       padding-block-end: var(--lp-dimension-spacing-block-m);
       border-block-end: var(--border-section-separator);
-    }
-
-    :global(.job-accordion) {
-      --dimension-border-thickness-accordion: 0;
-      --dimension-radius-accordion: 0;
-    }
-
-    :global(.job-section) {
-      --color-border-accordion-item: var(--lp-color-border-low-contrast);
-      --dimension-padding-inline-accordion-summary: 0;
-      --dimension-padding-inline-accordion-content: 0;
-      --color-background-accordion-summary-hover: transparent;
-      --color-background-accordion-summary-active: transparent;
     }
 
     .link-button {
@@ -272,27 +261,112 @@
       }
     }
 
-    .artifacts-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: var(--lp-dimension-spacing-inline-xs);
-      flex: 1;
-      min-width: 0;
+    .accordion-section {
+      display: contents;
+    }
+
+    /* 
+      Accordion overrides
+      TODO: Confirm with Enzo.
+    */
+    :global {
+      .ds.accordion {
+        --padding-inline-accordion: var(--lp-dimension-spacing-inline-xs);
+        --column-gap-accordion: var(--lp-dimension-spacing-inline-xs);
+
+        grid-template-columns:
+          var(--padding-inline-accordion)
+          [marker-start] auto
+          [marker-end]
+          var(--column-gap-accordion)
+          [content-start] 1fr [content-end extra-start] auto [extra-end];
+
+        .ds.accordion-item {
+          border-block-end: var(--border-section-separator);
+
+          .command-list {
+            display: contents;
+
+            li {
+              display: contents;
+
+              &:not(:last-child) .box {
+                margin-block-end: var(--lp-dimension-spacing-block-xs);
+              }
+            }
+
+            .box {
+              grid-column: 1 / content-end;
+              display: grid;
+              grid-template-columns: subgrid;
+              padding-inline: 0;
+              gap: 0;
+
+              code {
+                grid-column: content;
+              }
+            }
+
+            .icon-aligner {
+              grid-column: marker;
+            }
+
+            .jump-to-element {
+              grid-column: extra;
+              align-self: start;
+            }
+          }
+        }
+      }
+    }
+
+    .artifacts-section {
+      :global {
+        .ds.accordion-item {
+          grid-row: 1;
+        }
+
+        .download-all-button {
+          grid-row: 1;
+          grid-column: 1 / -1;
+          place-self: start end;
+
+          margin-block-start: var(--lp-dimension-spacing-block-xs);
+          padding-block: 0;
+          min-block-size: 1lh;
+
+          background-color: transparent;
+          border: none;
+
+          display: flex;
+          align-items: center;
+          gap: var(--lp-dimension-spacing-inline-xs);
+
+          @container details (width < 300px) {
+            /* In very tight spaces, make the button icon-only */
+            .button-text {
+              display: none;
+            }
+          }
+        }
+      }
     }
 
     .artifacts {
       list-style: none;
-      display: grid;
-      gap: var(--lp-dimension-spacing-block-xs);
+      display: contents;
+
+      > li {
+        display: contents;
+      }
 
       :global(a) {
-        display: flex;
-        align-items: start;
-        gap: var(--lp-dimension-spacing-inline-xs);
-        color: var(--lp-color-text-default);
+        display: grid;
+        grid-column: 1 / -1;
+        grid-template-columns: subgrid;
 
         > .icon-aligner {
+          grid-column: marker;
           height: 1lh;
           flex-shrink: 0;
           display: grid;
@@ -300,6 +374,7 @@
         }
 
         > .artifact-name {
+          grid-column: content-start / -1;
           word-break: break-word;
         }
       }

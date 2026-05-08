@@ -2,6 +2,7 @@
   import { ChevronRightIcon } from "@canonical/svelte-icons";
   import { getAccordionContext } from "../../context.js";
   import type { ItemProps } from "./types.js";
+  import "../../styles.css";
 
   const componentCssClassName = "ds accordion-item";
 
@@ -9,6 +10,7 @@
     class: className,
     open = $bindable(false),
     heading,
+    contentBreakout = false,
     children,
     ...rest
   }: ItemProps = $props();
@@ -23,129 +25,92 @@
   {...rest}
 >
   <summary>
-    <div class="summary-content">
+    <div class="chevron-wrapper">
       <ChevronRightIcon class="chevron" aria-hidden="true" />
+    </div>
 
-      <div class="heading">
-        {#if typeof heading === "string"}
-          {heading}
-        {:else}
-          {@render heading?.()}
-        {/if}
-      </div>
+    <div class="heading">
+      {#if typeof heading === "string"}
+        {heading}
+      {:else}
+        {@render heading?.()}
+      {/if}
     </div>
   </summary>
-  <div class="content">{@render children?.()}</div>
+  <div class="content" class:content-breakout={contentBreakout}>
+    {@render children?.()}
+  </div>
 </details>
-
-<!-- @component
-`Accordion.Item` is a single collapsible section rendered as a native
-`<details>` element. Its `<summary>` is keyboard-focusable and exposed as
-a button with `expanded` state in the accessibility tree, free of charge.
-
-When nested inside an `<Accordion exclusive>`, opening one item closes
-its siblings via the native `<details name>` mechanism. When inside any
-`<Accordion>`, ArrowUp/ArrowDown/Home/End move focus between item
-headers (WAI-ARIA Accordion Pattern).
-
-## Example Usage
-```svelte
-<Accordion.Item bind:open heading="Section title">
-  Body content
-</Accordion.Item>
-```
-
-For a heading with rich markup (icons, badges, multiple elements), pass
-a snippet instead:
-```svelte
-<Accordion.Item>
-  {#snippet heading()}
-    <strong>Section</strong> title <Badge>3</Badge>
-  {/snippet}
-  Body content
-</Accordion.Item>
-```
--->
 
 <style>
   .ds.accordion-item {
-    --dimension-padding-inline-accordion-summary: var(
-      --lp-dimension-spacing-inline-m
-    );
-    --dimension-padding-inline-accordion-content: var(
-      --lp-dimension-spacing-inline-m
-    );
-    --color-background-accordion-summary-hover: var(
-      --lp-color-background-hover
-    );
-    --color-background-accordion-summary-active: var(
-      --lp-color-background-active
-    );
-    --color-border-accordion-item: var(--lp-color-border-default);
     --transition-duration-accordion: var(--lp-transition-duration-fast);
     --transition-timing-accordion: var(--lp-transition-timing-ease-out);
 
-    
-    interpolate-size: allow-keywords;
+    font: var(--lp-typography-paragraph-default);
+    border-block-end: var(--lp-dimension-stroke-thickness-default) solid
+      var(--lp-color-border-default);
 
     &::details-content {
       block-size: 0;
       opacity: 0;
       overflow: clip;
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: subgrid;
+      align-items: center;
+      transform: translateY(calc(-1 * var(--lp-dimension-spacing-block-xs)));
       transition:
         content-visibility var(--transition-duration-accordion)
           var(--transition-timing-accordion),
         opacity var(--transition-duration-accordion)
           var(--transition-timing-accordion),
         block-size var(--transition-duration-accordion)
+          var(--transition-timing-accordion),
+        transform var(--transition-duration-accordion)
           var(--transition-timing-accordion);
       transition-behavior: allow-discrete;
-    }
-
-    &[open]::details-content {
-      block-size: auto;
-      opacity: 1;
-    }
-
-    &:not(:last-child) {
-      border-block-end: var(--lp-dimension-stroke-thickness-default) solid
-        var(--color-border-accordion-item);
+      interpolate-size: allow-keywords;
     }
 
     summary {
       cursor: pointer;
-      transition: background-color var(--transition-duration-accordion) var(--transition-timing-accordion);
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: subgrid;
+      padding-block: var(--lp-dimension-spacing-block-xs);
+      transition: background-color var(--lp-transition-duration-snap)
+        var(--lp-transition-timing-ease-in);
 
       list-style: none;
+      &::marker {
+        display: none;
+      }
       &::-webkit-details-marker {
         display: none;
       }
 
       &:hover {
-        background-color: var(--color-background-accordion-summary-hover);
+        background-color: var(--lp-color-background-hover);
       }
 
       &:active {
-        background-color: var(--color-background-accordion-summary-active);
+        background-color: var(--lp-color-background-active);
+      }
+
+      .heading {
+        grid-column: content-start / -1;
+        padding-inline-end: var(--padding-inline-accordion);
       }
     }
 
-    /*
-      Inner wrapper holds the flex layout: applying `display: flex` directly
-      to `<summary>` is fragile across browsers (notably WebKit's interaction
-      with the disclosure marker layout).
-    */
-    .summary-content {
-      display: flex;
-      align-items: center;
-      gap: var(--lp-dimension-spacing-inline-xs);
-      padding-block: var(--lp-dimension-spacing-block-m);
-      padding-inline: var(--dimension-padding-inline-accordion-summary);
-    }
-
-    .heading {
-      flex: 1;
-      min-width: 0;
+    .chevron-wrapper {
+      grid-column: marker;
+      block-size: var(--line-height-accordion-item-heading, 1lh);
+      inline-size: 1em;
+      display: grid;
+      place-content: center;
+      justify-self: center;
     }
 
     :global(.chevron) {
@@ -153,13 +118,26 @@ a snippet instead:
         var(--transition-timing-accordion);
     }
 
-    &[open] :global(.chevron) {
-      transform: rotate(90deg);
+    &:is(:open, [open]) {
+      &::details-content {
+        block-size: auto;
+        opacity: 1;
+        transform: translateY(0);
+        padding-block-start: var(--lp-dimension-spacing-block-xs);
+        padding-block-end: var(--lp-dimension-spacing-block-m);
+      }
+
+      :global(.chevron) {
+        transform: rotate(90deg);
+      }
     }
 
     .content {
-      padding-block-end: var(--lp-dimension-spacing-block-l);
-      padding-inline: var(--dimension-padding-inline-accordion-content);
+      grid-column: content;
+
+      &.content-breakout {
+        display: contents;
+      }
     }
   }
 </style>
