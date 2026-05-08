@@ -63,7 +63,7 @@
       {#snippet children(
         listProps,
         hiddenItemProps,
-        toggleButtonProps,
+        { class: toggleButtonClass, ...toggleButtonProps },
         isExpanded,
       )}
         <DescriptionList {...listProps} layout="auto">
@@ -130,7 +130,7 @@
         <!-- TODO: Proper link-looking button -->
         <button
           {...toggleButtonProps}
-          class="link-button"
+          class={["link-button", toggleButtonClass]}
           style="margin-top: var(--lp-dimension-spacing-block-xs);"
         >
           {isExpanded ? "Show less" : "Show more"}
