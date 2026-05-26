@@ -62,6 +62,7 @@
     "eslint-plugin-storybook": "^10.3.5",
     "eslint-plugin-svelte": "^3.17.0",
     "globals": "^17.4.0",
+    "msw": "^2.14.6",
     "openapi-sampler": "^1.6.2",
     "openapi-typescript": "^7.10.1",
     "openapi-typescript-helpers": "^0.0.15",
