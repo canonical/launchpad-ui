@@ -3,6 +3,11 @@
   "private": true,
   "version": "0.0.1",
   "type": "module",
+  "packageManager": "pnpm@10.6.2",
+  "engines": {
+    "node": ">=26.0.0",
+    "pnpm": ">=10.0.0"
+  },
   "scripts": {
     "dev": "vite dev",
     "dev:mock": "vite dev --mode mock",
@@ -11,29 +16,30 @@
     "prepare": "svelte-kit sync || echo ''",
     "format": "prettier --write .",
     "lint": "prettier --check . && eslint .",
-    "lint:fix": "bun run format && eslint . --fix",
-    "check": "bun run check:svelte && bun run lint",
-    "check:fix": "bun run check:svelte && bun run lint:fix",
+    "lint:fix": "pnpm run format && eslint . --fix",
+    "check": "pnpm run check:svelte && pnpm run lint",
+    "check:fix": "pnpm run check:svelte && pnpm run lint:fix",
     "check:svelte": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
-    "check:svelte:watch": "bun run check:svelte -- --watch",
+    "check:svelte:watch": "pnpm run check:svelte -- --watch",
     "test": "vitest --run",
     "test:watch": "vitest",
-    "test:server": "bun run test --project=server",
-    "test:client": "bun run test --project=client",
-    "test:ssr": "bun run test --project=ssr",
-    "test:client:chromium": "bun run test --project=client --browser=chromium",
-    "test:client:firefox": "bun run test --project=client --browser=firefox",
-    "test:client:webkit": "bun run test --project=client --browser=webkit",
-    "test:watch:client": "bun run test:watch --project=client --browser.headless=false",
+    "test:server": "pnpm run test --project=server",
+    "test:client": "pnpm run test --project=client",
+    "test:ssr": "pnpm run test --project=ssr",
+    "test:client:chromium": "pnpm run test --project=client --browser=chromium",
+    "test:client:firefox": "pnpm run test --project=client --browser=firefox",
+    "test:client:webkit": "pnpm run test --project=client --browser=webkit",
+    "test:watch:client": "pnpm run test:watch --project=client --browser.headless=false",
     "storybook": "storybook dev -p 6006 --no-open",
     "build-storybook": "storybook build",
-    "openapi:update": "bun run openapi:update-schema && bun run openapi:generate-types",
+    "openapi:update": "pnpm run openapi:update-schema && pnpm run openapi:generate-types",
     "openapi:update-schema": "./scripts/openapi-update-schema.sh",
     "openapi:generate-types": "openapi-typescript .api-spec/job-manager.yaml -o src/lib/api/job-manager/types.ts --root-types --root-types-no-schema-prefix --enum-values",
     "mock-server": "prism mock .api-spec/job-manager.yaml --port 4010",
-    "mock-server:dynamic": "bun run mock-server -d"
+    "mock-server:dynamic": "pnpm run mock-server -d"
   },
   "devDependencies": {
+    "@canonical/launchpad-design-tokens": "^1.1.1",
     "@canonical/svelte-ssr-test": "^0.25.0",
     "@chromatic-com/storybook": "^5.1.2",
     "@eslint/js": "^10.0.1",
@@ -48,6 +54,7 @@
     "@sveltejs/kit": "^2.57.0",
     "@sveltejs/vite-plugin-svelte": "^7.0.0",
     "@types/node": "^25.0.8",
+    "@vitest/browser": "^4.1.7",
     "@vitest/browser-playwright": "^4.1.3",
     "eslint": "^9.39.4",
     "eslint-config-prettier": "^10.1.8",
@@ -57,6 +64,7 @@
     "globals": "^17.4.0",
     "openapi-sampler": "^1.6.2",
     "openapi-typescript": "^7.10.1",
+    "openapi-typescript-helpers": "^0.0.15",
     "playwright": "^1.59.1",
     "prettier": "^3.8.1",
     "prettier-plugin-svelte": "^3.5.1",
@@ -69,9 +77,11 @@
     "vitest": "^4.1.3",
     "vitest-browser-svelte": "^2.1.0"
   },
-  "patchedDependencies": {
-    "markdown-actions@1.1.2": "patches/markdown-actions@1.1.2.patch",
-    "@stoplight/prism-http@5.12.0": "patches/@stoplight%2Fprism-http@5.12.0.patch"
+  "pnpm": {
+    "patchedDependencies": {
+      "markdown-actions@1.1.2": "patches/markdown-actions@1.1.2.patch",
+      "@stoplight/prism-http@5.15.10": "patches/@stoplight%2Fprism-http@5.15.10.patch"
+    }
   },
   "dependencies": {
     "@canonical/svelte-ds-app-launchpad": "^0.27.0",

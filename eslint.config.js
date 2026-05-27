@@ -100,8 +100,7 @@ export default ts.config(
   {
     // Pragma opts-out from vcs integration and requires explicit ignore declarations
     ignores: [
-      "bun.lock",
-      "bun.lockb",
+      "pnpm-lock.yaml",
       "node_modules/**",
       "build/**",
       ".svelte-kit/**",
