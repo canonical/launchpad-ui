@@ -399,13 +399,24 @@ export type PackagesViewsPreference = {
 // Query types
 // ---------------------------------------------------------------------------
 
-export type CollectionQuery = {
+/**
+ * Fields every endpoint accepts (collection or detail). `distro` is the
+ * `[distro]` route param threaded through every call so the mock can scope
+ * data to its seeded distro (see [[../../../.agents/decisions#D24]]); absent
+ * → mock treats it as ubuntu (backwards-compat for `client.test.ts`).
+ * `_inject_error` is the test-only error-path lever.
+ */
+export type BaseQuery = {
+  distro?: string;
+  /** Force a non-200 response — wired in the client for testing error paths. */
+  _inject_error?: number;
+};
+
+export type CollectionQuery = BaseQuery & {
   q?: string;
   page?: number;
   size?: number;
   sort?: string;
-  /** Force a non-200 response — wired in the client for testing error paths. */
-  _inject_error?: number;
 };
 
 export type SourcePackagesTab =
@@ -462,7 +473,7 @@ export interface paths {
   "/health": {
     get: {
       parameters: {
-        query?: { _inject_error?: number };
+        query?: BaseQuery;
         path?: never;
       };
       responses: {
@@ -487,6 +498,7 @@ export interface paths {
             "application/json": Paginated<SourcePackageListItem>;
           };
         };
+        500: { content: { "application/json": ErrorResponse } };
       };
     };
   };
@@ -494,7 +506,7 @@ export interface paths {
   "/source-packages/{name}": {
     get: {
       parameters: {
-        query?: { _inject_error?: number };
+        query?: BaseQuery;
         path: { name: string };
       };
       responses: {
@@ -507,7 +519,7 @@ export interface paths {
   "/source-packages/{name}/binary-packages": {
     get: {
       parameters: {
-        query?: { _inject_error?: number };
+        query?: BaseQuery;
         path: { name: string };
       };
       responses: {
@@ -537,7 +549,7 @@ export interface paths {
   "/source-packages/{name}/versions/latest": {
     get: {
       parameters: {
-        query?: { _inject_error?: number };
+        query?: BaseQuery;
         path: { name: string };
       };
       responses: {
@@ -565,7 +577,7 @@ export interface paths {
   "/source-packages/{name}/versions/{version}": {
     get: {
       parameters: {
-        query?: { _inject_error?: number };
+        query?: BaseQuery;
         path: { name: string; version: string };
       };
       responses: {
@@ -578,7 +590,7 @@ export interface paths {
   "/source-packages/{name}/versions/{version}/source-files": {
     get: {
       parameters: {
-        query?: { _inject_error?: number; sort?: string };
+        query?: BaseQuery & { sort?: string };
         path: { name: string; version: string };
       };
       responses: {
@@ -606,7 +618,7 @@ export interface paths {
   "/source-packages/{name}/versions/{version}/build-requirements": {
     get: {
       parameters: {
-        query?: { _inject_error?: number };
+        query?: BaseQuery;
         path: { name: string; version: string };
       };
       responses: {
@@ -621,7 +633,7 @@ export interface paths {
   "/source-packages/{name}/versions/{version}/publishing": {
     get: {
       parameters: {
-        query?: { _inject_error?: number };
+        query?: BaseQuery;
         path: { name: string; version: string };
       };
       responses: {
@@ -634,7 +646,7 @@ export interface paths {
   "/source-packages/{name}/versions/{version}/upstream": {
     get: {
       parameters: {
-        query?: { _inject_error?: number };
+        query?: BaseQuery;
         path: { name: string; version: string };
       };
       responses: {
@@ -706,7 +718,7 @@ export interface paths {
   "/source-packages/{name}/relationships": {
     get: {
       parameters: {
-        query?: { _inject_error?: number };
+        query?: BaseQuery;
         path: { name: string };
       };
       responses: {
@@ -719,7 +731,7 @@ export interface paths {
   "/source-packages/{name}/upstream": {
     get: {
       parameters: {
-        query?: { _inject_error?: number };
+        query?: BaseQuery;
         path: { name: string };
       };
       responses: {
@@ -734,7 +746,7 @@ export interface paths {
   "/source-packages/{name}/debian": {
     get: {
       parameters: {
-        query?: { _inject_error?: number };
+        query?: BaseQuery;
         path: { name: string };
       };
       responses: {
@@ -747,7 +759,7 @@ export interface paths {
   "/source-packages/{name}/source": {
     get: {
       parameters: {
-        query?: { _inject_error?: number };
+        query?: BaseQuery;
         path: { name: string };
       };
       responses: {
@@ -760,7 +772,7 @@ export interface paths {
   "/binary-packages/{name}": {
     get: {
       parameters: {
-        query?: { _inject_error?: number };
+        query?: BaseQuery;
         path: { name: string };
       };
       responses: {
@@ -790,7 +802,7 @@ export interface paths {
   "/me/packages-views": {
     get: {
       parameters: {
-        query?: { _inject_error?: number };
+        query?: BaseQuery;
         path?: never;
       };
       responses: {
@@ -801,7 +813,7 @@ export interface paths {
     };
     put: {
       parameters: {
-        query?: { _inject_error?: number };
+        query?: BaseQuery;
         path?: never;
       };
       requestBody: {
