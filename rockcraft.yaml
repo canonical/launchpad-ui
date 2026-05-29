@@ -1,0 +1,68 @@
+name: launchpad-ui
+# 24.04: npm plugin's bin/node staging breaks usrmerge on 24.10+/26.04.
+base: ubuntu@24.04
+version: "0.0.1"
+summary: Launchpad UI
+description: |
+  SvelteKit front end for Launchpad, served with @sveltejs/adapter-node.
+license: GPL-3.0
+
+platforms:
+  amd64:
+  arm64:
+
+run-user: _daemon_
+
+services:
+  # Name must stay "go": the charm references this Pebble service name.
+  go:
+    override: replace
+    command: node /app/build/index.js
+    startup: enabled
+    working-dir: /app
+    on-success: shutdown
+    on-failure: shutdown
+    environment:
+      HOST: "0.0.0.0"
+      PORT: "8080" # paas-charm wires ingress to 8080
+      NODE_ENV: "production"
+
+parts:
+  # Stages the full node 26 toolchain for the build; primes only bin/node.
+  node-runtime:
+    plugin: npm
+    npm-include-node: true
+    npm-node-version: "26"
+    source: .
+    source-type: local
+    override-build: |
+      craftctl default
+    prime:
+      - bin/node
+
+  sveltekit-app:
+    plugin: nil # build via pnpm using node-runtime's staged node
+    source: .
+    source-type: local
+    after: [node-runtime]
+    build-environment:
+      - NPM_CONFIG_IGNORE_SCRIPTS: "true"
+      - NODE_OPTIONS: "--max-old-space-size=3072" # avoid vite OOM
+    stage-packages:
+      # node runtime deps absent from the minimal base (+libgcc-s1 pulled in).
+      - libstdc++6
+      - libatomic1
+    overlay-packages:
+      - ca-certificates
+      - coreutils
+      - bash
+    override-build: |
+      set -eux
+      export PATH="${CRAFT_STAGE}/bin:${PATH}"
+      # pnpm (not npm): honours pnpm-lock.yaml + patchedDependencies + .npmrc.
+      npm install -g --prefix "${CRAFT_PART_BUILD}/.npm-global" pnpm@10.6.2
+      export PATH="${CRAFT_PART_BUILD}/.npm-global/bin:${PATH}"
+      pnpm install --frozen-lockfile
+      pnpm run build
+      mkdir -p ${CRAFT_PART_INSTALL}/app
+      cp -ar build node_modules package.json ${CRAFT_PART_INSTALL}/app/
