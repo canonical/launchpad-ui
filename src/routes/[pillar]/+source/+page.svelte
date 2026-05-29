@@ -4,7 +4,7 @@
 </script>
 
 <svelte:head>
-  <title>{params.distro} packages — Launchpad</title>
+  <title>{params.pillar} packages — Launchpad</title>
 </svelte:head>
 
-<h1>{params.distro} packages</h1>
+<h1>{params.pillar} packages</h1>
