@@ -1,0 +1,12 @@
+venv/
+.venv/
+build/
+*.charm
+*.rock
+.coverage
+.ruff_cache/
+.pytest_cache/
+__pycache__/
+*.py[cod]
+.idea
+.vscode/
