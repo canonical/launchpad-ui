@@ -33,6 +33,7 @@ export default defineConfig({
           name: "ssr",
           environment: "node",
           include: ["src/**/*.ssr.test.{js,ts}"],
+          setupFiles: ["./test/vitest-setup-msw.ts"],
         },
       },
       {
@@ -45,6 +46,7 @@ export default defineConfig({
             "src/**/*.svelte.test.{js,ts}",
             "src/**/*.ssr.test.{js,ts}",
           ],
+          setupFiles: ["./test/vitest-setup-msw.ts"],
         },
       },
     ],
