@@ -8,7 +8,7 @@ export const postgresql: SourcePackageSeed = {
     name: "postgresql",
     description:
       "Object-relational SQL database (metapackage depending on the default PostgreSQL version). This metapackage always depends on the currently supported PostgreSQL database server version.\n\nPostgreSQL is a powerful open-source relational database with a strong reputation for reliability, feature robustness, and correctness. It supports SQL:2016 conformance, multi-version concurrency control, foreign data wrappers, JSON/JSONB, full-text search, partitioning, logical replication, and a wide range of extensions including PostGIS for geospatial data.",
-    maintainer: MAINTAINERS.martinPitt,
+    maintainer: MAINTAINERS.ninaHolt,
     urgency: "Medium",
     architectures: ["amd64", "arm64", "armhf", "ppc64el", "riscv64", "s390x"],
     openBugCount: 18,
@@ -34,7 +34,7 @@ export const postgresql: SourcePackageSeed = {
       component: "main",
       section: "database",
       uploadDateTime: "2026-04-12T10:00:00Z",
-      uploader: "martinPitt",
+      uploader: "ninaHolt",
       publishedOn: "2026-04-12",
       isCurrent: true,
     },
@@ -46,7 +46,7 @@ export const postgresql: SourcePackageSeed = {
       component: "main",
       section: "database",
       uploadDateTime: "2025-11-01T08:00:00Z",
-      uploader: "martinPitt",
+      uploader: "ninaHolt",
       publishedOn: "2025-11-01",
       isCurrent: true,
     },
@@ -148,4 +148,3 @@ export const postgresql: SourcePackageSeed = {
     },
   ],
 };
-

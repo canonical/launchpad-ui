@@ -8,13 +8,12 @@ import { sourcePackageNotFound, versionNotFound } from "./responses.js";
 type Version = SourcePackageSeed["versions"][number];
 type ResolverInfo = Parameters<HttpResponseResolver>[0];
 
-// All seeded data is for the `ubuntu` distro. Routes wrap fetch with
-// `withDistroFetch` from `$lib/api/packages/distro.js`, threading `params.distro`
-// onto every request as `?distro=<name>`. If the param is present and names a
-// distro we don't seed, return 404 so `/{distro}/+source` etc. propagate the
-// 404 via each route's existing `error(res.response.status, …)` call. The
+// All seeded data is for the `ubuntu` distro. Each route's `load()` threads its
+// `[distro]` path param onto every API call as `?distro=<name>`. If the param is
+// present and names a distro we don't seed, return 404 so `/{distro}/+source` etc.
+// propagate it via each route's existing `error(res.response.status, …)` call. The
 // param is treated as optional (missing → allow) so direct mock callers in
-// `client.test.ts` keep working without modification — see D24.
+// `client.test.ts` keep working without modification.
 const validateDistro = (info: ResolverInfo): Response | undefined => {
   const distro = new URL(info.request.url).searchParams.get(DISTRO_QUERY_PARAM);
   if (distro !== null && distro !== SEEDED_DISTRO) {
@@ -29,27 +28,29 @@ const validateDistro = (info: ResolverInfo): Response | undefined => {
   return undefined;
 };
 
-export const safeWrap = (
-  inner: (
-    info: ResolverInfo,
-  ) => Response | undefined | Promise<Response | undefined>,
-): HttpResponseResolver => async (info) => {
-  await delay();
-  const distroError = validateDistro(info);
-  if (distroError) return distroError;
-  try {
-    return await inner(info);
-  } catch (err) {
-    return HttpResponse.json(
-      {
-        detail:
-          err instanceof Error ? err.message : "Unexpected fixture error",
-        code: "fixture_error",
-      },
-      { status: 500 },
-    );
-  }
-};
+export const safeWrap =
+  (
+    inner: (
+      info: ResolverInfo,
+    ) => Response | undefined | Promise<Response | undefined>,
+  ): HttpResponseResolver =>
+  async (info) => {
+    await delay();
+    const distroError = validateDistro(info);
+    if (distroError) return distroError;
+    try {
+      return await inner(info);
+    } catch (err) {
+      return HttpResponse.json(
+        {
+          detail:
+            err instanceof Error ? err.message : "Unexpected fixture error",
+          code: "fixture_error",
+        },
+        { status: 500 },
+      );
+    }
+  };
 
 export const withSourcePackage = (
   inner: (

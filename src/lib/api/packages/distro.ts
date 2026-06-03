@@ -1,4 +1,4 @@
-// `[distro]` is a route path param (per [[../../../.agents/decisions#D24]]).
+// `[distro]` is a route path param.
 // Routes thread `params.distro` onto every API call via `params.query.distro`
 // (typed on `BaseQuery` / `CollectionQuery` in `types.ts`); the MSW mock's
 // `safeWrap` validates it against `SEEDED_DISTRO` and returns 404 for anything

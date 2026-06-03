@@ -1,9 +1,10 @@
 # `packages` API client (mocked via MSW)
 
-Thin `openapi-fetch` wrapper for the `packages` API. In dev (`bun run dev:mock`)
-and tests, requests are intercepted by MSW (Mock Service Worker) running
-in-process. `client.ts` has no knowledge of the mock; pointing
-`PUBLIC_PACKAGES_API_URL` at a real backend swaps it out.
+Thin `openapi-fetch` wrapper for the `packages` API. In dev (`pnpm dev:mock`)
+and tests, requests are intercepted by MSW (Mock Service Worker) — in-process on
+the server (and in tests) and via a Service Worker in the browser. `client.ts`
+has no knowledge of the mock; pointing `PUBLIC_PACKAGES_API_URL` at a real
+backend swaps it out.
 
 ## Consumer usage
 
@@ -33,13 +34,14 @@ constants.ts       ERROR_INJECT_PARAM, DEFAULT_PAGE_SIZE
 types.ts           Domain types + `paths` interface
 client.test.ts     Vitest covering happy paths + error injection + fallback
 mocks/
-  server.ts        setupServer(...handlers) + appended fallback
+  server.ts        setupServer(...handlers) + appended fallback (Node/SSR/tests)
+  browser.ts       setupWorker(...handlers) + appended fallback (browser)
   state.ts         Per-process mutable singletons + resetMockState()
   data/
     series.ts        SERIES + SeriesKey
     maintainers.ts   MAINTAINERS
     types.ts         SourcePackageSeed
-    shared.ts        lp, dn, DEFAULT_ARCHES, versionSlug
+    shared.ts        lp, dn, DEFAULT_ARCHES, versionSlug, stripEpoch
     binary-packages.ts  BINARY_PACKAGES + findBinaryPackage
     converters.ts    toListingItem, toUploadItem, toLatestVersion, …
     seeds/           One file per hero (libreoffice, firefox, …) + extras.ts
@@ -49,7 +51,7 @@ mocks/
   handlers/
     index.ts         [injectError, ...typed] in dispatch order
     inject-error.ts  Head wildcard for ?_inject_error=NNN
-    fallback.ts      Tail wildcard (appended in server.ts)
+    fallback.ts      Tail wildcard (appended in server.ts / browser.ts)
     health.ts        /health
     binary-packages.ts             /binary-packages/{name}
     me.ts                          /me/packages-views GET + PUT
@@ -68,12 +70,13 @@ mocks/
 ## How MSW is wired
 
 - **Vitest** (`server` + `ssr` projects) loads `test/vitest-setup-msw.ts`,
-  which calls `server.listen()` at module top level. It must run *before*
+  which calls `server.listen()` at module top level. It must run _before_
   `client.ts` evaluates `createClient` — openapi-fetch captures
   `globalThis.fetch` at create-time.
-- **`bun run dev:mock`** (mode=mock) loads `.env.mock` and
-  `src/hooks.server.ts` calls `server.listen()` for the SvelteKit dev
-  server. `bun run dev` leaves MSW off.
+- **`pnpm dev:mock`** (mode=mock) loads `.env.mock`; `src/hooks.server.ts`
+  calls `server.listen()` for SSR, and `src/hooks.client.ts` starts the browser
+  `worker` so client-side universal `load` runs are mocked too. `pnpm dev`
+  leaves MSW off.
 
 ## Error injection
 
@@ -113,7 +116,7 @@ server.use(
 );
 ```
 
-Place this in `src/hooks.server.ts` (for `bun run dev:mock`) or in a vitest
+Place this in `src/hooks.server.ts` (for `pnpm dev:mock`) or in a vitest
 setup (for tests). `server.use(...)` additions are evaluated before the typed
 handlers, so the override wins. `resetHandlers()` (called in `afterEach`)
 wipes runtime overrides between tests.
@@ -170,8 +173,8 @@ Switching from Prism to the real backend later is one env-var change —
 
 When every handler is `passthrough()`, MSW is contributing nothing. Then:
 
-1. Delete `src/lib/api/packages/mocks/`.
-2. Delete `src/hooks.server.ts`.
+1. Delete `src/lib/api/packages/mocks/` and `static/mockServiceWorker.js`.
+2. Delete `src/hooks.server.ts` and `src/hooks.client.ts`.
 3. Drop `setupFiles` from `vite.config.ts`'s `server`/`ssr` projects;
    delete `test/vitest-setup-msw.ts`.
 4. Regenerate `types.ts` from the spec via `openapi-typescript`.
@@ -180,14 +183,14 @@ When every handler is `passthrough()`, MSW is contributing nothing. Then:
 
 ## Query param conventions
 
-| Param           | Meaning                                                        |
-| --------------- | -------------------------------------------------------------- |
-| `q`             | Combined search across name + description + maintainer name   |
-| `page`          | 1-indexed page number                                          |
-| `size`          | Page size (default 25); `"all"` on listing endpoints           |
-| `sort`          | Field name; prefix with `-` for descending                     |
-| `filter.<key>`  | Nested object. OR within field, AND across fields              |
-| `_inject_error` | Mock-only. Force a non-2xx response                            |
+| Param           | Meaning                                                     |
+| --------------- | ----------------------------------------------------------- |
+| `q`             | Combined search across name + description + maintainer name |
+| `page`          | 1-indexed page number                                       |
+| `size`          | Page size (default 25); `"all"` on listing endpoints        |
+| `sort`          | Field name; prefix with `-` for descending                  |
+| `filter.<key>`  | Nested object. OR within field, AND across fields           |
+| `_inject_error` | Mock-only. Force a non-2xx response                         |
 
 ## Status enums
 

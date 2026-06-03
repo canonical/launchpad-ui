@@ -8,7 +8,7 @@ export const curl: SourcePackageSeed = {
     name: "curl",
     description:
       "command-line tool for transferring data with URL syntax — curl supports DICT, FILE, FTP, FTPS, GOPHER, HTTP, HTTPS, IMAP, IMAPS, LDAP, LDAPS, POP3, POP3S, RTMP, RTSP, SCP, SFTP, SMTP, SMTPS, TELNET and TFTP.\n\ncurl supports HTTPS certificates, HTTP POST, HTTP PUT, FTP uploading, HTTP form-based upload, proxies, cookies, user+password authentication, file transfer resume, proxy tunnelling and more. It is built on top of libcurl, which is also used by many other applications as their HTTP transfer layer.",
-    maintainer: MAINTAINERS.iainLane,
+    maintainer: MAINTAINERS.omarFaruk,
     urgency: "High",
     architectures: [
       "amd64",
@@ -42,7 +42,7 @@ export const curl: SourcePackageSeed = {
       component: "main",
       section: "web",
       uploadDateTime: "2026-04-21T06:42:00Z",
-      uploader: "iainLane",
+      uploader: "omarFaruk",
       publishedOn: "2026-04-21",
       isCurrent: true,
     },
@@ -54,7 +54,7 @@ export const curl: SourcePackageSeed = {
       component: "main",
       section: "web",
       uploadDateTime: "2026-04-21T07:00:00Z",
-      uploader: "iainLane",
+      uploader: "omarFaruk",
       publishedOn: "2026-04-21",
       isCurrent: true,
     },
@@ -134,4 +134,3 @@ export const curl: SourcePackageSeed = {
     },
   ],
 };
-

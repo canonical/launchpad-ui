@@ -13,10 +13,7 @@ import {
   paginate,
 } from "./helpers/list.js";
 import { toListingItem } from "../data/converters.js";
-import {
-  SOURCE_PACKAGES,
-  SOURCE_PACKAGE_NAMES,
-} from "../data/seeds/index.js";
+import { SOURCE_PACKAGES, SOURCE_PACKAGE_NAMES } from "../data/seeds/index.js";
 import { SERIES } from "../data/series.js";
 import { PACKAGES_API } from "./helpers/paths.js";
 import {
@@ -148,8 +145,7 @@ const buildListing = (
     );
   }
 
-  const search =
-    readString(queryParams.search) ?? readString(queryParams.q);
+  const search = readString(queryParams.search) ?? readString(queryParams.q);
   const statusFilter = readFilterField(queryParams, "status") as
     | PublishingStatus
     | PublishingStatus[]

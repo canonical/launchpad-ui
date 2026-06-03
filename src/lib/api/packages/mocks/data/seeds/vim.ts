@@ -8,7 +8,7 @@ export const vim: SourcePackageSeed = {
     name: "vim",
     description:
       "Vi IMproved — enhanced vi editor. Vim is an almost compatible version of the UNIX editor Vi. Many new features have been added: multi-level undo, syntax highlighting, command-line history, on-line help, filename completion, block operations, folding, Unicode support, etc.\n\nVim is extensible with its own scripting language (Vimscript) and exposes bindings to Python, Ruby, Lua, and Perl. The package is split into multiple binaries — tiny, basic, GTK, and Nox — to match different runtime needs, from minimal recovery shells to full-featured graphical editing.",
-    maintainer: MAINTAINERS.matthiasKlose,
+    maintainer: MAINTAINERS.kaiTanaka,
     urgency: "Low",
     architectures: ["amd64", "arm64", "armhf", "ppc64el", "riscv64", "s390x"],
     openBugCount: 22,
@@ -34,7 +34,7 @@ export const vim: SourcePackageSeed = {
       component: "main",
       section: "editors",
       uploadDateTime: "2026-03-29T17:11:00Z",
-      uploader: "matthiasKlose",
+      uploader: "kaiTanaka",
       publishedOn: "2026-03-29",
       isCurrent: true,
     },
@@ -46,7 +46,7 @@ export const vim: SourcePackageSeed = {
       component: "main",
       section: "editors",
       uploadDateTime: "2025-07-14T13:00:00Z",
-      uploader: "matthiasKlose",
+      uploader: "kaiTanaka",
       publishedOn: "2025-07-14",
       isCurrent: true,
     },
@@ -123,4 +123,3 @@ export const vim: SourcePackageSeed = {
     },
   ],
 };
-

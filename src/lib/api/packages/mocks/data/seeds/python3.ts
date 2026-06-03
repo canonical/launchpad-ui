@@ -9,7 +9,7 @@ export const python3: SourcePackageSeed = {
     name: "python3",
     description:
       "Interactive high-level object-oriented language (default python3 version). This package is a dependency package, which depends on Ubuntu's default Python 3 version (currently v3.13).\n\nPython is a clear and powerful general-purpose programming language with a syntax that emphasises readability, and a comprehensive standard library. It is used widely for scripting, automation, web back-ends, data science, machine learning, and system tooling across the Ubuntu ecosystem.",
-    maintainer: MAINTAINERS.matthiasKlose,
+    maintainer: MAINTAINERS.kaiTanaka,
     urgency: "Medium",
     architectures: [
       "amd64",
@@ -44,7 +44,7 @@ export const python3: SourcePackageSeed = {
       component: "main",
       section: "python",
       uploadDateTime: "2026-04-30T16:42:00Z",
-      uploader: "matthiasKlose",
+      uploader: "kaiTanaka",
       publishedOn: "2026-04-30",
       isCurrent: true,
     },
@@ -56,7 +56,7 @@ export const python3: SourcePackageSeed = {
       component: "main",
       section: "python",
       uploadDateTime: "2026-03-08T11:00:00Z",
-      uploader: "matthiasKlose",
+      uploader: "kaiTanaka",
     },
     {
       version: "3.12.7-1",
@@ -66,7 +66,7 @@ export const python3: SourcePackageSeed = {
       component: "main",
       section: "python",
       uploadDateTime: "2025-09-15T08:00:00Z",
-      uploader: "matthiasKlose",
+      uploader: "kaiTanaka",
       publishedOn: "2025-09-15",
       isCurrent: true,
     },
@@ -199,4 +199,3 @@ export const python3: SourcePackageSeed = {
     },
   ],
 };
-

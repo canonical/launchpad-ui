@@ -23,6 +23,4 @@ export const sourcePackageNotFound = (name: string) =>
   notFoundResponse(`Source package ${name} not found`);
 
 export const versionNotFound = (name: string, version: string) =>
-  notFoundResponse(
-    `Version ${version} of source package ${name} not found`,
-  );
+  notFoundResponse(`Version ${version} of source package ${name} not found`);

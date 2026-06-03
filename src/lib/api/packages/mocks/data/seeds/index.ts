@@ -1,4 +1,7 @@
-import type { Architecture, SourcePackageBinariesGroup } from "../../../types.js";
+import type {
+  Architecture,
+  SourcePackageBinariesGroup,
+} from "../../../types.js";
 import { SERIES } from "../series.js";
 import type { SourcePackageSeed } from "../types.js";
 import { a11yProfileManager } from "./a11y-profile-manager.js";

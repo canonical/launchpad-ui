@@ -14,3 +14,7 @@ export const DEFAULT_ARCHES: Architecture[] = [
 
 export const versionSlug = (version: string): string =>
   version.replace(/[^a-zA-Z0-9]+/g, "-");
+
+// Strip a Debian version epoch (the leading `N:`) for use in file names / URLs.
+export const stripEpoch = (version: string): string =>
+  version.replace(/^\d+:/, "");

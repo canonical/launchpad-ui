@@ -1,7 +1,7 @@
 import type { BinaryPackageDetails } from "../../types.js";
 import { SOURCE_PACKAGES } from "./seeds/index.js";
 import { SERIES } from "./series.js";
-import { dn } from "./shared.js";
+import { dn, stripEpoch, versionSlug } from "./shared.js";
 import type { SourcePackageSeed } from "./types.js";
 
 export type BinaryPackageSeed = {
@@ -14,17 +14,16 @@ const buildBinaryDetails = (
   binaryName: string,
 ): BinaryPackageSeed => {
   const latestVersion = source.latestVersion;
-  const versionSlug = latestVersion.replace(/[^a-zA-Z0-9]+/g, "-");
   return {
     sourceName: source.details.name,
     details: {
-      id: `${binaryName}-${versionSlug}`,
+      id: `${binaryName}-${versionSlug(latestVersion)}`,
       name: binaryName,
       debPackage: {
-        name: `${binaryName}_${latestVersion.replace(/^\d+:/, "")}_amd64.deb`,
+        name: `${binaryName}_${stripEpoch(latestVersion)}_amd64.deb`,
         size: "14.1 MiB",
         url: dn(
-          `/ubuntu/pool/main/${binaryName.charAt(0)}/${source.details.name}/${binaryName}_${latestVersion.replace(/^\d+:/, "")}_amd64.deb`,
+          `/ubuntu/pool/main/${binaryName.charAt(0)}/${source.details.name}/${binaryName}_${stripEpoch(latestVersion)}_amd64.deb`,
         ),
       },
       version: latestVersion,

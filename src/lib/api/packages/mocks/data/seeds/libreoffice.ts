@@ -41,7 +41,7 @@ export const libreoffice: SourcePackageSeed = {
       component: "main",
       section: "editors",
       uploadDateTime: "2026-05-11T08:00:00Z",
-      uploader: "sebastienBacher",
+      uploader: "avaNovak",
       publishedOn: "2026-05-12",
       isCurrent: true,
       builds: [
@@ -61,7 +61,7 @@ export const libreoffice: SourcePackageSeed = {
       component: "main",
       section: "editors",
       uploadDateTime: "2026-03-25T11:18:09Z",
-      uploader: "sebastienBacher",
+      uploader: "avaNovak",
       publishedOn: "2026-03-25",
       builds: [
         { name: "amd64", status: "success" },
@@ -80,7 +80,7 @@ export const libreoffice: SourcePackageSeed = {
       component: "main",
       section: "editors",
       uploadDateTime: "2026-03-12T08:44:00Z",
-      uploader: "iainLane",
+      uploader: "omarFaruk",
       publishedOn: "2026-03-12",
     },
     {
@@ -91,7 +91,7 @@ export const libreoffice: SourcePackageSeed = {
       component: "main",
       section: "editors",
       uploadDateTime: "2025-11-19T15:22:11Z",
-      uploader: "sebastienBacher",
+      uploader: "avaNovak",
       publishedOn: "2025-11-19",
       isCurrent: true,
     },
@@ -103,7 +103,7 @@ export const libreoffice: SourcePackageSeed = {
       component: "main",
       section: "editors",
       uploadDateTime: "2025-04-14T09:30:00Z",
-      uploader: "iainLane",
+      uploader: "omarFaruk",
       publishedOn: "2025-04-14",
       isCurrent: true,
     },
@@ -279,7 +279,7 @@ export const libreoffice: SourcePackageSeed = {
       title: "Update icon theme to colibre v6",
       url: "https://code.launchpad.net/~libreoffice-packagers/libreoffice/+git/libreoffice/+merge/441001",
       status: "Needs review",
-      registrant: MAINTAINERS.sebastienBacher,
+      registrant: MAINTAINERS.avaNovak,
       createdAt: "2026-04-30T10:15:00Z",
     },
     {
@@ -287,7 +287,7 @@ export const libreoffice: SourcePackageSeed = {
       title: "Drop python2 build dependency",
       url: "https://code.launchpad.net/~libreoffice-packagers/libreoffice/+git/libreoffice/+merge/440812",
       status: "Approved",
-      registrant: MAINTAINERS.matthiasKlose,
+      registrant: MAINTAINERS.kaiTanaka,
       createdAt: "2026-04-22T14:30:00Z",
     },
     {
@@ -295,7 +295,7 @@ export const libreoffice: SourcePackageSeed = {
       title: "Enable riscv64 hardening flags",
       url: "https://code.launchpad.net/~libreoffice-packagers/libreoffice/+git/libreoffice/+merge/440100",
       status: "Work in progress",
-      registrant: MAINTAINERS.iainLane,
+      registrant: MAINTAINERS.omarFaruk,
       createdAt: "2026-04-11T08:00:00Z",
     },
   ],
@@ -336,4 +336,3 @@ export const libreoffice: SourcePackageSeed = {
     },
   ],
 };
-

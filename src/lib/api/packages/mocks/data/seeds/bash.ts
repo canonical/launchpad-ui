@@ -8,7 +8,7 @@ export const bash: SourcePackageSeed = {
     name: "bash",
     description:
       "Bash is an sh-compatible command language interpreter that executes commands read from the standard input or from a file. Bash also incorporates useful features from the Korn and C shells (ksh and csh).\n\nBash is the default login shell on Ubuntu. It conforms to the IEEE POSIX P1003.2/ISO 9945.2 Shell and Tools standard while extending it with features such as command-line editing, job control, command history, brace expansion, integer arithmetic and process substitution.",
-    maintainer: MAINTAINERS.matthiasKlose,
+    maintainer: MAINTAINERS.kaiTanaka,
     urgency: "High",
     architectures: [
       "amd64",
@@ -42,7 +42,7 @@ export const bash: SourcePackageSeed = {
       component: "main",
       section: "shells",
       uploadDateTime: "2026-04-01T07:00:00Z",
-      uploader: "matthiasKlose",
+      uploader: "kaiTanaka",
       publishedOn: "2026-04-01",
       isCurrent: true,
     },
@@ -54,7 +54,7 @@ export const bash: SourcePackageSeed = {
       component: "main",
       section: "shells",
       uploadDateTime: "2026-01-12T13:25:00Z",
-      uploader: "matthiasKlose",
+      uploader: "kaiTanaka",
       publishedOn: "2026-01-12",
       isCurrent: true,
     },
@@ -144,4 +144,3 @@ export const bash: SourcePackageSeed = {
     },
   ],
 };
-

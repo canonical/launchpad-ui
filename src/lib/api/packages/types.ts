@@ -402,7 +402,7 @@ export type PackagesViewsPreference = {
 /**
  * Fields every endpoint accepts (collection or detail). `distro` is the
  * `[distro]` route param threaded through every call so the mock can scope
- * data to its seeded distro (see [[../../../.agents/decisions#D24]]); absent
+ * data to its seeded distro; absent
  * → mock treats it as ubuntu (backwards-compat for `client.test.ts`).
  * `_inject_error` is the test-only error-path lever.
  */

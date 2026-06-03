@@ -9,7 +9,7 @@ export const snapd: SourcePackageSeed = {
     name: "snapd",
     description:
       "Daemon and tooling that enable snap packages — snapd is the background service that manages and maintains your snaps, automatically updating them with the latest revisions from the Snap Store.\n\nsnapd provides confinement using AppArmor, seccomp, cgroups and namespaces; supports transactional updates with automatic rollback; and exposes the `snap` command-line tool for installing, refreshing, removing, and connecting interfaces between snaps. It is enabled by default on Ubuntu Server and Desktop.",
-    maintainer: MAINTAINERS.iainLane,
+    maintainer: MAINTAINERS.omarFaruk,
     urgency: "Medium",
     architectures: ["amd64", "arm64", "armhf", "ppc64el", "riscv64", "s390x"],
     openBugCount: 64,
@@ -35,7 +35,7 @@ export const snapd: SourcePackageSeed = {
       component: "main",
       section: "admin",
       uploadDateTime: "2026-05-02T11:00:00Z",
-      uploader: "iainLane",
+      uploader: "omarFaruk",
       publishedOn: "2026-05-02",
       isCurrent: true,
     },
@@ -47,7 +47,7 @@ export const snapd: SourcePackageSeed = {
       component: "main",
       section: "admin",
       uploadDateTime: "2026-02-22T09:00:00Z",
-      uploader: "iainLane",
+      uploader: "omarFaruk",
       publishedOn: "2026-02-22",
       isCurrent: true,
     },
@@ -111,4 +111,3 @@ export const snapd: SourcePackageSeed = {
   },
   versionUpstream: [{ name: "snapd", url: "https://snapcraft.io/" }],
 };
-

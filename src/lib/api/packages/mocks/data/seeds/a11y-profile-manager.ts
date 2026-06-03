@@ -35,7 +35,7 @@ export const a11yProfileManager: SourcePackageSeed = {
       component: "main",
       section: "utils",
       uploadDateTime: "2026-02-02T10:00:00Z",
-      uploader: "martinPitt",
+      uploader: "ninaHolt",
       publishedOn: "2026-02-02",
       isCurrent: true,
       builds: [
@@ -51,7 +51,7 @@ export const a11yProfileManager: SourcePackageSeed = {
       component: "main",
       section: "utils",
       uploadDateTime: "2024-03-15T09:00:00Z",
-      uploader: "martinPitt",
+      uploader: "ninaHolt",
       publishedOn: "2024-03-15",
       isCurrent: true,
     },
@@ -126,7 +126,7 @@ export const a11yProfileManager: SourcePackageSeed = {
       title: "Migrate to GTK 4",
       url: "https://code.launchpad.net/~accessibility-team/a11y-profile-manager/+git/a11y-profile-manager/+merge/438800",
       status: "Work in progress",
-      registrant: MAINTAINERS.martinPitt,
+      registrant: MAINTAINERS.ninaHolt,
       createdAt: "2026-03-04T12:00:00Z",
     },
   ],
@@ -154,4 +154,3 @@ export const a11yProfileManager: SourcePackageSeed = {
     },
   ],
 };
-

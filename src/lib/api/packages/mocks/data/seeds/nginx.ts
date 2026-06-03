@@ -9,7 +9,7 @@ export const nginx: SourcePackageSeed = {
     name: "nginx",
     description:
       "small, powerful, scalable web/proxy server — Nginx is a high-performance HTTP and reverse-proxy server with low memory usage and high concurrency.\n\nNginx serves static content directly, terminates TLS, load-balances upstream application servers, and proxies WebSocket and gRPC traffic. It is commonly deployed in front of dynamic frameworks (Django, Rails, Node.js) to handle connection pooling, request buffering and caching. Configuration is declarative and reloadable without dropping live connections.",
-    maintainer: MAINTAINERS.iainLane,
+    maintainer: MAINTAINERS.omarFaruk,
     urgency: "Medium",
     architectures: ["amd64", "arm64", "armhf", "ppc64el", "riscv64", "s390x"],
     openBugCount: 42,
@@ -35,7 +35,7 @@ export const nginx: SourcePackageSeed = {
       component: "universe",
       section: "httpd",
       uploadDateTime: "2026-05-04T18:33:00Z",
-      uploader: "iainLane",
+      uploader: "omarFaruk",
       publishedOn: "2026-05-04",
       isCurrent: true,
     },
@@ -47,7 +47,7 @@ export const nginx: SourcePackageSeed = {
       component: "universe",
       section: "httpd",
       uploadDateTime: "2025-08-20T12:00:00Z",
-      uploader: "iainLane",
+      uploader: "omarFaruk",
       publishedOn: "2025-08-20",
       isCurrent: true,
     },
@@ -165,4 +165,3 @@ export const nginx: SourcePackageSeed = {
   },
   versionUpstream: [{ name: "Nginx", url: "https://nginx.org/" }],
 };
-

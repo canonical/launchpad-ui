@@ -13,7 +13,7 @@ import type {
 import { BINARY_PACKAGES } from "./binary-packages.js";
 import { MAINTAINERS } from "./maintainers.js";
 import { SERIES } from "./series.js";
-import { dn, lp } from "./shared.js";
+import { dn, lp, stripEpoch, versionSlug } from "./shared.js";
 import type { SourcePackageSeed } from "./types.js";
 
 export const toListingItem = (
@@ -39,7 +39,7 @@ export const toUploadItem = (
   seed: SourcePackageSeed,
   v: SourcePackageSeed["versions"][number],
 ): PackageUploadItem => ({
-  id: `${seed.details.id}-${v.version.replace(/[^a-zA-Z0-9]+/g, "-")}`,
+  id: `${seed.details.id}-${versionSlug(v.version)}`,
   name: seed.details.name,
   version: v.version,
   status: v.status,
@@ -57,7 +57,7 @@ export const toCurrentVersionItem = (
   seed: SourcePackageSeed,
   v: SourcePackageSeed["versions"][number],
 ): CurrentVersionItem => ({
-  id: `${seed.details.id}-${v.version.replace(/[^a-zA-Z0-9]+/g, "-")}-${v.series}`,
+  id: `${seed.details.id}-${versionSlug(v.version)}-${v.series}`,
   series: SERIES[v.series],
   version: v.version,
   pocket: v.pocket,
@@ -67,14 +67,13 @@ export const toCurrentVersionItem = (
 
 export const toLatestVersion = (seed: SourcePackageSeed): LatestVersionInfo => {
   const v = seed.versions[0];
-  const versionSlug = v.version.replace(/[^a-zA-Z0-9]+/g, "-");
   return {
-    id: `${seed.details.id}-${versionSlug}`,
+    id: `${seed.details.id}-${versionSlug(v.version)}`,
     version: v.version,
     downloadUrl: dn(
-      `/ubuntu/pool/${seed.listing.component}/${seed.details.name.charAt(0)}/${seed.details.name}/${seed.details.name}_${v.version.replace(/^\d+:/, "")}_amd64.deb`,
+      `/ubuntu/pool/${seed.listing.component}/${seed.details.name.charAt(0)}/${seed.details.name}/${seed.details.name}_${stripEpoch(v.version)}_amd64.deb`,
     ),
-    fileName: `${seed.details.name}_${v.version.replace(/^\d+:/, "")}_amd64.deb`,
+    fileName: `${seed.details.name}_${stripEpoch(v.version)}_amd64.deb`,
     fileSize: "14.1 KiB",
     status: "Published",
     pocket: v.pocket,
@@ -89,12 +88,12 @@ export const toVersionDetails = (
   seed: SourcePackageSeed,
   v: SourcePackageSeed["versions"][number],
 ): VersionDetails => ({
-  id: `${seed.details.id}-${v.version.replace(/[^a-zA-Z0-9]+/g, "-")}`,
+  id: `${seed.details.id}-${versionSlug(v.version)}`,
   version: v.version,
   changelog: `${seed.details.name} (${v.version}) ${SERIES[v.series].name}; urgency=${seed.details.urgency.toLowerCase()}\n\n  * New upstream release.\n  * Refresh patches.\n  * debian/rules: tidy up build flags.\n\n -- ${MAINTAINERS[v.uploader].name} <${MAINTAINERS[v.uploader].id}@ubuntu.com>  ${v.uploadDateTime}`,
   changes: [
     {
-      url: `https://launchpad.net/ubuntu/+source/${seed.details.name}/${v.version}/+files/${seed.details.name}_${v.version.replace(/^\d+:/, "")}.diff.gz`,
+      url: `https://launchpad.net/ubuntu/+source/${seed.details.name}/${v.version}/+files/${seed.details.name}_${stripEpoch(v.version)}.diff.gz`,
       name: `diff from previous to ${v.version}`,
     },
   ],
@@ -140,7 +139,7 @@ export const toVersionSourceFiles = (
   seed: SourcePackageSeed,
   v: SourcePackageSeed["versions"][number],
 ): VersionSourceFile[] => {
-  const base = `${seed.details.name}_${v.version.replace(/^\d+:/, "")}`;
+  const base = `${seed.details.name}_${stripEpoch(v.version)}`;
   return [
     {
       fileName: `${base}.dsc`,

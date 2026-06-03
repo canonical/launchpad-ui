@@ -1,3 +1,5 @@
+import { DEFAULT_PAGE_SIZE } from "../../../constants.js";
+
 export const asArray = <T>(value: T | T[] | undefined): T[] => {
   if (value === undefined || value === null) return [];
   return Array.isArray(value) ? value : [value];
@@ -44,7 +46,7 @@ export const paginate = <T>(
     return { items: result, total, page: 1, size: total };
   }
   const page = Math.max(1, Math.floor(query?.page ?? 1));
-  const size = Math.max(1, Math.floor(query?.size ?? 25));
+  const size = Math.max(1, Math.floor(query?.size ?? DEFAULT_PAGE_SIZE));
   const start = (page - 1) * size;
   return {
     items: result.slice(start, start + size),

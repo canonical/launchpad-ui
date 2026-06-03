@@ -65,9 +65,7 @@ export const readPaginationQuery = (
   sort: readString(queryParams.sort),
 });
 
-export const readListingSize = (
-  value: unknown,
-): number | "all" | undefined => {
+export const readListingSize = (value: unknown): number | "all" | undefined => {
   if (value === "all") return "all";
   return readNumber(value);
 };

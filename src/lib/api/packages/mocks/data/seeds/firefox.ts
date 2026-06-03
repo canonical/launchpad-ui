@@ -57,7 +57,7 @@ export const firefox: SourcePackageSeed = {
     name: "firefox",
     description:
       "Mozilla Firefox web browser — a fast, secure, and open-source web browser. Firefox provides a familiar user environment and a large library of extensions and themes.\n\nFirefox is developed by Mozilla and the global community of contributors. It supports modern web standards, sandboxed multi-process tabs, hardware-accelerated graphics, picture-in-picture video, container tabs, and built-in tracking protection. The Ubuntu package ships the standard release channel; ESR and Developer Edition are available separately.",
-    maintainer: MAINTAINERS.sebastienBacher,
+    maintainer: MAINTAINERS.avaNovak,
     urgency: "High",
     architectures: FIREFOX_RESOLUTE_ARCHES,
     openBugCount: 318,
@@ -83,7 +83,7 @@ export const firefox: SourcePackageSeed = {
       component: "universe",
       section: "web",
       uploadDateTime: "2026-05-06T22:14:08Z",
-      uploader: "sebastienBacher",
+      uploader: "avaNovak",
       publishedOn: "2026-05-06",
       isCurrent: true,
       builds: FIREFOX_RESOLUTE_ARCHES.map((name) => ({
@@ -99,7 +99,7 @@ export const firefox: SourcePackageSeed = {
       component: "universe",
       section: "web",
       uploadDateTime: "2026-04-08T09:00:00Z",
-      uploader: "sebastienBacher",
+      uploader: "avaNovak",
     },
     {
       version: "128.10.0esr+build1-0ubuntu0.24.04.1",
@@ -109,7 +109,7 @@ export const firefox: SourcePackageSeed = {
       component: "universe",
       section: "web",
       uploadDateTime: "2026-05-06T22:30:00Z",
-      uploader: "sebastienBacher",
+      uploader: "avaNovak",
       publishedOn: "2026-05-06",
       isCurrent: true,
     },
@@ -206,4 +206,3 @@ export const firefox: SourcePackageSeed = {
     },
   ],
 };
-
