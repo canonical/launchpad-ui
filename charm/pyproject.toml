@@ -1,0 +1,65 @@
+# Dev tooling. Install with `pip install poethepoet ruff codespell pyright`
+# (or `uvx --with ruff --with codespell --with pyright poethepoet <task>`),
+# then run the tasks below via `poe <task>`.
+[dependency-groups]
+dev = [
+    "ruff",
+    "codespell",
+    "pyright",
+    "poethepoet",
+]
+
+# Task runner (replaces tox). Run: `poe fmt`, `poe lint`, `poe static`, `poe check`.
+[tool.poe.tasks]
+fmt = [
+    { cmd = "ruff format src" },
+    { cmd = "ruff check --fix src" },
+]
+lint = [
+    { cmd = "codespell ." },
+    { cmd = "ruff check src" },
+    { cmd = "ruff format --check --diff src" },
+]
+static = { cmd = "pyright" }
+check = ["lint", "static"]
+
+[tool.coverage.run]
+branch = true
+
+[tool.coverage.report]
+show_missing = true
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+log_cli_level = "INFO"
+
+# Linting tools configuration
+[tool.ruff]
+line-length = 99
+lint.select = ["E", "W", "F", "C", "N", "D", "I001"]
+lint.ignore = [
+    "D105",
+    "D107",
+    "D203",
+    "D204",
+    "D213",
+    "D215",
+    "D400",
+    "D404",
+    "D406",
+    "D407",
+    "D408",
+    "D409",
+    "D413",
+]
+extend-exclude = ["__pycache__", "*.egg_info"]
+lint.per-file-ignores = {"tests/*" = ["D100","D101","D102","D103","D104"]}
+
+[tool.ruff.lint.mccabe]
+max-complexity = 10
+
+[tool.codespell]
+skip = "build,lib,venv,icon.svg,.tox,.git,.mypy_cache,.ruff_cache,.coverage"
+
+[tool.pyright]
+include = ["src/**.py"]

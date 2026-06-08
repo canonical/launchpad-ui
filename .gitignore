@@ -27,3 +27,7 @@ vite.config.ts.timestamp-*
 
 *storybook.log
 storybook-static
+
+# Rockcraft / Charmcraft build artifacts
+*.rock
+*.charm
