@@ -2,125 +2,15 @@ name: Sync with Launchpad repository
 
 on:
   schedule:
-    - cron: "*/5 * * * *"
+    - cron: "*/15 * * * *"
   workflow_dispatch: {}
+
+permissions:
+  contents: write
+  actions: write
 
 jobs:
   sync:
-    runs-on: ubuntu-latest
-    env:
-      LP_REPO_URL: https://git.launchpad.net/launchpad-ui
-    steps:
-      - name: Compare LP vs GH branches
-        id: shas
-        env:
-          REPO: ${{ github.repository }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          set -euo pipefail
-
-          # Fetch all branch HEADs from Launchpad
-          declare -A lp_branches
-          while IFS=$'\t' read -r sha ref; do
-            branch="${ref#refs/heads/}"
-            lp_branches["$branch"]="$sha"
-          done < <(git ls-remote --heads "$LP_REPO_URL")
-
-          # Fetch all branch HEADs from GitHub
-          declare -A gh_branches
-          page=1
-          while true; do
-            response=$(curl -fsSL -H "Authorization: Bearer $GITHUB_TOKEN" \
-              "https://api.github.com/repos/$REPO/branches?per_page=100&page=$page")
-            count=$(echo "$response" | jq length)
-            if [ "$count" -eq 0 ]; then
-              break
-            fi
-            while IFS=$'\t' read -r name sha; do
-              gh_branches["$name"]="$sha"
-            done < <(echo "$response" | jq -r '.[] | [.name, .commit.sha] | @tsv')
-            page=$((page + 1))
-          done
-
-          # Compare branches
-          changed=false
-          diff_details=""
-          for branch in "${!lp_branches[@]}"; do
-            lp_sha="${lp_branches[$branch]}"
-            gh_sha="${gh_branches[$branch]:-}"
-            if [ "$lp_sha" != "$gh_sha" ]; then
-              changed=true
-              if [ -z "$gh_sha" ]; then
-                diff_details+="  - **${branch}**: new branch (LP: \`${lp_sha:0:12}\`)\n"
-              else
-                diff_details+="  - **${branch}**: LP \`${lp_sha:0:12}\` != GH \`${gh_sha:0:12}\`\n"
-              fi
-            fi
-          done
-
-          echo "changed=$changed" >> "$GITHUB_OUTPUT"
-          echo "diff_details<<EOF" >> "$GITHUB_OUTPUT"
-          echo -e "$diff_details" >> "$GITHUB_OUTPUT"
-          echo "EOF" >> "$GITHUB_OUTPUT"
-
-          if [ "$changed" = "true" ]; then
-            echo "Changes detected - sync required"
-          else
-            echo "No changes detected - all branches are in sync"
-          fi
-
-      - name: Cleanup previous cancelled Sync runs
-        if: always()
-        env:
-          GH_TOKEN: ${{ github.token }}
-          REPO: ${{ github.repository }}
-        run: |
-          set -euo pipefail
-
-          # List run IDs for this workflow file.
-          run_ids="$(
-            gh api "repos/$REPO/actions/workflows/sync.yaml/runs" --paginate --jq '
-              .workflow_runs[]
-              | select(.status == "completed")
-              | .id
-            ' || true
-          )"
-
-          if [[ -z "$run_ids" ]]; then
-            exit 0
-          fi
-
-          while IFS= read -r run_id; do
-            [[ -z "$run_id" ]] && continue
-            gh api -X DELETE "repos/$REPO/actions/runs/$run_id" || true
-          done <<<"$run_ids"
-
-      - name: Cancel this run if no changes
-        if: steps.shas.outputs.changed == 'false'
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          echo "## Sync Status: No Changes" >> $GITHUB_STEP_SUMMARY
-          echo "All branches are in sync." >> $GITHUB_STEP_SUMMARY
-
-          gh run cancel ${{ github.run_id }} -R "${{ github.repository }}"
-
-      - name: Setup SSH
-        if: steps.shas.outputs.changed == 'true'
-        uses: webfactory/ssh-agent@v0.9.1
-        with:
-          ssh-private-key: ${{ secrets.PUSH_DEPLOY_PRIVATE_KEY }}
-
-      - name: Mirror from Launchpad to GitHub
-        if: steps.shas.outputs.changed == 'true'
-        env:
-          REPO: ${{ github.repository }}
-        run: |
-          set -euxo pipefail
-          echo "## Sync Status: Changes Detected" >> $GITHUB_STEP_SUMMARY
-          echo "${{ steps.shas.outputs.diff_details }}" >> $GITHUB_STEP_SUMMARY
-
-          git clone --mirror "$LP_REPO_URL" lp-mirror.git
-          cd lp-mirror.git
-          git remote set-url --push origin "git@github.com:${REPO}.git"
-          git push --mirror --force
+    uses: canonical/launchpad-actions/.github/workflows/sync.yaml@8034b2924bbd5574c339a6da8fe95e0d1c034994 # 8034b2924bbd5574c339a6da8fe95e0d1c034994
+    with:
+      source_url: https://git.launchpad.net/launchpad-ui
