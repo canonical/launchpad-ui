@@ -6,7 +6,6 @@ summary: Launchpad UI
 description: |
   SvelteKit front end for Launchpad, served with @sveltejs/adapter-node.
 license: GPL-3.0
-
 platforms:
   amd64:
   arm64:

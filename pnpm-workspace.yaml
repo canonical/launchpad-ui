@@ -1,0 +1,11 @@
+overrides:
+  # Via @sveltejs/kit: https://github.com/sveltejs/kit/blob/main/packages/kit/package.json#L25
+  cookie@<0.7.0: 0.7.2
+  # Via @stoplight/prism-cli: https://github.com/stoplightio/prism/blob/master/packages/cli/package.json#L21
+  lodash@<=4.17.23: 4.18.1
+  # Via @stoplight/prism-cli: indirect dependency
+  uuid@<11.1.1: 11.1.1
+
+patchedDependencies:
+  markdown-actions@1.1.2: patches/markdown-actions@1.1.2.patch
+  "@stoplight/prism-http@5.15.10": patches/@stoplight%2Fprism-http@5.15.10.patch
