@@ -14,7 +14,7 @@ jobs:
   chromatic:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           fetch-depth: 0
           persist-credentials: false
@@ -28,7 +28,7 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      - uses: chromaui/action@f191a0224b10e1a38b2091cefb7b7a2337009116 # latest
+      - uses: chromaui/action@d92ea1ce501f70e8c34745b2c7888648150a368a # v17.2.0
         with:
           projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }} # zizmor: ignore[secrets-outside-env]
           autoAcceptChanges: ${{ github.ref_name == 'main' && 'main' || '' }}
