@@ -59,7 +59,43 @@ jobs:
         run: |
           rockcraft remote-build \
             --launchpad-accept-public-upload \
-            --launchpad-timeout=1800
+            --launchpad-timeout=1800 &
+          ROCKCRAFT_PID=$!
+
+          # Poll for the builder log file rockcraft creates once LP starts
+          shopt -s nullglob
+          echo "::group::Waiting for Launchpad build log…"
+          for _ in $(seq 1 120); do
+            logs=(rockcraft-*.txt)
+            if [ ${#logs[@]} -gt 0 ]; then
+              LOG_FILE="${logs[0]}"
+              break
+            fi
+            sleep 3
+          done
+          echo "::endgroup::"
+
+          # Stream the log so build output is visible in real time
+          if [ -n "${LOG_FILE:-}" ]; then
+            echo "::group::Launchpad build log (${LOG_FILE})"
+            tail -n+1 -f "$LOG_FILE" &
+            TAIL_PID=$!
+          else
+            echo "::warning::Build log file never appeared after 6 minutes"
+          fi
+
+          wait "$ROCKCRAFT_PID"
+          ROCKCRAFT_EXIT=$?
+
+          # Flush remaining log lines before closing the group
+          if [ -n "${TAIL_PID:-}" ]; then
+            sleep 1
+            kill "$TAIL_PID" 2>/dev/null || true
+            wait "$TAIL_PID" 2>/dev/null || true
+            echo "::endgroup::"
+          fi
+
+          exit "$ROCKCRAFT_EXIT"
 
       - name: Log in to GHCR
         uses: docker/login-action@650006c6eb7dba73a995cc03b0b2d7f5ca915bee # v4.2.0
