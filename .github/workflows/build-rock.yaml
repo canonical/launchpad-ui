@@ -1,0 +1,73 @@
+name: Build rock
+# Builds rock images (amd64 + arm64) via Launchpad remote build.
+#
+# Required secret: ROCKCRAFT_LAUNCHPAD_CREDENTIALS
+#   The full contents of ~/.local/share/rockcraft/launchpad-credentials,
+#   an INI file created by an interactive `rockcraft remote-build` run:
+#
+#     [1]
+#     consumer_key = ...
+#     consumer_secret =
+#     access_token = <token>
+#     access_secret = <secret>
+#
+#   Paste the entire file as the secret value in
+#   Settings -> Secrets and variables -> Actions.
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: build-rock-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Install rockcraft
+        run: sudo snap install rockcraft --classic
+
+      - name: Write Launchpad credentials
+        env:
+          ROCKCRAFT_LAUNCHPAD_CREDENTIALS: ${{ secrets.ROCKCRAFT_LAUNCHPAD_CREDENTIALS }}
+        run: |
+          mkdir -p ~/.local/share/rockcraft
+          echo "$ROCKCRAFT_LAUNCHPAD_CREDENTIALS" > ~/.local/share/rockcraft/launchpad-credentials
+
+      - name: Build rock (Launchpad remote build)
+        run: |
+          rockcraft remote-build \
+            --launchpad-accept-public-upload \
+            --launchpad-timeout=1800
+
+      - name: Upload rock artifacts
+        if: success()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: rocks-${{ github.sha }}
+          path: |
+            *.rock
+          if-no-files-found: error
+
+      - name: Upload build logs
+        if: always()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: build-logs-${{ github.sha }}
+          path: |
+            rockcraft-launchpad-ui-*.txt
+          if-no-files-found: ignore
