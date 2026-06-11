@@ -5,9 +5,6 @@ type: charm
 base: ubuntu@24.04
 platforms:
   amd64:
-  arm64:
-  # ppc64el:
-  # s390x:
 
 # (Required)
 summary: SvelteKit front-end for Launchpad, deployed on Kubernetes.

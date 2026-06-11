@@ -1,0 +1,55 @@
+name: Publish
+# Orchestrates rock build, charm pack, and Charmhub release.
+# Pushes to main auto-publish on the edge channel.
+#
+# Required secrets:
+#   ROCKCRAFT_LAUNCHPAD_CREDENTIALS — see build-rock.yaml header
+#   CHARMHUB_TOKEN — charmcraft credentials (`charmcraft login --export`)
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      channel:
+        description: Charmhub channel
+        type: choice
+        options:
+          - edge
+          - stable
+        default: edge
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publish-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  rock:
+    permissions:
+      contents: read
+      packages: write
+    uses: ./.github/workflows/build-rock.yaml
+    secrets: inherit # zizmor: ignore[secrets-inherit]
+    with:
+      commit_sha: ${{ github.sha }}
+
+  charm:
+    uses: canonical/launchpad-actions/.github/workflows/build-charm.yaml@d37e57af16120fba0055931e77518a5f9edf7513
+    secrets: inherit # zizmor: ignore[secrets-inherit]
+    with:
+      charm_path: charm
+
+  release:
+    needs: [rock, charm]
+    uses: canonical/launchpad-actions/.github/workflows/release-charm.yaml@d37e57af16120fba0055931e77518a5f9edf7513
+    secrets: inherit # zizmor: ignore[secrets-inherit]
+    with:
+      charm_cache_hit: ${{ needs.charm.outputs.cache_hit }}
+      commit_sha: ${{ github.sha }}
+      channel: ${{ inputs.channel || 'edge' }}
+      charm_name: launchpad-ui
+      resource_name: app-image
