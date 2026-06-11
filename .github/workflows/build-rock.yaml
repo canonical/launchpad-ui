@@ -56,46 +56,39 @@ jobs:
           echo "$ROCKCRAFT_LAUNCHPAD_CREDENTIALS" > ~/.local/share/rockcraft/launchpad-credentials
 
       - name: Build rock (Launchpad remote build)
+        shell: bash
         run: |
+          set +e
           rockcraft remote-build \
             --launchpad-accept-public-upload \
-            --launchpad-timeout=1800 &
-          ROCKCRAFT_PID=$!
+            --launchpad-timeout=1800 2>&1 | tee rockcraft-remote-build.txt
+          pipe_status=("${PIPESTATUS[@]}")
+          set -e
 
-          # Poll for the builder log file rockcraft creates once LP starts
+          ROCKCRAFT_EXIT="${pipe_status[0]}"
+          TEE_EXIT="${pipe_status[1]}"
+
+          # Launchpad writes detailed builder logs after remote-build exits.
+          # Print them so they are visible in the workflow output.
           shopt -s nullglob
-          echo "::group::Waiting for Launchpad build log…"
-          for _ in $(seq 1 120); do
-            logs=(rockcraft-*.txt)
-            if [ ${#logs[@]} -gt 0 ]; then
-              LOG_FILE="${logs[0]}"
-              break
-            fi
-            sleep 3
-          done
-          echo "::endgroup::"
-
-          # Stream the log so build output is visible in real time
-          if [ -n "${LOG_FILE:-}" ]; then
-            echo "::group::Launchpad build log (${LOG_FILE})"
-            tail -n+1 -f "$LOG_FILE" &
-            TAIL_PID=$!
+          launchpad_logs=(rockcraft-launchpad-ui-*.txt)
+          if [ "${#launchpad_logs[@]}" -gt 0 ]; then
+            for LOG_FILE in "${launchpad_logs[@]}"; do
+              echo "::group::Launchpad build log (${LOG_FILE})"
+              STOP_COMMANDS_TOKEN="$(uuidgen)"
+              echo "::stop-commands::${STOP_COMMANDS_TOKEN}"
+              cat -- "$LOG_FILE"
+              echo "::${STOP_COMMANDS_TOKEN}::"
+              echo "::endgroup::"
+            done
           else
-            echo "::warning::Build log file never appeared after 6 minutes"
+            echo "::warning::No Launchpad build log files were written"
           fi
 
-          wait "$ROCKCRAFT_PID"
-          ROCKCRAFT_EXIT=$?
-
-          # Flush remaining log lines before closing the group
-          if [ -n "${TAIL_PID:-}" ]; then
-            sleep 1
-            kill "$TAIL_PID" 2>/dev/null || true
-            wait "$TAIL_PID" 2>/dev/null || true
-            echo "::endgroup::"
+          if [ "$ROCKCRAFT_EXIT" -ne 0 ]; then
+            exit "$ROCKCRAFT_EXIT"
           fi
-
-          exit "$ROCKCRAFT_EXIT"
+          exit "$TEE_EXIT"
 
       - name: Log in to GHCR
         uses: docker/login-action@650006c6eb7dba73a995cc03b0b2d7f5ca915bee # v4.2.0
@@ -119,10 +112,28 @@ jobs:
           path: "*.rock"
           if-no-files-found: error
 
+      - name: Prepare build logs for upload
+        if: always()
+        shell: bash
+        run: |
+          mkdir -p build-logs
+          shopt -s nullglob
+          logs=(rockcraft*.txt)
+
+          if [ "${#logs[@]}" -eq 0 ]; then
+            echo "No build logs to prepare"
+            exit 0
+          fi
+
+          for LOG_FILE in "${logs[@]}"; do
+            SAFE_NAME="${LOG_FILE//:/-}"
+            cp -- "$LOG_FILE" "build-logs/${SAFE_NAME}"
+          done
+
       - name: Upload build logs
         if: always()
         uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: build-logs-${{ github.sha }}
-          path: "rockcraft-launchpad-ui-*.txt"
+          path: "build-logs/*.txt"
           if-no-files-found: ignore
