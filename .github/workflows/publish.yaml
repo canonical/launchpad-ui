@@ -3,7 +3,18 @@ name: Publish
 # Pushes to main auto-publish on the edge channel.
 #
 # Required secrets:
-#   ROCKCRAFT_LAUNCHPAD_CREDENTIALS — see build-rock.yaml header
+#   ROCKCRAFT_LAUNCHPAD_CREDENTIALS
+#     The full contents of ~/.local/share/rockcraft/launchpad-credentials,
+#     an INI file created by an interactive `rockcraft remote-build` run:
+#
+#       [1]
+#       consumer_key = ...
+#       consumer_secret =
+#       access_token = <token>
+#       access_secret = <secret>
+#
+#     Paste the entire file as the secret value in
+#     Settings -> Secrets and variables -> Actions.
 #   CHARMHUB_TOKEN — charmcraft credentials (`charmcraft login --export`)
 
 on:
@@ -32,13 +43,13 @@ jobs:
     permissions:
       contents: read
       packages: write
-    uses: ./.github/workflows/build-rock.yaml
+    uses: canonical/launchpad-actions/.github/workflows/remote-build-rock.yaml@160accd95f96dc57b4f65147fa60259afb773526 # 160accd95f96dc57b4f65147fa60259afb773526
     secrets: inherit # zizmor: ignore[secrets-inherit]
     with:
       commit_sha: ${{ github.sha }}
 
   charm:
-    uses: canonical/launchpad-actions/.github/workflows/build-charm.yaml@8034b2924bbd5574c339a6da8fe95e0d1c034994 # 8034b2924bbd5574c339a6da8fe95e0d1c034994
+    uses: canonical/launchpad-actions/.github/workflows/build-charm.yaml@160accd95f96dc57b4f65147fa60259afb773526 # 160accd95f96dc57b4f65147fa60259afb773526
     with:
       commit_sha: ${{ github.sha }}
 
@@ -47,10 +58,11 @@ jobs:
     permissions:
       contents: read
       packages: read
-    uses: canonical/launchpad-actions/.github/workflows/release-charm.yaml@8034b2924bbd5574c339a6da8fe95e0d1c034994 # 8034b2924bbd5574c339a6da8fe95e0d1c034994
+    uses: canonical/launchpad-actions/.github/workflows/release-charm.yaml@160accd95f96dc57b4f65147fa60259afb773526 # 160accd95f96dc57b4f65147fa60259afb773526
     secrets: inherit # zizmor: ignore[secrets-inherit]
     with:
       charm_cache_hit: ${{ needs.charm.outputs.cache_hit }}
+      skip_resource_upload: ${{ needs.rock.outputs.cache_hit == 'true' }}
       commit_sha: ${{ github.sha }}
       channel: ${{ inputs.channel || 'edge' }}
       charm_name: launchpad-ui
