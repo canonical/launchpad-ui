@@ -38,53 +38,19 @@ jobs:
       commit_sha: ${{ github.sha }}
 
   charm:
-    runs-on:
-      - self-hosted
-      - linux
-      - x64
-      - self-hosted-linux-amd64-noble-large
-    steps:
-      - name: Checkout
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
-        with:
-          persist-credentials: false
-
-      - name: Cache charm
-        id: charm-cache
-        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
-        with:
-          path: charm/*.charm
-          key: charm-${{ hashFiles('charm/**') }}
-
-      - name: Setup LXD
-        if: steps.charm-cache.outputs.cache-hit != 'true'
-        uses: canonical/setup-lxd@da2ac84e727dc534215fd14cd088b9209d65893b # v1.0.0
-
-      - name: Install charmcraft
-        if: steps.charm-cache.outputs.cache-hit != 'true'
-        run: sudo snap install --classic charmcraft --channel=3.x/stable
-
-      - name: Pack charm
-        if: steps.charm-cache.outputs.cache-hit != 'true'
-        run: |
-          cd charm
-          charmcraft pack -v
-
-      - name: Upload charm artifact
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        with:
-          name: charm
-          path: charm/*.charm
-          if-no-files-found: error
+    uses: canonical/launchpad-actions/.github/workflows/build-charm.yaml@8034b2924bbd5574c339a6da8fe95e0d1c034994 # 8034b2924bbd5574c339a6da8fe95e0d1c034994
+    with:
+      commit_sha: ${{ github.sha }}
 
   release:
     needs: [rock, charm]
-    uses: canonical/launchpad-actions/.github/workflows/release-charm.yaml@d37e57af16120fba0055931e77518a5f9edf7513
+    permissions:
+      contents: read
+      packages: read
+    uses: canonical/launchpad-actions/.github/workflows/release-charm.yaml@8034b2924bbd5574c339a6da8fe95e0d1c034994 # 8034b2924bbd5574c339a6da8fe95e0d1c034994
     secrets: inherit # zizmor: ignore[secrets-inherit]
     with:
-      # TODO: Switch back to needs.charm.outputs.cache_hit when the reusable
-      # build-charm workflow uploads cached charm artifacts too.
-      charm_cache_hit: "false"
+      charm_cache_hit: ${{ needs.charm.outputs.cache_hit }}
       commit_sha: ${{ github.sha }}
       channel: ${{ inputs.channel || 'edge' }}
       charm_name: launchpad-ui
