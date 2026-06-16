@@ -31,12 +31,7 @@
     "test:client:webkit": "pnpm run test --project=client --browser=webkit",
     "test:watch:client": "pnpm run test:watch --project=client --browser.headless=false",
     "storybook": "storybook dev -p 6006 --no-open",
-    "build-storybook": "storybook build",
-    "openapi:update": "pnpm run openapi:update-schema && pnpm run openapi:generate-types",
-    "openapi:update-schema": "./scripts/openapi-update-schema.sh",
-    "openapi:generate-types": "openapi-typescript .api-spec/job-manager.yaml -o src/lib/api/job-manager/types.ts --root-types --root-types-no-schema-prefix --enum-values",
-    "mock-server": "prism mock .api-spec/job-manager.yaml --port 4010",
-    "mock-server:dynamic": "pnpm run mock-server -d"
+    "build-storybook": "storybook build"
   },
   "devDependencies": {
     "@canonical/launchpad-design-tokens": "^1.1.1",
