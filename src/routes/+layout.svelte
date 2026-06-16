@@ -5,7 +5,6 @@
     DesktopIcon,
     HomeIcon,
     IconsOptimizationProvider,
-    IsoIcon,
     LogOutIcon,
     SearchIcon,
     UserIcon,
@@ -165,18 +164,6 @@
           Home
           {#snippet icon()}
             <HomeIcon />
-          {/snippet}
-        </SideNavigation.NavigationItem>
-        <SideNavigation.NavigationItem
-          href={resolve("/jobs")}
-          selected={page.url.pathname.startsWith("/jobs")}
-          aria-current={page.url.pathname.startsWith("/jobs")
-            ? "page"
-            : undefined}
-        >
-          Jobs
-          {#snippet icon()}
-            <IsoIcon />
           {/snippet}
         </SideNavigation.NavigationItem>
         <!-- TODO: Placeholder links -->
