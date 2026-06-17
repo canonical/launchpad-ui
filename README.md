@@ -46,62 +46,6 @@ pnpm dev
 
 Launchpad UI will be available at [http://localhost:5173](http://localhost:5173).
 
-## Job Manager mocking
-
-The app can be run against a local mock server based on the Job Manager OpenAPI schema.
-
-### Mock server workflow
-
-`pnpm dev:mock` uses [`.env.mock`](.env.mock) instead of `.env` to point the UI at the local mock server.
-
-Terminal A (mock API):
-
-```bash
-pnpm mock-server
-```
-
-Terminal B (UI):
-
-```bash
-pnpm dev:mock
-```
-
-If you want the mock server to generate dynamic responses instead of always returning examples, use:
-
-```bash
-pnpm mock-server:dynamic
-```
-
-The mock server reads the OpenAPI schema from [`.api-spec/job-manager.yaml`](.api-spec/job-manager.yaml).
-
-## Job Manager OpenAPI
-
-This repo keeps the Job Manager API contract in sync in two ways:
-
-- [`.api-spec/job-manager.yaml`](.api-spec/job-manager.yaml) is the OpenAPI schema used for mocking.
-- [`src/lib/api/job-manager/types.ts`](src/lib/api/job-manager/types.ts) is generated TypeScript types used by the client, based on the schema.
-
-### Updating schema + types
-
-Run this to download the latest schema from the Job Manager repo and regenerate types:
-
-```bash
-pnpm openapi:update
-```
-
-The schema download step supports environment variable overrides:
-
-- `JOB_MANAGER_REPO` (default: `job-manager`)
-- `JOB_MANAGER_BRANCH` (default: `main`)
-
-Example: update schema/types from `my-branch` in fork `~lp-user/job-manager`:
-
-```bash
-JOB_MANAGER_REPO=~lp-user/job-manager JOB_MANAGER_BRANCH=my-branch pnpm openapi:update
-```
-
-This is useful even when you want to validate and regenerate types against an API branch before it lands.
-
 ## Storybook
 
 Use Storybook to develop and test UI components in isolation.
