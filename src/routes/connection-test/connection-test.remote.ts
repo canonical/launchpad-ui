@@ -4,7 +4,7 @@ import * as v from "valibot";
 import { form, getRequestEvent, query } from "$app/server";
 import { env } from "$env/dynamic/private";
 
-const lpCookieName = "lp";
+const lpCookieName = env.MAIN_LAUNCHPAD_COOKIE_NAME || "lp";
 
 export const getUbuntu = query(() => client("/api/devel/ubuntu"));
 
