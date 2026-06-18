@@ -1,4 +1,4 @@
-import { http, HttpResponse } from "msw";
+import { HttpResponse, http } from "msw";
 import { PACKAGES_API } from "./helpers/paths.js";
 import { safeWrap } from "./helpers/wrap.js";
 

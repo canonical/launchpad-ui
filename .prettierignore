@@ -8,3 +8,5 @@ bun.lockb
 /.svelte-kit
 node_modules
 /build
+
+static/mockServiceWorker.js

@@ -1,4 +1,4 @@
-import { http, HttpResponse } from "msw";
+import { HttpResponse, http } from "msw";
 import { findBinaryPackage } from "../data/binary-packages.js";
 import { PACKAGES_API } from "./helpers/paths.js";
 import { notFoundResponse } from "./helpers/responses.js";

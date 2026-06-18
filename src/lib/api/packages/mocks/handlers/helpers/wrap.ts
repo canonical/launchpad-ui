@@ -1,4 +1,5 @@
-import { HttpResponse, type HttpResponseResolver } from "msw";
+import { HttpResponse } from "msw";
+import type { HttpResponseResolver } from "msw";
 import { DISTRO_QUERY_PARAM, SEEDED_DISTRO } from "../../../distro.js";
 import { findSourcePackage, findVersion } from "../../data/seeds/index.js";
 import type { SourcePackageSeed } from "../../data/types.js";

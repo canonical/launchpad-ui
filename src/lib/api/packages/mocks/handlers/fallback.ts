@@ -1,4 +1,5 @@
-import { http, type HttpHandler } from "msw";
+import { http } from "msw";
+import type { HttpHandler } from "msw";
 import { PACKAGES_API, PACKAGES_API_WILDCARD } from "./helpers/paths.js";
 import {
   methodNotAllowedResponse,
