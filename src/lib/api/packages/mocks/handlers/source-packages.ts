@@ -1,4 +1,4 @@
-import { http, HttpResponse } from "msw";
+import { HttpResponse, http } from "msw";
 import type {
   Component,
   Pocket,
@@ -6,15 +6,15 @@ import type {
   SortOrder,
   SourcePackagesTab,
 } from "../../types.js";
+import { toListingItem } from "../data/converters.js";
+import { SOURCE_PACKAGES, SOURCE_PACKAGE_NAMES } from "../data/seeds/index.js";
+import { SERIES } from "../data/series.js";
 import {
   asArray,
   matchesFilter,
   matchesSearch,
   paginate,
 } from "./helpers/list.js";
-import { toListingItem } from "../data/converters.js";
-import { SOURCE_PACKAGES, SOURCE_PACKAGE_NAMES } from "../data/seeds/index.js";
-import { SERIES } from "../data/series.js";
 import { PACKAGES_API } from "./helpers/paths.js";
 import {
   parseQuery,

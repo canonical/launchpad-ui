@@ -1,7 +1,7 @@
 export {
   BINARY_PACKAGES,
-  findBinaryPackage,
   type BinaryPackageSeed,
+  findBinaryPackage,
 } from "./binary-packages.js";
 export {
   toCurrentVersionItem,

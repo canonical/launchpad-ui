@@ -1,4 +1,4 @@
-import { http, HttpResponse } from "msw";
+import { HttpResponse, http } from "msw";
 import { ERROR_INJECT_PARAM } from "../../constants.js";
 import { delay } from "./helpers/latency.js";
 import { PACKAGES_API_WILDCARD } from "./helpers/paths.js";

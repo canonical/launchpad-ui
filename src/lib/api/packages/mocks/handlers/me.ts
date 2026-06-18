@@ -1,4 +1,4 @@
-import { http, HttpResponse } from "msw";
+import { HttpResponse, http } from "msw";
 import type { PackagesViewsPreference } from "../../types.js";
 import { getPackagesViews, setPackagesViews } from "../state.js";
 import { PACKAGES_API } from "./helpers/paths.js";

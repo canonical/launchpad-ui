@@ -97,6 +97,13 @@
   const isSideNavigationExpanded = $derived(
     (await sideNavigationStatePromise) === "expanded",
   );
+
+  // The next state is lifted out of the form submission handler
+  // as a workaround for: https://github.com/sveltejs/kit/issues/15969
+  // TODO: Remove when the above is resolved
+  const nextSideNavigationState = $derived(
+    isSideNavigationExpanded ? "collapsed" : "expanded",
+  );
 </script>
 
 <ThemeSetter theme={await getTheme()} />
@@ -128,30 +135,28 @@
         {/snippet}
         {#snippet expandToggle(toggleProps)}
           <form
-            {...setSideNavigationStateForm.enhance(
-              async ({ data: { state: newState }, submit }) => {
-                try {
-                  // If we have JS, try not to bother the server at all
-                  await cookieStore.set({
-                    name: sideNavigationStateCookieName,
-                    value: newState,
-                    expires: Date.now() + 1000 * 60 * 60 * 24 * 365,
-                    sameSite: "lax",
-                  });
-                  getSideNavigationState().set(newState);
-                } catch (e) {
-                  console.error(e);
-                  await submit();
-                }
-              },
-            )}
+            {...setSideNavigationStateForm.enhance(async ({ submit }) => {
+              try {
+                // If we have JS, try not to bother the server at all
+                await cookieStore.set({
+                  name: sideNavigationStateCookieName,
+                  value: nextSideNavigationState,
+                  expires: Date.now() + 1000 * 60 * 60 * 24 * 365,
+                  sameSite: "lax",
+                });
+                getSideNavigationState().set(nextSideNavigationState);
+              } catch (e) {
+                console.error(e);
+                await submit();
+              }
+            })}
             style="display: contents;"
           >
             <SideNavigation.ExpandToggle
               {...toggleProps}
               {...setSideNavigationStateForm.fields.state.as(
                 "submit",
-                isSideNavigationExpanded ? "collapsed" : "expanded",
+                nextSideNavigationState,
               )}
             />
           </form>
@@ -195,34 +200,37 @@
             <ContextualMenuContent
               style="margin-inline-start: var(--lp-dimension-spacing-inline-xxs);"
             >
-              <form
-                {...setThemeForm.enhance(
-                  async ({ data: { theme }, submit }) => {
-                    try {
-                      // If we have JS, try not to bother the server at all
-                      await clientSideSetTheme(theme);
-                    } catch (e) {
-                      console.error(e);
-                      await submit();
-                    }
-                  },
-                )}
-                style="display: contents;"
-              >
-                <ContextualMenuContent.Group style="min-width: 280px">
-                  {#each themes as themeOption (themeOption)}
-                    {@const { Icon, label } = themesDisplay[themeOption]}
+              <ContextualMenuContent.Group style="min-width: 280px">
+                {#each themes as themeOption (themeOption)}
+                  <!-- 
+                    A form per theme option as a workaround for: https://github.com/sveltejs/kit/issues/15969
+                    TODO: Change back to a single form when the above is resolved
+                  -->
+                  {@const themeForm = setThemeForm.for(themeOption)}
+                  {@const { Icon, label } = themesDisplay[themeOption]}
+                  <form
+                    {...themeForm.enhance(async ({ submit }) => {
+                      try {
+                        // If we have JS, try not to bother the server at all
+                        await clientSideSetTheme(themeOption);
+                      } catch (e) {
+                        console.error(e);
+                        await submit();
+                      }
+                    })}
+                    style="display: contents;"
+                  >
                     <ContextualMenuContent.ButtonItem
                       text={label}
-                      {...setThemeForm.fields.theme.as("submit", themeOption)}
+                      {...themeForm.fields.theme.as("submit", themeOption)}
                     >
                       {#snippet icon()}
                         <Icon />
                       {/snippet}
                     </ContextualMenuContent.ButtonItem>
-                  {/each}
-                </ContextualMenuContent.Group>
-              </form>
+                  </form>
+                {/each}
+              </ContextualMenuContent.Group>
             </ContextualMenuContent>
           </Popover>
           <!-- TODO: Placeholder links -->
