@@ -1,4 +1,5 @@
 import { error } from "@sveltejs/kit";
+import { Agent } from "undici";
 import * as v from "valibot";
 import { form, getRequestEvent, query } from "$app/server";
 import { env } from "$env/dynamic/private";
@@ -56,18 +57,30 @@ async function client(
     headers.set("Cookie", `${lpCookieName}=${lpCookie}`);
   }
 
-  const { fetch } = getRequestEvent();
   let response: Response;
   try {
     const loggableHeaders = Object.fromEntries(headers);
     if (loggableHeaders.cookie) {
-      loggableHeaders.cookie = "<supplied>";
+      loggableHeaders.cookie = `<${lpCookieName}>`;
     }
+
+    const skipTLS = env.MAIN_LAUNCHPAD_SKIP_TLS_VERIFY === "true";
+
     console.log("Making request to Launchpad", {
       url: url.toString(),
       headers: loggableHeaders,
+      skipTLS,
     });
-    response = await fetch(url, { headers });
+
+    response = await fetch(url, {
+      headers,
+      // `dispatcher` is a valid undici fetch option, but it's absent from the
+      // DOM `RequestInit` type that types the global fetch (lib: ["DOM"]).
+      // @ts-expect-error - dispatcher not in DOM RequestInit
+      dispatcher: skipTLS
+        ? new Agent({ connect: { rejectUnauthorized: false } })
+        : undefined,
+    });
   } catch (e) {
     error(
       502,
