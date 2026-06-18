@@ -3,6 +3,7 @@
   import {
     CommentsIcon,
     DesktopIcon,
+    DisconnectedIcon,
     HomeIcon,
     IconsOptimizationProvider,
     LogOutIcon,
@@ -169,6 +170,18 @@
           Home
           {#snippet icon()}
             <HomeIcon />
+          {/snippet}
+        </SideNavigation.NavigationItem>
+        <SideNavigation.NavigationItem
+          href={resolve("/connection-test")}
+          selected={page.url.pathname === "/connection-test"}
+          aria-current={page.url.pathname === "/connection-test"
+            ? "page"
+            : undefined}
+        >
+          Connection Test
+          {#snippet icon()}
+            <DisconnectedIcon />
           {/snippet}
         </SideNavigation.NavigationItem>
         <!-- TODO: Placeholder links -->
