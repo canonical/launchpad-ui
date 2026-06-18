@@ -59,9 +59,13 @@ async function client(
   const { fetch } = getRequestEvent();
   let response: Response;
   try {
+    const loggableHeaders = Object.fromEntries(headers);
+    if (loggableHeaders.cookie) {
+      loggableHeaders.cookie = "<supplied>";
+    }
     console.log("Making request to Launchpad", {
       url: url.toString(),
-      headers,
+      headers: loggableHeaders,
     });
     response = await fetch(url, { headers });
   } catch (e) {
