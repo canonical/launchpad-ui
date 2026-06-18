@@ -57,20 +57,18 @@ async function client(
     headers.set("Cookie", `${lpCookieName}=${lpCookie}`);
   }
 
+  const skipTLS = env.MAIN_LAUNCHPAD_SKIP_TLS_VERIFY === "true";
+
+  const loggableHeaders = Object.fromEntries(headers);
+  if (loggableHeaders.cookie) {
+    loggableHeaders.cookie = `<${lpCookieName}>`;
+  }
+
+  const logContext = { url: url.toString(), headers: loggableHeaders, skipTLS };
+
   let response: Response;
   try {
-    const loggableHeaders = Object.fromEntries(headers);
-    if (loggableHeaders.cookie) {
-      loggableHeaders.cookie = `<${lpCookieName}>`;
-    }
-
-    const skipTLS = env.MAIN_LAUNCHPAD_SKIP_TLS_VERIFY === "true";
-
-    console.log("Making request to Launchpad", {
-      url: url.toString(),
-      headers: loggableHeaders,
-      skipTLS,
-    });
+    console.log("Launchpad request started", logContext);
 
     response = await fetch(url, {
       headers,
@@ -81,7 +79,16 @@ async function client(
         ? new Agent({ connect: { rejectUnauthorized: false } })
         : undefined,
     });
+
+    console.log("Launchpad request finished successfully", {
+      ...logContext,
+      status: response.status,
+    });
   } catch (e) {
+    console.error("Launchpad request failed", {
+      ...logContext,
+      error: e instanceof Error ? e.message : String(e),
+    });
     error(
       502,
       `Request to ${url.host} failed: ${e instanceof Error ? e.message : String(e)}`,
