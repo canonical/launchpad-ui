@@ -1,5 +1,5 @@
 import { error } from "@sveltejs/kit";
-import { Agent } from "undici";
+import { Agent, request as undiciRequest } from "undici";
 import * as v from "valibot";
 import { form, getRequestEvent, query } from "$app/server";
 import { env } from "$env/dynamic/private";
@@ -49,40 +49,74 @@ async function client(
   const ipAddress = env.MAIN_LAUNCHPAD_IP_ADDRESS;
   const url = new URL(path, ipAddress || baseHost);
 
-  const headers = new Headers();
+  const headers: Record<string, string> = {};
   if (ipAddress) {
-    headers.set("Host", new URL(baseHost).host);
+    headers["host"] = new URL(baseHost).host;
   }
   if (lpCookie) {
-    headers.set("Cookie", `${lpCookieName}=${lpCookie}`);
+    headers["cookie"] = `${lpCookieName}=${lpCookie}`;
   }
 
   const skipTLS = env.MAIN_LAUNCHPAD_SKIP_TLS_VERIFY === "true";
 
-  const loggableHeaders = Object.fromEntries(headers);
+  const loggableHeaders = { ...headers };
   if (loggableHeaders.cookie) {
     loggableHeaders.cookie = `<${lpCookieName}>`;
   }
 
   const logContext = { url: url.toString(), headers: loggableHeaders, skipTLS };
 
-  let response: Response;
+  let statusCode: number;
+  let text: string;
   try {
     console.log("Launchpad request started", logContext);
 
-    response = await fetch(url, {
-      headers,
-      // `dispatcher` is a valid undici fetch option, but it's absent from the
-      // DOM `RequestInit` type that types the global fetch (lib: ["DOM"]).
-      // @ts-expect-error - dispatcher not in DOM RequestInit
-      dispatcher: skipTLS
-        ? new Agent({ connect: { rejectUnauthorized: false } })
-        : undefined,
-    });
+    const MAX_REDIRECTS = 5;
+    const baseOrigin = new URL(baseHost).origin;
+    let currentUrl: URL = url;
+
+    for (let redirects = 0; ; redirects++) {
+      // fetch() treats `Host` as a forbidden header and silently drops it,
+      // breaking vhost routing when connecting to an IP address.
+      // undici.request() does not enforce the Fetch spec's forbidden-header list.
+      const res = await undiciRequest(currentUrl, {
+        headers,
+        dispatcher: skipTLS
+          ? new Agent({ connect: { rejectUnauthorized: false } })
+          : undefined,
+      });
+
+      const isRedirect = res.statusCode >= 300 && res.statusCode < 400;
+      if (isRedirect && redirects < MAX_REDIRECTS) {
+        const location = Array.isArray(res.headers.location)
+          ? res.headers.location[0]
+          : res.headers.location;
+        await res.body.dump();
+
+        if (!location) {
+          statusCode = res.statusCode;
+          text = "";
+          break;
+        }
+
+        let next = new URL(location, currentUrl);
+        // LP redirects use the canonical hostname; rewrite back to IP so the
+        // Host header override keeps working on every hop.
+        if (ipAddress && next.origin === baseOrigin) {
+          next = new URL(next.pathname + next.search, ipAddress);
+        }
+        currentUrl = next;
+        continue;
+      }
+
+      statusCode = res.statusCode;
+      text = await res.body.text();
+      break;
+    }
 
     console.log("Launchpad request finished successfully", {
       ...logContext,
-      status: response.status,
+      status: statusCode,
     });
   } catch (e) {
     console.error("Launchpad request failed", {
@@ -95,13 +129,11 @@ async function client(
     );
   }
 
-  const text = await response.text();
-
   try {
     const json = JSON.parse(text);
-    return { status: response.status, json };
+    return { status: statusCode, json };
   } catch {
-    return { status: response.status, text };
+    return { status: statusCode, text };
   }
 }
 
