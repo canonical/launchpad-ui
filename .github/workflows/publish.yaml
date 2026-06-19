@@ -67,3 +67,17 @@ jobs:
       channel: ${{ inputs.channel || 'edge' }}
       charm_name: launchpad-ui
       resource_name: app-image
+
+  terraform-bump-stg-ps7:
+    needs: release
+    # Only the stg Terraform repo exists today, and it tracks the edge channel.
+    if: ${{ (inputs.channel || 'edge') == 'edge' }}
+    permissions:
+      contents: read
+    uses: canonical/launchpad-actions/.github/workflows/terraform-bump-pr.yaml@137515cabc2ff246bfd7886d6c4ab17eb876b35a # canonical/launchpad-actions#15
+    secrets: inherit # zizmor: ignore[secrets-inherit]
+    with:
+      environment: stg
+      app_name: launchpad-ui
+      charm_revision: ${{ needs.release.outputs.charm_revision }}
+      resource_revision: ${{ needs.release.outputs.resource_revision }}
