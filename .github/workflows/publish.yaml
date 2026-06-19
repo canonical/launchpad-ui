@@ -34,13 +34,13 @@ jobs:
     uses: canonical/launchpad-actions/.github/workflows/build-rock.yaml@f958634637cc70a6a282bf4f57b1da0a94cc2648 # f958634637cc70a6a282bf4f57b1da0a94cc2648
     with:
       commit_sha: ${{ github.sha }}
-      runner_flavor: small
+      runner_flavor: medium
 
   charm:
     uses: canonical/launchpad-actions/.github/workflows/build-charm.yaml@f958634637cc70a6a282bf4f57b1da0a94cc2648 # f958634637cc70a6a282bf4f57b1da0a94cc2648
     with:
       commit_sha: ${{ github.sha }}
-      runner_flavor: small
+      runner_flavor: medium
 
   release:
     needs: [rock, charm]
