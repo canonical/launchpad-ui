@@ -11,6 +11,6 @@ permissions:
 
 jobs:
   sync:
-    uses: canonical/launchpad-actions/.github/workflows/sync.yaml@f958634637cc70a6a282bf4f57b1da0a94cc2648 # f958634637cc70a6a282bf4f57b1da0a94cc2648
+    uses: canonical/launchpad-actions/.github/workflows/sync.yaml@29acf6ef813a528b94ee87f3680ad844cde6ca8f # 29acf6ef813a528b94ee87f3680ad844cde6ca8f
     with:
       source_url: https://git.launchpad.net/launchpad-ui
