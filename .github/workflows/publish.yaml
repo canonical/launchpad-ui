@@ -74,7 +74,7 @@ jobs:
     if: ${{ (inputs.channel || 'edge') == 'edge' }}
     permissions:
       contents: read
-    uses: canonical/launchpad-actions/.github/workflows/terraform-bump-pr.yaml@137515cabc2ff246bfd7886d6c4ab17eb876b35a # canonical/launchpad-actions#15
+    uses: canonical/launchpad-actions/.github/workflows/terraform-bump-pr.yaml@6ab7cc00db6c252718216db82ccc93c659e8bf79 # 6ab7cc00db6c252718216db82ccc93c659e8bf79
     secrets: inherit # zizmor: ignore[secrets-inherit]
     with:
       environment: stg
