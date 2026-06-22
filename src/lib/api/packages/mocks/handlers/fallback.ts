@@ -6,6 +6,7 @@ import {
   notFoundResponse,
 } from "./helpers/responses.js";
 import { safeWrap } from "./helpers/wrap.js";
+import { browser } from "$app/environment";
 
 const REGEX_METACHARS = /[.*+?^${}()|[\]\\]/g;
 
@@ -34,8 +35,13 @@ export const createFallbackHandler = (
   http.all(
     PACKAGES_API_WILDCARD,
     safeWrap(({ request }) => {
-      const pathname = new URL(request.url).pathname;
+      const { pathname, origin } = new URL(request.url);
       const method = request.method.toUpperCase();
+
+      // When running in the browser, ignore same-origin requests. This makes sure that Vite's HMR and other asset requests are passed through
+      if (browser && origin === window.location.origin) {
+        return undefined;
+      }
 
       const known = getHandlers()
         .filter((h) => !isWildcardPattern(h.info.path as string))
