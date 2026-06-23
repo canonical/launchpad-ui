@@ -4,29 +4,25 @@ export const SERIES = {
   resolute: {
     id: "resolute",
     name: "resolute",
-    displayName: "Resolute",
-    title: "The Resolute Razorbill",
+    displayName: "26.04 LTS Resolute",
     version: "26.04",
   },
   noble: {
     id: "noble",
     name: "noble",
-    displayName: "Noble",
-    title: "The Noble Numbat",
+    displayName: "24.04 LTS Noble",
     version: "24.04",
   },
   jammy: {
     id: "jammy",
     name: "jammy",
-    displayName: "Jammy",
-    title: "The Jammy Jellyfish",
+    displayName: "22.04 LTS Jammy",
     version: "22.04",
   },
   focal: {
     id: "focal",
     name: "focal",
-    displayName: "Focal",
-    title: "The Focal Fossa",
+    displayName: "20.04 LTS Focal",
     version: "20.04",
   },
 } as const satisfies Record<string, Series & { id: string }>;

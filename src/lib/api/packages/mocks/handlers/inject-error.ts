@@ -2,6 +2,7 @@ import { HttpResponse, http } from "msw";
 import { ERROR_INJECT_PARAM } from "../../constants.js";
 import { delay } from "./helpers/latency.js";
 import { PACKAGES_API_WILDCARD } from "./helpers/paths.js";
+import { withCors } from "./helpers/wrap.js";
 
 export const injectErrorHandler = http.all(
   PACKAGES_API_WILDCARD,
@@ -13,9 +14,11 @@ export const injectErrorHandler = http.all(
       // delay() only on the injection branch — falling through must not wait,
       // or the downstream safeWrap pays the latency a second time.
       await delay();
-      return HttpResponse.json(
-        { detail: `Injected error: ${inject}`, code: "injected" },
-        { status: inject },
+      return withCors(
+        HttpResponse.json(
+          { detail: `Injected error: ${inject}`, code: "injected" },
+          { status: inject },
+        ),
       );
     }
     return undefined;

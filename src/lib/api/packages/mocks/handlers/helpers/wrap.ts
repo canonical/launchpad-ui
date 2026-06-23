@@ -9,6 +9,11 @@ import { sourcePackageNotFound, versionNotFound } from "./responses.js";
 type Version = SourcePackageSeed["versions"][number];
 type ResolverInfo = Parameters<HttpResponseResolver>[0];
 
+export const withCors = (response: Response): Response => {
+  response.headers.set("Access-Control-Allow-Origin", "*");
+  return response;
+};
+
 // All seeded data is for the `ubuntu` distro. Each route's `load()` threads its
 // `[distro]` path param onto every API call as `?distro=<name>`. If the param is
 // present and names a distro we don't seed, return 404 so `/{distro}/+source` etc.
@@ -38,17 +43,21 @@ export const safeWrap =
   async (info) => {
     await delay();
     const distroError = validateDistro(info);
-    if (distroError) return distroError;
+    if (distroError) return withCors(distroError);
     try {
-      return await inner(info);
+      const response = await inner(info);
+      // `undefined` lets MSW fall through to the next handler — leave it untouched.
+      return response ? withCors(response) : response;
     } catch (err) {
-      return HttpResponse.json(
-        {
-          detail:
-            err instanceof Error ? err.message : "Unexpected fixture error",
-          code: "fixture_error",
-        },
-        { status: 500 },
+      return withCors(
+        HttpResponse.json(
+          {
+            detail:
+              err instanceof Error ? err.message : "Unexpected fixture error",
+            code: "fixture_error",
+          },
+          { status: 500 },
+        ),
       );
     }
   };
