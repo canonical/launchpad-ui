@@ -106,7 +106,6 @@ export type MergeProposalStatus =
 export type Series = {
   name: string;
   displayName: string;
-  title: string;
   version: string;
 };
 
