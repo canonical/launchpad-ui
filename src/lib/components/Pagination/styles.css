@@ -6,6 +6,7 @@
   font: var(--lp-typography-paragraph-s);
   border-top: var(--lp-dimension-stroke-thickness-default) solid
     var(--lp-color-border-default);
+  background-color: var(--lp-color-background-default);
 
   --dimension-pagination-group-gap: var(--lp-dimension-spacing-inline-m);
   --dimension-pagination-divider-width: var(

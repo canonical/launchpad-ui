@@ -86,9 +86,7 @@
             </Link>
           </th>
           <td>{item.status}</td>
-          <td>
-            {item.series.displayName}
-          </td>
+          <td>{item.series.displayName}</td>
           <td>{item.pocket}</td>
           <td>
             {#each item.binaryPackages as binaryPackage (binaryPackage.name)}
@@ -212,7 +210,6 @@
     :global(.pagination) {
       position: sticky;
       bottom: 0;
-      background-color: var(--lp-color-background-default);
     }
   }
 </style>
