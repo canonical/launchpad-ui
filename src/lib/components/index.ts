@@ -1,4 +1,5 @@
 export * from "./Accordion/index.js";
+export * from "./ActiveViewsList/index.js";
 export * from "./Combobox/index.js";
 export * from "./ContextualMenuContent/index.js";
 export * from "./Log/index.js";
