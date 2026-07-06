@@ -28,7 +28,7 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      - uses: chromaui/action@d92ea1ce501f70e8c34745b2c7888648150a368a # v17.2.0
+      - uses: chromaui/action@98132da0fca2211fb41b3af7b49ce85176007851 # v17.8.0
         with:
           projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }} # zizmor: ignore[secrets-outside-env]
           autoAcceptChanges: ${{ github.ref_name == 'main' && 'main' || '' }}
