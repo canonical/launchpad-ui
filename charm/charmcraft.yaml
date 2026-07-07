@@ -17,6 +17,23 @@ description: |
 extensions:
   - go-framework
 
+# Mapped to unprefixed env vars (charm.py sets configuration_prefix="")
+# read by adapter-node to derive the request origin behind the ingress.
+config:
+  options:
+    protocol-header:
+      type: string
+      default: x-forwarded-proto
+      description: >
+        Header adapter-node reads to determine the original request protocol
+        (PROTOCOL_HEADER).
+    host-header:
+      type: string
+      default: x-forwarded-host
+      description: >
+        Header adapter-node reads to determine the original request host
+        (HOST_HEADER).
+
 # Uncomment the integrations used by your application
 # Integrations set to "optional: false" will block the charm
 # until the applications are integrated.
