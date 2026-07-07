@@ -84,7 +84,10 @@
   bind:this={ref}
   {...rest}
 >
-  <DefaultActions />
+  <!-- Used in MarkdownEditor.stories.svelte to test the focus management -->
+  {#if !rest["data-test-no-default-actions"]}
+    <DefaultActions />
+  {/if}
   {@render children?.()}
 </div>
 
