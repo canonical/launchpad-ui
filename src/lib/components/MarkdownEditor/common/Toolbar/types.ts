@@ -2,15 +2,26 @@
 
 import type { SvelteHTMLElements } from "svelte/elements";
 
+export type ActionItem = {
+  readonly element: HTMLButtonElement;
+  readonly disabled: boolean;
+};
+
 export type MarkdownEditorToolbarContext = {
   /**
-   * The currently selected action button.
+   * Registers an action so the toolbar can manage its focus and tab order.
+   *
+   * @returns A cleanup function that unregisters the action.
    */
-  selectedAction: HTMLButtonElement | undefined;
+  registerAction(item: ActionItem): () => void;
   /**
-   * To be called when action buttons are mounted or changed, to select the first action button.
+   * Marks the element as the one the user last interacted with (e.g. on click)
    */
-  notifyActionButtonChange(): void;
+  setActiveAction(element: HTMLButtonElement): void;
+  /**
+   * Whether the element is the toolbar's current tab stop.
+   */
+  isTabStop(element: HTMLButtonElement): boolean;
 };
 
 type BaseProps = SvelteHTMLElements["div"];

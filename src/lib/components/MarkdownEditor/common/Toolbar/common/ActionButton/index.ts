@@ -2,4 +2,3 @@
 
 export { default as ActionButton } from "./ActionButton.svelte";
 export * from "./types.js";
-export * from "./constant.js";
