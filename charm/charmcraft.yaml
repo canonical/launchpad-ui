@@ -33,6 +33,14 @@ config:
       description: >
         Header adapter-node reads to determine the original request host
         (HOST_HEADER).
+    origin:
+      type: string
+      description: >
+        Public origin (scheme://host) adapter-node uses to build request URLs
+        and validate same-origin POSTs (ORIGIN). Set to the external URL, e.g.
+        https://staging.paddev.net. Pins the origin so the CSRF check does not
+        rely on proxy headers, which behind the front proxy carry the internal
+        host/scheme instead of the public one.
     main-launchpad-base-host:
       type: string
       default: https://launchpad.net
