@@ -33,6 +33,29 @@ config:
       description: >
         Header adapter-node reads to determine the original request host
         (HOST_HEADER).
+    main-launchpad-base-host:
+      type: string
+      default: https://launchpad.net
+      description: >
+        Base host used to reach the main Launchpad service
+        (MAIN_LAUNCHPAD_BASE_HOST).
+    main-launchpad-ip-address:
+      type: string
+      description: >
+        Optional IP address override for the main Launchpad service
+        (MAIN_LAUNCHPAD_IP_ADDRESS).
+    main-launchpad-skip-tls-verify:
+      type: boolean
+      default: false
+      description: >
+        Skip TLS certificate verification when contacting the main Launchpad
+        service (MAIN_LAUNCHPAD_SKIP_TLS_VERIFY).
+    main-launchpad-cookie-name:
+      type: string
+      default: lp
+      description: >
+        Session cookie name used with the main Launchpad service
+        (MAIN_LAUNCHPAD_COOKIE_NAME).
 
 # Uncomment the integrations used by your application
 # Integrations set to "optional: false" will block the charm
