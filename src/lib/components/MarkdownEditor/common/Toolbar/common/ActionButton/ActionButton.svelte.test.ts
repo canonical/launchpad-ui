@@ -10,22 +10,26 @@ import type { MarkdownEditorContext } from "$lib/components/MarkdownEditor/types
 import type { MarkdownEditorToolbarContext } from "../../types";
 import Component from "./ActionButton.svelte";
 
-const { ctx, setSelectedAction, notifyActionButtonChange } = vi.hoisted(() => {
-  const setSelectedAction = vi.fn();
-  const notifyActionButtonChange = vi.fn();
-  let _selected: HTMLButtonElement | undefined;
-  const ctx = {
-    get selectedAction() {
-      return _selected;
-    },
-    set selectedAction(el: HTMLButtonElement | undefined) {
-      _selected = el;
-      setSelectedAction(el);
-    },
-    notifyActionButtonChange,
-  } satisfies MarkdownEditorToolbarContext;
-  return { ctx, setSelectedAction, notifyActionButtonChange };
-});
+const { ctx, registerAction, unregisterAction, setActiveAction, setIsTabStop } =
+  vi.hoisted(() => {
+    let isTabStop = false;
+
+    const unregisterAction = vi.fn();
+    const registerAction = vi.fn(() => unregisterAction);
+    const setActiveAction = vi.fn();
+    const ctx = {
+      registerAction,
+      setActiveAction,
+      isTabStop: () => isTabStop,
+    } satisfies MarkdownEditorToolbarContext;
+    return {
+      ctx,
+      registerAction,
+      unregisterAction,
+      setActiveAction,
+      setIsTabStop: (value: boolean) => (isTabStop = value),
+    };
+  });
 
 vi.mock("../../context.js", () => {
   return {
@@ -56,6 +60,7 @@ describe("Markdown Editor > Toolbar > Action button component", () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
+    setIsTabStop(false);
   });
 
   it("renders", async () => {
@@ -92,25 +97,25 @@ describe("Markdown Editor > Toolbar > Action button component", () => {
     });
   });
 
-  it("calls notifyActionButtonChange on mount", () => {
+  it("registers the action on mount", () => {
     render(Component, baseProps);
-    expect(notifyActionButtonChange).toHaveBeenCalledTimes(1);
+    expect(registerAction).toHaveBeenCalledTimes(1);
   });
 
-  it("calls notifyActionButtonChange on unmount", async () => {
+  it("unregisters the action on unmount", async () => {
     const page = render(Component, baseProps);
     await expect.element(componentLocator(page)).toBeInTheDocument();
     page.unmount();
-    expect(notifyActionButtonChange).toHaveBeenCalledTimes(2);
+    expect(unregisterAction).toHaveBeenCalledTimes(1);
   });
 
-  it("sets selectedAction on focus", () => {
+  it("sets the active action on focus", () => {
     const page = render(Component, baseProps);
     const button = componentLocator(page);
     const buttonEl = button.element() as HTMLButtonElement;
     buttonEl.focus();
-    expect(setSelectedAction).toHaveBeenCalledTimes(1);
-    expect(setSelectedAction).toHaveBeenCalledWith(buttonEl);
+    expect(setActiveAction).toHaveBeenCalledTimes(1);
+    expect(setActiveAction).toHaveBeenCalledWith(buttonEl);
   });
 
   it("shows tooltip with label", async () => {
@@ -120,7 +125,22 @@ describe("Markdown Editor > Toolbar > Action button component", () => {
     await expect.element(tooltip).toBeInTheDocument();
     await expect.element(tooltip).toHaveTextContent(label);
   });
-  // TODO: it("tab index is -1 if the action button is disabled and is in tab order")
+
+  describe("tab stop", () => {
+    it("has tabIndex=-1 if its not the tab stop", async () => {
+      setIsTabStop(false);
+      const page = render(Component, baseProps);
+      const button = componentLocator(page);
+      await expect.element(button).toHaveAttribute("tabindex", "-1");
+    });
+
+    it("has tabIndex=0 if its the tab stop", async () => {
+      setIsTabStop(true);
+      const page = render(Component, baseProps);
+      const button = componentLocator(page);
+      await expect.element(button).toHaveAttribute("tabindex", "0");
+    });
+  });
 });
 
 function componentLocator(page: RenderResult<typeof Component>): Locator {

@@ -27,7 +27,6 @@
   const disabled = $derived(!mounted.value || Boolean(disabledProp));
 
   const registerAction: Attachment<HTMLButtonElement> = (element) => {
-    console.log("register");
     const unregister = markdownEditorToolbarContext?.registerAction({
       element,
       get disabled() {
