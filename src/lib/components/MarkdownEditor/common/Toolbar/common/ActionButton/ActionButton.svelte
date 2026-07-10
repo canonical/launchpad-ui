@@ -27,7 +27,7 @@
   const disabled = $derived(!mounted.value || Boolean(disabledProp));
 
   const registerAction: Attachment<HTMLButtonElement> = (element) => {
-    const unregister = markdownEditorToolbarContext?.registerAction({
+    const unregister = markdownEditorToolbarContext?.registerActionItem({
       element,
       get disabled() {
         return disabled;
@@ -43,7 +43,7 @@
 
   const onfocus: typeof onfocusProp = (event) => {
     onfocusProp?.(event);
-    markdownEditorToolbarContext?.setActiveAction(event.currentTarget);
+    markdownEditorToolbarContext?.setActiveActionElement(event.currentTarget);
   };
 </script>
 

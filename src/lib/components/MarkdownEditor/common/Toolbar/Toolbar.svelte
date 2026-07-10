@@ -18,11 +18,11 @@
   }: ToolbarProps = $props();
   const markdownEditorContext = getMarkdownEditorContext();
 
-  const actions = new SvelteSet<ActionItem>();
-  let activeAction = $state<HTMLButtonElement>();
+  const actionItems = new SvelteSet<ActionItem>();
+  let activeActionElement = $state<HTMLButtonElement>();
 
-  function getNavigableItems(): ActionItem[] {
-    return [...actions]
+  function getNavigableActionItems(): ActionItem[] {
+    return [...actionItems]
       .filter((item) => !item.disabled)
       .toSorted((a, b) =>
         a.element.compareDocumentPosition(b.element) &
@@ -33,19 +33,21 @@
   }
 
   const tabStopAction = $derived.by(() => {
-    const navigable = getNavigableItems();
+    const navigableActionItems = getNavigableActionItems();
     return (
-      navigable.find((item) => item.element === activeAction) ?? navigable.at(0)
+      navigableActionItems.find(
+        (item) => item.element === activeActionElement,
+      ) ?? navigableActionItems.at(0)
     )?.element;
   });
 
   setMarkdownEditorToolbarContext({
-    registerAction(item) {
-      actions.add(item);
-      return () => actions.delete(item);
+    registerActionItem(item) {
+      actionItems.add(item);
+      return () => actionItems.delete(item);
     },
-    setActiveAction(element) {
-      activeAction = element;
+    setActiveActionElement(element) {
+      activeActionElement = element;
     },
     isTabStop(element) {
       return tabStopAction === element;
@@ -56,21 +58,21 @@
     onkeydownProp?.(event);
     if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
 
-    const navigable = getNavigableItems();
-    const currentIndex = navigable.findIndex(
+    const navigableActionItems = getNavigableActionItems();
+    const currentIndex = navigableActionItems.findIndex(
       (item) => item.element === event.target,
     );
     if (currentIndex === -1) return;
 
     const offset = event.key === "ArrowLeft" ? -1 : 1;
-    const toFocus = navigable.at(
-      (currentIndex + offset) % navigable.length,
+    const toFocus = navigableActionItems.at(
+      (currentIndex + offset) % navigableActionItems.length,
     )?.element;
 
-    if (toFocus) {
-      toFocus.focus();
-      event.preventDefault();
-    }
+    if (!toFocus) return;
+
+    toFocus.focus();
+    event.preventDefault();
   };
 </script>
 

@@ -10,26 +10,31 @@ import type { MarkdownEditorContext } from "$lib/components/MarkdownEditor/types
 import type { MarkdownEditorToolbarContext } from "../../types";
 import Component from "./ActionButton.svelte";
 
-const { ctx, registerAction, unregisterAction, setActiveAction, setIsTabStop } =
-  vi.hoisted(() => {
-    let isTabStop = false;
+const {
+  ctx,
+  registerActionItem,
+  unregisterAction,
+  setActiveActionElement,
+  setIsTabStop,
+} = vi.hoisted(() => {
+  let isTabStop = false;
 
-    const unregisterAction = vi.fn();
-    const registerAction = vi.fn(() => unregisterAction);
-    const setActiveAction = vi.fn();
-    const ctx = {
-      registerAction,
-      setActiveAction,
-      isTabStop: () => isTabStop,
-    } satisfies MarkdownEditorToolbarContext;
-    return {
-      ctx,
-      registerAction,
-      unregisterAction,
-      setActiveAction,
-      setIsTabStop: (value: boolean) => (isTabStop = value),
-    };
-  });
+  const unregisterAction = vi.fn();
+  const registerActionItem = vi.fn(() => unregisterAction);
+  const setActiveActionElement = vi.fn();
+  const ctx = {
+    registerActionItem,
+    setActiveActionElement,
+    isTabStop: () => isTabStop,
+  } satisfies MarkdownEditorToolbarContext;
+  return {
+    ctx,
+    registerActionItem,
+    unregisterAction,
+    setActiveActionElement,
+    setIsTabStop: (value: boolean) => (isTabStop = value),
+  };
+});
 
 vi.mock("../../context.js", () => {
   return {
@@ -99,7 +104,7 @@ describe("Markdown Editor > Toolbar > Action button component", () => {
 
   it("registers the action on mount", () => {
     render(Component, baseProps);
-    expect(registerAction).toHaveBeenCalledTimes(1);
+    expect(registerActionItem).toHaveBeenCalledTimes(1);
   });
 
   it("unregisters the action on unmount", async () => {
@@ -114,8 +119,8 @@ describe("Markdown Editor > Toolbar > Action button component", () => {
     const button = componentLocator(page);
     const buttonEl = button.element() as HTMLButtonElement;
     buttonEl.focus();
-    expect(setActiveAction).toHaveBeenCalledTimes(1);
-    expect(setActiveAction).toHaveBeenCalledWith(buttonEl);
+    expect(setActiveActionElement).toHaveBeenCalledTimes(1);
+    expect(setActiveActionElement).toHaveBeenCalledWith(buttonEl);
   });
 
   it("shows tooltip with label", async () => {

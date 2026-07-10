@@ -13,13 +13,16 @@ export type MarkdownEditorToolbarContext = {
    *
    * @returns A cleanup function that unregisters the action.
    */
-  registerAction(item: ActionItem): () => void;
+  registerActionItem(item: ActionItem): () => void;
   /**
    * Marks the element as the one the user last interacted with (e.g. on click)
    */
-  setActiveAction(element: HTMLButtonElement): void;
+  setActiveActionElement(element: HTMLButtonElement): void;
   /**
-   * Whether the element is the toolbar's current tab stop.
+   * Whether the element is the toolbar's single Tab-focusable action.
+   *
+   * The toolbar uses a roving tabindex, so only one action is in the tab order
+   * (the tab stop) while arrow keys move focus between the rest.
    */
   isTabStop(element: HTMLButtonElement): boolean;
 };
