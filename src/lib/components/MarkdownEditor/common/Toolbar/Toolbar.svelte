@@ -1,14 +1,11 @@
 <!-- @canonical/generator-ds 0.10.0-experimental.3 -->
 
 <script lang="ts">
-  import { getFirstElement, getSiblingElement } from "$lib/utils/index.js";
+  import { SvelteSet } from "svelte/reactivity";
   import { getMarkdownEditorContext } from "../../context.js";
-  import {
-    ACTION_BUTTON_CSS_CLASS_NAME,
-    DefaultActions,
-  } from "./common/index.js";
+  import { DefaultActions } from "./common/index.js";
   import { setMarkdownEditorToolbarContext } from "./context.js";
-  import type { ToolbarProps } from "./types.js";
+  import type { ActionItem, ToolbarProps } from "./types.js";
 
   const componentCssClassName = "ds markdown-editor-toolbar";
 
@@ -20,76 +17,63 @@
     ...rest
   }: ToolbarProps = $props();
   const markdownEditorContext = getMarkdownEditorContext();
-  let selectedAction = $state<HTMLButtonElement>();
-  /**
-   * Select the default action when the toolbar is mounted
-   * This can be called as many times as needed
-   * where it will only change if the current action is not valid
-   */
-  const selectDefaultAction = () => {
-    if (!ref) return;
-    const isCurrentActionValid =
-      selectedAction &&
-      ref.contains(selectedAction) &&
-      !selectedAction.disabled;
-    // If the current action is valid, don't change it
-    if (isCurrentActionValid) return;
 
-    selectedAction =
-      getFirstElement<HTMLButtonElement>({
-        containerElement: ref,
-        selector: `.${ACTION_BUTTON_CSS_CLASS_NAME}`,
-        predicate: (action) => !action.disabled,
-      }) ?? undefined;
-  };
+  const actionItems = new SvelteSet<ActionItem>();
+  let activeActionElement = $state<HTMLButtonElement>();
+
+  function getNavigableActionItems(): ActionItem[] {
+    return [...actionItems]
+      .filter((item) => !item.disabled)
+      .toSorted((a, b) =>
+        a.element.compareDocumentPosition(b.element) &
+        Node.DOCUMENT_POSITION_FOLLOWING
+          ? -1
+          : 1,
+      );
+  }
+
+  const tabStopAction = $derived.by(() => {
+    const navigableActionItems = getNavigableActionItems();
+    return (
+      navigableActionItems.find(
+        (item) => item.element === activeActionElement,
+      ) ?? navigableActionItems.at(0)
+    )?.element;
+  });
 
   setMarkdownEditorToolbarContext({
-    set selectedAction(action) {
-      selectedAction = action;
+    registerActionItem(item) {
+      actionItems.add(item);
+      return () => actionItems.delete(item);
     },
-
-    get selectedAction() {
-      return selectedAction;
+    setActiveActionElement(element) {
+      activeActionElement = element;
     },
-    notifyActionButtonChange: selectDefaultAction,
+    isTabStop(element) {
+      return tabStopAction === element;
+    },
   });
 
-  /**
-   * Adds additional event handling for the toolbar, to navigate between action buttons.
-   * It is used to navigate between action buttons using the arrow keys.
-   */
   const onkeydown: typeof onkeydownProp = (event) => {
     onkeydownProp?.(event);
-    if (
-      !(event.target as HTMLElement)?.classList?.contains(
-        ACTION_BUTTON_CSS_CLASS_NAME,
-      )
-    )
-      return;
+    if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
 
-    if (
-      selectedAction &&
-      ref &&
-      (event.key === "ArrowLeft" || event.key === "ArrowRight")
-    ) {
-      const nextAction = getSiblingElement({
-        containerElement: ref,
-        currentElement: selectedAction,
-        selector: `.${ACTION_BUTTON_CSS_CLASS_NAME}`,
-        direction: event.key === "ArrowLeft" ? "previous" : "next",
-        predicate: (action) => !action.disabled,
-        wrap: true,
-      });
-      if (nextAction) {
-        nextAction.focus();
-      }
-    }
+    const navigableActionItems = getNavigableActionItems();
+    const currentIndex = navigableActionItems.findIndex(
+      (item) => item.element === event.target,
+    );
+    if (currentIndex === -1) return;
+
+    const offset = event.key === "ArrowLeft" ? -1 : 1;
+    const toFocus = navigableActionItems.at(
+      (currentIndex + offset) % navigableActionItems.length,
+    )?.element;
+
+    if (!toFocus) return;
+
+    toFocus.focus();
+    event.preventDefault();
   };
-
-  // select the default action when the toolbar is mounted
-  $effect(() => {
-    selectDefaultAction();
-  });
 </script>
 
 <div
@@ -102,7 +86,10 @@
   bind:this={ref}
   {...rest}
 >
-  <DefaultActions />
+  <!-- Used in MarkdownEditor.stories.svelte and test.fixtures.svelte to test the focus management -->
+  {#if !rest["data-test-no-default-actions"]}
+    <DefaultActions />
+  {/if}
   {@render children?.()}
 </div>
 

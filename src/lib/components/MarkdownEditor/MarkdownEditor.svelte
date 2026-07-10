@@ -8,7 +8,6 @@
   const componentCssClassName = "ds markdown-editor";
 
   let { class: className, children, ...rest }: MarkdownEditorProps = $props();
-  // TODO: add a textarea-id
 
   let textareaElement = $state<HTMLTextAreaElement>();
   let textareaId = $state<string>();
