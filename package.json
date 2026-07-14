@@ -25,7 +25,6 @@
     "test:watch": "vitest",
     "test:server": "pnpm run test --project=server",
     "test:client": "pnpm run test --project=client",
-    "test:ssr": "pnpm run test --project=ssr",
     "test:client:chromium": "pnpm run test --project=client --browser=chromium",
     "test:client:firefox": "pnpm run test --project=client --browser=firefox",
     "test:client:webkit": "pnpm run test --project=client --browser=webkit",
