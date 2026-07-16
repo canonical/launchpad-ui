@@ -69,7 +69,7 @@
     "vitest-browser-svelte": "^2.1.1"
   },
   "dependencies": {
-    "@canonical/svelte-ds-app-launchpad": "^0.27.0",
+    "@canonical/svelte-ds-app-launchpad": "^0.30.0",
     "@canonical/svelte-icons": "^0.0.9",
     "@floating-ui/dom": "^1.7.6",
     "markdown-actions": "^1.1.2",
