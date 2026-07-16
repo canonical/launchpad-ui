@@ -2,25 +2,12 @@
 
 <script lang="ts">
   import { SidePanel, TextInput } from "@canonical/svelte-ds-app-launchpad";
-  import type { SidePanelMethods } from "@canonical/svelte-ds-app-launchpad";
   import { Shortcut, useShortcuts } from "$lib/shortcuts/index.js";
   import { Section } from "./common/index.js";
-  import type {
-    ShortcutsHelpSidePanelMethods,
-    ShortcutsHelpSidePanelProps,
-  } from "./types.js";
+  import type { ShortcutsHelpSidePanelProps } from "./types.js";
 
   const componentCssClassName = "ds shortcuts-help-side-panel";
-  const props: ShortcutsHelpSidePanelProps = $props();
-  let sidePanelMethods = $state<SidePanelMethods>();
-
-  export const showModal: ShortcutsHelpSidePanelMethods["showModal"] = () => {
-    sidePanelMethods?.showModal();
-  };
-
-  export const close: ShortcutsHelpSidePanelMethods["close"] = () => {
-    sidePanelMethods?.close();
-  };
+  let { open = $bindable(), ...rest }: ShortcutsHelpSidePanelProps = $props();
 
   const shortcuts = useShortcuts();
   let filterQuery = $state("");
@@ -50,11 +37,7 @@
   });
 </script>
 
-<SidePanel
-  bind:this={sidePanelMethods}
-  class={componentCssClassName}
-  {...props}
->
+<SidePanel class={componentCssClassName} bind:open {...rest}>
   {#snippet children(_, close)}
     <SidePanel.Content class="content">
       <SidePanel.Content.Header>
@@ -85,11 +68,15 @@
 
   ## Example Usage
   ```svelte
+  <script lang="ts">
+    let open = $state(false);
+  </script>
+
   <ShortcutsProvider>
     <UseShortcuts shortcuts={new Shortcut("ctrl+/", "Show Shortcuts Help", () => {
-      modalMethods?.showModal();
+      open = true;
     })} />
-    <ShortcutsHelpSidePanel bind:this={modalMethods} />
+    <ShortcutsHelpSidePanel bind:open />
     <YourAppComponents />
   </ShortcutsProvider>
   ```

@@ -21,7 +21,6 @@
     ShortcutsHelpSidePanel,
     SideNavigation,
   } from "$lib/components/index.js";
-  import type { ShortcutsHelpSidePanelMethods } from "$lib/components/index.js";
   import {
     LaunchpadLogo,
     LaunchpadLogoText,
@@ -67,13 +66,13 @@
     getTheme().set(theme);
   };
 
-  let modalMethods = $state<ShortcutsHelpSidePanelMethods>();
+  let helpOpen = $state(false);
   const helpShortcut = new Shortcut(
     "ctrl+/",
     {
       label: "Open command guide",
     },
-    () => modalMethods?.showModal(),
+    () => (helpOpen = true),
   );
 
   const toggleThemeShortcut = new Shortcut(
@@ -105,7 +104,7 @@
 <IconsOptimizationProvider>
   <GlobalShortcutsProvider>
     <UseShortcuts shortcuts={[helpShortcut, toggleThemeShortcut]} />
-    <ShortcutsHelpSidePanel bind:this={modalMethods} />
+    <ShortcutsHelpSidePanel bind:open={helpOpen} />
 
     <div class="app-layout">
       <SideNavigation expanded={isSideNavigationExpanded}>

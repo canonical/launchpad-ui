@@ -3,7 +3,6 @@
 <script lang="ts">
   import { HelpIcon, LinkIcon } from "@canonical/svelte-icons";
   import ShortcutsHelpSidePanel from "$lib/components/ShortcutsHelpSidePanel/ShortcutsHelpSidePanel.svelte";
-  import type { ShortcutsHelpSidePanelMethods } from "$lib/components/ShortcutsHelpSidePanel/types.js";
   import {
     BoldIcon,
     BulletedListIcon,
@@ -24,7 +23,7 @@
   const textareaElement = $derived(markdownEditorContext?.textareaElement);
   const defaultActions = createDefaultActions(() => textareaElement);
 
-  let modalMethods = $state<ShortcutsHelpSidePanelMethods>();
+  let helpOpen = $state(false);
   let textareaSelectionBeforeHelp = $state<{
     textareaElement: HTMLTextAreaElement;
     selectionStart: number;
@@ -41,7 +40,7 @@
     } else {
       textareaSelectionBeforeHelp = undefined;
     }
-    modalMethods?.showModal();
+    helpOpen = true;
   };
 
   const handleCloseHelp = () => {
@@ -158,7 +157,7 @@
     <HelpIcon />
   </ActionButton>
   <ShortcutsHelpSidePanel
-    bind:this={modalMethods}
+    bind:open={helpOpen}
     onclose={() => handleCloseHelp()}
   />
 </Group>

@@ -17,8 +17,8 @@ importers:
   .:
     dependencies:
       '@canonical/svelte-ds-app-launchpad':
-        specifier: ^0.27.0
-        version: 0.27.0(svelte@5.56.4(@typescript-eslint/types@8.62.0))
+        specifier: ^0.30.0
+        version: 0.30.0(svelte@5.56.4(@typescript-eslint/types@8.62.0))
       '@canonical/svelte-icons':
         specifier: ^0.0.9
         version: 0.0.9(svelte@5.56.4(@typescript-eslint/types@8.62.0))
@@ -185,8 +185,8 @@ packages:
   '@canonical/launchpad-design-tokens@1.1.1':
     resolution: {integrity: sha512-rOrV4TxC9bOyA4DlgxNAwssFfsA/h5XHPqM0plmYbaODodd7EakntM3ZOSHnoNqViskxieVSc7TEbZY+JyFHoA==}
 
-  '@canonical/svelte-ds-app-launchpad@0.27.0':
-    resolution: {integrity: sha512-ca9xngkKCGDrqGCnQaXZwr6oXJ3O/SiJWn6FCL9YOefNnGq1TU7kbBqNGjzZAHqTnedxh7qkUE5udx3z8ZaCBA==}
+  '@canonical/svelte-ds-app-launchpad@0.30.0':
+    resolution: {integrity: sha512-POlaofX3KB2v798xqUhSM5qGDANA5eus6lwLzNMMDp6M/egoCN7L/QEYCJxErFzeg/s7C2H8Gl4IffNid/C2Pg==}
     peerDependencies:
       svelte: ^5.47.1
 
@@ -3311,7 +3311,7 @@ snapshots:
 
   '@canonical/launchpad-design-tokens@1.1.1': {}
 
-  '@canonical/svelte-ds-app-launchpad@0.27.0(svelte@5.56.4(@typescript-eslint/types@8.62.0))':
+  '@canonical/svelte-ds-app-launchpad@0.30.0(svelte@5.56.4(@typescript-eslint/types@8.62.0))':
     dependencies:
       '@canonical/launchpad-design-tokens': 1.1.1
       '@canonical/svelte-icons': 0.0.9(svelte@5.56.4(@typescript-eslint/types@8.62.0))
