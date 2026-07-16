@@ -369,20 +369,18 @@ export type VersionBuildRequirements = {
 
 export type BinaryPackageDetails = {
   id: string;
+  title: string;
   name: string;
-  debPackage: {
-    name: string;
-    size: string;
+  summary: string;
+  description: string;
+  downloadUrl: string;
+  artifacts: Array<{
+    id: string;
+    architecture: Architecture;
+    fileName: string;
+    size: number;
     url: string;
-  };
-  version: string;
-  status: PublishingStatus;
-  pocket: Pocket;
-  component: Component;
-  priority: Priority;
-  build: string;
-  source: string;
-  relationships: PackageRelationships;
+  }>;
 };
 
 // ---------------------------------------------------------------------------

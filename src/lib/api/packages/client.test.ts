@@ -751,14 +751,18 @@ describe("packagesApi — version level", () => {
 });
 
 describe("packagesApi — binary-package level", () => {
-  it("/binary-packages/{name} returns full details for libreoffice-writer", async () => {
+  it("/binary-packages/{name} returns binary package details", async () => {
     const { data, error } = await packagesApi.GET("/binary-packages/{name}", {
       params: { path: { name: "libreoffice-writer" } },
     });
     expect(error).toBeUndefined();
-    expect(data?.name).toBe("libreoffice-writer");
-    expect(data?.debPackage.url).toMatch(/\.deb$/);
-    expect(data?.relationships.dependedOn.length).toBeGreaterThan(0);
+    expect(data?.title).toBe("libreoffice binary packages");
+    expect(data?.summary).toBe("libreoffice-writer binary package");
+    expect(data?.description).toContain(
+      "LibreOffice is a full-featured office productivity suite",
+    );
+    expect(data?.artifacts).toHaveLength(7);
+    expect(data?.artifacts[0]?.url).toMatch(/\.deb$/);
   });
 
   it("/binary-packages/{name} 404s for unknown binary", async () => {

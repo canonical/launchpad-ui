@@ -179,12 +179,12 @@ export const toVersionBinaryPackages = (
     name,
     url: lp(`/ubuntu/+source/${seed.details.name}/+package/${name}`),
     description:
-      BINARY_PACKAGES[name]?.details.source ??
+      BINARY_PACKAGES[name]?.details.description ??
       `binary package built from ${seed.details.name}`,
     architectures: seed.details.architectures
       .filter((a) => a !== "all")
       .map((a) => ({ name: a, id: `${name}-${a}` })),
-    downloadUrl: BINARY_PACKAGES[name]?.details.debPackage.url ?? "",
+    downloadUrl: BINARY_PACKAGES[name]?.details.artifacts[0]?.url ?? "",
   }));
 
 export const toVersionBuildRequirements = (

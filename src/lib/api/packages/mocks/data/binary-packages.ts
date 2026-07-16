@@ -1,6 +1,5 @@
-import type { BinaryPackageDetails } from "../../types.js";
+import type { Architecture, BinaryPackageDetails } from "../../types.js";
 import { SOURCE_PACKAGES } from "./seeds/index.js";
-import { SERIES } from "./series.js";
 import { dn, stripEpoch, versionSlug } from "./shared.js";
 import type { SourcePackageSeed } from "./types.js";
 
@@ -9,31 +8,53 @@ export type BinaryPackageSeed = {
   sourceName: string;
 };
 
+const artifactSizes = {
+  amd64: 45_773,
+  arm64: 68_403,
+  armhf: 43_315,
+  ppc64el: 46_592,
+  riscv64: 58_470,
+  s390x: 64_410,
+  i386: 43_315,
+  all: 14_438,
+} as const satisfies Record<Architecture, number>;
+
+const buildArtifacts = (
+  source: SourcePackageSeed,
+  binaryName: string,
+): BinaryPackageDetails["artifacts"] => {
+  const version = stripEpoch(source.latestVersion);
+
+  return source.details.architectures.map((architecture) => {
+    const fileName = `${binaryName}_${version}_${architecture}.deb`;
+    return {
+      id: `${binaryName}-${versionSlug(source.latestVersion)}-${architecture}`,
+      architecture,
+      fileName,
+      size: artifactSizes[architecture] ?? 14_438,
+      url: dn(
+        `/ubuntu/pool/${source.listing.component}/${binaryName.charAt(0)}/${source.details.name}/${fileName}`,
+      ),
+    };
+  });
+};
+
 const buildBinaryDetails = (
   source: SourcePackageSeed,
   binaryName: string,
 ): BinaryPackageSeed => {
-  const latestVersion = source.latestVersion;
   return {
     sourceName: source.details.name,
     details: {
-      id: `${binaryName}-${versionSlug(latestVersion)}`,
+      id: `${binaryName}-${versionSlug(source.latestVersion)}`,
+      title: source.binariesGroup.title,
       name: binaryName,
-      debPackage: {
-        name: `${binaryName}_${stripEpoch(latestVersion)}_amd64.deb`,
-        size: "14.1 MiB",
-        url: dn(
-          `/ubuntu/pool/main/${binaryName.charAt(0)}/${source.details.name}/${binaryName}_${stripEpoch(latestVersion)}_amd64.deb`,
-        ),
-      },
-      version: latestVersion,
-      status: "Published",
-      pocket: source.listing.pocket,
-      component: source.listing.component,
-      priority: "Optional",
-      build: `Build amd64 build of ${source.details.name} ${latestVersion} in ubuntu ${SERIES[source.listing.seriesKey].name}`,
-      source: `${source.details.name} ${latestVersion} source package`,
-      relationships: source.relationships,
+      summary: `${binaryName} binary package`,
+      description: source.binariesGroup.description,
+      downloadUrl: dn(
+        `/ubuntu/pool/${source.listing.component}/${binaryName.charAt(0)}/${source.details.name}/${binaryName}_${stripEpoch(source.latestVersion)}_all.tar`,
+      ),
+      artifacts: buildArtifacts(source, binaryName),
     },
   };
 };
