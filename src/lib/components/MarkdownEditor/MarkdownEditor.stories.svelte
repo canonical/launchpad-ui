@@ -10,7 +10,6 @@
   import { defineMeta } from "@storybook/addon-svelte-csf";
   import type { Component } from "svelte";
   import { ShortcutsHelpSidePanel } from "$lib/components/ShortcutsHelpSidePanel/index.js";
-  import type { ShortcutsHelpSidePanelMethods } from "$lib/components/ShortcutsHelpSidePanel/index.js";
   import {
     BranchMergeIcon,
     BranchMergedIcon,
@@ -67,10 +66,10 @@
   }
 
   let actions = $state<TestAction[]>(Array.from({ length: 4 }, makeAction));
-  let helpMethods = $state<ShortcutsHelpSidePanelMethods>();
+  let helpOpen = $state(false);
 
   function showHelp() {
-    helpMethods?.showModal();
+    helpOpen = true;
   }
 
   function shuffleActions() {
@@ -275,7 +274,7 @@
 <Story name="Focus management test" tags={["!autodocs"]}>
   {#snippet template(args)}
     <MarkdownEditor {...args}>
-      <ShortcutsHelpSidePanel bind:this={helpMethods} />
+      <ShortcutsHelpSidePanel bind:open={helpOpen} />
       <UseShortcuts shortcuts={testShortcuts} />
       <MarkdownEditor.Header>
         <MarkdownEditor.Toolbar data-test-no-default-actions>

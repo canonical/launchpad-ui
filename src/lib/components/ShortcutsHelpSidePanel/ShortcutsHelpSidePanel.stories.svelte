@@ -5,7 +5,6 @@
   import ShortcutsProvider from "$lib/shortcuts/ShortcutsProvider/ShortcutsProvider.svelte";
   import { Shortcut, UseShortcuts } from "$lib/shortcuts/index.js";
   import ShortcutsHelpSidePanel from "./ShortcutsHelpSidePanel.svelte";
-  import type { ShortcutsHelpSidePanelMethods } from "./types.js";
 
   const { Story } = defineMeta({
     title: "Components/ShortcutsHelpSidePanel",
@@ -15,7 +14,7 @@
 </script>
 
 <script lang="ts">
-  let modalMethods = $state<ShortcutsHelpSidePanelMethods>();
+  let globalPanelOpen = $state(false);
 
   const localShortcuts = [
     new Shortcut("ctrl+s", { label: "Save Document" }, () => {}),
@@ -24,7 +23,7 @@
 
   const globalShortcuts = [
     new Shortcut("ctrl+/", { label: "Show Shortcuts Help" }, () => {
-      modalMethods?.showModal();
+      globalPanelOpen = true;
     }),
     new Shortcut("ctrl+q", { label: "Quit Application" }, () => {}),
     new Shortcut("ctrl+w", { label: "Close Window" }, () => {}),
@@ -35,7 +34,7 @@
   {#snippet template(args)}
     <!-- 
       <script lang="ts">
-        let modalMethods = $state<ShortcutsHelpSidePanelMethods>();
+        let globalPanelOpen = $state(false);
 
         const localShortcuts = [
           new Shortcut("ctrl+s", { label: "Save Document" }, () => {}),
@@ -44,7 +43,7 @@
 
         const globalShortcuts = [
           new Shortcut("ctrl+/", { label: "Show Shortcuts Help" }, () => {
-            modalMethods?.showModal();
+            globalPanelOpen = true;
           }),
           new Shortcut("ctrl+q", { label: "Quit Application" }, () => {}),
           new Shortcut("ctrl+w", { label: "Close Window" }  , () => {}),
@@ -53,7 +52,7 @@
     -->
     <GlobalShortcutsProvider>
       <UseShortcuts shortcuts={globalShortcuts} />
-      <ShortcutsHelpSidePanel bind:this={modalMethods} {...args} />
+      <ShortcutsHelpSidePanel {...args} bind:open={globalPanelOpen} />
       <ShortcutsProvider>
         <UseShortcuts shortcuts={localShortcuts} />
         <ShortcutsHelpSidePanel {...args}>
