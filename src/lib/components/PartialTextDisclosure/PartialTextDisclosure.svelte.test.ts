@@ -28,7 +28,7 @@ describe("PartialTextDisclosure component", () => {
     it("shows the toggle button when the text overflows", async () => {
       const page = render(Component, { ...baseProps });
       await expect
-        .element(page.getByRole("button", { name: "Expand visual text" }))
+        .element(page.getByRole("button", { name: "Visually expand text" }))
         .toBeInTheDocument();
     });
 

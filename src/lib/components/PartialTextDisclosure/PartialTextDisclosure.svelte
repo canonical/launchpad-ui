@@ -10,7 +10,7 @@
 
   const paragraphId = $props.id();
   let paragraphRef = $state<HTMLParagraphElement>();
-  let needsCollapsing = $state(false);
+  let maxLinesExceeded = $state(false);
   const maxLines = $derived(Math.max(1, maxLinesProp));
 
   const supportsInterpolateSize =
@@ -69,11 +69,11 @@
         didWarnAboutLineHeight = true;
       }
 
-      needsCollapsing = true;
+      maxLinesExceeded = true;
       return;
     }
 
-    needsCollapsing = paragraphRef.scrollHeight > maxLines * lineHeight;
+    maxLinesExceeded = paragraphRef.scrollHeight > maxLines * lineHeight;
   }
 
   // Observe for width changes
@@ -107,12 +107,12 @@
 >
   {text}
 </p>
-{#if needsCollapsing}
+{#if maxLinesExceeded}
   <button
     aria-controls={paragraphId}
     aria-expanded={isExpanded}
     onclick={toggle}
-    aria-label={isExpanded ? "Collapse visual text" : "Expand visual text"}
+    aria-label={isExpanded ? "Visually collapse text" : "Visually expand text"}
   >
     {isExpanded ? "Show less" : "Show more"}
   </button>
@@ -137,7 +137,6 @@ only applied when JavaScript is available.
     white-space: pre-wrap;
     padding-block: 0;
 
-    /* Only collapse if we have JS to control it */
     @media (scripting: enabled) {
       overflow: hidden;
       max-height: max-content;

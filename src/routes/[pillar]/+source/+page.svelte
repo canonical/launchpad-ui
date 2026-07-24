@@ -8,7 +8,7 @@
     Table,
   } from "@canonical/svelte-ds-app-launchpad";
   import { Pagination, TabList } from "$lib/components/index.js";
-  import BinaryPackageSidePanel from "$lib/modules/packages/BinaryPackageSidePanel.svelte";
+  import BinaryPackageSidePanel from "$lib/modules/packages/BinaryPackageSidePanel/BinaryPackageSidePanel.svelte";
   import { setPackagesContext } from "$lib/modules/packages/context.js";
   import { QueryParams } from "$lib/modules/packages/superhref.js";
   import type { PageProps } from "./$types.js";
