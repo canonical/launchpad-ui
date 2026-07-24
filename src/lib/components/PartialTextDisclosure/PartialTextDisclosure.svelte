@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { prefersReducedMotion } from "svelte/motion";
   import type { PartialTextDisclosureProps } from "./types.js";
   import { browser } from "$app/environment";
 
@@ -15,6 +16,9 @@
 
   const supportsInterpolateSize =
     browser && CSS.supports("interpolate-size: allow-keywords");
+  const shouldTransition = $derived(
+    supportsInterpolateSize && !prefersReducedMotion.current,
+  );
   // We need `collapsing` state to apply `line-clamp` only after the closing transition finishes. Otherwise there would then be no full-height content left for max-height to animate, making the paragraph close immediately.
   // `expanding` is an optimization to avoid repeated ResizeObserver's `testOverflow` calls
   let disclosureState = $state<
@@ -46,11 +50,11 @@
   function toggle() {
     // Unsupported browsers do not transition intrinsic sizes or emit transitionend.
     if (isExpanded) {
-      disclosureState = supportsInterpolateSize ? "collapsing" : "collapsed";
+      disclosureState = shouldTransition ? "collapsing" : "collapsed";
       return;
     }
 
-    disclosureState = supportsInterpolateSize ? "expanding" : "expanded";
+    disclosureState = shouldTransition ? "expanding" : "expanded";
   }
 
   let didWarnAboutLineHeight = false;
