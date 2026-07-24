@@ -74,55 +74,55 @@ FIXME(DAL): When underlying dialog is upgrading to modal, it should suppress `on
         {#if binaryPackage}
           <svelte:boundary pending={browser ? pending : undefined}>
             {@const details = await binaryPackage}
-            {@const totalSize = details.artifacts.reduce(
-              (acc, artifact) => acc + artifact.size,
-              0,
-            )}
-
             <p class="summary">{details.summary}</p>
             {#key name}
               <PartialTextDisclosure text={details.description} />
             {/key}
-
-            <section class="artifacts">
-              <header>
-                <h3>Artifacts</h3>
-                {#if details.artifacts.length > 0}
-                  <Button
-                    severity="base"
-                    class="download-all"
-                    density="dense"
-                    href={details.downloadUrl}
-                    download
-                    rel="external noopener noreferrer"
-                  >
-                    {#snippet iconLeft()}
-                      <DownloadIcon />
-                    {/snippet}
-                    Download all ({bytesToHumanReadable(totalSize)})
-                  </Button>
-                {/if}
-              </header>
-              <ul class="artifacts-list">
-                {#each details.artifacts as artifact (artifact.id)}
-                  <li>
-                    <Link
-                      href={artifact.url}
-                      download={artifact.fileName}
-                      soft
-                      target="_blank"
+            {#if details.artifacts.length > 0}
+              <section class="artifacts">
+                <header>
+                  <h3>Artifacts</h3>
+                  {#if details.artifacts.length > 1}
+                    <Button
+                      severity="base"
+                      class="download-all"
+                      density="dense"
+                      href={details.downloadUrl}
+                      download
                       rel="external noopener noreferrer"
                     >
-                      {artifact.fileName}
-                    </Link>
-                    <span class="size"
-                      >{bytesToHumanReadable(artifact.size)}</span
-                    >
-                  </li>
-                {/each}
-              </ul>
-            </section>
-
+                      {#snippet iconLeft()}
+                        <DownloadIcon />
+                      {/snippet}
+                      Download all ({bytesToHumanReadable(
+                        details.artifacts.reduce(
+                          (acc, artifact) => acc + artifact.size,
+                          0,
+                        ),
+                      )})
+                    </Button>
+                  {/if}
+                </header>
+                <ul class="artifacts-list">
+                  {#each details.artifacts as artifact (artifact.id)}
+                    <li>
+                      <Link
+                        href={artifact.url}
+                        download={artifact.fileName}
+                        soft
+                        target="_blank"
+                        rel="external noopener noreferrer"
+                      >
+                        {artifact.fileName}
+                      </Link>
+                      <span class="size"
+                        >{bytesToHumanReadable(artifact.size)}</span
+                      >
+                    </li>
+                  {/each}
+                </ul>
+              </section>
+            {/if}
             {#snippet failed(error)}
               <p class="package-details-error">{String(error)}</p>
             {/snippet}
@@ -134,6 +134,7 @@ FIXME(DAL): When underlying dialog is upgrading to modal, it should suppress `on
 </SidePanel>
 
 {#snippet pending()}
+  <!-- TODO(@Enzo): How should the loading state look like -->
   <div class="pending"><Spinner />Loading package details…</div>
 {/snippet}
 
