@@ -8,9 +8,21 @@
     Table,
   } from "@canonical/svelte-ds-app-launchpad";
   import { Pagination, TabList } from "$lib/components/index.js";
+  import BinaryPackageSidePanel from "$lib/modules/packages/BinaryPackageSidePanel/BinaryPackageSidePanel.svelte";
+  import { setPackagesContext } from "$lib/modules/packages/context.js";
+  import { QueryParams } from "$lib/modules/packages/superhref.js";
   import type { PageProps } from "./$types.js";
   import { resolve } from "$app/paths";
-  let { params, data }: PageProps = $props();
+  import { page } from "$app/state";
+
+  const { params, data }: PageProps = $props();
+
+  const queryParams = $derived(QueryParams.bind(page.url));
+  setPackagesContext({
+    get queryParams() {
+      return queryParams;
+    },
+  });
 </script>
 
 <svelte:head>
@@ -90,7 +102,12 @@
           <td>{item.pocket}</td>
           <td>
             {#each item.binaryPackages as binaryPackage (binaryPackage.name)}
-              <Link soft class="package-link">
+              <Link
+                href={queryParams.set("binary-package", binaryPackage.name)}
+                soft
+                class="package-link"
+                data-sveltekit-noscroll
+              >
                 {binaryPackage.name}
               </Link>
             {/each}
@@ -122,6 +139,8 @@
     <Pagination.PageNavigation direction="last" disabled />
   </Pagination>
 </main>
+
+<BinaryPackageSidePanel name={queryParams["binary-package"]} />
 
 <style>
   main {

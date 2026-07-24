@@ -16,6 +16,9 @@ importers:
 
   .:
     dependencies:
+      '@canonical/superhref':
+        specifier: ^0.1.0
+        version: 0.1.0
       '@canonical/svelte-ds-app-launchpad':
         specifier: ^0.30.0
         version: 0.30.0(svelte@5.56.4(@typescript-eslint/types@8.62.0))
@@ -184,6 +187,10 @@ packages:
 
   '@canonical/launchpad-design-tokens@1.1.1':
     resolution: {integrity: sha512-rOrV4TxC9bOyA4DlgxNAwssFfsA/h5XHPqM0plmYbaODodd7EakntM3ZOSHnoNqViskxieVSc7TEbZY+JyFHoA==}
+
+  '@canonical/superhref@0.1.0':
+    resolution: {integrity: sha512-MhWZdgHaekNMEDfgijE5XGPJC3T4Foc6bQmlWPMv5asWn9t7SIxDSXTb7mvzpq7MIW5jBDqyUa887xuMKcn1kQ==}
+    engines: {node: '>=20'}
 
   '@canonical/svelte-ds-app-launchpad@0.30.0':
     resolution: {integrity: sha512-POlaofX3KB2v798xqUhSM5qGDANA5eus6lwLzNMMDp6M/egoCN7L/QEYCJxErFzeg/s7C2H8Gl4IffNid/C2Pg==}
@@ -3310,6 +3317,8 @@ snapshots:
       css-tree: 3.2.1
 
   '@canonical/launchpad-design-tokens@1.1.1': {}
+
+  '@canonical/superhref@0.1.0': {}
 
   '@canonical/svelte-ds-app-launchpad@0.30.0(svelte@5.56.4(@typescript-eslint/types@8.62.0))':
     dependencies:
