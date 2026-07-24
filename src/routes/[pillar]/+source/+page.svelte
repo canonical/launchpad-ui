@@ -9,24 +9,20 @@
   } from "@canonical/svelte-ds-app-launchpad";
   import { Pagination, TabList } from "$lib/components/index.js";
   import BinaryPackageSidePanel from "$lib/modules/packages/BinaryPackageSidePanel.svelte";
-  import { BINARY_PACKAGE } from "$lib/modules/packages/query-params.js";
+  import { setPackagesContext } from "$lib/modules/packages/context.js";
+  import { QueryParams } from "$lib/modules/packages/superhref.js";
   import type { PageProps } from "./$types.js";
   import { resolve } from "$app/paths";
   import { page } from "$app/state";
 
   const { params, data }: PageProps = $props();
 
-  const selectedBinaryPackageName = $derived(
-    page.url.searchParams.get(BINARY_PACKAGE) ?? undefined,
-  );
-
-  const getBinaryPackageHref = (name: string) => {
-    // TODO(superhref): Replace with superhref
-    // eslint-disable-next-line svelte/prefer-svelte-reactivity
-    const searchParams = new URLSearchParams(page.url.searchParams);
-    searchParams.set(BINARY_PACKAGE, name);
-    return `?${searchParams.toString()}`;
-  };
+  const queryParams = $derived(QueryParams.bind(page.url));
+  setPackagesContext({
+    get queryParams() {
+      return queryParams;
+    },
+  });
 </script>
 
 <svelte:head>
@@ -107,7 +103,7 @@
           <td>
             {#each item.binaryPackages as binaryPackage (binaryPackage.name)}
               <Link
-                href={getBinaryPackageHref(binaryPackage.name)}
+                href={queryParams.set("binary-package", binaryPackage.name)}
                 soft
                 class="package-link"
                 data-sveltekit-noscroll
@@ -144,7 +140,7 @@
   </Pagination>
 </main>
 
-<BinaryPackageSidePanel name={selectedBinaryPackageName} />
+<BinaryPackageSidePanel name={queryParams["binary-package"]} />
 
 <style>
   main {
