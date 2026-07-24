@@ -48,7 +48,8 @@ describe("PartialTextDisclosure component", () => {
         maxLines: 2,
         lineHeightPx,
       });
-      const paragraph = page.getByText(wrappingText).element() as HTMLElement;
+      const paragraphLocator = page.getByText(wrappingText);
+      const paragraph = paragraphLocator.element() as HTMLElement;
       const toggle = page.getByRole("button");
 
       // Constrain the width so the text wraps beyond `maxLines` and overflows.
@@ -58,6 +59,9 @@ describe("PartialTextDisclosure component", () => {
       // Expand the paragraph.
       await toggle.click();
       await expect.element(toggle).toHaveAttribute("aria-expanded", "true");
+      await expect
+        .element(paragraphLocator)
+        .toHaveAttribute("data-state", "expanded");
 
       // Grow the width so the text now fits within `maxLines` when collapsed.
       paragraph.style.width = "10000px";

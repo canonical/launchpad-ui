@@ -1,6 +1,6 @@
 <script lang="ts">
-  import type { Attachment } from "svelte/attachments";
   import type { PartialTextDisclosureProps } from "./types.js";
+  import { browser } from "$app/environment";
 
   let {
     text,
@@ -9,73 +9,94 @@
   }: PartialTextDisclosureProps = $props();
 
   const paragraphId = $props.id();
+  let paragraphRef = $state<HTMLParagraphElement>();
   let needsCollapsing = $state(false);
   const maxLines = $derived(Math.max(1, maxLinesProp));
 
-  // We need `transitioning` state to apply `line-clamp` only after the closing transition finishes. Otherwise there would then be no full-height content left for max-height to animate, making the paragraph close immediately.
-  let disclosureState = $state<"collapsed" | "expanded" | "transitioning">(
-    "collapsed",
-  );
-  const isExpanded = $derived(disclosureState === "expanded");
+  const supportsInterpolateSize =
+    browser && CSS.supports("interpolate-size: allow-keywords");
+  // We need `collapsing` state to apply `line-clamp` only after the closing transition finishes. Otherwise there would then be no full-height content left for max-height to animate, making the paragraph close immediately.
+  // `expanding` is an optimization to avoid repeated ResizeObserver's `testOverflow` calls
+  let disclosureState = $state<
+    "collapsed" | "expanded" | "collapsing" | "expanding"
+  >("collapsed");
   const ontransitionend = (event: TransitionEvent) => {
     if (
-      event.propertyName === "max-height" &&
-      event.target === event.currentTarget &&
-      disclosureState === "transitioning"
-    ) {
-      disclosureState = "collapsed";
-    }
+      event.propertyName !== "max-height" ||
+      event.target !== event.currentTarget ||
+      !isTransitioning
+    )
+      return;
+
+    disclosureState =
+      disclosureState === "collapsing" ? "collapsed" : "expanded";
+
+    // We skip the RO-triggered tests while transitioning, so test now, after we settled.
+    testOverflow();
   };
 
-  const toggle = () => {
-    if (!isExpanded) {
-      disclosureState = "expanded";
+  // Copy and aria should update immediately after toggle, not after the transition ends
+  const isExpanded = $derived(
+    disclosureState === "expanded" || disclosureState === "expanding",
+  );
+  const isTransitioning = $derived(
+    disclosureState === "expanding" || disclosureState === "collapsing",
+  );
+
+  function toggle() {
+    // Unsupported browsers do not transition intrinsic sizes or emit transitionend.
+    if (isExpanded) {
+      disclosureState = supportsInterpolateSize ? "collapsing" : "collapsed";
       return;
     }
 
-    // Unsupported browsers do not transition intrinsic sizes or emit transitionend.
-    disclosureState = CSS.supports("interpolate-size: allow-keywords")
-      ? "transitioning"
-      : "collapsed";
-  };
+    disclosureState = supportsInterpolateSize ? "expanding" : "expanded";
+  }
 
-  const observeOverflow: Attachment<HTMLParagraphElement> = (paragraph) => {
-    let didWarnAboutLineHeight = false;
+  let didWarnAboutLineHeight = false;
+  function testOverflow() {
+    if (!paragraphRef) return;
 
-    const testOverflow = () => {
-      const lineHeight =
-        lineHeightPx ??
-        Number.parseFloat(getComputedStyle(paragraph).lineHeight);
+    const lineHeight =
+      lineHeightPx ??
+      Number.parseFloat(getComputedStyle(paragraphRef).lineHeight);
 
-      if (Number.isNaN(lineHeight)) {
-        if (!didWarnAboutLineHeight) {
-          console.warn(
-            "Unable to automatically determine the line height of the paragraph. Set the `lineHeightPx` prop to enable accurate overflow detection.",
-          );
-          didWarnAboutLineHeight = true;
-        }
-
-        needsCollapsing = true;
-        return;
+    if (Number.isNaN(lineHeight)) {
+      if (!didWarnAboutLineHeight) {
+        console.warn(
+          "Unable to automatically determine the line height of the paragraph. Set the `lineHeightPx` prop to enable accurate overflow detection.",
+        );
+        didWarnAboutLineHeight = true;
       }
 
-      needsCollapsing = paragraph.scrollHeight > maxLines * lineHeight;
-    };
-    // Observe for width changes
-    const resizeObserver = new ResizeObserver(testOverflow);
-    resizeObserver.observe(paragraph);
-    // Observe for content, maxLines, lineHeightPx changes without recreating the ResizeObserver
-    $effect(() => {
-      void text;
+      needsCollapsing = true;
+      return;
+    }
+
+    needsCollapsing = paragraphRef.scrollHeight > maxLines * lineHeight;
+  }
+
+  // Observe for width changes
+  $effect(() => {
+    if (!paragraphRef) return;
+    const resizeObserver = new ResizeObserver(() => {
+      if (isTransitioning) return;
       testOverflow();
     });
+    resizeObserver.observe(paragraphRef);
 
     return () => resizeObserver.disconnect();
-  };
+  });
+
+  // Observe for text + anything testOverflow depends on
+  $effect(() => {
+    void text;
+    testOverflow();
+  });
 </script>
 
 <p
-  {@attach observeOverflow}
+  bind:this={paragraphRef}
   id={paragraphId}
   data-state={disclosureState}
   style:--max-lines={maxLines}
@@ -124,7 +145,7 @@ only applied when JavaScript is available.
       transition: max-height var(--lp-transition-duration-fast)
         var(--lp-transition-timing-ease-out);
 
-      &:is([data-state="collapsed"], [data-state="transitioning"]) {
+      &:is([data-state="collapsed"], [data-state="collapsing"]) {
         max-height: calc(var(--max-lines) * 1lh);
       }
 
