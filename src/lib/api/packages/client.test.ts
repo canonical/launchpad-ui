@@ -7,6 +7,7 @@ import {
 } from "./mocks/handlers/helpers/paths.js";
 import { server } from "./mocks/server.js";
 import { resetMockState } from "./mocks/state.js";
+import type { SourcePackageListItem } from "./types.js";
 
 // Must match the value stubbed in test/vitest-setup-msw.ts.
 const TEST_BASE_URL = "http://msw.local/api/packages";
@@ -509,6 +510,33 @@ describe("packagesApi — DEF-002 server-side sort columns + order", () => {
     });
     expect(data?.items.length).toBeGreaterThan(0);
   });
+
+  it.each([
+    ["source-package", (i: SourcePackageListItem) => i.sourcePackage.name],
+    ["status", (i: SourcePackageListItem) => i.status as string],
+    ["series", (i: SourcePackageListItem) => i.series.displayName],
+    ["pocket", (i: SourcePackageListItem) => i.pocket as string],
+    [
+      "binary-packages",
+      (i: SourcePackageListItem) => i.binaryPackages[0]?.name ?? "",
+    ],
+  ])(
+    "sorts the packages table by %s in both directions",
+    async (column, of) => {
+      const [asc, desc] = await Promise.all(
+        (["asc", "desc"] as const).map(async (order) => {
+          const { data, response } = await packagesApi.GET("/source-packages", {
+            params: { query: { sort: column, order, size: "all" } },
+          });
+          expect(response.status).toBe(200);
+          return data?.items.map(of) ?? [];
+        }),
+      );
+      expect(asc.length).toBeGreaterThan(1);
+      expect(asc).toEqual([...asc].sort());
+      expect(desc).toEqual([...asc].reverse());
+    },
+  );
 
   it("rejects an unknown sort column with 400", async () => {
     const { error, response } = await packagesApi.GET("/source-packages", {

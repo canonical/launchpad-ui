@@ -32,6 +32,12 @@ const SORT_COLUMNS = [
   "latest-uploaded",
   "section",
   "uploadDate", // alias for "latest-uploaded"
+  // Sortable columns of the packages table.
+  "source-package", // alias for "name"
+  "status",
+  "series",
+  "pocket",
+  "binary-packages",
 ] as const;
 type SortColumn = (typeof SORT_COLUMNS)[number];
 
@@ -224,11 +230,17 @@ const buildListing = (
 
   type EnrichedRow = (typeof enriched)[number];
   const sortKey = (row: EnrichedRow, field: string) => {
-    if (field === "name") return row.item.sourcePackage.name;
+    if (field === "name" || field === "source-package")
+      return row.item.sourcePackage.name;
     if (field === "latest-version") return row.item.sourcePackage.latestVersion;
     if (field === "latest-uploaded") return row.uploadDateTime;
     if (field === "uploadDate") return row.uploadDateTime;
     if (field === "section") return row.section;
+    if (field === "status") return row.item.status;
+    if (field === "series") return row.item.series.displayName;
+    if (field === "pocket") return row.item.pocket;
+    // The table shows the binary packages in order, so sort by the first.
+    if (field === "binary-packages") return row.item.binaryPackages[0]?.name;
     return undefined;
   };
 
