@@ -10,7 +10,10 @@
   import { Pagination, TabList } from "$lib/components/index.js";
   import BinaryPackageSidePanel from "$lib/modules/packages/BinaryPackageSidePanel/BinaryPackageSidePanel.svelte";
   import { setPackagesContext } from "$lib/modules/packages/context.js";
-  import { QueryParams } from "$lib/modules/packages/superhref.js";
+  import {
+    PACKAGES_TABLE_COLUMNS,
+    QueryParams,
+  } from "$lib/modules/packages/superhref.js";
   import type { PageProps } from "./$types.js";
   import { resolve } from "$app/paths";
   import { page } from "$app/state";
@@ -76,11 +79,27 @@
   <Table class="packages-table">
     <thead>
       <tr>
-        <th scope="col" class="source-package">Source package</th>
-        <th scope="col" class="status">Status</th>
-        <th scope="col" class="series">Series</th>
-        <th scope="col" class="pocket">Pocket</th>
-        <th scope="col" class="binary-packages">Binary packages</th>
+        {#each PACKAGES_TABLE_COLUMNS as { key, label } (key)}
+          {@const sort = queryParams.sort}
+          {@const next = sort.cycle(key)}
+          <Table.TH
+            scope="col"
+            class={key}
+            aria-sort={sort.key === key ? sort.direction : "none"}
+          >
+            {label}
+            {#snippet action()}
+              <Table.TH.SortButton
+                href={queryParams.set("sort", next)}
+                aria-label={next.direction === "none"
+                  ? `Remove sorting by ${label}`
+                  : `Sort by ${label} ${next.direction}`}
+                data-sveltekit-noscroll
+                data-sveltekit-keepfocus
+              />
+            {/snippet}
+          </Table.TH>
+        {/each}
       </tr>
     </thead>
     <tbody>
@@ -98,7 +117,6 @@
             </Link>
           </th>
           <td>{item.status}</td>
-          <td>{item.series.displayName}</td>
           <td>{item.pocket}</td>
           <td>
             {#each item.binaryPackages as binaryPackage (binaryPackage.name)}
@@ -112,6 +130,7 @@
               </Link>
             {/each}
           </td>
+          <td>{item.series.displayName}</td>
         </tr>
       {/each}
     </tbody>
@@ -183,28 +202,30 @@
       width: 100%;
       table-layout: fixed;
 
-      td,
-      th {
-        vertical-align: top;
-        text-overflow: ellipsis;
-        overflow: hidden;
-      }
+      :global {
+        td,
+        th {
+          vertical-align: top;
+          text-overflow: ellipsis;
+          overflow: hidden;
+        }
 
-      thead th {
-        &.source-package {
-          width: 22%;
-        }
-        &.status {
-          width: 10%;
-        }
-        &.series {
-          width: 16%;
-        }
-        &.pocket {
-          width: 10%;
-        }
-        &.binary-packages {
-          width: 42%;
+        thead th {
+          &.source-package {
+            width: 22%;
+          }
+          &.series {
+            width: 16%;
+          }
+          &.pocket {
+            width: 10%;
+          }
+          &.binary-packages {
+            width: 42%;
+          }
+          &.status {
+            width: 10%;
+          }
         }
       }
 
