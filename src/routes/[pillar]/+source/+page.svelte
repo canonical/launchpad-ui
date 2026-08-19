@@ -103,60 +103,73 @@
       </tr>
     </thead>
     <tbody>
-      {#each data.items as item (item.sourcePackage.id)}
+      {#if data.unavailable}
         <tr>
-          <th scope="row">
-            <Link
-              href={resolve("/[pillar]/+source/[name]", {
-                pillar: params.pillar,
-                name: item.sourcePackage.name,
-              })}
-              soft
-            >
-              {item.sourcePackage.name}
-            </Link>
-          </th>
-          <td>{item.status}</td>
-          <td>{item.pocket}</td>
-          <td>
-            {#each item.binaryPackages as binaryPackage (binaryPackage.name)}
-              <Link
-                href={queryParams.set("binary-package", binaryPackage.name)}
-                soft
-                class="package-link"
-                data-sveltekit-noscroll
-              >
-                {binaryPackage.name}
-              </Link>
-            {/each}
+          <td
+            colspan={PACKAGES_TABLE_COLUMNS.length}
+            class="packages-unavailable"
+          >
+            Couldn't load packages. Refresh the page to try again.
           </td>
-          <td>{item.series.displayName}</td>
         </tr>
-      {/each}
+      {:else}
+        {#each data.items as item (item.sourcePackage.id)}
+          <tr>
+            <th scope="row">
+              <Link
+                href={resolve("/[pillar]/+source/[name]", {
+                  pillar: params.pillar,
+                  name: item.sourcePackage.name,
+                })}
+                soft
+              >
+                {item.sourcePackage.name}
+              </Link>
+            </th>
+            <td>{item.status}</td>
+            <td>{item.pocket}</td>
+            <td>
+              {#each item.binaryPackages as binaryPackage (binaryPackage.name)}
+                <Link
+                  href={queryParams.set("binary-package", binaryPackage.name)}
+                  soft
+                  class="package-link"
+                  data-sveltekit-noscroll
+                >
+                  {binaryPackage.name}
+                </Link>
+              {/each}
+            </td>
+            <td>{item.series.displayName}</td>
+          </tr>
+        {/each}
+      {/if}
     </tbody>
   </Table>
-  <Pagination class="pagination">
-    {#snippet leftGroup()}
-      <Pagination.ItemsPerPageSelect disabled>
-        <option value={10}>10</option>
-        <option value={25} selected>25</option>
-        <option value={50}>50</option>
-        <option value={100}>100</option>
-      </Pagination.ItemsPerPageSelect>
-      <Pagination.ItemsCount showing={data.size} total={data.total} />
-    {/snippet}
-    {#snippet rightGroup()}
-      <Pagination.PageInput
-        value={data.page}
-        totalPages={Math.ceil(data.total / data.size)}
-        disabled
-      />
-    {/snippet}
-    <Pagination.PageNavigation direction="first" disabled />
-    <Pagination.PageNavigation direction="previous" disabled />
-    <Pagination.PageNavigation direction="next" disabled />
-    <Pagination.PageNavigation direction="last" disabled />
-  </Pagination>
+  {#if !data.unavailable}
+    <Pagination class="pagination">
+      {#snippet leftGroup()}
+        <Pagination.ItemsPerPageSelect disabled>
+          <option value={10}>10</option>
+          <option value={25} selected>25</option>
+          <option value={50}>50</option>
+          <option value={100}>100</option>
+        </Pagination.ItemsPerPageSelect>
+        <Pagination.ItemsCount showing={data.size} total={data.total} />
+      {/snippet}
+      {#snippet rightGroup()}
+        <Pagination.PageInput
+          value={data.page}
+          totalPages={Math.ceil(data.total / data.size) || 1}
+          disabled
+        />
+      {/snippet}
+      <Pagination.PageNavigation direction="first" disabled />
+      <Pagination.PageNavigation direction="previous" disabled />
+      <Pagination.PageNavigation direction="next" disabled />
+      <Pagination.PageNavigation direction="last" disabled />
+    </Pagination>
+  {/if}
 </main>
 
 <BinaryPackageSidePanel name={queryParams["binary-package"]} />
@@ -245,6 +258,12 @@
           }
         }
       }
+    }
+
+    .packages-unavailable {
+      padding-block: var(--lp-dimension-spacing-block-m);
+      color: var(--lp-color-text-muted);
+      text-align: center;
     }
 
     :global(.pagination) {
