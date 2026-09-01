@@ -70,7 +70,7 @@
   },
   "dependencies": {
     "@canonical/superhref": "^0.1.0",
-    "@canonical/svelte-ds-app-launchpad": "^0.30.0",
+    "@canonical/svelte-ds-app-launchpad": "^0.36.0",
     "@canonical/svelte-icons": "^0.0.9",
     "@floating-ui/dom": "^1.7.6",
     "markdown-actions": "^1.1.2",
