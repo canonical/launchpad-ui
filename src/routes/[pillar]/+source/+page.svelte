@@ -7,12 +7,15 @@
     Select,
     Table,
   } from "@canonical/svelte-ds-app-launchpad";
-  import { Pagination, TabList } from "$lib/components/index.js";
+  import { SettingsIcon } from "@canonical/svelte-icons";
+  import { Pagination, TableViewBar } from "$lib/components/index.js";
   import BinaryPackageSidePanel from "$lib/modules/packages/BinaryPackageSidePanel/BinaryPackageSidePanel.svelte";
   import { setPackagesContext } from "$lib/modules/packages/context.js";
   import {
+    DEFAULT_TABLE_VIEW,
     PACKAGES_TABLE_COLUMNS,
     QueryParams,
+    TABLE_VIEWS,
   } from "$lib/modules/packages/superhref.js";
   import type { PageProps } from "./$types.js";
   import { resolve } from "$app/paths";
@@ -47,18 +50,23 @@
     ]}
     class="breadcrumbs"
   />
-  <div class="page-header">
-    <h1>Packages</h1>
-    <Button disabled>Manage views</Button>
-  </div>
-  <!-- TODO: Make TabList accent/border span 100% of the parent -->
-  <TabList>
-    <TabList.Tab active>All packages</TabList.Tab>
-    <TabList.Tab>My uploads</TabList.Tab>
-    <TabList.Tab>Latest uploads</TabList.Tab>
-    <TabList.Tab>Ubuntu server</TabList.Tab>
-  </TabList>
-
+  <h1>Packages</h1>
+  <TableViewBar
+    items={TABLE_VIEWS.map(({ name, slug }) => ({
+      text: name,
+      href: queryParams.setView(slug),
+      current: slug === queryParams.view,
+      key: slug,
+    }))}
+    label="Packages table views"
+    >{#snippet trailing()}
+      <Button aria-label="Manage package table views" disabled severity="base">
+        {#snippet iconLeft()}
+          <SettingsIcon />
+        {/snippet}
+      </Button>
+    {/snippet}</TableViewBar
+  >
   <div class="filters">
     <SearchBox
       placeholder="Search"
@@ -184,11 +192,8 @@
       margin-block-end: var(--lp-dimension-spacing-block-xs);
     }
 
-    .page-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-block-end: var(--lp-dimension-spacing-block-xs);
+    h1 {
+      margin-block-end: var(--lp-dimension-spacing-block-m);
     }
 
     .filters {
