@@ -1,3 +1,4 @@
+export * from "./slugify.js";
 export * from "./assert.js";
 export * from "./bytesToHumanReadable.js";
 export * from "./extractAria.js";
