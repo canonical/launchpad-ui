@@ -15,10 +15,17 @@
     QueryParams,
   } from "$lib/modules/packages/superhref.js";
   import type { PageProps } from "./$types.js";
+  import { getSourcePackages } from "./packages.remote.js";
+  import type { PackagesListArgs } from "./packages.remote.js";
   import { resolve } from "$app/paths";
   import { page } from "$app/state";
 
-  const { params, data }: PageProps = $props();
+  const { params }: PageProps = $props();
+
+  // TODO: Implement pagination and total count from API
+  const PAGE = 1;
+  const PAGE_SIZE = 25;
+  const TOTAL = 100;
 
   const queryParams = $derived(QueryParams.bind(page.url));
   setPackagesContext({
@@ -26,6 +33,16 @@
       return queryParams;
     },
   });
+
+  const listArgs = $derived<PackagesListArgs>({
+    distro: params.pillar,
+    sortKey: queryParams.sort.key,
+    sortOrder: queryParams.sort.direction,
+    page: PAGE,
+    size: PAGE_SIZE,
+  });
+
+  const data = $derived(await getSourcePackages(listArgs));
 </script>
 
 <svelte:head>
@@ -79,97 +96,90 @@
   <Table class="packages-table">
     <thead>
       <tr>
-        {#each PACKAGES_TABLE_COLUMNS as { key, label } (key)}
+        {#each PACKAGES_TABLE_COLUMNS as column (column.key)}
           {@const sort = queryParams.sort}
-          {@const next = sort.cycle(key)}
           <Table.TH
             scope="col"
-            class={key}
-            aria-sort={sort.key === key ? sort.direction : "none"}
+            class={column.key}
+            aria-sort={column.sortable
+              ? sort.key === column.key
+                ? sort.direction
+                : "none"
+              : undefined}
           >
-            {label}
+            {column.label}
             {#snippet action()}
-              <Table.TH.SortButton
-                href={queryParams.set("sort", next)}
-                aria-label={next.direction === "none"
-                  ? `Remove sorting by ${label}`
-                  : `Sort by ${label} ${next.direction}`}
-                data-sveltekit-noscroll
-                data-sveltekit-keepfocus
-              />
+              {#if column.sortable}
+                {@const next = sort.cycle(column.key)}
+                <Table.TH.SortButton
+                  href={queryParams.set("sort", next)}
+                  aria-label={next.direction === "none"
+                    ? `Remove sorting by ${column.label}`
+                    : `Sort by ${column.label} ${next.direction}`}
+                  data-sveltekit-noscroll
+                  data-sveltekit-keepfocus
+                />
+              {/if}
             {/snippet}
           </Table.TH>
         {/each}
       </tr>
     </thead>
     <tbody>
-      {#if data.unavailable}
+      {#each data as item (item.sourcePackage.id)}
         <tr>
-          <td
-            colspan={PACKAGES_TABLE_COLUMNS.length}
-            class="packages-unavailable"
-          >
-            Couldn't load packages. Refresh the page to try again.
-          </td>
-        </tr>
-      {:else}
-        {#each data.items as item (item.sourcePackage.id)}
-          <tr>
-            <th scope="row">
+          <th scope="row">
+            <Link
+              href={resolve("/[pillar]/+source/[name]", {
+                pillar: params.pillar,
+                name: item.sourcePackage.name,
+              })}
+              soft
+            >
+              {item.sourcePackage.name}
+            </Link>
+          </th>
+          <td>{item.series.displayName}</td>
+          <td>{item.pocket}</td>
+          <td>
+            {#each item.binaryPackages as binaryPackage (binaryPackage.name)}
               <Link
-                href={resolve("/[pillar]/+source/[name]", {
-                  pillar: params.pillar,
-                  name: item.sourcePackage.name,
-                })}
+                href={queryParams.set("binary-package", binaryPackage.name)}
                 soft
+                class="package-link"
+                data-sveltekit-noscroll
               >
-                {item.sourcePackage.name}
+                {binaryPackage.name}
               </Link>
-            </th>
-            <td>{item.status}</td>
-            <td>{item.pocket}</td>
-            <td>
-              {#each item.binaryPackages as binaryPackage (binaryPackage.name)}
-                <Link
-                  href={queryParams.set("binary-package", binaryPackage.name)}
-                  soft
-                  class="package-link"
-                  data-sveltekit-noscroll
-                >
-                  {binaryPackage.name}
-                </Link>
-              {/each}
-            </td>
-            <td>{item.series.displayName}</td>
-          </tr>
-        {/each}
-      {/if}
+            {/each}
+          </td>
+          <td>{item.status}</td>
+        </tr>
+      {/each}
     </tbody>
   </Table>
-  {#if !data.unavailable}
-    <Pagination class="pagination">
-      {#snippet leftGroup()}
-        <Pagination.ItemsPerPageSelect disabled>
-          <option value={10}>10</option>
-          <option value={25} selected>25</option>
-          <option value={50}>50</option>
-          <option value={100}>100</option>
-        </Pagination.ItemsPerPageSelect>
-        <Pagination.ItemsCount showing={data.size} total={data.total} />
-      {/snippet}
-      {#snippet rightGroup()}
-        <Pagination.PageInput
-          value={data.page}
-          totalPages={Math.ceil(data.total / data.size) || 1}
-          disabled
-        />
-      {/snippet}
-      <Pagination.PageNavigation direction="first" disabled />
-      <Pagination.PageNavigation direction="previous" disabled />
-      <Pagination.PageNavigation direction="next" disabled />
-      <Pagination.PageNavigation direction="last" disabled />
-    </Pagination>
-  {/if}
+  <Pagination class="pagination">
+    {#snippet leftGroup()}
+      <Pagination.ItemsPerPageSelect disabled>
+        <option value={10}>10</option>
+        <option value={25} selected>25</option>
+        <option value={50}>50</option>
+        <option value={100}>100</option>
+      </Pagination.ItemsPerPageSelect>
+      <Pagination.ItemsCount showing={data.length} total={TOTAL} />
+    {/snippet}
+    {#snippet rightGroup()}
+      <Pagination.PageInput
+        value={PAGE}
+        totalPages={Math.ceil(TOTAL / PAGE_SIZE) || 1}
+        disabled
+      />
+    {/snippet}
+    <Pagination.PageNavigation direction="first" disabled />
+    <Pagination.PageNavigation direction="previous" disabled />
+    <Pagination.PageNavigation direction="next" disabled />
+    <Pagination.PageNavigation direction="last" disabled />
+  </Pagination>
 </main>
 
 <BinaryPackageSidePanel name={queryParams["binary-package"]} />
@@ -258,12 +268,6 @@
           }
         }
       }
-    }
-
-    .packages-unavailable {
-      padding-block: var(--lp-dimension-spacing-block-m);
-      color: var(--lp-color-text-muted);
-      text-align: center;
     }
 
     :global(.pagination) {

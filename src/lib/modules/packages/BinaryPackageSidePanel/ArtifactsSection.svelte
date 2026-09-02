@@ -1,20 +1,19 @@
 <script lang="ts">
   import { Button, Link } from "@canonical/svelte-ds-app-launchpad";
   import { DownloadIcon } from "@canonical/svelte-icons";
-  import type { BinaryPackageDetails } from "$lib/api/packages/types.js";
   import { bytesToHumanReadable } from "$lib/utils/bytesToHumanReadable.js";
+  import type { BinaryPackageArtifact } from "./binary-package.remote.js";
 
   const {
     artifacts,
     downloadUrl,
-  }: { artifacts: BinaryPackageDetails["artifacts"]; downloadUrl: string } =
-    $props();
+  }: { artifacts: BinaryPackageArtifact[]; downloadUrl?: string } = $props();
 </script>
 
 <section>
   <header>
     <h3>Artifacts</h3>
-    {#if artifacts.length > 1}
+    {#if downloadUrl && artifacts.length > 1}
       <Button
         severity="base"
         class="download-all"

@@ -20,7 +20,11 @@
   const queryParams = $derived(context.queryParams);
 
   const open = $derived(Boolean(name));
-  const binaryPackage = $derived(name ? getBinaryPackage(name) : undefined);
+  const binaryPackage = $derived(
+    name && page.params.pillar
+      ? getBinaryPackage({ distro: page.params.pillar, name })
+      : undefined,
+  );
 
   // Disable light dismiss when no JS, because otherwise we wouldn't have a way to clear the query param.
   const closeOnOutsideSuppress = !browser
@@ -71,7 +75,7 @@ FIXME(DAL): When underlying dialog is upgrading to modal, it should suppress `on
             {@const details = await binaryPackage}
             <p class="summary">{details.summary}</p>
             {#key name}
-              <PartialTextDisclosure text={details.description} />
+              <PartialTextDisclosure text={details.description ?? ""} />
             {/key}
             {#if details.artifacts.length > 0}
               <ArtifactsSection

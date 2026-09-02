@@ -5,18 +5,26 @@ import { sortCodec } from "$lib/utils/sortCodec.js";
 
 export const BINARY_PACKAGE_QUERY_PARAM = "binary-package" as const;
 
-/** The packages table columns, in display order. Every one is sortable. */
+/** The packages table columns, in display order.*/
 export const PACKAGES_TABLE_COLUMNS = [
-  { key: "source-package", label: "Source package" },
-  { key: "series", label: "Series" },
-  { key: "pocket", label: "Pocket" },
-  { key: "binary-packages", label: "Binary packages" },
-  { key: "status", label: "Status" },
-] as const satisfies readonly { key: string; label: string }[];
+  { key: "source-package", label: "Source package", sortable: true },
+  { key: "series", label: "Series", sortable: true },
+  { key: "pocket", label: "Pocket", sortable: true },
+  { key: "binary-packages", label: "Binary packages", sortable: false },
+  { key: "status", label: "Status", sortable: true },
+] as const satisfies readonly {
+  key: string;
+  label: string;
+  sortable: boolean;
+}[];
+
+export const SORTABLE_PACKAGES_COLUMNS = PACKAGES_TABLE_COLUMNS.flatMap(
+  (column) => (column.sortable ? [column.key] : []),
+);
 
 export const QueryParams = superhref({
   [BINARY_PACKAGE_QUERY_PARAM]: strCodec(),
-  sort: sortCodec(PACKAGES_TABLE_COLUMNS.map(({ key }) => key)),
+  sort: sortCodec(SORTABLE_PACKAGES_COLUMNS),
 });
 
 export type BoundPackagesQueryParams = ReturnType<typeof QueryParams.bind>;
