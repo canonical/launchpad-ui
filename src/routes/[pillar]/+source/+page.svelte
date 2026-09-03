@@ -65,8 +65,8 @@
           <SettingsIcon />
         {/snippet}
       </Button>
-    {/snippet}</TableViewBar
-  >
+    {/snippet}
+  </TableViewBar>
   <div class="filters">
     <SearchBox
       placeholder="Search"

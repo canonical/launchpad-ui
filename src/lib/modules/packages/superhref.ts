@@ -15,6 +15,8 @@ export const PACKAGES_TABLE_COLUMNS = [
   { key: "status", label: "Status" },
 ] as const satisfies readonly { key: string; label: string }[];
 
+// Temporary.
+// TODO: Remove when values are served from the backend.
 export const TABLE_VIEWS = [
   "All packages",
   "Signed by me",
