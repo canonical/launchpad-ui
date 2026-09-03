@@ -39,8 +39,12 @@
   <nav aria-label={label}>
     <ul>
       {#each items as { key, ...item }, index (key ?? item.href)}
-        {const isSelectedBefore = $derived(selectedTabIndex !== -1 && selectedTabIndex < index);}
-        {const isSelectedAfter = $derived(selectedTabIndex !== -1 && selectedTabIndex > index);}
+        {const isSelectedBefore = $derived(
+          selectedTabIndex !== -1 && selectedTabIndex < index,
+        )}
+        {const isSelectedAfter = $derived(
+          selectedTabIndex !== -1 && selectedTabIndex > index,
+        )}
         <Tab
           {...item}
           current={index === selectedTabIndex}
@@ -56,7 +60,10 @@
     </ul>
   </nav>
   <div class="trailing" bind:offsetWidth={trailingWidth}>
-    <Popover position="block-end span-inline-start" bind:this={menuPopoverMethods}>
+    <Popover
+      position="block-end span-inline-start"
+      bind:this={menuPopoverMethods}
+    >
       {#snippet trigger(triggerProps)}
         <Button {...triggerProps} severity="base" aria-label="{label} menu">
           {#snippet iconLeft()}

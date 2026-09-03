@@ -9,11 +9,11 @@
     component: TableViewBar,
     tags: ["autodocs"],
     args: {
-      label: "Package views"
+      label: "Package views",
     },
     argTypes: {
-      trailing: { control: false }
-    }
+      trailing: { control: false },
+    },
   });
 </script>
 
@@ -31,19 +31,19 @@
   }}
 >
   {#snippet template({ trailing: _, items, ...args })}
-  {let selected = $state("All packages")}
-    <TableViewBar 
-      items={
-        items.map((item) => ({
-          ...item,
-          current: item.text === selected,
-          // onclick handler for demonstration purposes only
-          onclick: (event) => {
-            event.preventDefault();
-            selected = item.text;
-          }
-        }))
-      } {...args}>
+    {let selected = $state("All packages")}
+    <TableViewBar
+      items={items.map((item) => ({
+        ...item,
+        current: item.text === selected,
+        // onclick handler for demonstration purposes only
+        onclick: (event) => {
+          event.preventDefault();
+          selected = item.text;
+        },
+      }))}
+      {...args}
+    >
       {#snippet trailing()}
         <Button severity="base">
           {#snippet iconLeft()}
@@ -71,33 +71,40 @@
     ])}
     {let selected = $state("All packages")}
     {let added = $state(0)}
-    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-block-end: 1rem;">
+    <div
+      style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-block-end: 1rem;"
+    >
       <Button
         onclick={() => {
           added++;
           items.push({
-            text: added % 2 ? `Added ${added}` : `A much longer added tab ${added}`,
+            text:
+              added % 2 ? `Added ${added}` : `A much longer added tab ${added}`,
             href: `?view=added-${added}`,
           });
         }}>Add</Button
       >
       <Button onclick={() => items.shift()}>Remove first</Button>
       <Button onclick={() => items.pop()}>Remove last</Button>
-      <Button
-        onclick={() =>
-          items.sort(() => Math.random() - 0.5)}>Shuffle</Button
+      <Button onclick={() => items.sort(() => Math.random() - 0.5)}
+        >Shuffle</Button
       >
     </div>
-    <div style="resize: horizontal; overflow: hidden; min-inline-size: 5rem; padding-block-end: 1rem;">
-      <TableViewBar items={items.map((item) => ({
-        ...item,
-        current: item.text === selected,
-        // onclick handler for demonstration purposes only
-        onclick: (event) => {
-          event.preventDefault();
-          selected = item.text;
-        }
-      }))} {...args}>
+    <div
+      style="resize: horizontal; overflow: hidden; min-inline-size: 5rem; padding-block-end: 1rem;"
+    >
+      <TableViewBar
+        items={items.map((item) => ({
+          ...item,
+          current: item.text === selected,
+          // onclick handler for demonstration purposes only
+          onclick: (event) => {
+            event.preventDefault();
+            selected = item.text;
+          },
+        }))}
+        {...args}
+      >
         {#snippet trailing()}
           <Button severity="base">
             {#snippet iconLeft()}
@@ -109,4 +116,3 @@
     </div>
   {/snippet}
 </Story>
-

@@ -26,7 +26,6 @@ const config = {
         svelteAllowShorthand: true,
         svelteIndentScriptAndStyle: true,
         svelteSortOrder: "options-scripts-markup-styles",
-        svelteStrictMode: true,
       },
     },
   ],

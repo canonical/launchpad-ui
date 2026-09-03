@@ -12,7 +12,6 @@
   import BinaryPackageSidePanel from "$lib/modules/packages/BinaryPackageSidePanel/BinaryPackageSidePanel.svelte";
   import { setPackagesContext } from "$lib/modules/packages/context.js";
   import {
-    DEFAULT_TABLE_VIEW,
     PACKAGES_TABLE_COLUMNS,
     QueryParams,
     TABLE_VIEWS,
