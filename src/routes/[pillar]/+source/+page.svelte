@@ -51,10 +51,10 @@
   />
   <h1>Packages</h1>
   <TableViewBar
+    current={queryParams.view}
     items={TABLE_VIEWS.map(({ name, slug }) => ({
       text: name,
       href: queryParams.setView(slug),
-      current: slug === queryParams.view,
       key: slug,
     }))}
     label="Packages table views"

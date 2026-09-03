@@ -8,6 +8,8 @@ type BaseProps = Omit<SvelteHTMLElements["div"], "children">;
 export interface TableViewBarProps extends BaseProps {
   /** The tabs to display, in the order they should appear */
   items: TableViewBarItemProps[];
+  /** The `key` of the currently selected item. If no item matches, no tab is marked as current. */
+  current?: string;
   /**
    * The content to display at the end of the bar, after the tabs. Usually a set of action buttons.
    **/
@@ -24,11 +26,6 @@ export interface TableViewBarItemProps extends Omit<
   href: NonNullable<HTMLAnchorAttributes["href"]>;
   /** The text to display for the item */
   text: string;
-  /** Whether the item is currently selected. If several items set this, only the first one is treated as current. **/
-  current?: boolean;
-  /**
-   * A unique key for the item, used for tracking in lists. If not provided, the href will be used as the key.
-   * Keys must be unique, so items sharing an href have to provide one.
-   */
-  key?: string;
+  /** A key for the item, used for tracking in lists and matching the current item. Must be unique among the items. */
+  key: string;
 }

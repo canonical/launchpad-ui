@@ -13,9 +13,9 @@ describe("TableViewBar SSR", () => {
     label,
     "data-testid": testId,
     items: [
-      { text: "All packages", href: "?" },
-      { text: "Signed by me", href: "?view=signed-by-me" },
-      { text: "My uploads", href: "?view=my-uploads" },
+      { key: "all", text: "All packages", href: "?" },
+      { key: "signed-by-me", text: "Signed by me", href: "?view=signed-by-me" },
+      { key: "my-uploads", text: "My uploads", href: "?view=my-uploads" },
     ],
   } satisfies ComponentProps<typeof Component>;
 
@@ -83,10 +83,7 @@ describe("TableViewBar SSR", () => {
       const page = render(Component, {
         props: {
           ...baseProps,
-          items: baseProps.items.map((item) => ({
-            ...item,
-            current: item.text === "Signed by me",
-          })),
+          current: "signed-by-me",
         },
       });
       const tabs = [...tabsLocator(page).querySelectorAll("li")];
@@ -97,25 +94,25 @@ describe("TableViewBar SSR", () => {
       expect(tabs[1].classList).toContain("current");
     });
 
-    it("marks only the first item claiming to be current", () => {
+    it("does not mark any item as current when the current key does not match", () => {
       const page = render(Component, {
         props: {
           ...baseProps,
-          items: baseProps.items.map((item) => ({ ...item, current: true })),
+          current: "does-not-exist",
         },
       });
       const tabs = [...tabsLocator(page).querySelectorAll("li")];
 
       expect(
         tabs.map((tab) => tab.querySelector("a")?.getAttribute("aria-current")),
-      ).toEqual(["page", null, null]);
+      ).toEqual([null, null, null]);
     });
 
     it("doesn't make the current tab sticky before hydration", () => {
       const page = render(Component, {
         props: {
           ...baseProps,
-          items: baseProps.items.map((item) => ({ ...item, current: true })),
+          current: "all",
         },
       });
 

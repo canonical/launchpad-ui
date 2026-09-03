@@ -10,6 +10,31 @@
     tags: ["autodocs"],
     args: {
       label: "Package views",
+      items: [
+        { key: "all", text: "All packages", href: "?" },
+        {
+          key: "signed-by-me",
+          text: "Signed by me",
+          href: "?view=signed-by-me",
+        },
+        {
+          key: "maintained-by-me",
+          text: "Maintained by me",
+          href: "?view=maintained-by-me",
+        },
+        { key: "my-uploads", text: "My uploads", href: "?view=my-uploads" },
+        {
+          key: "latest-uploads",
+          text: "Latest uploads",
+          href: "?view=latest-uploads",
+        },
+        {
+          key: "ubuntu-server",
+          text: "Ubuntu server",
+          href: "?view=ubuntu-server",
+        },
+      ],
+      current: "all",
     },
     argTypes: {
       trailing: { control: false },
@@ -17,29 +42,17 @@
   });
 </script>
 
-<Story
-  name="Default"
-  args={{
-    items: [
-      { text: "All packages", href: "?" },
-      { text: "Signed by me", href: "?view=signed-by-me" },
-      { text: "Maintained by me", href: "?view=maintained-by-me" },
-      { text: "My uploads", href: "?view=my-uploads" },
-      { text: "Latest uploads", href: "?view=latest-uploads" },
-      { text: "Ubuntu server", href: "?view=ubuntu-server" },
-    ],
-  }}
->
-  {#snippet template({ trailing: _, items, ...args })}
-    {let selected = $state("All packages")}
+<Story name="Default">
+  {#snippet template({ trailing: _, items, current, ...args })}
+    {let selected = $derived(current)}
     <TableViewBar
+      current={selected}
       items={items.map((item) => ({
         ...item,
-        current: item.text === selected,
         // onclick handler for demonstration purposes only
         onclick: (event) => {
           event.preventDefault();
-          selected = item.text;
+          selected = item.key;
         },
       }))}
       {...args}
@@ -55,21 +68,9 @@
   {/snippet}
 </Story>
 
-<Story
-  name="Dynamic items"
-  args={{ items: [] }}
-  argTypes={{ items: { control: false } }}
->
-  {#snippet template({ trailing: _, items: __, ...args })}
-    {const items = $state([
-      { text: "All packages", href: "?" },
-      { text: "Signed by me", href: "?view=signed-by-me" },
-      { text: "Maintained by me", href: "?view=maintained-by-me" },
-      { text: "My uploads", href: "?view=my-uploads" },
-      { text: "Latest uploads", href: "?view=latest-uploads" },
-      { text: "Ubuntu server", href: "?view=ubuntu-server" },
-    ])}
-    {let selected = $state("All packages")}
+<Story name="Dynamic items">
+  {#snippet template({ trailing: _, items, current, ...args })}
+    {let selected = $derived(current)}
     {let added = $state(0)}
     <div
       style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-block-end: 1rem;"
@@ -78,6 +79,7 @@
         onclick={() => {
           added++;
           items.push({
+            key: `added-${added}`,
             text:
               added % 2 ? `Added ${added}` : `A much longer added tab ${added}`,
             href: `?view=added-${added}`,
@@ -94,13 +96,13 @@
       style="resize: horizontal; overflow: hidden; min-inline-size: 5rem; padding-block-end: 1rem;"
     >
       <TableViewBar
+        current={selected}
         items={items.map((item) => ({
           ...item,
-          current: item.text === selected,
           // onclick handler for demonstration purposes only
           onclick: (event) => {
             event.preventDefault();
-            selected = item.text;
+            selected = item.key;
           },
         }))}
         {...args}

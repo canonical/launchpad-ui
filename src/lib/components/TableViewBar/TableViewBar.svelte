@@ -7,7 +7,7 @@
   import { SvelteMap } from "svelte/reactivity";
   import { ContextualMenuContent } from "../ContextualMenuContent/index.js";
   import { Tab } from "./common/index.js";
-  import type { TableViewBarProps } from "./types.js";
+  import type { TableViewBarItemProps, TableViewBarProps } from "./types.js";
   import "./styles.css";
 
   const componentCssClassName = "ds table-view-bar";
@@ -15,19 +15,21 @@
   let {
     class: className,
     items,
+    current,
     trailing,
     label,
     ...rest
   }: TableViewBarProps = $props();
 
   const tabSizes = new SvelteMap<string, number>();
-  const { selectedTab, selectedTabIndex } = $derived.by(() => {
-    const selectedTabIndex = items.findIndex(({ current }) => current);
-    const selectedTab = items[selectedTabIndex];
-    return { selectedTab, selectedTabIndex };
-  });
+  const selectedTabIndex = $derived(
+    items.findIndex(({ key }) => key === current),
+  );
+  const selectedTab: TableViewBarItemProps | undefined = $derived(
+    items[selectedTabIndex],
+  );
   const selectedTabWidth = $derived(
-    selectedTab ? (tabSizes.get(selectedTab.key ?? selectedTab.href) ?? 0) : 0,
+    selectedTab ? (tabSizes.get(selectedTab.key) ?? 0) : 0,
   );
 
   let trailingWidth = $state(0);
@@ -38,7 +40,7 @@
 <div class={[componentCssClassName, className]} {...rest}>
   <nav aria-label={label}>
     <ul>
-      {#each items as { key, ...item }, index (key ?? item.href)}
+      {#each items as { key, ...item }, index (key)}
         {const isSelectedBefore = $derived(
           selectedTabIndex !== -1 && selectedTabIndex < index,
         )}
@@ -49,7 +51,7 @@
           {...item}
           current={index === selectedTabIndex}
           bind:offsetWidth={
-            () => null, (width) => tabSizes.set(key ?? item.href, width ?? 0)
+            () => null, (width) => tabSizes.set(key, width ?? 0)
           }
           insetInlineEnd={trailingWidth}
           scrollMarginInlineStart={isSelectedBefore ? selectedTabWidth : 0}
@@ -77,7 +79,7 @@
           - role="list", because safari drops the list semantics for list-style: none elements if they are not in a nav: https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/list-style#accessibility
         -->
         <ul role="list">
-          {#each items as { key, href, current: _current, onclick, ...rest }, index (key ?? href)}
+          {#each items as { key, href, onclick, ...rest }, index (key)}
             <li>
               <ContextualMenuContent.ButtonItem
                 {href}
@@ -104,9 +106,10 @@
 ```svelte
 <TableViewBar
   label="Package views"
+  current="all"
   items={[
-    { text: "All packages", href: "?", current: true },
-    { text: "My uploads", href: "?view=my-uploads" },
+    { key: "all", text: "All packages", href: "?" },
+    { key: "my-uploads", text: "My uploads", href: "?view=my-uploads" },
   ]}
 >
   {#snippet trailing()}
