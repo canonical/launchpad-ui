@@ -13,13 +13,13 @@ describe("ThemeSetter SSR", () => {
   describe("adds the correct styles", () => {
     it("for light theme", () => {
       const { head } = render(Component, { props: { theme: "light" } });
-      expect((head.match(/:root\s*{/g) || []).length).toBe(1);
+      expect((head.match(/:root\s*{/g) || []).length).toBe(2);
       expect(head).not.toContain("@media (prefers-color-scheme:");
     });
 
     it("for dark theme", () => {
       const { head } = render(Component, { props: { theme: "dark" } });
-      expect((head.match(/:root\s*{/g) || []).length).toBe(1);
+      expect((head.match(/:root\s*{/g) || []).length).toBe(2);
       expect(head).not.toContain("@media (prefers-color-scheme:");
     });
 

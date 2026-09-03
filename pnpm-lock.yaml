@@ -20,8 +20,8 @@ importers:
         specifier: ^0.1.0
         version: 0.1.0
       '@canonical/svelte-ds-app-launchpad':
-        specifier: ^0.30.0
-        version: 0.30.0(svelte@5.56.4(@typescript-eslint/types@8.62.0))
+        specifier: ^0.36.0
+        version: 0.36.0(svelte@5.56.4(@typescript-eslint/types@8.62.0))(typescript@6.0.3)
       '@canonical/svelte-icons':
         specifier: ^0.0.9
         version: 0.0.9(svelte@5.56.4(@typescript-eslint/types@8.62.0))
@@ -117,8 +117,8 @@ importers:
         specifier: ^3.8.4
         version: 3.8.4
       prettier-plugin-svelte:
-        specifier: ^3.5.2
-        version: 3.5.2(prettier@3.8.4)(svelte@5.56.4(@typescript-eslint/types@8.62.0))
+        specifier: ^4.1.1
+        version: 4.1.1(prettier@3.8.4)(svelte@5.56.4(@typescript-eslint/types@8.62.0))
       storybook:
         specifier: ^10.4.6
         version: 10.4.6(@testing-library/dom@10.4.1)(@types/react@19.2.15)(prettier@3.8.4)(react@19.2.7)
@@ -185,15 +185,33 @@ packages:
     resolution: {integrity: sha512-ctxtJ/eA+t+6q2++vj5j7FYX3nRu311q1wfYH3xjlLOsczhlhxAg2FWNUXhpGvAw3BWo1xBcvOV6/YLc2r5FJw==}
     hasBin: true
 
+  '@canonical/design-tokens@0.8.1':
+    resolution: {integrity: sha512-5EQj2ZpYl3Jqg8rmbckovp+FAEzTPFsAnD8GrCLMCscIpHdumrIHeVzD8hM1Vx1hKchJ8S8IpW91fPyE26onDg==}
+    engines: {bun: '>=1.3', node: '>=22'}
+
   '@canonical/launchpad-design-tokens@1.1.1':
     resolution: {integrity: sha512-rOrV4TxC9bOyA4DlgxNAwssFfsA/h5XHPqM0plmYbaODodd7EakntM3ZOSHnoNqViskxieVSc7TEbZY+JyFHoA==}
+
+  '@canonical/styles-typography@0.36.0':
+    resolution: {integrity: sha512-qKWptIuYUNegGr98EgThQVpf/Nj1J1Z7+7Cn1aikRfQBLDjEQL+CE9v1hdVsm3K1yAAneJ6H4OK2Xldpz2IaHA==}
+    hasBin: true
+    peerDependencies:
+      typescript: ^5.9.3
+
+  '@canonical/styles@0.36.0':
+    resolution: {integrity: sha512-JQe+mgjdJdg4kgZujfA1syEtlE8jOoKMBVn378dbYJ+S3BIm3wi5TU7EOPYxd+6AEVmibTi8EDMrAzrXtFOwYA==}
+    peerDependencies:
+      '@canonical/ds-assets': '>=0.18.0'
+    peerDependenciesMeta:
+      '@canonical/ds-assets':
+        optional: true
 
   '@canonical/superhref@0.1.0':
     resolution: {integrity: sha512-MhWZdgHaekNMEDfgijE5XGPJC3T4Foc6bQmlWPMv5asWn9t7SIxDSXTb7mvzpq7MIW5jBDqyUa887xuMKcn1kQ==}
     engines: {node: '>=20'}
 
-  '@canonical/svelte-ds-app-launchpad@0.30.0':
-    resolution: {integrity: sha512-POlaofX3KB2v798xqUhSM5qGDANA5eus6lwLzNMMDp6M/egoCN7L/QEYCJxErFzeg/s7C2H8Gl4IffNid/C2Pg==}
+  '@canonical/svelte-ds-app-launchpad@0.36.0':
+    resolution: {integrity: sha512-kmSp8rNXNSxh+JpmSBzmWR2yXHUCur4w2fsU1tJ6YjcLe67wmm9rJXzgBQd4/q77JJmzZUqkmTWDzTi9LnpzQQ==}
     peerDependencies:
       svelte: ^5.47.1
 
@@ -206,6 +224,15 @@ packages:
     resolution: {integrity: sha512-CFUkwI0VYrAnwfYEsAc441Q+qngn/GO5SxE4JxfTu6c90oCvsOvnvt4zp3jhVWSkO5FkEyWmduA8BPP33UEtxA==}
     peerDependencies:
       svelte: ^5.38.2
+
+  '@canonical/terrazzo-lsp@0.8.2':
+    resolution: {integrity: sha512-EYjNGWegH1Cx5r5rIr1N6y7ISv/Ibzpew8Qj9X4Vg427VtJA44/rr3tGeuf8ivEkLMWIc47oIsRuk9ynffm1fg==}
+    engines: {bun: '>=1.3', node: '>=22'}
+    hasBin: true
+
+  '@canonical/token-types@0.8.1':
+    resolution: {integrity: sha512-i0V9RaEPuySeTUcGn2NBulb0FXJcHInBtaI+awceokbcK75cc48/HxW1Gw4+GtI4D2xGn5W3EC58/O9siN4n7Q==}
+    engines: {bun: '>=1.3', node: '>=22'}
 
   '@chromatic-com/storybook@5.2.1':
     resolution: {integrity: sha512-z6I7NJk/0VngA64y5TNYaB4Hc2X8+90n4op6lBt9PvWk5TmIlFLDqdX33rlrwbNRkkYijVgA/wO04rVYXi5Mlg==}
@@ -564,6 +591,18 @@ packages:
 
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
+
+  '@lezer/common@1.5.2':
+    resolution: {integrity: sha512-sxQE460fPZyU3sdc8lafxiPwJHBzZRy/udNFynGQky1SePYBdhkBl1kOagA9uT3pxR8K09bOrmTUqA9wb/PjSQ==}
+
+  '@lezer/css@1.3.6':
+    resolution: {integrity: sha512-YJE78Wcg+zX8f10hiHWQ4Az48Qr/c13eId0VtRQYLBpxHDmDeSrXIlkbl+fJGW42rWC/uoUco9mhBZeVWP/A1g==}
+
+  '@lezer/highlight@1.2.3':
+    resolution: {integrity: sha512-qXdH7UqTvGfdVBINrgKhDsVTJTxactNNxLk7+UMwZhU13lMHaOBlJe9Vqp907ya56Y3+ed2tlqzys7jDkTmW0g==}
+
+  '@lezer/lr@1.4.10':
+    resolution: {integrity: sha512-rnCpTIBafOx4mRp43xOxDJbFipJm/c0cia/V5TiGlhmMa+wsSdoGmUN3w5Bqrks/09Q/D4tNAmWaT8p6NRi77A==}
 
   '@mdx-js/react@3.1.1':
     resolution: {integrity: sha512-f++rKLQgUVYDAtECQ6fn/is15GkEH9+nZPM3MS0RcxVqoTfawHvDlSCH7JbMhAM6uJ32v3eXLvLmLvjGu7PTQw==}
@@ -1605,6 +1644,9 @@ packages:
   color-name@1.1.4:
     resolution: {integrity: sha512-dOy+3AuW3a2wNbZHIuMZpTcgjGuLU/uBL/ubcZF9OXbDo8ff4O8yVp5Bf0efS8uEoYo5q4Fx7dY9OgQGXgAsQA==}
 
+  colorjs.io@0.7.1:
+    resolution: {integrity: sha512-LY7OHnJZxHwT5UlzNa9bbhHHDbzB6yE5+3MIPwJEQKRvSCt/T4G7epsj+9j2BExUIIfXFIJGsIXUKdfrK9Q5tA==}
+
   commondir@1.0.1:
     resolution: {integrity: sha512-W9pAhw0ja1Edb5GVdIF1mjZw/ASI0AlShXM83UUGe2DVr5TdAPEA1OA8m/g8zWp9x6On7gqufY+FatDbC3MDQg==}
 
@@ -2467,6 +2509,9 @@ packages:
     resolution: {integrity: sha512-kXs9Go0cah0qHVV2v389IXQLdLCeE1xfFtjOAF+iobu0OIoG1pje8At2vMHyaPMiPMnG/LWP50twML21eMcAag==}
     engines: {node: '>= 0.4'}
 
+  normalize.css@8.0.1:
+    resolution: {integrity: sha512-qizSNPO93t1YUuUhP22btGOo3chcvDFqFaj2TRybP0DMxkHOCTYwp3n34fel4a31ORXy4m1Xq0Gyqpb5m33qIg==}
+
   object-inspect@1.13.4:
     resolution: {integrity: sha512-W67iLl4J2EXEGTbfeHCffrjDfitvLANg0UlX3wFUUSTx92KXRFegMHUVgSqE+wvhAbi4WqjGg9czysTV2Epbew==}
     engines: {node: '>= 0.4'}
@@ -2508,6 +2553,11 @@ packages:
 
   openapi-typescript-helpers@0.0.15:
     resolution: {integrity: sha512-opyTPaunsklCBpTK8JGef6mfPhLSnyy5a0IN9vKtx3+4aExf+KxEqYwIy3hqkedXIB97u357uLMJsOnm3GVjsw==}
+
+  opentype.js@1.3.4:
+    resolution: {integrity: sha512-d2JE9RP/6uagpQAVtJoF0pJJA/fgai89Cc50Yp0EJHk+eLp6QQ7gBoblsnubRULNY132I0J1QKMJ+JTbMqz4sw==}
+    engines: {node: '>= 8.0.0'}
+    hasBin: true
 
   optionator@0.9.4:
     resolution: {integrity: sha512-6IpQ7mKUxRcZNLIObR0hz7lxsapSSIYNZJwXPGeF0mTVqGKFIXj1DQcMoT22S3ROcLyY/rz0PWaWZ9ayWmad9g==}
@@ -2624,11 +2674,12 @@ packages:
     resolution: {integrity: sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==}
     engines: {node: '>= 0.8.0'}
 
-  prettier-plugin-svelte@3.5.2:
-    resolution: {integrity: sha512-ItFouLvzSFE3ulNl4DKoWM3BGcbDCNVpIyy/Y3F2gC3aNiGLxtFUdffVqO5Z5hhYG+DFT5KULWaxmeFFpdbvaQ==}
+  prettier-plugin-svelte@4.1.1:
+    resolution: {integrity: sha512-wXvbXMjSvb4C9ENWTHXyd+ihakKCsJ6rJhLP6/8HFNj4GkZr48jqL9PoKsl2sk7SyCZRTnJ7O2TTowUpOxP/KA==}
+    engines: {node: '>=20'}
     peerDependencies:
       prettier: ^3.0.0
-      svelte: ^3.2.0 || ^4.0.0-next.0 || ^5.0.0-next.0
+      svelte: ^5.0.0
 
   prettier@3.8.4:
     resolution: {integrity: sha512-N2MylSdi48+5N/6S5j+maeHbUSIzzZ5uOcX5Hm4QpV8Dkb1HFjfAKTKX6yNPJQD9AhcT3ifHNB66tWTTJDi11Q==}
@@ -2843,6 +2894,9 @@ packages:
     resolution: {integrity: sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==}
     engines: {node: '>=8'}
 
+  string.prototype.codepointat@0.2.1:
+    resolution: {integrity: sha512-2cBVCj6I4IOvEnjgO/hWqXjqBGsY+zwPmHl12Srk9IXSZ56Jwwmy+66XO5Iut/oQVR7t5ihYdLB0GMa4alEUcg==}
+
   string.prototype.trim@1.2.11:
     resolution: {integrity: sha512-PwvK7BU+CMTJGYQCTZb5RWXIML92lftJLhQz1tBzgKiqGxJaMlBAa48POXaNAC2s4y8jr3EFqrkF9+44neS46w==}
     engines: {node: '>= 0.4'}
@@ -2922,6 +2976,9 @@ packages:
   tagged-tag@1.0.0:
     resolution: {integrity: sha512-yEFYrVhod+hdNyx7g5Bnkkb0G6si8HJurOoOEgC8B/O0uXLHlaey/65KRv6cuWBNhBgHKAROVpc7QyYqE5gFng==}
     engines: {node: '>=20'}
+
+  tiny-inflate@1.0.3:
+    resolution: {integrity: sha512-pkY1fj1cKHb2seWDy0B16HeWyczlJA9/WW3u3c4z/NiWDsO3DOU5D7nhTLE9CF0yXv/QZFY7sEJmj24dK+Rrqw==}
 
   tiny-invariant@1.3.3:
     resolution: {integrity: sha512-+FbBPE1o9QAYvviau/qC5SE3caw21q3xkvWKBtja5vgqOWIHHJ3ioaq1VPfn/Szqctz2bU/oYeKd9/z5BL+PVg==}
@@ -3316,16 +3373,38 @@ snapshots:
     dependencies:
       css-tree: 3.2.1
 
+  '@canonical/design-tokens@0.8.1':
+    dependencies:
+      '@canonical/terrazzo-lsp': 0.8.2
+
   '@canonical/launchpad-design-tokens@1.1.1': {}
+
+  '@canonical/styles-typography@0.36.0(typescript@6.0.3)':
+    dependencies:
+      '@canonical/design-tokens': 0.8.1
+      opentype.js: 1.3.4
+      typescript: 6.0.3
+
+  '@canonical/styles@0.36.0(typescript@6.0.3)':
+    dependencies:
+      '@canonical/design-tokens': 0.8.1
+      '@canonical/styles-typography': 0.36.0(typescript@6.0.3)
+      normalize.css: 8.0.1
+    transitivePeerDependencies:
+      - typescript
 
   '@canonical/superhref@0.1.0': {}
 
-  '@canonical/svelte-ds-app-launchpad@0.30.0(svelte@5.56.4(@typescript-eslint/types@8.62.0))':
+  '@canonical/svelte-ds-app-launchpad@0.36.0(svelte@5.56.4(@typescript-eslint/types@8.62.0))(typescript@6.0.3)':
     dependencies:
       '@canonical/launchpad-design-tokens': 1.1.1
+      '@canonical/styles': 0.36.0(typescript@6.0.3)
       '@canonical/svelte-icons': 0.0.9(svelte@5.56.4(@typescript-eslint/types@8.62.0))
       '@floating-ui/dom': 1.7.6
       svelte: 5.56.4(@typescript-eslint/types@8.62.0)
+    transitivePeerDependencies:
+      - '@canonical/ds-assets'
+      - typescript
 
   '@canonical/svelte-icons@0.0.9(svelte@5.56.4(@typescript-eslint/types@8.62.0))':
     dependencies:
@@ -3340,6 +3419,15 @@ snapshots:
       - '@noble/hashes'
       - canvas
       - supports-color
+
+  '@canonical/terrazzo-lsp@0.8.2':
+    dependencies:
+      '@canonical/token-types': 0.8.1
+      '@lezer/common': 1.5.2
+      '@lezer/css': 1.3.6
+      colorjs.io: 0.7.1
+
+  '@canonical/token-types@0.8.1': {}
 
   '@chromatic-com/storybook@5.2.1(storybook@10.4.6(@testing-library/dom@10.4.1)(@types/react@19.2.15)(prettier@3.8.4)(react@19.2.7))':
     dependencies:
@@ -3622,6 +3710,22 @@ snapshots:
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
+
+  '@lezer/common@1.5.2': {}
+
+  '@lezer/css@1.3.6':
+    dependencies:
+      '@lezer/common': 1.5.2
+      '@lezer/highlight': 1.2.3
+      '@lezer/lr': 1.4.10
+
+  '@lezer/highlight@1.2.3':
+    dependencies:
+      '@lezer/common': 1.5.2
+
+  '@lezer/lr@1.4.10':
+    dependencies:
+      '@lezer/common': 1.5.2
 
   '@mdx-js/react@3.1.1(@types/react@19.2.15)(react@19.2.7)':
     dependencies:
@@ -4594,6 +4698,8 @@ snapshots:
 
   color-name@1.1.4: {}
 
+  colorjs.io@0.7.1: {}
+
   commondir@1.0.1: {}
 
   concat-map@0.0.1: {}
@@ -5531,6 +5637,8 @@ snapshots:
       object.entries: 1.1.9
       semver: 6.3.1
 
+  normalize.css@8.0.1: {}
+
   object-inspect@1.13.4: {}
 
   object-keys@1.1.1: {}
@@ -5585,6 +5693,11 @@ snapshots:
       openapi-typescript-helpers: 0.0.15
 
   openapi-typescript-helpers@0.0.15: {}
+
+  opentype.js@1.3.4:
+    dependencies:
+      string.prototype.codepointat: 0.2.1
+      tiny-inflate: 1.0.3
 
   optionator@0.9.4:
     dependencies:
@@ -5722,7 +5835,7 @@ snapshots:
 
   prelude-ls@1.2.1: {}
 
-  prettier-plugin-svelte@3.5.2(prettier@3.8.4)(svelte@5.56.4(@typescript-eslint/types@8.62.0)):
+  prettier-plugin-svelte@4.1.1(prettier@3.8.4)(svelte@5.56.4(@typescript-eslint/types@8.62.0)):
     dependencies:
       prettier: 3.8.4
       svelte: 5.56.4(@typescript-eslint/types@8.62.0)
@@ -6011,6 +6124,8 @@ snapshots:
       is-fullwidth-code-point: 3.0.0
       strip-ansi: 6.0.1
 
+  string.prototype.codepointat@0.2.1: {}
+
   string.prototype.trim@1.2.11:
     dependencies:
       call-bind: 1.0.9
@@ -6119,6 +6234,8 @@ snapshots:
   symbol-tree@3.2.4: {}
 
   tagged-tag@1.0.0: {}
+
+  tiny-inflate@1.0.3: {}
 
   tiny-invariant@1.3.3: {}
 

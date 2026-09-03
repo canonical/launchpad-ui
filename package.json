@@ -58,7 +58,7 @@
     "msw": "^2.14.6",
     "playwright": "^1.61.1",
     "prettier": "^3.8.4",
-    "prettier-plugin-svelte": "^3.5.2",
+    "prettier-plugin-svelte": "^4.1.1",
     "storybook": "^10.4.6",
     "svelte": "^5.56.4",
     "svelte-check": "^4.7.1",
@@ -70,7 +70,7 @@
   },
   "dependencies": {
     "@canonical/superhref": "^0.1.0",
-    "@canonical/svelte-ds-app-launchpad": "^0.30.0",
+    "@canonical/svelte-ds-app-launchpad": "^0.36.0",
     "@canonical/svelte-icons": "^0.0.9",
     "@floating-ui/dom": "^1.7.6",
     "markdown-actions": "^1.1.2",

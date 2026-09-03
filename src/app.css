@@ -9,3 +9,11 @@
     scroll-behavior: smooth;
   }
 }
+
+html {
+  /* 
+    DAL currently sets html background color to one from launchpad-design-tokens 
+    TODO(DAL): Remove this override when DAL either stops setting the background color or sets one from the new design-tokens 
+  */
+  background-color: var(--color-background);
+}
