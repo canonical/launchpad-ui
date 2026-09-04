@@ -3,9 +3,10 @@ import * as v from "valibot";
 import { SORTABLE_PACKAGES_COLUMNS } from "$lib/modules/packages/superhref.js";
 import type { PACKAGES_TABLE_COLUMNS } from "$lib/modules/packages/superhref.js";
 import { getPublishedSources } from "$lib/server/launchpad/client.js";
-import { toSourcePackageListRow } from "$lib/server/launchpad/toSourcePackageListRow.js";
-import type { SourcePackageListRow } from "$lib/server/launchpad/toSourcePackageListRow.js";
-import type { PublishedSourcesSortKey } from "$lib/server/launchpad/types.js";
+import type {
+  PublishedSourcesSortKey,
+  SourcePackagePublishingEntry,
+} from "$lib/server/launchpad/types.js";
 import { SORT_DIRECTIONS } from "$lib/utils/sortCodec.js";
 import type { SortDirection } from "$lib/utils/sortCodec.js";
 import { query } from "$app/server";
@@ -42,14 +43,14 @@ export const getSourcePackages = query(
     sortOrder,
     page,
     size,
-  }): Promise<SourcePackageListRow[]> => {
+  }): Promise<SourcePackagePublishingEntry[]> => {
     try {
       const { entries } = await getPublishedSources(pillar, {
         size,
         start: (page - 1) * size,
         orderBy: toOrderBy(sortKey, sortOrder),
       });
-      return entries.map(toSourcePackageListRow);
+      return entries;
     } catch (requestError) {
       console.error("Failed to load source packages", requestError);
       error(503, "Couldn't load packages from Launchpad. Try again shortly.");

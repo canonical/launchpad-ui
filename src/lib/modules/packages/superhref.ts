@@ -3,8 +3,6 @@
 import { strCodec, superhref } from "@canonical/superhref";
 import { sortCodec } from "$lib/utils/sortCodec.js";
 
-export const BINARY_PACKAGE_QUERY_PARAM = "binary-package" as const;
-
 /** The packages table columns, in display order.*/
 export const PACKAGES_TABLE_COLUMNS = [
   { key: "source-package", label: "Source package", sortable: true },
@@ -23,7 +21,8 @@ export const SORTABLE_PACKAGES_COLUMNS = PACKAGES_TABLE_COLUMNS.flatMap(
 );
 
 export const QueryParams = superhref({
-  [BINARY_PACKAGE_QUERY_PARAM]: strCodec(),
+  "binary-package": strCodec(),
+  "source-package": strCodec(),
   sort: sortCodec(SORTABLE_PACKAGES_COLUMNS),
 });
 

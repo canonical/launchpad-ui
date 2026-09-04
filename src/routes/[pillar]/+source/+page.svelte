@@ -14,6 +14,7 @@
     PACKAGES_TABLE_COLUMNS,
     QueryParams,
   } from "$lib/modules/packages/superhref.js";
+  import { deduplicate } from "$lib/utils/deduplicate.js";
   import type { PageProps } from "./$types.js";
   import { getSourcePackages } from "./packages.remote.js";
   import type { PackagesListArgs } from "./packages.remote.js";
@@ -97,7 +98,7 @@
     <thead>
       <tr>
         {#each PACKAGES_TABLE_COLUMNS as column (column.key)}
-          {@const sort = queryParams.sort}
+          {const sort = queryParams.sort}
           <Table.TH
             scope="col"
             class={column.key}
@@ -110,7 +111,7 @@
             {column.label}
             {#snippet action()}
               {#if column.sortable}
-                {@const next = sort.cycle(column.key)}
+                {const next = sort.cycle(column.key)}
                 <Table.TH.SortButton
                   href={queryParams.set("sort", next)}
                   aria-label={next.direction === "none"
@@ -126,30 +127,39 @@
       </tr>
     </thead>
     <tbody>
-      {#each data as item (item.sourcePackage.id)}
+      {#each data as item (item.self_link)}
         <tr>
           <th scope="row">
             <Link
               href={resolve("/[pillar]/+source/[name]", {
                 pillar: params.pillar,
-                name: item.sourcePackage.name,
+                name: item.source_package_name,
               })}
               soft
             >
-              {item.sourcePackage.name}
+              {item.source_package_name}
             </Link>
           </th>
-          <td>{item.series.displayName}</td>
+          <td>{item.distro_series_link.split("/").pop() ?? ""}</td>
           <td>{item.pocket}</td>
           <td>
-            {#each item.binaryPackages as binaryPackage (binaryPackage.name)}
+            {const binaryPackages = deduplicate(
+              (item.published_binaries ?? []).filter(
+                (publication) => publication.status === "Published",
+              ),
+              "binary_package_name",
+            )}
+            {#each binaryPackages as binaryPackage (binaryPackage.binary_package_name)}
               <Link
-                href={queryParams.set("binary-package", binaryPackage.name)}
+                href={queryParams.patch({
+                  "binary-package": binaryPackage.binary_package_name,
+                  "source-package": item.self_link.split("/").pop() ?? "",
+                })}
                 soft
                 class="package-link"
                 data-sveltekit-noscroll
               >
-                {binaryPackage.name}
+                {binaryPackage.binary_package_name}
               </Link>
             {/each}
           </td>
@@ -182,7 +192,11 @@
   </Pagination>
 </main>
 
-<BinaryPackageSidePanel name={queryParams["binary-package"]} />
+<BinaryPackageSidePanel
+  distro={params.pillar}
+  name={queryParams["binary-package"]}
+  sourcePackageId={queryParams["source-package"]}
+/>
 
 <style>
   main {

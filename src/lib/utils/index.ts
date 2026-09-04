@@ -1,5 +1,6 @@
 export * from "./assert.js";
 export * from "./bytesToHumanReadable.js";
+export * from "./deduplicate.js";
 export * from "./extractAria.js";
 export * from "./getFirstElement.js";
 export * from "./getLastElement.js";

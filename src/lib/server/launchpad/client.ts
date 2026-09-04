@@ -3,7 +3,6 @@ import type {
   BinaryFileMeta,
   BinaryPackagePublishingEntry,
   Collection,
-  PublishedBinariesQuery,
   PublishedSourcesQuery,
   SourcePackagePublishingEntry,
 } from "./types.js";
@@ -20,6 +19,7 @@ export class LaunchpadApiError extends Error {
 }
 
 type QueryParamValue = string | number | undefined;
+const MAX_COLLECTION_PAGES = 20;
 
 export function getPublishedSources(
   distro: string,
@@ -35,18 +35,16 @@ export function getPublishedSources(
   );
 }
 
-export function getPublishedBinaries(
+export async function getPublishedBinaries(
   distro: string,
-  query: PublishedBinariesQuery,
-): Promise<Collection<BinaryPackagePublishingEntry>> {
-  return getCollection(
-    archiveUrl(distro, "getPublishedBinaries", {
-      "ws.size": query.size,
-      binary_name: query.binaryName,
-      exact_match: "true",
-      ordered: "false",
-      status: "Published",
-    }),
+  sourcePackageId: string,
+): Promise<BinaryPackagePublishingEntry[]> {
+  const search = new URLSearchParams({
+    "ws.op": "getPublishedBinaries",
+    active_binaries_only: "true",
+  });
+  return getAllCollection(
+    `${apiBase()}/${encodeURIComponent(distro)}/+archive/primary/+sourcepub/${encodeURIComponent(sourcePackageId)}?${search}`,
   );
 }
 
@@ -71,6 +69,45 @@ async function getCollection<T>(url: string): Promise<Collection<T>> {
     throw new LaunchpadApiError(response.status, url);
   }
   return response.json();
+}
+
+// TODO: Used now only for one api call
+// That api call needs a product decision. May be removed in future
+// 1. The limits implemented in internal query will reduce the amout of entries returned
+// 2. Maybe we won't need pagination at all
+// 3. If we do, lets consider UI based solution.
+async function getAllCollection<T>(initialUrl: string): Promise<T[]> {
+  const entries: T[] = [];
+  const visited = new Set<string>();
+  let pagesLoaded = 0;
+  let url: string | undefined = initialUrl;
+
+  while (url) {
+    if (pagesLoaded >= MAX_COLLECTION_PAGES) {
+      console.warn("Launchpad collection page limit reached", {
+        initialUrl,
+        nextUrl: url,
+        pagesLoaded,
+      });
+      break;
+    }
+    if (visited.has(url)) {
+      console.warn("Launchpad collection pagination loop detected", {
+        initialUrl,
+        repeatedUrl: url,
+        pagesLoaded,
+      });
+      break;
+    }
+    visited.add(url);
+
+    const collection: Collection<T> = await getCollection<T>(url);
+    entries.push(...collection.entries);
+    pagesLoaded += 1;
+    url = collection.next_collection_link;
+  }
+
+  return entries;
 }
 
 function archiveUrl(

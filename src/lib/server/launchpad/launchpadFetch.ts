@@ -25,7 +25,7 @@ export async function launchpadFetch(
   }
 
   const res = await undiciRequest(url, {
-    method: (init?.method ?? "GET") as "GET",
+    method: init?.method ?? "GET",
     headers,
     dispatcher:
       env.MAIN_LAUNCHPAD_SKIP_TLS_VERIFY === "true"

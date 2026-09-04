@@ -3,7 +3,6 @@
   import { PartialTextDisclosure } from "$lib/components/index.js";
   import { QueryParamHiddenInput } from "$lib/launchpad-components/index.js";
   import { getPackagesContext } from "../context.js";
-  import { BINARY_PACKAGE_QUERY_PARAM } from "../superhref.js";
   import ArtifactsSection from "./ArtifactsSection.svelte";
   import { getBinaryPackage } from "./binary-package.remote.js";
   import { browser } from "$app/environment";
@@ -11,18 +10,26 @@
   import { page } from "$app/state";
 
   let {
+    distro,
     name,
+    sourcePackageId,
   }: {
+    distro: string;
     name: string | null;
+    sourcePackageId: string | null;
   } = $props();
 
   const context = getPackagesContext();
   const queryParams = $derived(context.queryParams);
 
-  const open = $derived(Boolean(name));
-  const binaryPackage = $derived(
-    name && page.params.pillar
-      ? getBinaryPackage({ distro: page.params.pillar, name })
+  const open = $derived(Boolean(name && sourcePackageId));
+  const binaryPackageDetails = $derived(
+    name && sourcePackageId
+      ? getBinaryPackage({
+          distro,
+          name,
+          sourcePackageId,
+        })
       : undefined,
   );
 
@@ -43,12 +50,19 @@ FIXME(DAL): When underlying dialog is upgrading to modal, it should suppress `on
 <SidePanel
   {open}
   {...closeOnOutsideSuppress}
-  onclose={() =>
-    // eslint-disable-next-line svelte/no-navigation-without-resolve
-    goto(queryParams.set("binary-package", null), {
-      keepFocus: true,
-      noScroll: true,
-    })}
+  onclose={() => {
+    return goto(
+      // eslint-disable-next-line svelte/no-navigation-without-resolve
+      queryParams.patch({
+        "binary-package": null,
+        "source-package": null,
+      }),
+      {
+        keepFocus: true,
+        noScroll: true,
+      },
+    );
+  }}
 >
   {#snippet children(commandfor)}
     <SidePanel.Content>
@@ -62,7 +76,7 @@ FIXME(DAL): When underlying dialog is upgrading to modal, it should suppress `on
             <!-- TODO(superhref): Replace with superhref when form inputs helper is added -->
             {#each page.url.searchParams
               .keys()
-              .filter((name) => name !== BINARY_PACKAGE_QUERY_PARAM) as name (name)}
+              .filter((name) => name !== "binary-package" && name !== "source-package") as name (name)}
               <QueryParamHiddenInput {name} />
             {/each}
             <SidePanel.Content.Header.CloseButton type="submit" />
@@ -70,13 +84,17 @@ FIXME(DAL): When underlying dialog is upgrading to modal, it should suppress `on
         {/if}
       </SidePanel.Content.Header>
       <SidePanel.Content.Body>
-        {#if binaryPackage}
+        {#if binaryPackageDetails}
           <svelte:boundary pending={browser ? pending : undefined}>
-            {@const details = await binaryPackage}
-            <p class="summary">{details.summary}</p>
-            {#key name}
-              <PartialTextDisclosure text={details.description ?? ""} />
-            {/key}
+            {const details = await binaryPackageDetails}
+            {#if details.summary}
+              <p class="summary">{details.summary}</p>
+            {/if}
+            {#if details.description}
+              {#key name}
+                <PartialTextDisclosure text={details.description} />
+              {/key}
+            {/if}
             {#if details.artifacts.length > 0}
               <ArtifactsSection
                 artifacts={details.artifacts}

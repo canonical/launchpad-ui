@@ -2,7 +2,7 @@
   import { Button, Link } from "@canonical/svelte-ds-app-launchpad";
   import { DownloadIcon } from "@canonical/svelte-icons";
   import { bytesToHumanReadable } from "$lib/utils/bytesToHumanReadable.js";
-  import type { BinaryPackageArtifact } from "./binary-package.remote.js";
+  import type { BinaryPackageArtifact } from "./binary-package.types.js";
 
   const {
     artifacts,

@@ -32,6 +32,8 @@ export type BinaryPackagePublishingEntry = {
   display_name: string;
   binary_package_name: string;
   binary_package_version: string;
+  summary?: string;
+  description?: string;
   status: PublishingStatus;
   pocket: Pocket;
   component_name: string;
@@ -40,11 +42,6 @@ export type BinaryPackagePublishingEntry = {
   source_package_version: string;
   date_published: string | null;
   architecture_specific: boolean;
-};
-
-export type PublishedBinariesQuery = {
-  binaryName: string;
-  size?: number;
 };
 
 export type BinaryFileMeta = {
@@ -56,8 +53,8 @@ export type BinaryFileMeta = {
 export type PublishedBinarySummary = {
   binary_package_name: string;
   architecture_tag: string;
-  status: string;
-  pocket: string;
+  status: PublishingStatus;
+  pocket: Pocket;
   date_created: string | null;
   date_made_pending: string | null;
   date_superseded: string | null;
@@ -85,7 +82,7 @@ export type SourcePackagePublishingEntry = {
   date_superseded: string | null;
   date_made_pending: string | null;
   date_removed: string | null;
-  published_binaries: PublishedBinarySummary[];
+  published_binaries?: PublishedBinarySummary[];
 };
 
 /** Sort keys accepted by `getPublishedSources`' `order_by`. */
