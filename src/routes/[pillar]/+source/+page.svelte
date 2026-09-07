@@ -104,20 +104,19 @@
     <thead>
       <tr>
         {#each PACKAGES_TABLE_COLUMNS as column (column.key)}
-          {const sort = $derived(queryParams.sort)}
           <Table.TH
             scope="col"
             class={column.key}
             aria-sort={column.sortable
-              ? sort.key === column.key
-                ? sort.direction
+              ? queryParams.sort.key === column.key
+                ? queryParams.sort.direction
                 : "none"
               : undefined}
           >
             {column.label}
             {#snippet action()}
               {#if column.sortable}
-                {const next = $derived(sort.cycle(column.key))}
+                {const next = $derived(queryParams.sort.cycle(column.key))}
                 <Table.TH.SortButton
                   href={queryParams.set("sort", next)}
                   aria-label={next.direction === "none"
