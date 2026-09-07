@@ -1,10 +1,12 @@
 import type { Codec } from "@canonical/superhref";
 
+export const SORT_DIRECTIONS = ["ascending", "descending", "none"] as const;
+
 /**
  * Which way a collection is sorted, as an `aria-sort` value so a table header
  * hands a direction straight to the attribute.
  */
-export type SortDirection = "ascending" | "descending" | "none";
+export type SortDirection = (typeof SORT_DIRECTIONS)[number];
 
 /**
  * Advances `column` one step: unsorted -> ascending -> descending -> unsorted.
