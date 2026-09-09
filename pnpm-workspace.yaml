@@ -3,4 +3,6 @@ overrides:
   cookie@<0.7.0: 0.7.2
 
 patchedDependencies:
+  # Encode iframe IDs so browser tests can be colocated under +source.
+  "@vitest/browser@4.1.9": patches/@vitest__browser@4.1.9.patch
   markdown-actions@1.1.2: patches/markdown-actions@1.1.2.patch

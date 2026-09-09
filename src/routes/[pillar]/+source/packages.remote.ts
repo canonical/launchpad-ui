@@ -1,7 +1,6 @@
 import { error } from "@sveltejs/kit";
 import * as v from "valibot";
 import { SORTABLE_PACKAGES_COLUMNS } from "$lib/modules/packages/superhref.js";
-import type { PACKAGES_TABLE_COLUMNS } from "$lib/modules/packages/superhref.js";
 import { getPublishedSources } from "$lib/server/launchpad/client.js";
 import type {
   PublishedSourcesSortKey,
@@ -16,7 +15,7 @@ const SORT_KEYS = {
   series: "series",
   pocket: "pocket",
   status: "status",
-} as const satisfies Record<SortablePackagesColumn, PublishedSourcesSortKey>;
+} as const satisfies Record<(typeof SORTABLE_PACKAGES_COLUMNS)[number], PublishedSourcesSortKey>;
 
 const DEFAULT_ORDER_BY = ["-date_created"];
 
@@ -27,13 +26,6 @@ const listArgsSchema = v.object({
   page: v.pipe(v.number(), v.integer(), v.minValue(1)),
   size: v.pipe(v.number(), v.integer(), v.minValue(1), v.maxValue(100)),
 });
-
-export type PackagesListArgs = v.InferInput<typeof listArgsSchema>;
-
-export type SortablePackagesColumn = Extract<
-  (typeof PACKAGES_TABLE_COLUMNS)[number],
-  { sortable: true }
->["key"];
 
 export const getSourcePackages = query(
   listArgsSchema,
@@ -59,7 +51,7 @@ export const getSourcePackages = query(
 );
 
 function toOrderBy(
-  sortKey: SortablePackagesColumn | null,
+  sortKey: (typeof SORTABLE_PACKAGES_COLUMNS)[number] | null,
   sortOrder: SortDirection,
 ): string[] {
   return sortKey === null || sortOrder === "none"

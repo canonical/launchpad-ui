@@ -18,7 +18,6 @@
   } from "$lib/modules/packages/superhref.js";
   import type { PageProps } from "./$types.js";
   import { getSourcePackages } from "./packages.remote.js";
-  import type { PackagesListArgs } from "./packages.remote.js";
   import { resolve } from "$app/paths";
   import { page } from "$app/state";
 
@@ -36,15 +35,13 @@
     },
   });
 
-  const listArgs = $derived<PackagesListArgs>({
+  const data = $derived(await getSourcePackages({
     distro: params.pillar,
     sortKey: queryParams.sort.key,
     sortOrder: queryParams.sort.direction,
     page: PAGE,
     size: PAGE_SIZE,
-  });
-
-  const data = $derived(await getSourcePackages(listArgs));
+  }));
 </script>
 
 <svelte:head>

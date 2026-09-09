@@ -1,17 +1,19 @@
 import { settled, tick } from "svelte";
+import type { ComponentProps } from "svelte";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { render } from "vitest-browser-svelte";
 import type { SourcePackagePublishingEntry } from "$lib/server/launchpad/types.js";
-import type { PackagesListArgs } from "./[pillar]/+source/packages.remote.js";
-import Page from "./packages.test.fixtures.svelte";
+import Page from "./+page.svelte";
+import type { getSourcePackages as remoteGetSourcePackages } from "./packages.remote.js";
 import { page } from "$app/state";
 
-// Keep this test outside +source: Vitest doesn't escape "+" in tester IDs.
+type PackagesListArgs = Parameters<typeof remoteGetSourcePackages>[0];
+
 const getSourcePackages = vi.hoisted(() =>
   vi.fn<(args: PackagesListArgs) => Promise<SourcePackagePublishingEntry[]>>(),
 );
 
-vi.mock("./[pillar]/+source/packages.remote.js", () => ({
+vi.mock("./packages.remote.js", () => ({
   getSourcePackages,
 }));
 
@@ -54,6 +56,10 @@ function sourcePackage(name: string): SourcePackagePublishingEntry {
 const alpha = sourcePackage("alpha");
 const zulu = sourcePackage("zulu");
 const initialRows = [zulu, alpha];
+const baseProps = {
+  params: { pillar: "ubuntu" },
+  data: {},
+} satisfies ComponentProps<typeof Page>;
 
 beforeEach(() => {
   page.url.search = "";
@@ -62,7 +68,7 @@ beforeEach(() => {
 
 describe("packages table sorting", () => {
   it("updates the arrow and next-sort link with the loaded rows throughout the sort cycle", async () => {
-    const screen = await render(Page);
+    const screen = await render(Page, { ...baseProps });
     const header = screen.getByRole("columnheader", {
       name: "Source package",
       exact: true,
@@ -76,25 +82,31 @@ describe("packages table sorting", () => {
       direction: header.element().getAttribute("aria-sort"),
       href: link.element().getAttribute("href"),
       label: link.element().getAttribute("aria-label"),
-      icon: header.element().querySelector("use")?.getAttribute("href"),
+      icon: link.element().querySelector("symbol")?.innerHTML,
     });
 
     await expect.element(header).toHaveAttribute("aria-sort", "none");
     expect(rows()).toEqual(["zulu", "alpha"]);
+    const unsortedIcon = headerState().icon;
+    expect(unsortedIcon).toBeTruthy();
+    expect(link.element().querySelector("symbol path")).not.toBeNull();
+    expect(
+      link.element().querySelector('g[id="arrow-up"], g[id="arrow-down"]'),
+    ).toBeNull();
     expect(headerState()).toEqual({
       direction: "none",
       href: "?sort=source-package",
       label: "Sort by Source package ascending",
-      icon: "#sort-svelte-icon",
+      icon: unsortedIcon,
     });
 
-    for (const { search, direction, next, label, icon, entries } of [
+    for (const { search, direction, next, label, arrowId, entries } of [
       {
         search: "?sort=source-package",
         direction: "ascending",
         next: "?sort=-source-package",
         label: "Sort by Source package descending",
-        icon: "#arrow-up-svelte-icon",
+        arrowId: "arrow-up",
         entries: [alpha, zulu],
       },
       {
@@ -102,7 +114,7 @@ describe("packages table sorting", () => {
         direction: "descending",
         next: "?",
         label: "Remove sorting by Source package",
-        icon: "#arrow-down-svelte-icon",
+        arrowId: "arrow-down",
         entries: [zulu, alpha],
       },
       {
@@ -110,7 +122,7 @@ describe("packages table sorting", () => {
         direction: "none",
         next: "?sort=source-package",
         label: "Sort by Source package ascending",
-        icon: "#sort-svelte-icon",
+        arrowId: null,
         entries: [alpha, zulu],
       },
     ]) {
@@ -136,18 +148,24 @@ describe("packages table sorting", () => {
       await expect
         .poll(rows)
         .toEqual(entries.map((entry) => entry.source_package_name));
-      expect(headerState()).toEqual({
+      const { icon, ...currentHeader } = headerState();
+      expect(currentHeader).toEqual({
         direction,
         href: next,
         label,
-        icon,
       });
+      if (arrowId) {
+        expect(link.element().querySelector("symbol g")?.id).toBe(arrowId);
+        expect(icon).not.toBe(unsortedIcon);
+      } else {
+        expect(icon).toBe(unsortedIcon);
+      }
     }
   });
 
   it("moves the active arrow when sorting by another column", async () => {
     page.url.search = "?sort=source-package";
-    const screen = await render(Page);
+    const screen = await render(Page, { ...baseProps });
     const sourceHeader = screen.getByRole("columnheader", {
       name: "Source package",
       exact: true,
@@ -172,9 +190,12 @@ describe("packages table sorting", () => {
       await expect
         .element(header.getByRole("link"))
         .toHaveAttribute("href", `?sort=-${key}`);
-      expect(header.element().querySelector("use")?.getAttribute("href")).toBe(
-        "#arrow-up-svelte-icon",
-      );
+      expect(
+        header.getByRole("link").element().querySelector('g[id="arrow-up"]'),
+      ).not.toBeNull();
+      expect(
+        screen.container.querySelectorAll('thead g[id="arrow-up"]'),
+      ).toHaveLength(1);
       expect(
         screen.container.querySelectorAll('th[aria-sort="ascending"]'),
       ).toHaveLength(1);
