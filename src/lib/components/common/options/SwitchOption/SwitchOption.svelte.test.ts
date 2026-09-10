@@ -24,12 +24,12 @@ function componentLocator(page: RenderResult<any>): Locator {
 describe("SwitchOption component", () => {
   describe("Renders", () => {
     it("renders", async () => {
-      const page = render(Component, baseProps);
+      const page = await render(Component, baseProps);
       await expect.element(page.getByRole("switch")).toBeInTheDocument();
     });
 
     it("renders secondary text", async () => {
-      const page = render(Component, {
+      const page = await render(Component, {
         ...baseProps,
         secondaryText: "Secondary",
       });
@@ -37,7 +37,7 @@ describe("SwitchOption component", () => {
     });
 
     it("renders trailing text", async () => {
-      const page = render(Component, {
+      const page = await render(Component, {
         ...baseProps,
         trailingText: "Trailing",
       });
@@ -46,7 +46,7 @@ describe("SwitchOption component", () => {
 
     it("renders icon", async () => {
       const icon = "<span data-testid='icon'>Icon</span>";
-      const page = render(Component, {
+      const page = await render(Component, {
         ...baseProps,
         icon: createRawSnippet(() => ({ render: () => icon })),
       });
@@ -59,14 +59,20 @@ describe("SwitchOption component", () => {
       ["id", "test-id"],
       ["aria-label", "test-aria-label"],
     ])("applies %s", async (attribute, value) => {
-      const page = render(Component, { ...baseProps, [attribute]: value });
+      const page = await render(Component, {
+        ...baseProps,
+        [attribute]: value,
+      });
       await expect
         .element(componentLocator(page))
         .toHaveAttribute(attribute, value);
     });
 
     it("applies class", async () => {
-      const page = render(Component, { ...baseProps, class: "test-class" });
+      const page = await render(Component, {
+        ...baseProps,
+        class: "test-class",
+      });
       const element = componentLocator(page);
       await expect.element(element).toHaveClass("ds");
       await expect.element(element).toHaveClass("switch-option");
@@ -74,7 +80,10 @@ describe("SwitchOption component", () => {
     });
 
     it("applies style", async () => {
-      const page = render(Component, { ...baseProps, style: "color: orange;" });
+      const page = await render(Component, {
+        ...baseProps,
+        style: "color: orange;",
+      });
       await expect
         .element(componentLocator(page))
         .toHaveStyle("color: orange;");
@@ -83,52 +92,54 @@ describe("SwitchOption component", () => {
 
   describe("Checked state", () => {
     it("is not checked by default", async () => {
-      const page = render(Component, baseProps);
+      const page = await render(Component, baseProps);
       await expect.element(page.getByRole("switch")).not.toBeChecked();
     });
 
     it("can be checked", async () => {
-      const page = render(Component, { ...baseProps, checked: true });
+      const page = await render(Component, { ...baseProps, checked: true });
       await expect.element(page.getByRole("switch")).toBeChecked();
     });
   });
 
   describe("Disabled state", () => {
     it("is not disabled by default", async () => {
-      const page = render(Component, baseProps);
+      const page = await render(Component, baseProps);
       await expect.element(page.getByRole("switch")).not.toBeDisabled();
     });
 
     it("can be disabled", async () => {
-      const page = render(Component, { ...baseProps, disabled: true });
+      const page = await render(Component, { ...baseProps, disabled: true });
       await expect.element(page.getByRole("switch")).toBeDisabled();
     });
   });
 
   describe("Label", () => {
     it("has label from text", async () => {
-      const page = render(Component, { ...baseProps, text: "Basic" });
+      const page = await render(Component, { ...baseProps, text: "Basic" });
       await expect.element(page.getByLabelText("Basic")).toBeInTheDocument();
     });
 
     it("has label from secondary text", async () => {
-      const page = render(Component, {
+      const page = await render(Component, {
         ...baseProps,
         text: "Basic",
         secondaryText: "Secondary",
       });
       await expect
-        .element(page.getByLabelText("Secondary"))
+        .element(page.getByLabelText("Basic Secondary"))
         .toBeInTheDocument();
     });
 
     it("has label from trailing text", async () => {
-      const page = render(Component, {
+      const page = await render(Component, {
         ...baseProps,
         text: "Basic",
         trailingText: "Trailing",
       });
-      await expect.element(page.getByLabelText("Trailing")).toBeInTheDocument();
+      await expect
+        .element(page.getByLabelText("Basic Trailing"))
+        .toBeInTheDocument();
     });
   });
 });

@@ -33,14 +33,14 @@ describe("ShortcutsProvider", () => {
   } satisfies ShortcutsProviderProps;
 
   it("renders", async () => {
-    const page = render(Component, baseProps);
+    const page = await render(Component, baseProps);
     await expect.element(testIdLocator(page)).toBeInTheDocument();
     await expect.element(page.getByText("Content")).toBeInTheDocument();
     await expect.element(testIdLocator(page)).toHaveStyle("display: contents");
   });
 
   it("calls useShortcutProvider", async () => {
-    render(Component, baseProps);
+    await render(Component, baseProps);
     expect(useShortcutProvider).toHaveBeenCalledOnce();
   });
 });

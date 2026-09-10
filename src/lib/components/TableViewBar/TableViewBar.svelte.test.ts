@@ -25,14 +25,20 @@ describe("TableViewBar component", () => {
       ["id", "test-id"],
       ["aria-label", "test-aria-label"],
     ])("applies %s", async (attribute, expected) => {
-      const page = render(Component, { ...baseProps, [attribute]: expected });
+      const page = await render(Component, {
+        ...baseProps,
+        [attribute]: expected,
+      });
       await expect
         .element(componentLocator(page))
         .toHaveAttribute(attribute, expected);
     });
 
     it("applies classes", async () => {
-      const page = render(Component, { ...baseProps, class: "test-class" });
+      const page = await render(Component, {
+        ...baseProps,
+        class: "test-class",
+      });
       await expect.element(componentLocator(page)).toHaveClass("test-class");
       await expect.element(componentLocator(page)).toHaveClass("ds");
       await expect
@@ -41,7 +47,10 @@ describe("TableViewBar component", () => {
     });
 
     it("applies style", async () => {
-      const page = render(Component, { ...baseProps, style: "color: orange;" });
+      const page = await render(Component, {
+        ...baseProps,
+        style: "color: orange;",
+      });
       await expect
         .element(componentLocator(page))
         .toHaveStyle({ color: "orange" });
@@ -50,7 +59,7 @@ describe("TableViewBar component", () => {
 
   describe("tabs", () => {
     it("renders a labelled navigation with a link per item, in order", async () => {
-      const page = render(Component, { ...baseProps });
+      const page = await render(Component, { ...baseProps });
       const links = tabsLocator(page).getByRole("link");
 
       await expect.element(tabsLocator(page)).toBeVisible();
@@ -61,7 +70,7 @@ describe("TableViewBar component", () => {
     });
 
     it("marks only the current item as current", async () => {
-      const page = render(Component, {
+      const page = await render(Component, {
         ...baseProps,
         current: "signed-by-me",
       });
@@ -76,7 +85,7 @@ describe("TableViewBar component", () => {
     });
 
     it("does not mark any item as current when the current key does not match", async () => {
-      const page = render(Component, {
+      const page = await render(Component, {
         ...baseProps,
         current: "does-not-exist",
       });
@@ -91,7 +100,7 @@ describe("TableViewBar component", () => {
     });
 
     it("renders items sharing an href when they have distinct keys", async () => {
-      const page = render(Component, {
+      const page = await render(Component, {
         ...baseProps,
         items: [
           { text: "First", href: "?", key: "first" },
@@ -110,7 +119,7 @@ describe("TableViewBar component", () => {
   });
 
   it("renders trailing content", async () => {
-    const page = render(Component, {
+    const page = await render(Component, {
       ...baseProps,
       trailing: createRawSnippet(() => ({
         render: () => `<button type="button">Settings</button>`,
@@ -124,7 +133,7 @@ describe("TableViewBar component", () => {
 
   describe("overflow menu", () => {
     it("lists every item, marking the current one, once opened", async () => {
-      const page = render(Component, {
+      const page = await render(Component, {
         ...baseProps,
         current: "signed-by-me",
       });
@@ -143,7 +152,7 @@ describe("TableViewBar component", () => {
 
     it("runs the item's onclick and closes when an item is activated", async () => {
       const onclick = vi.fn((event: Event) => event.preventDefault());
-      const page = render(Component, {
+      const page = await render(Component, {
         ...baseProps,
         items: baseProps.items.map((item) => ({ ...item, onclick })),
       });
@@ -177,7 +186,7 @@ describe("TableViewBar component", () => {
     } satisfies ComponentProps<typeof Component>;
 
     it("scrolls an out-of-view tab into view when it receives focus", async () => {
-      const page = render(Component, { ...scrollProps, ...narrowBar });
+      const page = await render(Component, { ...scrollProps, ...narrowBar });
       const bar = componentElement(page);
       const lastTab = tabElement(page, "Latest uploads");
 
@@ -190,7 +199,7 @@ describe("TableViewBar component", () => {
     });
 
     it("doesn't scroll when a focused tab is already in view", async () => {
-      const page = render(Component, { ...scrollProps, ...narrowBar });
+      const page = await render(Component, { ...scrollProps, ...narrowBar });
       const bar = componentElement(page);
       const firstTab = tabElement(page, "All packages");
 
@@ -200,7 +209,7 @@ describe("TableViewBar component", () => {
     });
 
     it("doesn't scroll the page vertically when a tab receives focus", async () => {
-      const page = render(Component, {
+      const page = await render(Component, {
         ...scrollProps,
         // Placed within a scrollable page, but fully in view vertically.
         style: `${narrowBar.style} margin-block: 50vh 200vh;`,
@@ -215,7 +224,7 @@ describe("TableViewBar component", () => {
     });
 
     it("doesn't leave the focused tab under the sticky current tab", async () => {
-      const page = render(Component, {
+      const page = await render(Component, {
         ...scrollProps,
         current: "all",
         ...narrowBar,
@@ -241,7 +250,7 @@ describe("TableViewBar component", () => {
     });
 
     it("doesn't leave the focused tab under the trailing content", async () => {
-      const page = render(Component, { ...scrollProps, ...narrowBar });
+      const page = await render(Component, { ...scrollProps, ...narrowBar });
       const trailing = trailingElement(page);
       const middleTab = tabElement(page, "My uploads");
 

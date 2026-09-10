@@ -26,13 +26,13 @@ describe("Accordion.Item component", () => {
   } satisfies ComponentProps<typeof Component>;
 
   it("renders", async () => {
-    const page = render(Component, { ...baseProps });
+    const page = await render(Component, { ...baseProps });
     await expect.element(componentLocator(page)).toBeInTheDocument();
     await expect.element(page.getByText(headingText)).toBeInTheDocument();
   });
 
   it("renders a string heading", async () => {
-    const page = render(Component, {
+    const page = await render(Component, {
       ...baseProps,
       heading: headingText,
     });
@@ -41,7 +41,7 @@ describe("Accordion.Item component", () => {
 
   describe("interaction", () => {
     it("toggles open when summary is clicked", async () => {
-      const page = render(Component, { ...baseProps });
+      const page = await render(Component, { ...baseProps });
       const details = componentLocator(page);
 
       await expect.element(details).not.toHaveAttribute("open");
@@ -54,7 +54,7 @@ describe("Accordion.Item component", () => {
 
   describe("content", () => {
     it("shows the children content when open", async () => {
-      const page = render(Component, {
+      const page = await render(Component, {
         ...baseProps,
         open: true,
         children: createRawSnippet(() => ({
@@ -72,7 +72,7 @@ describe("Accordion.Item component", () => {
 
     it("gets a name attribute from the Accordion context", async () => {
       name = "test-name";
-      const page = render(Component, {
+      const page = await render(Component, {
         ...baseProps,
       });
 
@@ -83,7 +83,7 @@ describe("Accordion.Item component", () => {
 
     it("can override the Accordion context name with a prop", async () => {
       name = "test-name";
-      const page = render(Component, {
+      const page = await render(Component, {
         ...baseProps,
         name: "override-name",
       });

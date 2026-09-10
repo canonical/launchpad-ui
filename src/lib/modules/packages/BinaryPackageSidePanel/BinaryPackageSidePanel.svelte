@@ -3,6 +3,7 @@
   import { PartialTextDisclosure } from "$lib/components/index.js";
   import { QueryParamHiddenInput } from "$lib/launchpad-components/index.js";
   import { getPackagesContext } from "../context.js";
+  import { BINARY_PACKAGE_QUERY_PARAM } from "../superhref.js";
   import ArtifactsSection from "./ArtifactsSection.svelte";
   import { getBinaryPackage } from "./binary-package.remote.js";
   import { browser } from "$app/environment";
@@ -57,7 +58,7 @@ FIXME(DAL): When underlying dialog is upgrading to modal, it should suppress `on
             <!-- TODO(superhref): Replace with superhref when form inputs helper is added -->
             {#each page.url.searchParams
               .keys()
-              .filter((name) => name !== "binary-package") as name (name)}
+              .filter((name) => name !== BINARY_PACKAGE_QUERY_PARAM) as name (name)}
               <QueryParamHiddenInput {name} />
             {/each}
             <SidePanel.Content.Header.CloseButton type="submit" />

@@ -10,7 +10,7 @@ import Component from "./OptionsGroup.svelte";
 describe("OptionsGroup component", () => {
   const baseProps = {} satisfies ComponentProps<typeof Component>;
   it("renders", async () => {
-    const page = render(Component, baseProps);
+    const page = await render(Component, baseProps);
     await expect.element(componentLocator(page)).toBeInTheDocument();
   });
 
@@ -19,14 +19,20 @@ describe("OptionsGroup component", () => {
       ["id", "test-id"],
       ["aria-label", "test-aria-label"],
     ])("applies %s", async (attribute, value) => {
-      const page = render(Component, { ...baseProps, [attribute]: value });
+      const page = await render(Component, {
+        ...baseProps,
+        [attribute]: value,
+      });
       await expect
         .element(componentLocator(page))
         .toHaveAttribute(attribute, value);
     });
 
     it("applies class", async () => {
-      const page = render(Component, { ...baseProps, class: "test-class" });
+      const page = await render(Component, {
+        ...baseProps,
+        class: "test-class",
+      });
       const element = componentLocator(page);
       await expect.element(element).toHaveClass("ds");
       await expect.element(element).toHaveClass("options-group");
@@ -34,7 +40,10 @@ describe("OptionsGroup component", () => {
     });
 
     it("applies style", async () => {
-      const page = render(Component, { ...baseProps, style: "color: orange;" });
+      const page = await render(Component, {
+        ...baseProps,
+        style: "color: orange;",
+      });
       await expect
         .element(componentLocator(page))
         .toHaveStyle("color: orange;");
@@ -43,7 +52,7 @@ describe("OptionsGroup component", () => {
 
   describe("Group title", () => {
     it("renders the group title", async () => {
-      const page = render(Component, {
+      const page = await render(Component, {
         ...baseProps,
         groupTitle: "Group Title",
       });
@@ -51,7 +60,7 @@ describe("OptionsGroup component", () => {
     });
 
     it("applies name to the group", async () => {
-      const page = render(Component, {
+      const page = await render(Component, {
         ...baseProps,
         groupTitle: "Group Name",
       });

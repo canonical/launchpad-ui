@@ -30,9 +30,16 @@ export const TABLE_VIEWS = [
 ].map((tab) => ({ name: tab, slug: slugify(tab) }));
 export const DEFAULT_TABLE_VIEW = TABLE_VIEWS[0];
 
+/**
+ * Create constant for the superhref key only
+ * if it is meant to be used in a place where you
+ * cannot rely on types
+ */
+export const BINARY_PACKAGE_QUERY_PARAM = "binary-package";
+
 export const QueryParams = superhref(
   {
-    "binary-package": strCodec(),
+    [BINARY_PACKAGE_QUERY_PARAM]: strCodec(),
     sort: sortCodec(SORTABLE_PACKAGES_COLUMNS),
     view: strCodec({ default: DEFAULT_TABLE_VIEW.slug }),
   },

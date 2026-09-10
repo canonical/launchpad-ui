@@ -11,7 +11,7 @@ describe("ItemsCount component", () => {
   } satisfies ComponentProps<typeof Component>;
 
   it("renders", async () => {
-    const page = render(Component, { ...baseProps });
+    const page = await render(Component, { ...baseProps });
     await expect.element(componentLocator(page)).toBeInTheDocument();
     await expect
       .element(componentLocator(page))
@@ -20,42 +20,42 @@ describe("ItemsCount component", () => {
 
   describe("text generation", () => {
     it("renders singular text without total", async () => {
-      const page = render(Component, { showing: 1 });
+      const page = await render(Component, { showing: 1 });
       await expect
         .element(componentLocator(page))
         .toHaveTextContent("Showing 1 item");
     });
 
     it("renders plural text without total", async () => {
-      const page = render(Component, { showing: 2 });
+      const page = await render(Component, { showing: 2 });
       await expect
         .element(componentLocator(page))
         .toHaveTextContent("Showing 2 items");
     });
 
     it("renders singular text with a singular total", async () => {
-      const page = render(Component, { showing: 1, total: 1 });
+      const page = await render(Component, { showing: 1, total: 1 });
       await expect
         .element(componentLocator(page))
         .toHaveTextContent("Showing 1 of 1 item");
     });
 
     it("renders pluralized total text", async () => {
-      const page = render(Component, { showing: 1, total: 2 });
+      const page = await render(Component, { showing: 1, total: 2 });
       await expect
         .element(componentLocator(page))
         .toHaveTextContent("Showing 1 of 2 items");
     });
 
     it("treats total=0 as not provided when showing is not zero", async () => {
-      const page = render(Component, { showing: 4, total: 0 });
+      const page = await render(Component, { showing: 4, total: 0 });
       await expect
         .element(componentLocator(page))
         .toHaveTextContent("Showing 4 items");
     });
 
     it("treats total=0 as zero when showing is also zero", async () => {
-      const page = render(Component, { showing: 0, total: 0 });
+      const page = await render(Component, { showing: 0, total: 0 });
       await expect
         .element(componentLocator(page))
         .toHaveTextContent("Showing 0 of 0 items");
@@ -67,14 +67,20 @@ describe("ItemsCount component", () => {
       ["id", "test-id"],
       ["aria-label", "Items count"],
     ])("applies %s", async (attribute, expected) => {
-      const page = render(Component, { ...baseProps, [attribute]: expected });
+      const page = await render(Component, {
+        ...baseProps,
+        [attribute]: expected,
+      });
       await expect
         .element(componentLocator(page))
         .toHaveAttribute(attribute, expected);
     });
 
     it("applies classes", async () => {
-      const page = render(Component, { ...baseProps, class: "test-class" });
+      const page = await render(Component, {
+        ...baseProps,
+        class: "test-class",
+      });
       await expect.element(componentLocator(page)).toHaveClass("test-class");
       await expect.element(componentLocator(page)).toHaveClass("ds");
       await expect
@@ -83,7 +89,7 @@ describe("ItemsCount component", () => {
     });
 
     it("applies style", async () => {
-      const page = render(Component, {
+      const page = await render(Component, {
         ...baseProps,
         style: "color: orange;",
       });

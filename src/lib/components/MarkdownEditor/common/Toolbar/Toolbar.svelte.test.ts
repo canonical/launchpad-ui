@@ -33,7 +33,7 @@ describe("Markdown Editor > Toolbar component", () => {
   const baseProps = {} satisfies ComponentProps<typeof Component>;
 
   it("renders", async () => {
-    const page = render(Component, baseProps);
+    const page = await render(Component, baseProps);
     await expect.element(componentLocator(page)).toBeInTheDocument();
   });
 
@@ -42,21 +42,30 @@ describe("Markdown Editor > Toolbar component", () => {
       ["id", "test-id"],
       ["aria-label", "test-aria-label"],
     ])("applies %s", async (attribute, value) => {
-      const page = render(Component, { ...baseProps, [attribute]: value });
+      const page = await render(Component, {
+        ...baseProps,
+        [attribute]: value,
+      });
       await expect
         .element(componentLocator(page))
         .toHaveAttribute(attribute, value);
     });
 
     it("applies style", async () => {
-      const page = render(Component, { ...baseProps, style: "color: orange;" });
+      const page = await render(Component, {
+        ...baseProps,
+        style: "color: orange;",
+      });
       await expect
         .element(componentLocator(page))
         .toHaveStyle("color: orange;");
     });
 
     it("applies class", async () => {
-      const page = render(Component, { ...baseProps, class: "test-class" });
+      const page = await render(Component, {
+        ...baseProps,
+        class: "test-class",
+      });
       const element = componentLocator(page);
       await expect.element(element).toHaveClass("ds");
       await expect.element(element).toHaveClass("markdown-editor-toolbar");
@@ -65,7 +74,7 @@ describe("Markdown Editor > Toolbar component", () => {
   });
 
   it("applies aria-controls", async () => {
-    const page = render(Component, baseProps);
+    const page = await render(Component, baseProps);
     await expect
       .element(componentLocator(page))
       .toHaveAttribute("aria-controls", textareaId);
@@ -111,7 +120,7 @@ describe("Markdown Editor > Toolbar component", () => {
 
     it("makes the first enabled action the tab stop", async () => {
       const actions = $state<FixtureAction[]>(threeActions());
-      const page = render(Fixture, { actions });
+      const page = await render(Fixture, { actions });
       await expectTabStop(page, "a");
       await expectNotTabStop(page, "b");
       await expectNotTabStop(page, "c");
@@ -123,14 +132,14 @@ describe("Markdown Editor > Toolbar component", () => {
         { id: "b", label: "Action B", disabled: false },
         { id: "c", label: "Action C", disabled: false },
       ]);
-      const page = render(Fixture, { actions });
+      const page = await render(Fixture, { actions });
       await expectNotTabStop(page, "a");
       await expectTabStop(page, "b");
     });
 
     it("makes a focused action the tab stop", async () => {
       const actions = $state<FixtureAction[]>(threeActions());
-      const page = render(Fixture, { actions });
+      const page = await render(Fixture, { actions });
       await expectTabStop(page, "a");
 
       actionEl(page, "b").focus();
@@ -140,7 +149,7 @@ describe("Markdown Editor > Toolbar component", () => {
 
     it("moves focus with the arrow keys in DOM order, wrapping around", async () => {
       const actions = $state<FixtureAction[]>(threeActions());
-      const page = render(Fixture, { actions });
+      const page = await render(Fixture, { actions });
       await expectTabStop(page, "a");
 
       actionEl(page, "a").focus();
@@ -159,7 +168,7 @@ describe("Markdown Editor > Toolbar component", () => {
 
     it("follows the live DOM order after the actions are reordered", async () => {
       const actions = $state<FixtureAction[]>(threeActions());
-      const page = render(Fixture, { actions });
+      const page = await render(Fixture, { actions });
       await expectTabStop(page, "a");
 
       // Make B the active tab stop, then reverse the order to C, B, A.
@@ -181,7 +190,7 @@ describe("Markdown Editor > Toolbar component", () => {
 
     it("moves the tab stop off an action that is removed from the DOM", async () => {
       const actions = $state<FixtureAction[]>(threeActions());
-      const page = render(Fixture, { actions });
+      const page = await render(Fixture, { actions });
       await expectTabStop(page, "a");
 
       actionEl(page, "b").focus();
@@ -198,7 +207,7 @@ describe("Markdown Editor > Toolbar component", () => {
 
     it("moves the tab stop off an action that becomes disabled", async () => {
       const actions = $state<FixtureAction[]>(threeActions());
-      const page = render(Fixture, { actions });
+      const page = await render(Fixture, { actions });
       await expectTabStop(page, "a");
 
       // A is the tab stop; disabling it should hand the tab stop to B.
@@ -211,7 +220,7 @@ describe("Markdown Editor > Toolbar component", () => {
 
     it("skips disabled actions during arrow navigation", async () => {
       const actions = $state<FixtureAction[]>(threeActions());
-      const page = render(Fixture, { actions });
+      const page = await render(Fixture, { actions });
       await expectTabStop(page, "a");
 
       actions[1].disabled = true;
@@ -224,7 +233,7 @@ describe("Markdown Editor > Toolbar component", () => {
 
     it("keeps a single tab stop when new actions are added", async () => {
       const actions = $state<FixtureAction[]>(threeActions());
-      const page = render(Fixture, { actions });
+      const page = await render(Fixture, { actions });
       await expectTabStop(page, "a");
 
       // Focus A so it is the tab stop, then insert a new action before it.

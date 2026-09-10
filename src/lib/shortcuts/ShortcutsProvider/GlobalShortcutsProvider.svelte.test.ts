@@ -32,12 +32,12 @@ describe("GlobalShortcutsProvider", () => {
   } satisfies ShortcutsProviderProps;
 
   it("renders", async () => {
-    const page = render(Component, baseProps);
+    const page = await render(Component, baseProps);
     await expect.element(page.getByText("Content")).toBeInTheDocument();
   });
 
   it("calls useShortcutProvider", async () => {
-    render(Component, baseProps);
+    await render(Component, baseProps);
     expect(useShortcutProvider).toHaveBeenCalledOnce();
   });
 });

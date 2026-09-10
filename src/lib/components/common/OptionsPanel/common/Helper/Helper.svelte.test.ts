@@ -18,12 +18,12 @@ describe("Helper component", () => {
 
   describe("Renders", () => {
     it("with required props", async () => {
-      const page = render(Component, baseProps);
+      const page = await render(Component, baseProps);
       await expect.element(componentLocator(page)).toBeInTheDocument();
     });
 
     it("with icon", async () => {
-      const page = render(Component, {
+      const page = await render(Component, {
         ...baseProps,
         icon: createRawSnippet(() => ({
           render: () => '<span data-testid="test-icon">Test Icon</span>',
@@ -39,14 +39,20 @@ describe("Helper component", () => {
       ["id", "test-id"],
       ["aria-label", "test-aria-label"],
     ])("applies %s", async (attribute, value) => {
-      const page = render(Component, { ...baseProps, [attribute]: value });
+      const page = await render(Component, {
+        ...baseProps,
+        [attribute]: value,
+      });
       await expect
         .element(componentLocator(page))
         .toHaveAttribute(attribute, value);
     });
 
     it("applies class", async () => {
-      const page = render(Component, { ...baseProps, class: "test-class" });
+      const page = await render(Component, {
+        ...baseProps,
+        class: "test-class",
+      });
       const element = componentLocator(page);
       await expect.element(element).toHaveClass("ds");
       await expect.element(element).toHaveClass("options-panel-helper");
@@ -54,7 +60,10 @@ describe("Helper component", () => {
     });
 
     it("applies style", async () => {
-      const page = render(Component, { ...baseProps, style: "color: orange;" });
+      const page = await render(Component, {
+        ...baseProps,
+        style: "color: orange;",
+      });
       await expect
         .element(componentLocator(page))
         .toHaveStyle("color: orange;");
