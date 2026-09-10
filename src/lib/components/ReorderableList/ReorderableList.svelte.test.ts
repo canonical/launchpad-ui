@@ -88,6 +88,55 @@ describe("ReorderableList component", () => {
         .poll(() => props.items.map((item) => item.name))
         .toEqual(["Bravo", "Alpha", "Charlie"]);
     });
+
+    it("leaves the bound items untouched until a pointer drag is dropped", async () => {
+      const props = $state({ ...baseProps });
+      const page = render(Component, props);
+      const handle = page.getByRole("button", { name: "Reorder Alpha" });
+      const [from, to] = centres(page);
+
+      handle.element().dispatchEvent(pointerEvent("pointerdown", from));
+      dispatchListPointerEvent(page, "pointermove", to + 2);
+
+      await expect
+        .poll(() => handleLabels(page))
+        .toEqual(["Reorder Bravo", "Reorder Alpha", "Reorder Charlie"]);
+      expect(props.items.map((item) => item.name)).toEqual([
+        "Alpha",
+        "Bravo",
+        "Charlie",
+      ]);
+
+      dispatchListPointerEvent(page, "pointerup", to + 2);
+      await expect
+        .poll(() => props.items.map((item) => item.name))
+        .toEqual(["Bravo", "Alpha", "Charlie"]);
+      // Let the drop's post-tick settle animation run before unmount tears down the drag session.
+      await tick();
+    });
+
+    it("leaves the bound items untouched until a keyboard grab is dropped", async () => {
+      const props = $state({ ...baseProps });
+      const page = render(Component, props);
+      const handle = page.getByRole("button", { name: "Reorder Alpha" });
+
+      focus(handle.element());
+      await userEvent.keyboard("{Enter}{ArrowDown}");
+
+      await expect
+        .poll(() => handleLabels(page))
+        .toEqual(["Reorder Bravo", "Reorder Alpha", "Reorder Charlie"]);
+      expect(props.items.map((item) => item.name)).toEqual([
+        "Alpha",
+        "Bravo",
+        "Charlie",
+      ]);
+
+      await userEvent.keyboard("{Enter}");
+      await expect
+        .poll(() => props.items.map((item) => item.name))
+        .toEqual(["Bravo", "Alpha", "Charlie"]);
+    });
   });
 
   describe("keyboard reordering", () => {
@@ -162,6 +211,24 @@ describe("ReorderableList component", () => {
         .toHaveTextContent("Charlie moved to position 2 of 3.");
     });
 
+    it("publishes throttled move announcements with the current item count", async () => {
+      const props = $state({ ...baseProps });
+      const page = render(Component, props);
+      const handle = page.getByRole("button", { name: "Reorder Alpha" });
+
+      focus(handle.element());
+      await userEvent.keyboard("{Alt>}{ArrowDown}{/Alt}");
+      await expect
+        .poll(() => handleLabels(page))
+        .toEqual(["Reorder Bravo", "Reorder Alpha", "Reorder Charlie"]);
+
+      props.items = [threeItems[1], threeItems[0]];
+
+      await expect
+        .element(page.getByRole("status"))
+        .toHaveTextContent("Alpha moved to position 2 of 2.");
+    });
+
     it("moves to the start with Home", async () => {
       const page = render(Component, baseProps);
       const handle = page.getByRole("button", { name: "Reorder Charlie" });
@@ -214,6 +281,34 @@ describe("ReorderableList component", () => {
         .poll(() => handleLabels(page))
         .toEqual(["Reorder Bravo", "Reorder Alpha", "Reorder Charlie"]);
       expect(document.activeElement).toBe(handle.element());
+    });
+
+    it("releases keyboard activity when the grabbed item is removed", async () => {
+      const props = $state({ ...baseProps });
+      const page = render(Component, props);
+      const handle = page.getByRole("button", { name: "Reorder Alpha" });
+
+      focus(handle.element());
+      await userEvent.keyboard("{Enter}");
+      await expect.element(handle).toHaveAttribute("aria-pressed", "true");
+
+      props.items = threeItems.slice(1);
+      await expect
+        .poll(() => handleLabels(page))
+        .toEqual(["Reorder Bravo", "Reorder Charlie"]);
+
+      const nextHandle = page.getByRole("button", { name: "Reorder Bravo" });
+      const [from, to] = centres(page);
+
+      nextHandle.element().dispatchEvent(pointerEvent("pointerdown", from));
+      dispatchListPointerEvent(page, "pointermove", to + 2);
+
+      await expect
+        .poll(() => handleLabels(page))
+        .toEqual(["Reorder Charlie", "Reorder Bravo"]);
+
+      dispatchListPointerEvent(page, "pointerup", to + 2);
+      await tick();
     });
   });
 
@@ -316,13 +411,13 @@ describe("ReorderableList component", () => {
       const [from, to] = centres(page);
 
       handle.element().dispatchEvent(pointerEvent("pointerdown", from));
-      window.dispatchEvent(pointerEvent("pointermove", to + 2));
+      dispatchListPointerEvent(page, "pointermove", to + 2);
 
       await expect
         .poll(() => handleLabels(page))
         .toEqual(["Reorder Bravo", "Reorder Alpha", "Reorder Charlie"]);
 
-      window.dispatchEvent(pointerEvent("pointerup", to + 2));
+      dispatchListPointerEvent(page, "pointerup", to + 2);
       await expect
         .element(page.getByRole("status"))
         .toHaveTextContent("Alpha dropped at position 2 of 3.");
@@ -336,8 +431,8 @@ describe("ReorderableList component", () => {
       const [from] = centres(page);
 
       handle.element().dispatchEvent(pointerEvent("pointerdown", from));
-      window.dispatchEvent(pointerEvent("pointermove", from + 3));
-      window.dispatchEvent(pointerEvent("pointerup", from + 3));
+      dispatchListPointerEvent(page, "pointermove", from + 3);
+      dispatchListPointerEvent(page, "pointerup", from + 3);
 
       await expect.poll(() => handleLabels(page)).toEqual(initialOrder);
       expect(page.getByRole("status").element().textContent?.trim()).toBe("");
@@ -349,7 +444,7 @@ describe("ReorderableList component", () => {
       const [from, to] = centres(page);
 
       handle.element().dispatchEvent(pointerEvent("pointerdown", from));
-      window.dispatchEvent(pointerEvent("pointermove", to + 2));
+      dispatchListPointerEvent(page, "pointermove", to + 2);
       await expect.poll(() => handleLabels(page)).not.toEqual(initialOrder);
 
       window.dispatchEvent(
@@ -370,15 +465,36 @@ describe("ReorderableList component", () => {
       const [from, to] = centres(page);
 
       handle.element().dispatchEvent(pointerEvent("pointerdown", from));
-      window.dispatchEvent(pointerEvent("pointermove", to + 2));
+      dispatchListPointerEvent(page, "pointermove", to + 2);
       await expect.poll(() => handleLabels(page)).not.toEqual(initialOrder);
 
-      window.dispatchEvent(pointerEvent("pointercancel", to + 2));
+      dispatchListPointerEvent(page, "pointercancel", to + 2);
 
       await expect.poll(() => handleLabels(page)).toEqual(initialOrder);
       await expect
         .element(page.getByRole("status"))
         .toHaveTextContent("Reordering cancelled.");
+      // Let the cancel's post-tick settle animation run before unmount tears down the drag session.
+      await tick();
+    });
+
+    it("cancels the drag and releases activity when pointer capture is lost", async () => {
+      const page = render(Component, baseProps);
+      const handle = page.getByRole("button", { name: "Reorder Alpha" });
+      const [from, to] = centres(page);
+
+      handle.element().dispatchEvent(pointerEvent("pointerdown", from));
+      dispatchListPointerEvent(page, "pointermove", to + 2);
+      await expect.poll(() => handleLabels(page)).not.toEqual(initialOrder);
+
+      dispatchListPointerEvent(page, "lostpointercapture", to + 2);
+
+      await expect.poll(() => handleLabels(page)).toEqual(initialOrder);
+      focus(handle.element());
+      await userEvent.keyboard("{Alt>}{ArrowDown}{/Alt}");
+      await expect
+        .poll(() => handleLabels(page))
+        .toEqual(["Reorder Bravo", "Reorder Alpha", "Reorder Charlie"]);
       // Let the cancel's post-tick settle animation run before unmount tears down the drag session.
       await tick();
     });
@@ -391,8 +507,8 @@ describe("ReorderableList component", () => {
       handle
         .element()
         .dispatchEvent(pointerEvent("pointerdown", from, { button: 2 }));
-      window.dispatchEvent(pointerEvent("pointermove", to + 2));
-      window.dispatchEvent(pointerEvent("pointerup", to + 2));
+      dispatchListPointerEvent(page, "pointermove", to + 2);
+      dispatchListPointerEvent(page, "pointerup", to + 2);
 
       await expect.poll(() => handleLabels(page)).toEqual(initialOrder);
     });
@@ -403,10 +519,8 @@ describe("ReorderableList component", () => {
       const [from, to] = centres(page);
 
       handle.element().dispatchEvent(pointerEvent("pointerdown", from));
-      window.dispatchEvent(
-        pointerEvent("pointermove", to + 2, { pointerId: 2 }),
-      );
-      window.dispatchEvent(pointerEvent("pointerup", to + 2));
+      dispatchListPointerEvent(page, "pointermove", to + 2, { pointerId: 2 });
+      dispatchListPointerEvent(page, "pointerup", to + 2);
 
       await expect.poll(() => handleLabels(page)).toEqual(initialOrder);
     });
@@ -423,8 +537,8 @@ describe("ReorderableList component", () => {
       await userEvent.keyboard("{Enter}");
 
       dragged.element().dispatchEvent(pointerEvent("pointerdown", from));
-      window.dispatchEvent(pointerEvent("pointermove", from - 100));
-      window.dispatchEvent(pointerEvent("pointerup", from - 100));
+      dispatchListPointerEvent(page, "pointermove", from - 100);
+      dispatchListPointerEvent(page, "pointerup", from - 100);
 
       await expect.poll(() => handleLabels(page)).toEqual(initialOrder);
     });
@@ -436,14 +550,68 @@ describe("ReorderableList component", () => {
       const [from, to] = centres(page);
 
       dragged.element().dispatchEvent(pointerEvent("pointerdown", from));
-      window.dispatchEvent(pointerEvent("pointermove", to + 2));
+      dispatchListPointerEvent(page, "pointermove", to + 2);
       await expect.poll(() => handleLabels(page)).not.toEqual(initialOrder);
 
       focus(other.element());
       await userEvent.keyboard("{Enter}");
       await expect.element(other).toHaveAttribute("aria-pressed", "false");
 
-      window.dispatchEvent(pointerEvent("pointerup", to + 2));
+      dispatchListPointerEvent(page, "pointerup", to + 2);
+      // Let the drop's post-tick settle animation run before unmount tears down the drag session.
+      await tick();
+    });
+
+    it("ignores the position input of another item while dragging", async () => {
+      const page = render(Component, baseProps);
+      const dragged = page.getByRole("button", { name: "Reorder Alpha" });
+      const input = page.getByRole("spinbutton", {
+        name: "Position of Charlie",
+      });
+      const [from, to] = centres(page);
+      const draggedOrder = [
+        "Reorder Bravo",
+        "Reorder Alpha",
+        "Reorder Charlie",
+      ];
+
+      dragged.element().dispatchEvent(pointerEvent("pointerdown", from));
+      dispatchListPointerEvent(page, "pointermove", to + 2);
+      await expect.poll(() => handleLabels(page)).toEqual(draggedOrder);
+
+      const node = input.element() as HTMLInputElement;
+      node.value = "1";
+      node.dispatchEvent(keydownEvent("Enter"));
+
+      await expect.poll(() => handleLabels(page)).toEqual(draggedOrder);
+      await expect.element(input).toHaveValue(3);
+
+      dispatchListPointerEvent(page, "pointerup", to + 2);
+      // Let the drop's post-tick settle animation run before unmount tears down the drag session.
+      await tick();
+    });
+
+    it("ignores an Alt arrow move on another item while dragging", async () => {
+      const page = render(Component, baseProps);
+      const dragged = page.getByRole("button", { name: "Reorder Alpha" });
+      const other = page.getByRole("button", { name: "Reorder Charlie" });
+      const [from, to] = centres(page);
+      const draggedOrder = [
+        "Reorder Bravo",
+        "Reorder Alpha",
+        "Reorder Charlie",
+      ];
+
+      dragged.element().dispatchEvent(pointerEvent("pointerdown", from));
+      dispatchListPointerEvent(page, "pointermove", to + 2);
+      await expect.poll(() => handleLabels(page)).toEqual(draggedOrder);
+
+      focus(other.element());
+      other.element().dispatchEvent(keydownEvent("ArrowUp", { altKey: true }));
+
+      await expect.poll(() => handleLabels(page)).toEqual(draggedOrder);
+
+      dispatchListPointerEvent(page, "pointerup", to + 2);
       // Let the drop's post-tick settle animation run before unmount tears down the drag session.
       await tick();
     });
@@ -480,10 +648,65 @@ describe("ReorderableList component", () => {
       const [from, to] = centres(page);
 
       handle.element().dispatchEvent(pointerEvent("pointerdown", from));
-      window.dispatchEvent(pointerEvent("pointermove", to + 2));
-      window.dispatchEvent(pointerEvent("pointerup", to + 2));
+      dispatchListPointerEvent(page, "pointermove", to + 2);
+      dispatchListPointerEvent(page, "pointerup", to + 2);
 
       await expect.poll(() => handleLabels(page)).toEqual(initialOrder);
+    });
+
+    it("cancels an active pointer drag when disabled changes", async () => {
+      const props = $state({ ...baseProps, disabled: false });
+      const page = render(Component, props);
+      const handle = page.getByRole("button", { name: "Reorder Alpha" });
+      const [from, to] = centres(page);
+
+      handle.element().dispatchEvent(pointerEvent("pointerdown", from));
+      dispatchListPointerEvent(page, "pointermove", to + 2);
+      await expect
+        .poll(() => handleLabels(page))
+        .toEqual(["Reorder Bravo", "Reorder Alpha", "Reorder Charlie"]);
+
+      props.disabled = true;
+
+      await expect.poll(() => handleLabels(page)).toEqual(initialOrder);
+      await expect.element(handle).toBeDisabled();
+      await expect
+        .element(page.getByRole("status"))
+        .toHaveTextContent(
+          "Reordering cancelled. Alpha returned to position 1 of 3.",
+        );
+      expect(props.items.map((item) => item.name)).toEqual([
+        "Alpha",
+        "Bravo",
+        "Charlie",
+      ]);
+      await tick();
+    });
+
+    it("does not resume the drag when the list is enabled again", async () => {
+      const props = $state({ ...baseProps, disabled: false });
+      const page = render(Component, props);
+      const handle = page.getByRole("button", { name: "Reorder Alpha" });
+      const [from, to] = centres(page);
+
+      handle.element().dispatchEvent(pointerEvent("pointerdown", from));
+      dispatchListPointerEvent(page, "pointermove", to + 2);
+      await expect.poll(() => handleLabels(page)).not.toEqual(initialOrder);
+
+      props.disabled = true;
+      await expect.poll(() => handleLabels(page)).toEqual(initialOrder);
+
+      props.disabled = false;
+      dispatchListPointerEvent(page, "pointermove", to + 2);
+      dispatchListPointerEvent(page, "pointerup", to + 2);
+
+      await expect.poll(() => handleLabels(page)).toEqual(initialOrder);
+      expect(props.items.map((item) => item.name)).toEqual([
+        "Alpha",
+        "Bravo",
+        "Charlie",
+      ]);
+      await tick();
     });
   });
 });
@@ -497,6 +720,18 @@ function handleLabels(page: RenderResult<Component>): (string | null)[] {
 
 function focus(element: Element): void {
   (element as HTMLElement).focus();
+}
+
+function dispatchListPointerEvent(
+  page: RenderResult<Component>,
+  type: string,
+  clientY: number,
+  options?: { button?: number; pointerId?: number },
+): void {
+  page
+    .getByRole("list")
+    .element()
+    .dispatchEvent(pointerEvent(type, clientY, options));
 }
 
 function pointerEvent(

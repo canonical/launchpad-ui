@@ -26,13 +26,11 @@ export class PositionInputController<T> {
   }
 
   #commit(node: HTMLInputElement, key: string) {
-    if (this.#model.isRestoringFocus) return;
-
-    const requested = Number.parseInt(node.value, 10);
-    if (Number.isFinite(requested)) {
-      const to = Math.min(Math.max(requested, 1), this.#model.count) - 1;
-      if (this.#model.moveKeepingFocus(key, to)) {
-        this.#model.announce("move", this.#model.labelFor(key), to);
+    // A gesture elsewhere in the list owns the order, so only the value resets.
+    if (this.#model.canStart()) {
+      const requested = Number.parseInt(node.value, 10);
+      if (Number.isFinite(requested)) {
+        this.#model.moveImmediate(key, requested - 1);
       }
     }
 

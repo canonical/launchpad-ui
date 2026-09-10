@@ -1,20 +1,24 @@
+import { ReorderSession } from "./ReorderSession.svelte.js";
 import type { ReorderableList } from "./ReorderableList.svelte.js";
+
+class KeyboardSession extends ReorderSession {
+  readonly kind = "grab";
+}
 
 export class KeyboardGrabController<T> {
   readonly #model: ReorderableList<T>;
-
-  #grabbed = $state<{ key: string; origin: number } | null>(null);
 
   constructor(model: ReorderableList<T>) {
     this.#model = model;
   }
 
   isGrabbed(key: string) {
-    return this.#grabbed?.key === key;
+    const session = this.#model.session;
+    return session?.kind === "grab" && session?.key === key;
   }
 
   onkeydown(event: KeyboardEvent, key: string) {
-    if (this.#model.disabled || this.#model.activity === "pointer") return;
+    if (this.#model.disabled) return;
 
     const index = this.#model.indexOf(key);
     if (index === -1) return;
@@ -23,29 +27,29 @@ export class KeyboardGrabController<T> {
       switch (event.key) {
         case "ArrowUp":
           event.preventDefault();
-          this.#move(key, index - 1);
+          this.#model.moveInSession(index - 1);
           return;
         case "ArrowDown":
           event.preventDefault();
-          this.#move(key, index + 1);
+          this.#model.moveInSession(index + 1);
           return;
         case "Home":
           event.preventDefault();
-          this.#move(key, 0);
+          this.#model.moveInSession(0);
           return;
         case "End":
           event.preventDefault();
-          this.#move(key, this.#model.count - 1);
+          this.#model.moveInSession(this.#model.count - 1);
           return;
         case "Enter":
         case " ":
           event.preventDefault();
-          this.#drop();
+          this.#model.commit();
           return;
         case "Escape":
           event.preventDefault();
           event.stopPropagation();
-          this.#cancel();
+          this.#model.cancel();
           return;
         default:
           return;
@@ -58,54 +62,24 @@ export class KeyboardGrabController<T> {
     ) {
       event.preventDefault();
       event.stopPropagation();
-      this.#move(key, event.key === "ArrowUp" ? index - 1 : index + 1);
+      if (!this.#model.canStart()) return;
+
+      this.#model.moveImmediate(
+        key,
+        event.key === "ArrowUp" ? index - 1 : index + 1,
+      );
       return;
     }
 
     if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();
-      if (!this.#model.claim("keyboard")) return;
-
-      this.#grabbed = { key, origin: index };
-      this.#model.announce("grab", this.#model.labelFor(key), index);
+      this.#model.begin(new KeyboardSession(key));
     }
   }
 
   onblur(key: string) {
-    if (!this.#model.isRestoringFocus && this.isGrabbed(key)) this.#drop();
-  }
-
-  #move(key: string, to: number) {
-    if (!this.#model.moveKeepingFocus(key, to)) return;
-    this.#model.announce("move", this.#model.labelFor(key), to);
-  }
-
-  #drop() {
-    const grabbed = this.#grabbed;
-    if (!grabbed) return;
-
-    this.#grabbed = null;
-    this.#model.release();
-
-    this.#model.announce(
-      "drop",
-      this.#model.labelFor(grabbed.key),
-      this.#model.indexOf(grabbed.key),
-    );
-  }
-
-  #cancel() {
-    const grabbed = this.#grabbed;
-    if (!grabbed) return;
-
-    this.#grabbed = null;
-    this.#model.release();
-
-    this.#model.moveKeepingFocus(grabbed.key, grabbed.origin);
-    this.#model.announce(
-      "cancel",
-      this.#model.labelFor(grabbed.key),
-      grabbed.origin,
-    );
+    if (!this.#model.isRestoringFocus && this.isGrabbed(key)) {
+      this.#model.commit();
+    }
   }
 }

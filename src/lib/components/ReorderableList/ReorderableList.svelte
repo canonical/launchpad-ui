@@ -2,6 +2,7 @@
   import { Button } from "@canonical/svelte-ds-app-launchpad";
   import { DragIcon } from "@canonical/svelte-icons";
   import { flip } from "svelte/animate";
+  import { prefersReducedMotion } from "svelte/motion";
   import type { ReorderableListProps } from "./types.js";
   import { KeyboardGrabController } from "./utils/KeyboardGrabController.svelte.js";
   import { PointerDragController } from "./utils/PointerDragController.svelte.js";
@@ -19,9 +20,13 @@
     item,
     extraContent,
     disabled = false,
-    duration = 200,
+    animationDuration: animationDurationProp = 200,
     ...rest
   }: ReorderableListProps<T> = $props();
+
+  const animationDuration = $derived(
+    prefersReducedMotion.current ? 0 : animationDurationProp,
+  );
 
   const list = new ReorderableList<T>({
     items: () => items,
@@ -29,23 +34,35 @@
     key: (entry) => key(entry),
     itemLabel: (entry) => itemLabel(entry),
     disabled: () => !browser || disabled,
-    duration: () => duration,
   });
 
-  const drag = new PointerDragController(list);
+  const drag = new PointerDragController(list, () => animationDuration);
   const grab = new KeyboardGrabController(list);
   const position = new PositionInputController(list);
 
   const instructionsId = $props.id();
 </script>
 
-<ol class={[componentCssClassName, className]} role="list" {...rest}>
-  {#each items as entry, index (key(entry))}
+<ol
+  role="list"
+  class={[componentCssClassName, className]}
+  class:dragging={drag.isDragging()}
+  onpointermove={drag.onpointermove}
+  onpointerup={drag.onpointerup}
+  onpointercancel={drag.onpointercancel}
+  onlostpointercapture={drag.onlostpointercapture}
+  {@attach drag.registerList}
+  {...rest}
+>
+  {#each list.displayItems as entry, index (key(entry))}
     <li
-      class:dragging={drag.isDragging(key(entry))}
+      data-dragstate={drag.dragStateFor(key(entry))}
       class:grabbed={grab.isGrabbed(key(entry))}
       style:transform={drag.transformFor(key(entry))}
-      animate:flip={{ duration: drag.flipDuration(key(entry)) }}
+      animate:flip={{
+        duration:
+          drag.dragStateFor(key(entry)) === undefined ? animationDuration : 0,
+      }}
       {@attach list.registerItem(key(entry))}
     >
       <div class="main-row">
@@ -53,7 +70,7 @@
           severity="base"
           type="button"
           density="dense"
-          class={["handle", { dragging: drag.isDragging(key(entry)) }]}
+          class={["handle"]}
           {disabled}
           aria-label="Reorder {itemLabel(entry)}"
           aria-describedby={instructionsId}
@@ -103,8 +120,13 @@
     list-style: none;
     isolation: isolate;
 
-    &:has(> li.dragging) {
+    &.dragging {
+      cursor: grabbing;
       user-select: none;
+
+      > :global(*) {
+        pointer-events: none;
+      }
     }
 
     > li {
@@ -113,16 +135,7 @@
       transition: box-shadow var(--ds-transition-duration-fast)
         var(--ds-transition-timing-ease-out);
 
-      &.dragging {
-        user-select: none;
-        cursor: grabbing;
-
-        :global(*) {
-          pointer-events: none;
-        }
-      }
-
-      &.dragging,
+      &[data-dragstate="dragging"],
       &.grabbed {
         z-index: 1;
         position: relative;
@@ -130,6 +143,11 @@
         box-shadow:
           0 1px 2px rgba(0, 0, 0, 0.15),
           0 8px 20px rgba(0, 0, 0, 0.2);
+      }
+
+      &[data-dragstate="settling"] {
+        position: relative;
+        z-index: 1;
       }
 
       > .main-row {

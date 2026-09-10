@@ -14,8 +14,16 @@ export interface ReorderableListProps<T> extends Omit<BaseProps, "children"> {
   item: Snippet<[T]>;
   /** Render snippet for extra content per item, receiving the current item as its argument. */
   extraContent?: Snippet<[T]>;
-  /** Disables interaction and prevents dragging or reordering. */
+  /**
+   * Disables interaction and prevents dragging or reordering.
+   *
+   * @default false
+   **/
   disabled?: boolean;
-  /** Animation duration in milliseconds for reorder transitions. */
-  duration?: number;
+  /**
+   * Animation duration in milliseconds for reorder transitions. Ignored if the user prefers reduced motion.
+   *
+   * @default 200
+   */
+  animationDuration?: number;
 }
