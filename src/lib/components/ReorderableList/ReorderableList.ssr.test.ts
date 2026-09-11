@@ -3,11 +3,7 @@ import type { RenderResult } from "@canonical/svelte-ssr-test";
 import type { Component as SvelteComponent } from "svelte";
 import { describe, expect, it } from "vitest";
 import ReorderableList from "./ReorderableList.svelte";
-import {
-  extraContentSnippet,
-  itemSnippet,
-  threeItems,
-} from "./test.fixtures.svelte";
+import { itemSnippet, threeItems } from "./test.fixtures.svelte";
 import type { TestItem } from "./test.fixtures.svelte";
 import type { ReorderableListProps } from "./types.js";
 
@@ -60,13 +56,6 @@ describe("ReorderableList SSR", () => {
       expect(
         root.ownerDocument.getElementById(describedBy ?? "")?.textContent,
       ).toContain("Press Enter or Space to pick up the item");
-    });
-
-    it("renders extra content per item", () => {
-      const page = render(Component, {
-        props: { ...baseProps, extraContent: extraContentSnippet },
-      });
-      expect(componentLocator(page).textContent).toContain("Extra Bravo");
     });
 
     it("labels the controls of every item", () => {

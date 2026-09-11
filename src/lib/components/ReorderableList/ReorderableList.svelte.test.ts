@@ -5,11 +5,7 @@ import { userEvent } from "vitest/browser";
 import { render } from "vitest-browser-svelte";
 import type { Component, RenderResult } from "vitest-browser-svelte";
 import ReorderableList from "./ReorderableList.svelte";
-import {
-  extraContentSnippet,
-  itemSnippet,
-  threeItems,
-} from "./test.fixtures.svelte";
+import { itemSnippet, threeItems } from "./test.fixtures.svelte";
 import type { TestItem } from "./test.fixtures.svelte";
 import type { ReorderableListProps } from "./types.js";
 
@@ -23,7 +19,7 @@ const baseProps = {
   key: (item: TestItem) => item.id,
   itemLabel: (item: TestItem) => item.name,
   item: itemSnippet,
-  duration: 0,
+  animationDuration: 0,
 } as const satisfies ReorderableListProps<TestItem>;
 
 const initialOrder = ["Reorder Alpha", "Reorder Bravo", "Reorder Charlie"];
@@ -51,14 +47,6 @@ describe("ReorderableList component", () => {
       const input = page.getByRole("spinbutton", { name: "Position of Bravo" });
       await expect.element(input).toHaveValue(2);
       await expect.element(input).toHaveAttribute("max", "3");
-    });
-
-    it("renders extra content per item", async () => {
-      const page = render(Component, {
-        ...baseProps,
-        extraContent: extraContentSnippet,
-      });
-      await expect.element(page.getByText("Extra Bravo")).toBeInTheDocument();
     });
 
     it("re-renders when the items change from the outside", async () => {

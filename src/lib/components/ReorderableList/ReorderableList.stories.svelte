@@ -2,7 +2,7 @@
   import { Button } from "@canonical/svelte-ds-app-launchpad";
   import { DeleteIcon, EditIcon } from "@canonical/svelte-icons";
   import { defineMeta } from "@storybook/addon-svelte-csf";
-  import ReorderableList from "./ReorderableList.svelte";
+  import { ReorderableList } from "./index.js";
 
   type Item = {
     id: string;
@@ -18,7 +18,6 @@
     argTypes: {
       items: { control: false },
       item: { control: false },
-      extraContent: { control: false },
       key: { control: false },
       itemLabel: { control: false },
     },
@@ -60,42 +59,54 @@
       key={(item) => item.id}
       itemLabel={(item) => item.name}
     >
-      {#snippet item(item)}
-        <div style="display: flex; align-items: center;">
-          <span style="margin-inline-end: auto;">{item.name}</span>
-          {#if item.editable}
-            <Button
-              density="dense"
-              severity="base"
-              aria-label="Edit {item.name}"
-              onclick={() => (item.expanded = !item.expanded)}
-            >
-              {#snippet iconLeft()}
-                <EditIcon />
-              {/snippet}
-            </Button>
-            <Button
-              density="dense"
-              severity="base"
-              aria-label="Delete {item.name}"
-              onclick={() => (items = items.filter((i) => i.id !== item.id))}
-            >
-              {#snippet iconLeft()}
-                <DeleteIcon />
-              {/snippet}
-            </Button>
-          {/if}
-        </div>
-      {/snippet}
-      {#snippet extraContent(item)}
-        {#if item.expanded}
-          <div
-            style="margin-top: var(--dimension-050); display: grid; place-items: center; border: var(--dimension-stroke-thickness-medium) solid var(--color-border-muted); min-block-size: 10rem;"
-          >
-            Extra content for {item.name}
+      {#snippet item(props)}
+        {#if props.item.expanded}
+          <div class="custom-content">
+            <span>Custom content for {props.item.name}</span>
+            <Button onclick={() => (props.item.expanded = false)}>Close</Button>
           </div>
+        {:else}
+          <ReorderableList.Item {...props}>
+            <span style="margin-inline-end: auto;">{props.item.name}</span>
+            {#if props.item.editable}
+              <Button
+                density="dense"
+                severity="base"
+                aria-label="Edit {props.item.name}"
+                onclick={() => (props.item.expanded = !props.item.expanded)}
+              >
+                {#snippet iconLeft()}
+                  <EditIcon />
+                {/snippet}
+              </Button>
+              <Button
+                density="dense"
+                severity="base"
+                aria-label="Delete {props.item.name}"
+                onclick={() =>
+                  (items = items.filter((i) => i.id !== props.item.id))}
+              >
+                {#snippet iconLeft()}
+                  <DeleteIcon />
+                {/snippet}
+              </Button>
+            {/if}
+          </ReorderableList.Item>
         {/if}
       {/snippet}
     </ReorderableList>
   {/snippet}
 </Story>
+
+<style>
+  .custom-content {
+    margin-top: var(--dimension-050);
+    display: grid;
+    place-content: center;
+    justify-items: center;
+    gap: var(--dimension-050);
+    border: var(--dimension-stroke-thickness-medium) solid
+      var(--color-border-muted);
+    min-block-size: 10rem;
+  }
+</style>

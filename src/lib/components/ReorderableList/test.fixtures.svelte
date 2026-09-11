@@ -1,4 +1,7 @@
 <script lang="ts" module>
+  import { Item } from "./common/Item/index.js";
+  import type { ReorderableListItemSnippetProps } from "./types.js";
+
   export type TestItem = {
     id: string;
     name: string;
@@ -10,13 +13,11 @@
     { id: "c", name: "Charlie" },
   ];
 
-  export { extraContentSnippet, itemSnippet };
+  export { itemSnippet };
 </script>
 
-{#snippet itemSnippet(item: TestItem)}
-  <span>{item.name}</span>
-{/snippet}
-
-{#snippet extraContentSnippet(item: TestItem)}
-  <span>Extra {item.name}</span>
+{#snippet itemSnippet(props: ReorderableListItemSnippetProps<TestItem>)}
+  <Item {...props}>
+    <span>{props.item.name}</span>
+  </Item>
 {/snippet}

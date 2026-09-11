@@ -1,8 +1,7 @@
 <script lang="ts" generics="T">
-  import { Button } from "@canonical/svelte-ds-app-launchpad";
-  import { DragIcon } from "@canonical/svelte-icons";
   import { flip } from "svelte/animate";
   import { prefersReducedMotion } from "svelte/motion";
+  import { setReorderableListContext } from "./context.js";
   import type { ReorderableListProps } from "./types.js";
   import { KeyboardGrabController } from "./utils/KeyboardGrabController.svelte.js";
   import { PointerDragController } from "./utils/PointerDragController.svelte.js";
@@ -18,11 +17,12 @@
     key,
     itemLabel,
     item,
-    extraContent,
-    disabled = false,
+    disabled: disabledProp = false,
     animationDuration: animationDurationProp = 200,
     ...rest
   }: ReorderableListProps<T> = $props();
+
+  const disabled = $derived(!browser || disabledProp);
 
   const animationDuration = $derived(
     prefersReducedMotion.current ? 0 : animationDurationProp,
@@ -33,7 +33,7 @@
     setItems: (next) => (items = next),
     key: (entry) => key(entry),
     itemLabel: (entry) => itemLabel(entry),
-    disabled: () => !browser || disabled,
+    disabled: () => disabled,
   });
 
   const drag = new PointerDragController(list, () => animationDuration);
@@ -41,6 +41,19 @@
   const position = new PositionInputController(list);
 
   const instructionsId = $props.id();
+
+  setReorderableListContext({
+    list,
+    drag,
+    grab,
+    position,
+    key: (entry) => key(entry),
+    itemLabel: (entry) => itemLabel(entry),
+    instructionsId,
+    get disabled() {
+      return disabled;
+    },
+  });
 </script>
 
 <ol
@@ -65,43 +78,7 @@
       }}
       {@attach list.registerItem(key(entry))}
     >
-      <div class="main-row">
-        <Button
-          severity="base"
-          type="button"
-          density="dense"
-          class={["handle"]}
-          {disabled}
-          aria-label="Reorder {itemLabel(entry)}"
-          aria-describedby={instructionsId}
-          aria-pressed={grab.isGrabbed(key(entry))}
-          onpointerdown={(event) => drag.onpointerdown(event, key(entry))}
-          onkeydown={(event) => grab.onkeydown(event, key(entry))}
-          onblur={() => grab.onblur(key(entry))}
-        >
-          {#snippet iconLeft()}
-            <DragIcon />
-          {/snippet}
-        </Button>
-
-        <input
-          type="number"
-          inputmode="numeric"
-          autocomplete="off"
-          min="1"
-          max={items.length}
-          {disabled}
-          aria-label="Position of {itemLabel(entry)}"
-          value={index + 1}
-          onkeydown={(event) => position.onkeydown(event, key(entry))}
-          onblur={(event) => position.onblur(event, key(entry))}
-        />
-
-        <div class="content">
-          {@render item(entry)}
-        </div>
-      </div>
-      {@render extraContent?.(entry)}
+      {@render item({ item: entry, index })}
     </li>
   {/each}
 </ol>
@@ -148,46 +125,6 @@
       &[data-dragstate="settling"] {
         position: relative;
         z-index: 1;
-      }
-
-      > .main-row {
-        display: flex;
-        align-items: center;
-        gap: var(--dimension-100);
-        padding-block: var(--dimension-050);
-        flex: 1;
-        border-bottom: var(--dimension-stroke-thickness-medium) solid
-          var(--color-border-muted);
-
-        /* TODO(DAL-input): Style the input to visually match the design */
-        > input {
-          font: var(--lp-typography-paragraph-s);
-          border: none;
-          padding: var(--dimension-050) var(--dimension-100);
-          text-align: center;
-          background-color: var(--color-foreground-input);
-          min-width: min-content;
-          appearance: textfield;
-          &::-webkit-outer-spin-button,
-          &::-webkit-inner-spin-button {
-            display: none;
-          }
-
-          &:hover {
-            background-color: var(--color-foreground-input-hover);
-          }
-        }
-
-        :global(.handle) {
-          touch-action: none;
-          cursor: grab;
-          --color-background-button-hover: var(--color-background-button);
-          --color-background-button-active: var(--color-background-button);
-        }
-
-        > .content {
-          flex: 1;
-        }
       }
     }
   }
