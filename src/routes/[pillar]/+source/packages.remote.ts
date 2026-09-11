@@ -51,7 +51,7 @@ const totalArgsSchema = v.object({
 export type PackagesListArgs = v.InferInput<typeof listArgsSchema>;
 
 export type PackagesListing = {
-  entries: SourcePackagePublishingEntry[];
+  data: SourcePackagePublishingEntry[];
   hasNext: boolean;
 };
 
@@ -76,7 +76,7 @@ export const getSourcePackages = query(
           orderBy: toOrderBy(sortKey, sortOrder),
         },
       );
-      return { entries, hasNext: next_collection_link !== undefined };
+      return { data: entries, hasNext: next_collection_link !== undefined };
     } catch (requestError) {
       console.error("Failed to load source packages", requestError);
       error(503, "Couldn't load packages from Launchpad. Try again shortly.");

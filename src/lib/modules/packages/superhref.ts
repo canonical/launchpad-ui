@@ -38,31 +38,33 @@ export const DEFAULT_TABLE_VIEW = TABLE_VIEWS[0];
  */
 export const BINARY_PACKAGE_QUERY_PARAM = "binary-package";
 
-const schema = {
-  [BINARY_PACKAGE_QUERY_PARAM]: strCodec(),
-  sort: sortCodec(SORTABLE_PACKAGES_COLUMNS),
-  view: strCodec({ default: DEFAULT_TABLE_VIEW.slug }),
-  series: strCodec(), //TODO proper type when filters land
-  ...paginationCodecs({ defaultSize: 25, maxSize: 100 }),
-};
-
-export type PackagesQueryParam = keyof typeof schema;
-
-export const QueryParams = superhref(schema, {
-  actions: {
-    setView: (patch, { sort }, view) => {
-      const isDefaultView = view === DEFAULT_TABLE_VIEW.slug;
-      return patch({
-        view: isDefaultView ? null : view,
-        sort: isDefaultView ? sort : null,
-        page: 1,
-      });
+export const QueryParams = superhref(
+  {
+    [BINARY_PACKAGE_QUERY_PARAM]: strCodec(),
+    sort: sortCodec(SORTABLE_PACKAGES_COLUMNS),
+    view: strCodec({ default: DEFAULT_TABLE_VIEW.slug }),
+    series: strCodec(), //TODO proper type when filters land
+    ...paginationCodecs({ defaultSize: 25, maxSize: 100 }),
+  },
+  {
+    actions: {
+      setView: (patch, { sort }, view) => {
+        const isDefaultView = view === DEFAULT_TABLE_VIEW.slug;
+        return patch({
+          view: isDefaultView ? null : view,
+          sort: isDefaultView ? sort : null,
+          page: 1,
+        });
+      },
     },
   },
-});
+);
 
 export type BoundPackagesQueryParams = ReturnType<typeof QueryParams.bind>;
 
+type PackagesQueryParam = keyof ReturnType<typeof QueryParams.parse>;
+
+//TODO: move to superhref eventually
 export function preservedParams(
   url: URL,
   except: PackagesQueryParam[],

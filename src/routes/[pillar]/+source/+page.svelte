@@ -22,7 +22,6 @@
     getSourcePackages,
     getSourcePackagesTotal,
   } from "./packages.remote.js";
-  import type { PackagesListArgs } from "./packages.remote.js";
   import { resolve } from "$app/paths";
   import { page } from "$app/state";
 
@@ -37,22 +36,24 @@
     },
   });
 
-  const listArgs = $derived<PackagesListArgs>({
-    distro: params.pillar,
-    series: queryParams.series ?? undefined,
-    sortKey: queryParams.sort.key,
-    sortOrder: queryParams.sort.direction,
-    page: queryParams.page,
-    size: queryParams["page-size"],
-  });
+  const { data, hasNext } = $derived(
+    await getSourcePackages({
+      distro: params.pillar,
+      series: queryParams.series ?? undefined,
+      sortKey: queryParams.sort.key,
+      sortOrder: queryParams.sort.direction,
+      page: queryParams.page,
+      size: queryParams["page-size"],
+    }),
+  );
 
-  const listing = $derived(await getSourcePackages(listArgs));
   const total = $derived(
     (await getSourcePackagesTotal({
-      distro: listArgs.distro,
-      series: listArgs.series,
+      distro: params.pillar,
+      series: queryParams.series ?? undefined,
     })) ?? undefined,
   );
+
   const totalPages = $derived(
     total === undefined
       ? undefined
@@ -107,6 +108,7 @@
       <label>
         <span class="label-text">{filter}:</span>
         <Select severity="base" class="packages-filter" disabled>
+          <!-- TODO Replace when filters land -->
           {#if filter === "Series" && queryParams.series !== null}
             <option>{queryParams.series}</option>
           {:else}
@@ -135,7 +137,7 @@
               {#if column.sortable}
                 {const next = $derived(queryParams.sort.cycle(column.key))}
                 <Table.TH.SortButton
-                  href={queryParams.patch({ sort: next, page: null })}
+                  href={queryParams.patch({ sort: next, page: 1 })}
                   aria-label={next.direction === "none"
                     ? `Remove sorting by ${column.label}`
                     : `Sort by ${column.label} ${next.direction}`}
@@ -149,7 +151,7 @@
       </tr>
     </thead>
     <tbody>
-      {#each listing.entries as item (item.self_link)}
+      {#each data as item (item.self_link)}
         <tr>
           <th scope="row">
             <Link
@@ -200,7 +202,7 @@
           <Button type="submit" severity="base">Apply</Button>
         </span>
       </form>
-      <Pagination.ItemsCount showing={listing.entries.length} {total} />
+      <Pagination.ItemsCount showing={data.length} {total} />
     {/snippet}
     {#snippet rightGroup()}
       <form method="GET" class="pagination-form" data-sveltekit-keepfocus>
@@ -232,7 +234,7 @@
     <Pagination.PageNavigation
       direction="next"
       href={queryParams.set("page", queryParams.page + 1)}
-      disabled={!listing.hasNext}
+      disabled={!hasNext}
       data-sveltekit-keepfocus
     />
     <Pagination.PageNavigation

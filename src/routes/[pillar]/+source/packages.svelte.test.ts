@@ -62,7 +62,7 @@ function listing(
   entries: SourcePackagePublishingEntry[],
   overrides: Partial<PackagesListing> = {},
 ): PackagesListing {
-  return { entries, hasNext: false, ...overrides };
+  return { data: entries, hasNext: false, ...overrides };
 }
 
 function submittedParams(container: Element): Promise<Record<string, string>> {
