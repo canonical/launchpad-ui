@@ -59,6 +59,17 @@ describe("PageInput SSR", () => {
     );
   });
 
+  it('renders an unknown page count as "many" and leaves the input enabled', () => {
+    const page = render(Component, {
+      props: { ...baseProps, totalPages: undefined },
+    });
+    expect(page.getByText("of many Pages")).toBeInstanceOf(
+      page.window.HTMLSpanElement,
+    );
+    expect(inputLocator(page).disabled).toBe(false);
+    expect(inputLocator(page).hasAttribute("max")).toBe(false);
+  });
+
   it("forwards pagination table id to aria-controls", () => {
     const page = render(Component, { props: { ...baseProps } });
     expect(inputLocator(page).getAttribute("aria-controls")).toBe(tableId);

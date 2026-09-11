@@ -63,6 +63,15 @@ describe("PageInput component", () => {
     await expect.element(page.getByText("of 1 Page")).toBeVisible();
   });
 
+  it('renders an unknown page count as "many" and leaves the input enabled', async () => {
+    const page = await render(Component, {
+      ...baseProps,
+      totalPages: undefined,
+    });
+    await expect.element(page.getByText("of many Pages")).toBeVisible();
+    await expect.element(inputLocator(page)).toBeEnabled();
+  });
+
   it("applies classes", async () => {
     const page = await render(Component, { ...baseProps, class: "test-class" });
     const element = componentElement(page);

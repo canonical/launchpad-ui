@@ -1,6 +1,7 @@
 import { launchpadFetch } from "./launchpadFetch.js";
 import type {
   Collection,
+  PublishedSourcesFilter,
   PublishedSourcesQuery,
   SourcePackagePublishingEntry,
 } from "./types.js";
@@ -22,17 +23,32 @@ export function getPublishedSources(
   distro: string,
   query: PublishedSourcesQuery,
 ): Promise<Collection<SourcePackagePublishingEntry>> {
-  return getCollection(
+  return getJson(
     archiveUrl(distro, "getPublishedSources", {
       "ws.size": query.size,
       "ws.start": query.start,
       order_by: query.orderBy,
-      status: query.status,
+      ...filterParams(distro, query),
     }),
   );
 }
 
-async function getCollection<T>(url: string): Promise<Collection<T>> {
+export async function getPublishedSourcesTotal(
+  distro: string,
+  filter: PublishedSourcesFilter,
+): Promise<number> {
+  const url = archiveUrl(distro, "getPublishedSources", {
+    "ws.show": "total_size",
+    ...filterParams(distro, filter),
+  });
+  const total: unknown = await getJson(url);
+  if (typeof total !== "number") {
+    throw new Error(`Launchpad request to ${url} did not return a total`);
+  }
+  return total;
+}
+
+async function getJson<T>(url: string): Promise<T> {
   const response = await launchpadFetch(url, {
     headers: { accept: "application/json" },
   });
@@ -40,6 +56,19 @@ async function getCollection<T>(url: string): Promise<Collection<T>> {
     throw new LaunchpadApiError(response.status, url);
   }
   return response.json();
+}
+
+function filterParams(
+  distro: string,
+  filter: PublishedSourcesFilter,
+): Record<string, QueryParamValue | QueryParamValue[]> {
+  return {
+    status: filter.status,
+    distro_series:
+      filter.series === undefined
+        ? undefined
+        : `${apiBase()}/${encodeURIComponent(distro)}/${encodeURIComponent(filter.series)}`,
+  };
 }
 
 function archiveUrl(

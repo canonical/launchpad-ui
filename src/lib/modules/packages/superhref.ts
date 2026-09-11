@@ -2,6 +2,7 @@
 
 import { strCodec, superhref } from "@canonical/superhref";
 import { slugify } from "$lib/utils/index.js";
+import { paginationCodecs } from "$lib/utils/paginationCodecs.js";
 import { sortCodec } from "$lib/utils/sortCodec.js";
 
 /** The packages table columns, in display order.*/
@@ -37,23 +38,36 @@ export const DEFAULT_TABLE_VIEW = TABLE_VIEWS[0];
  */
 export const BINARY_PACKAGE_QUERY_PARAM = "binary-package";
 
-export const QueryParams = superhref(
-  {
-    [BINARY_PACKAGE_QUERY_PARAM]: strCodec(),
-    sort: sortCodec(SORTABLE_PACKAGES_COLUMNS),
-    view: strCodec({ default: DEFAULT_TABLE_VIEW.slug }),
-  },
-  {
-    actions: {
-      setView: (patch, { sort }, view) => {
-        const isDefaultView = view === DEFAULT_TABLE_VIEW.slug;
-        return patch({
-          view: isDefaultView ? null : view,
-          sort: isDefaultView ? sort : null,
-        });
-      },
+const schema = {
+  [BINARY_PACKAGE_QUERY_PARAM]: strCodec(),
+  sort: sortCodec(SORTABLE_PACKAGES_COLUMNS),
+  view: strCodec({ default: DEFAULT_TABLE_VIEW.slug }),
+  series: strCodec(), //TODO proper type when filters land
+  ...paginationCodecs({ defaultSize: 25, maxSize: 100 }),
+};
+
+export type PackagesQueryParam = keyof typeof schema;
+
+export const QueryParams = superhref(schema, {
+  actions: {
+    setView: (patch, { sort }, view) => {
+      const isDefaultView = view === DEFAULT_TABLE_VIEW.slug;
+      return patch({
+        view: isDefaultView ? null : view,
+        sort: isDefaultView ? sort : null,
+        page: 1,
+      });
     },
   },
-);
+});
 
 export type BoundPackagesQueryParams = ReturnType<typeof QueryParams.bind>;
+
+export function preservedParams(
+  url: URL,
+  except: PackagesQueryParam[],
+): [name: string, value: string][] {
+  return [...url.searchParams.entries()].filter(
+    ([name]) => !except.includes(name as PackagesQueryParam),
+  );
+}
