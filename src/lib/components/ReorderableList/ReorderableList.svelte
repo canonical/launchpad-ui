@@ -92,6 +92,38 @@
   {list.announcement}
 </div>
 
+<!-- @component
+`ReorderableList` renders an ordered list whose items can be rearranged with
+pointer dragging, keyboard controls, or direct position input.
+
+Provide `items`, a stable `key`, and `itemLabel` for accessible control labels
+and status announcements. The `item` snippet receives `{ item, index }`, which
+can be spread onto `ReorderableList.Item` to render the default drag handle and
+position input around custom item content.
+
+## Example Usage
+```svelte
+<script lang="ts">
+  let items = $state([
+    { id: "all", name: "All packages" },
+    { id: "owned", name: "Owned by me" },
+  ]);
+</script>
+
+<ReorderableList
+  bind:items
+  key={(item) => item.id}
+  itemLabel={(item) => item.name}
+>
+  {#snippet item(props)}
+    <ReorderableList.Item {...props}>
+      <span>{props.item.name}</span>
+    </ReorderableList.Item>
+  {/snippet}
+</ReorderableList>
+```
+-->
+
 <style>
   .ds.reorderable-list {
     list-style: none;
