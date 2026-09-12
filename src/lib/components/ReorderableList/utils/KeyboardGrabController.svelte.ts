@@ -49,7 +49,7 @@ export class KeyboardGrabController<T> {
         case "Escape":
           event.preventDefault();
           event.stopPropagation();
-          this.#model.cancel();
+          this.#model.cancelSession();
           return;
         default:
           return;

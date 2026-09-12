@@ -98,6 +98,31 @@
   {/snippet}
 </Story>
 
+<Story name="Nested scroll containers" tags={["!autodocs"]}>
+  {#snippet template(args)}
+    {let items = $state(baseItems)}
+    <div
+      style="max-block-size: 16rem; overflow: auto; border: var(--dimension-stroke-thickness-medium) solid var(--color-border-muted);"
+    >
+      <div style="block-size: 20rem;">
+        <ReorderableList
+          {...args}
+          bind:items
+          key={(item) => item.id}
+          itemLabel={(item) => item.name}
+          style="max-block-size: 10rem; overflow: auto; border: var(--dimension-stroke-thickness-medium) solid var(--color-border-muted);"
+        >
+          {#snippet item(props)}
+            <ReorderableList.Item {...props}>
+              <span>{props.item.name}</span>
+            </ReorderableList.Item>
+          {/snippet}
+        </ReorderableList>
+      </div>
+    </div>
+  {/snippet}
+</Story>
+
 <Story name="Status announcement" tags={["!autodocs"]}>
   {#snippet template(args)}
     {let items = $state(baseItems)}
@@ -110,7 +135,18 @@
       >
         {#snippet item(props)}
           <ReorderableList.Item {...props}>
-            {props.item.name}
+            <span style="margin-inline-end: auto;">{props.item.name}</span>
+            <Button
+              density="dense"
+              severity="base"
+              aria-label="Delete {props.item.name}"
+              onclick={() =>
+                (items = items.filter((i) => i.id !== props.item.id))}
+            >
+              {#snippet iconLeft()}
+                <DeleteIcon />
+              {/snippet}
+            </Button>
           </ReorderableList.Item>
         {/snippet}
       </ReorderableList>

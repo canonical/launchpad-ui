@@ -1,15 +1,19 @@
 <script lang="ts" generics="T">
   import { flip } from "svelte/animate";
+  import { cubicOut } from "svelte/easing";
   import { prefersReducedMotion } from "svelte/motion";
+  import type { TransitionConfig } from "svelte/transition";
   import { setReorderableListContext } from "./context.js";
   import type { ReorderableListProps } from "./types.js";
   import { KeyboardGrabController } from "./utils/KeyboardGrabController.svelte.js";
   import { PointerDragController } from "./utils/PointerDragController.svelte.js";
+  import type { DragData } from "./utils/PointerDragController.svelte.js";
   import { PositionInputController } from "./utils/PositionInputController.js";
   import { ReorderableList } from "./utils/ReorderableList.svelte.js";
   import { browser } from "$app/env";
 
   const componentCssClassName = "ds reorderable-list";
+  const TRANSITION_EASING = cubicOut;
 
   let {
     class: className,
@@ -28,6 +32,8 @@
     prefersReducedMotion.current ? 0 : animationDurationProp,
   );
 
+  let listElement = $state<HTMLElement>();
+
   const list = new ReorderableList<T>({
     items: () => items,
     setItems: (next) => (items = next),
@@ -36,7 +42,7 @@
     disabled: () => disabled,
   });
 
-  const drag = new PointerDragController(list, () => animationDuration);
+  const drag = new PointerDragController(list, () => listElement);
   const grab = new KeyboardGrabController(list);
   const position = new PositionInputController(list);
 
@@ -54,9 +60,41 @@
       return disabled;
     },
   });
+
+  // When the drag is already gone, we still need the last travel/key to animate from where it was dropped off to its final position.
+  let lastDragData = $state<DragData>();
+  $effect(() => {
+    if (drag.dragged) {
+      lastDragData = drag.dragged;
+    }
+  });
+
+  function settleOverlay(node: HTMLElement): TransitionConfig {
+    // Target the real item's resting spot rather than the overlay's pickup spot.
+    if (!lastDragData || !listElement) return {};
+    const targetElement = list.elementFor(lastDragData.key);
+    if (!targetElement) return {};
+    const listRect = listElement.getBoundingClientRect();
+    const correction =
+      listRect.top +
+      targetElement.offsetTop -
+      listElement.scrollTop -
+      parseFloat(node.style.top || "0");
+
+    const lastTravel = lastDragData.travel ?? 0;
+
+    node.classList.add("settling");
+    return {
+      duration: animationDuration,
+      easing: TRANSITION_EASING,
+      css: (t) =>
+        `transform: translateY(${correction + t * (lastTravel - correction)}px)`,
+    };
+  }
 </script>
 
 <ol
+  bind:this={listElement}
   role="list"
   class={[componentCssClassName, className]}
   class:dragging={drag.isDragging()}
@@ -64,23 +102,42 @@
   onpointerup={drag.onpointerup}
   onpointercancel={drag.onpointercancel}
   onlostpointercapture={drag.onlostpointercapture}
-  {@attach drag.registerList}
+  style:--reappear-after-settle-delay={`${animationDuration}ms`}
   {...rest}
 >
   {#each list.displayItems as entry, index (key(entry))}
     <li
-      data-dragstate={drag.dragStateFor(key(entry))}
+      class:dragging={drag.isDragging(key(entry))}
       class:grabbed={grab.isGrabbed(key(entry))}
-      style:transform={drag.transformFor(key(entry))}
       animate:flip={{
-        duration:
-          drag.dragStateFor(key(entry)) === undefined ? animationDuration : 0,
+        duration: animationDuration,
+        easing: TRANSITION_EASING,
       }}
       {@attach list.registerItem(key(entry))}
     >
       {@render item({ item: entry, index })}
     </li>
   {/each}
+  {#if drag.dragged && list.indexOf(drag.dragged.key) !== -1}
+    {const index = $derived(list.indexOf(drag.dragged.key))}
+    <li
+      popover="manual"
+      class="drag-overlay"
+      class:settling={!drag.dragged}
+      aria-hidden="true"
+      inert
+      style:top={`${drag.dragged.rect.top}px`}
+      style:left={`${drag.dragged.rect.left}px`}
+      style:width={`${drag.dragged.rect.width}px`}
+      style:height={`${drag.dragged.rect.height}px`}
+      style:transform={`translateY(${drag.dragged.travel}px)`}
+      out:settleOverlay
+      // A trick to force the element onto the top-layer escaping any potential containing blocks that could throw off the viewport-relative positioning. Also ensures that the overlay isn't clipped now matter what.
+      {@attach (el) => el.showPopover()}
+    >
+      {@render item({ item: list.displayItems[index], index })}
+    </li>
+  {/if}
 </ol>
 
 <div id={instructionsId} class="visually-hidden">
@@ -100,6 +157,10 @@ Provide `items`, a stable `key`, and `itemLabel` for accessible control labels
 and status announcements. The `item` snippet receives `{ item, index }`, which
 can be spread onto `ReorderableList.Item` to render the default drag handle and
 position input around custom item content.
+
+During pointer dragging, the snippet is also rendered in an inert fixed-position
+preview. Each rendering has independent component state; use instance-specific
+IDs (for example `$props.id()`) rather than fixed IDs inside the snippet.
 
 ## Example Usage
 ```svelte
@@ -128,6 +189,8 @@ position input around custom item content.
   .ds.reorderable-list {
     list-style: none;
     isolation: isolate;
+    /* Item offsetTop values are relative to the list padding box. */
+    position: relative;
 
     &.dragging {
       cursor: grabbing;
@@ -141,22 +204,38 @@ position input around custom item content.
     > li {
       background-color: var(--color-background);
       box-shadow: none;
-      transition: box-shadow var(--ds-transition-duration-fast)
-        var(--ds-transition-timing-ease-out);
+      transition:
+        box-shadow var(--ds-transition-duration-fast)
+          var(--ds-transition-timing-ease-out),
+        /* Delay the reappearance of the item until the overlay comes back into place */
+        opacity 0s linear var(--reappear-after-settle-delay);
 
-      &[data-dragstate="dragging"],
+      /* TODO: Shadow design tokens */
+      --grabbed-shadow:
+        0 1px 2px rgba(0, 0, 0, 0.15), 0 8px 20px rgba(0, 0, 0, 0.2);
+
+      &.dragging {
+        opacity: 0;
+        transition: none;
+      }
+
+      &.drag-overlay {
+        border: none;
+        position: fixed;
+        inset: auto;
+        pointer-events: none;
+        transition: none;
+        box-shadow: var(--grabbed-shadow);
+
+        &.settling {
+          box-shadow: none;
+        }
+      }
+
       &.grabbed {
         z-index: 1;
         position: relative;
-        /* TODO: Shadow design tokens */
-        box-shadow:
-          0 1px 2px rgba(0, 0, 0, 0.15),
-          0 8px 20px rgba(0, 0, 0, 0.2);
-      }
-
-      &[data-dragstate="settling"] {
-        position: relative;
-        z-index: 1;
+        box-shadow: var(--grabbed-shadow);
       }
     }
   }

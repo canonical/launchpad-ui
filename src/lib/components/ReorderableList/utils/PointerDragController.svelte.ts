@@ -1,63 +1,64 @@
 import { tick } from "svelte";
-import type { Attachment } from "svelte/attachments";
-import { SvelteSet } from "svelte/reactivity";
 import { ReorderSession } from "./ReorderSession.svelte.js";
 import type { ReorderableList } from "./ReorderableList.svelte.js";
 
+export type DragData = {
+  rect: DOMRect;
+  travel: number;
+  key: string;
+};
+
 const DRAG_THRESHOLD_PX = 5;
-// TODO: JS design tokens
-const SETTLE_EASING = "cubic-bezier(0.2, 0, 0.2, 1)";
 
 class PointerSession extends ReorderSession {
   readonly kind = "drag";
   readonly pointerId: number;
   readonly pointerStartY: number;
-  readonly scrollStartY: number;
   readonly listeners = new AbortController();
 
-  readonly #scrollContainers: Element[];
-  readonly #captureElement: Element | null;
+  readonly #draggedRect: DOMRect;
+  readonly #grabOffsetY: number;
+  readonly #captureElement: HTMLElement | undefined;
+  readonly #onDragStart: () => void;
 
   #pointerY = $state(0);
-  #scrollY = $state(0);
-  #dragged = $state<{ startTop: number; currentTop: number }>();
+  #dragStarted = $state(false);
 
-  /** Pointer travel minus layout travel, so reordering the list mid-drag cannot pull the item out from under the pointer. */
-  readonly offset = $derived.by(() => {
-    if (!this.#dragged) return 0;
-    return (
-      this.pointerTravel - (this.#dragged.currentTop - this.#dragged.startTop)
-    );
-  });
-  readonly pointerTravel = $derived.by(
-    () =>
-      this.#pointerY - this.pointerStartY + (this.#scrollY - this.scrollStartY),
-  );
-  readonly hasPassedThreshold = $derived.by(
-    () => Math.abs(this.pointerTravel) >= DRAG_THRESHOLD_PX,
-  );
-  /** Where the item is drawn right now, independent of the slot it occupies. */
-  readonly visualTop = $derived.by(() =>
-    this.#dragged ? this.#dragged.startTop + this.pointerTravel : 0,
+  readonly #pointerTravel = $derived.by(
+    () => this.#pointerY - this.pointerStartY,
   );
 
-  get dragged() {
-    return this.#dragged;
+  readonly dragData: DragData | null = $derived.by(() =>
+    this.#dragStarted
+      ? { rect: this.#draggedRect, travel: this.#pointerTravel, key: this.key }
+      : null,
+  );
+
+  /** Pointer and slot centres share the list's padding-box coordinate system. */
+  centreIn(list: HTMLElement) {
+    const pointerInList =
+      this.#pointerY -
+      list.getBoundingClientRect().top -
+      list.clientTop +
+      list.scrollTop;
+    return pointerInList - this.#grabOffsetY + this.#draggedRect.height / 2;
   }
 
   constructor(
     event: PointerEvent,
     key: string,
-    captureElement: Element | null,
+    captureElement: HTMLElement | undefined,
+    draggedElement: HTMLElement,
+    onDragStart: () => void,
   ) {
     super(key);
     this.pointerId = event.pointerId;
     this.pointerStartY = event.clientY;
     this.#pointerY = event.clientY;
     this.#captureElement = captureElement;
-    this.#scrollContainers = scrollContainersFor(event.target);
-    this.scrollStartY = scrollYFor(this.#scrollContainers);
-    this.#scrollY = this.scrollStartY;
+    this.#draggedRect = draggedElement.getBoundingClientRect();
+    this.#grabOffsetY = this.pointerStartY - this.#draggedRect.top;
+    this.#onDragStart = onDragStart;
   }
 
   override teardown() {
@@ -68,69 +69,43 @@ class PointerSession extends ReorderSession {
     }
   }
 
-  startDrag(top: number) {
-    this.#dragged = { startTop: top, currentTop: top };
-  }
-
-  updateDragged(currentTop: number) {
-    if (this.#dragged) {
-      this.#dragged.currentTop = currentTop;
-    }
-  }
-
   set pointerY(value: number) {
     this.#pointerY = value;
+
+    if (
+      !this.#dragStarted &&
+      Math.abs(this.#pointerTravel) >= DRAG_THRESHOLD_PX
+    ) {
+      this.#dragStarted = true;
+      this.#onDragStart();
+    }
   }
-
-  updateScrollY() {
-    this.#scrollY = scrollYFor(this.#scrollContainers);
-  }
-}
-
-function scrollContainersFor(target: EventTarget | null) {
-  if (!(target instanceof Element)) return [];
-
-  const containers: Element[] = [];
-  for (
-    let element = target.parentElement;
-    element;
-    element = element.parentElement
-  ) {
-    if (element.scrollHeight > element.clientHeight) containers.push(element);
-  }
-
-  return containers;
-}
-
-function scrollYFor(containers: Element[]) {
-  return containers.reduce(
-    (scrollY, container) => scrollY + container.scrollTop,
-    window.scrollY,
-  );
 }
 
 export class PointerDragController<T> {
   readonly #model: ReorderableList<T>;
-  readonly #animationDuration: number;
+  readonly #listElement: HTMLElement | undefined;
 
-  listElement: Element | null = null;
   #isSwappingItem = false;
-
-  #settlingItems = new SvelteSet<string>();
 
   readonly #session = $derived.by(() => {
     const session = this.#model.session;
     return session instanceof PointerSession ? session : null;
   });
 
+  readonly dragged = $derived(this.#session?.dragData);
+
   #draggingKey = $derived.by(() => {
     const session = this.#session;
-    return session?.dragged ? session.key : null;
+    return session?.dragData ? session.key : null;
   });
 
-  constructor(model: ReorderableList<T>, animationDuration: () => number) {
+  constructor(
+    model: ReorderableList<T>,
+    listElement: () => HTMLElement | undefined,
+  ) {
     this.#model = model;
-    this.#animationDuration = $derived(animationDuration());
+    this.#listElement = $derived(listElement());
   }
 
   isDragging(key?: string) {
@@ -138,36 +113,23 @@ export class PointerDragController<T> {
     return this.#draggingKey === key;
   }
 
-  dragStateFor(key: string) {
-    return this.#draggingKey === key
-      ? "dragging"
-      : this.#settlingItems.has(key)
-        ? "settling"
-        : undefined;
-  }
-
-  transformFor(key: string) {
-    const session = this.#session;
-    return session && this.#draggingKey === key
-      ? `translateY(${session.offset}px)`
-      : undefined;
-  }
-
-  registerList: Attachment<HTMLElement> = (node) => {
-    this.listElement = node;
-    return () => {
-      if (this.listElement === node) this.listElement = null;
-    };
-  };
-
   onpointerdown(event: PointerEvent, key: string) {
     if (event.button !== 0) return;
 
-    const session = new PointerSession(event, key, this.listElement);
+    const node = this.#model.elementFor(key);
+    if (!node) return;
+
+    const session = new PointerSession(
+      event,
+      key,
+      this.#listElement,
+      node,
+      () => this.#model.announceGrab(),
+    );
     if (!this.#model.begin(session, true)) return;
 
     try {
-      this.listElement?.setPointerCapture(event.pointerId);
+      this.#listElement?.setPointerCapture(event.pointerId);
     } catch {
       // Browsers can reject synthetic or already-ended pointers.
       // Non-critical: pointer events are still registered on the list.
@@ -188,21 +150,7 @@ export class PointerDragController<T> {
   onpointermove = (event: PointerEvent) => {
     const session = this.#session;
     if (!session || event.pointerId !== session.pointerId) return;
-
     session.pointerY = event.clientY;
-
-    if (!session.dragged) {
-      if (!session.hasPassedThreshold) return;
-
-      const node = this.#model.elementFor(session.key);
-      if (!node) {
-        this.#model.cancel(true);
-        return;
-      }
-
-      session.startDrag(node.offsetTop);
-      this.#model.announceGrab();
-    }
 
     void this.#swapPastNeighbours();
   };
@@ -226,7 +174,6 @@ export class PointerDragController<T> {
     const session = this.#session;
     if (!session) return;
 
-    session.updateScrollY();
     void this.#swapPastNeighbours();
   };
 
@@ -244,22 +191,21 @@ export class PointerDragController<T> {
     try {
       while (true) {
         const session = this.#session;
-        if (!session?.dragged) break;
+        if (!session?.dragData) break;
 
         const node = this.#model.elementFor(session.key);
         const index = this.#model.indexOf(session.key);
-        if (!node || index === -1) break;
+        if (!node || index === -1 || !this.#listElement) break;
 
-        const centre = session.visualTop + node.offsetHeight / 2;
+        const centre = session.centreIn(this.#listElement);
         const target = this.#newItemIndex(index, centre);
         if (target === index) break;
 
         if (!this.#model.moveInSession(target)) break;
 
-        // Settle the DOM and re-calculate the position of the dragged item.
+        // Wait for the new slot geometry before checking the next neighbour.
         await tick();
         if (this.#session !== session) break;
-        session.updateDragged(node.offsetTop);
       }
     } finally {
       this.#isSwappingItem = false;
@@ -284,37 +230,12 @@ export class PointerDragController<T> {
     const session = this.#session;
     if (!session) return;
 
-    if (!session.dragged) {
-      this.#model.cancel(true);
+    if (!session.dragData) {
+      this.#model.discardSession();
       return;
     }
 
-    this.#settlingItems.add(session.key);
-
     if (commit) this.#model.commit();
-    else this.#model.cancel();
-
-    void this.#settleSession(session);
-  }
-
-  /** Animates the released item from where the pointer left it back to its slot. */
-  async #settleSession(session: PointerSession) {
-    await tick();
-
-    const node = this.#model.elementFor(session.key);
-    if (node) await this.#settle(node, session.visualTop - node.offsetTop);
-
-    this.#settlingItems.delete(session.key);
-  }
-
-  async #settle(node: HTMLElement, from: number) {
-    if (this.#animationDuration === 0 || Math.abs(from) < 1) return;
-
-    const animation = node.animate(
-      [{ transform: `translateY(${from}px)` }, { transform: "none" }],
-      { duration: this.#animationDuration, easing: SETTLE_EASING },
-    );
-
-    await animation.finished.catch(() => {});
+    else this.#model.cancelSession();
   }
 }

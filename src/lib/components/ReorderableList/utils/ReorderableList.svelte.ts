@@ -54,15 +54,15 @@ export class ReorderableList<T> {
 
     onDestroy(() => {
       clearTimeout(this.#announcementTimer);
-      this.cancel(true);
+      this.discardSession();
     });
 
-    // Clears the session if the list gets disabled or no longer contains the item being dragged.
+    // Discards the session if the list gets disabled or no longer contains the item being dragged.
     // Loop danger! Reads and writes session!
     $effect(() => {
       const session = this.#session;
       if (session === null) return;
-      if (this.#gotInterrupted(session)) untrack(() => this.cancel());
+      if (this.#gotInterrupted(session)) untrack(() => this.discardSession());
     });
   }
 
@@ -145,7 +145,7 @@ export class ReorderableList<T> {
     const session = this.#session;
     // A blur fired by an element removal may occur before the effect ends a dead session.
     if (!session || this.#gotInterrupted(session)) {
-      this.cancel();
+      this.discardSession();
       return;
     }
 
@@ -160,21 +160,27 @@ export class ReorderableList<T> {
     this.#announce("drop", session.key, index);
   }
 
-  cancel(silent = false) {
+  /** Ends the current session due to the users's cancellation. */
+  cancelSession() {
     const session = this.#session;
     if (!session) return;
-
-    if (this.#gotInterrupted(session)) this.#session = null;
     else this.#keepingFocus(session.key, () => (this.#session = null));
 
     session.teardown();
-
-    if (silent) return;
 
     const origin = this.#rawIndexOf(session.key);
     if (origin !== -1) {
       this.#announce("cancel", session.key, origin);
     }
+  }
+
+  /** Ends the current session in case of an interruption. */
+  discardSession() {
+    const session = this.#session;
+    if (!session) return;
+
+    this.#session = null;
+    session.teardown();
   }
 
   /** A one-off move without a session, written straight through to `items`. */

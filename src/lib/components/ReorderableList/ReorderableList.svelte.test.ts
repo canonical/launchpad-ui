@@ -658,11 +658,6 @@ describe("ReorderableList component", () => {
 
       await expect.poll(() => handleLabels(page)).toEqual(initialOrder);
       await expect.element(handle).toBeDisabled();
-      await expect
-        .element(page.getByRole("status"))
-        .toHaveTextContent(
-          "Reordering cancelled. Alpha returned to position 1 of 3.",
-        );
       expect(props.items.map((item) => item.name)).toEqual([
         "Alpha",
         "Bravo",
