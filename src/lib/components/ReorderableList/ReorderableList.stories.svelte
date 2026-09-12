@@ -98,6 +98,26 @@
   {/snippet}
 </Story>
 
+<Story name="Status announcement" tags={["!autodocs"]}>
+  {#snippet template(args)}
+    {let items = $state(baseItems)}
+    <div class="status-debug">
+      <ReorderableList
+        {...args}
+        bind:items
+        key={(item) => item.id}
+        itemLabel={(item) => item.name}
+      >
+        {#snippet item(props)}
+          <ReorderableList.Item {...props}>
+            {props.item.name}
+          </ReorderableList.Item>
+        {/snippet}
+      </ReorderableList>
+    </div>
+  {/snippet}
+</Story>
+
 <style>
   .custom-content {
     margin-top: var(--dimension-050);
@@ -108,5 +128,19 @@
     border: var(--dimension-stroke-thickness-medium) solid
       var(--color-border-muted);
     min-block-size: 10rem;
+  }
+
+  .status-debug :global([role="status"]) {
+    position: static;
+    width: auto;
+    height: auto;
+    margin: var(--dimension-200) 0 0;
+    padding: var(--dimension-050);
+    overflow: visible;
+    clip: auto;
+    clip-path: none;
+    white-space: normal;
+    border: var(--dimension-stroke-thickness-medium) solid
+      var(--color-border-muted);
   }
 </style>
