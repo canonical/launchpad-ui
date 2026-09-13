@@ -12,6 +12,8 @@ export type ReorderableListItemSnippetProps<T> = {
   index: number;
 };
 
+export type DragMode = "preview" | "drop-indicator";
+
 export interface ReorderableListProps<T> extends Omit<BaseProps, "children"> {
   /** Ordered list of items to render. */
   items: T[];
@@ -33,6 +35,16 @@ export interface ReorderableListProps<T> extends Omit<BaseProps, "children"> {
    * @default 200
    */
   animationDuration?: number;
+  /**
+   * Controls how pointer dragging communicates the potential drop position.
+   * - "preview" previews the reordered rows.
+   * - "drop-indicator" keeps rows in place and marks the insertion edge.
+   *
+   * Does not affect keyboard moves.
+   *
+   * @default "preview"
+   */
+  dragMode?: DragMode;
 }
 
 export type ReorderableListContext<T> = {

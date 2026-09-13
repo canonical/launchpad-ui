@@ -30,8 +30,8 @@ export class ReorderableList<T> {
   #announcement = $state("");
 
   readonly count = $derived.by(() => this.#items.length);
-  /** `items` with the in-progress move applied. This is what the list actually renders. */
-  readonly displayItems = $derived.by(() => {
+  /** `items` with the in-progress move applied. */
+  readonly sessionItems = $derived.by(() => {
     const session = this.#session;
     if (!session) return this.#items;
 
@@ -66,11 +66,6 @@ export class ReorderableList<T> {
     });
   }
 
-  /**
-   * Check used to catch cases where during the session, the list:
-   * - becomes disabled
-   * - no longer contains the item being dragged
-   */
   #gotInterrupted(session: ReorderSession) {
     return this.disabled || this.#rawIndexOf(session.key) === -1;
   }
@@ -93,11 +88,11 @@ export class ReorderableList<T> {
   }
 
   indexOf(key: string) {
-    return this.displayItems.findIndex((item) => this.#key(item) === key);
+    return this.sessionItems.findIndex((item) => this.#key(item) === key);
   }
 
   labelFor(key: string) {
-    const item = this.displayItems[this.indexOf(key)];
+    const item = this.#items.find((item) => this.#key(item) === key);
     return item === undefined ? "" : this.#itemLabel(item);
   }
 
@@ -105,8 +100,12 @@ export class ReorderableList<T> {
     return this.#elements.get(key);
   }
 
+  get elements() {
+    return this.#items.map((item) => this.#elements.get(this.#key(item)));
+  }
+
   elementAt(index: number) {
-    const item = this.displayItems[index];
+    const item = this.sessionItems[index];
     return item === undefined ? undefined : this.#elements.get(this.#key(item));
   }
 
@@ -149,7 +148,7 @@ export class ReorderableList<T> {
       return;
     }
 
-    const next = this.displayItems;
+    const next = this.sessionItems;
     const index = this.indexOf(session.key);
 
     this.#keepingFocus(session.key, () => {

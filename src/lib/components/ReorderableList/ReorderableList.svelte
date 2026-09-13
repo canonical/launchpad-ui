@@ -24,6 +24,7 @@
     item,
     disabled: disabledProp = false,
     animationDuration: animationDurationProp = 200,
+    dragMode = "preview",
     onpointermove,
     onpointerup,
     onpointercancel,
@@ -47,7 +48,11 @@
     disabled: () => disabled,
   });
 
-  const drag = new PointerDragController(list, () => listElement);
+  const drag = new PointerDragController(
+    list,
+    () => listElement,
+    () => dragMode,
+  );
   const grab = new KeyboardGrabController(list);
   const position = new PositionInputController(list);
 
@@ -86,6 +91,12 @@
         `transform: translateY(${correction + t * (dragData.travel - correction)}px); box-shadow: none;`,
     };
   }
+
+  const displayItems = $derived(
+    dragMode === "drop-indicator" && drag.isDragging()
+      ? items
+      : list.sessionItems,
+  );
 </script>
 
 <ol
@@ -112,10 +123,14 @@
   style:--reappear-after-settle-delay={`${animationDuration}ms`}
   {...rest}
 >
-  {#each list.displayItems as entry, index (key(entry))}
+  {#each displayItems as entry, index (key(entry))}
     <li
-      class:dragging={drag.isDragging(key(entry))}
       class:grabbed={grab.isGrabbed(key(entry))}
+      data-dragging={drag.isDragging(key(entry)) ? dragMode : undefined}
+      data-dropindicator={drag.dropIndicator &&
+      drag.dropIndicator.index === index
+        ? drag.dropIndicator.edge
+        : undefined}
       animate:flip={{
         duration: animationDuration,
         easing: TRANSITION_EASING,
@@ -132,6 +147,7 @@
     {const index = $derived(list.indexOf(dragData.key))}
     <li
       class="drag-overlay"
+      class:drop-indicator={dragMode === "drop-indicator"}
       aria-hidden="true"
       inert
       style:top={`${dragData.rect.top}px`}
@@ -144,7 +160,7 @@
       popover="manual"
       {@attach (el) => el.showPopover()}
     >
-      {@render item({ item: list.displayItems[index], index })}
+      {@render item({ item: list.sessionItems[index], index })}
     </li>
   {/each}
 </ol>
@@ -159,17 +175,11 @@
 </div>
 
 <!-- @component
-`ReorderableList` renders an ordered list whose items can be rearranged with
-pointer dragging, keyboard controls, or direct position input.
+`ReorderableList` renders an ordered list whose items can be rearranged with pointer dragging, keyboard controls, or direct position input.
 
-Provide `items`, a stable `key`, and `itemLabel` for accessible control labels
-and status announcements. The `item` snippet receives `{ item, index }`, which
-can be spread onto `ReorderableList.Item` to render the default drag handle and
-position input around custom item content.
+Provide `items`, a stable `key`, and `itemLabel` for accessible control labels and status announcements. The `item` snippet receives `{ item, index }`, which can be spread onto `ReorderableList.Item` to render the default drag handle and position input around custom item content.
 
-During pointer dragging, the snippet is also rendered in an inert fixed-position
-preview. Each rendering has independent component state; use instance-specific
-IDs (for example `$props.id()`) rather than fixed IDs inside the snippet.
+During pointer dragging, the snippet is also rendered in an inert fixed-position preview. Each rendering has independent component state; use instance-specific IDs (for example `$props.id()`) rather than fixed IDs inside the snippet.
 
 ## Example Usage
 ```svelte
@@ -223,9 +233,37 @@ IDs (for example `$props.id()`) rather than fixed IDs inside the snippet.
       --grabbed-shadow:
         0 1px 2px rgba(0, 0, 0, 0.15), 0 8px 20px rgba(0, 0, 0, 0.2);
 
-      &.dragging {
+      &[data-dragging="preview"] {
         opacity: 0;
         transition: none;
+      }
+
+      &[data-dragging="drop-indicator"] {
+        /* TODO(@Enzo): Confirm opacity values/tokens */
+        opacity: 0.3;
+        transition: none;
+      }
+
+      &[data-dropindicator] {
+        position: relative;
+
+        &::after {
+          content: "";
+          position: absolute;
+          inset-inline: 0;
+          border-top: var(--dimension-stroke-thickness-large) solid
+            var(--color-focusRing);
+          pointer-events: none;
+          z-index: 1;
+        }
+      }
+
+      &[data-dropindicator="before"]::after {
+        top: 0;
+      }
+
+      &[data-dropindicator="after"]::after {
+        bottom: 0;
       }
 
       &.drag-overlay {
@@ -235,6 +273,11 @@ IDs (for example `$props.id()`) rather than fixed IDs inside the snippet.
         pointer-events: none;
         transition: none;
         box-shadow: var(--grabbed-shadow);
+
+        &.drop-indicator {
+          /* TODO(@Enzo): Confirm opacity values/tokens */
+          opacity: 0.5;
+        }
       }
 
       &.grabbed {

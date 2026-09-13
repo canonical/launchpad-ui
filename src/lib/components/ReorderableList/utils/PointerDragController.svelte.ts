@@ -1,4 +1,5 @@
-import { tick } from "svelte";
+import { tick, untrack } from "svelte";
+import type { DragMode } from "../types.js";
 import { ReorderSession } from "./ReorderSession.svelte.js";
 import type { ReorderableList } from "./ReorderableList.svelte.js";
 import { listCoordinates } from "./listCoordinates.js";
@@ -81,7 +82,7 @@ class PointerSession extends ReorderSession {
 export class PointerDragController<T> {
   readonly #model: ReorderableList<T>;
   readonly #listElement: HTMLElement | undefined;
-
+  readonly #dragMode: DragMode;
   #isSwappingItem = false;
 
   readonly #session = $derived.by(() => {
@@ -91,6 +92,19 @@ export class PointerDragController<T> {
 
   readonly dragged = $derived(this.#session?.dragData);
 
+  readonly dropIndicator = $derived.by(() => {
+    const session = this.#session;
+    if (!session?.dragData || this.#dragMode !== "drop-indicator") return null;
+
+    const origin = this.#model.elements.indexOf(
+      this.#model.elementFor(session.key),
+    );
+    const target = this.#model.indexOf(session.key);
+    if (origin === -1 || target === -1 || target === origin) return null;
+
+    return { index: target, edge: target < origin ? "before" : "after" };
+  });
+
   #draggingKey = $derived.by(() => {
     const session = this.#session;
     return session?.dragData ? session.key : null;
@@ -99,9 +113,17 @@ export class PointerDragController<T> {
   constructor(
     model: ReorderableList<T>,
     listElement: () => HTMLElement | undefined,
+    dragMode: () => DragMode,
   ) {
     this.#model = model;
     this.#listElement = $derived(listElement());
+    this.#dragMode = $derived(dragMode());
+
+    // Discard the current drag session if the drag mode changes.
+    $effect(() => {
+      void this.#dragMode;
+      untrack(() => this.#session && this.#model.discardSession());
+    });
   }
 
   isDragging(key?: string) {
@@ -148,7 +170,7 @@ export class PointerDragController<T> {
     if (!session || event.pointerId !== session.pointerId) return;
     session.pointerY = event.clientY;
 
-    void this.#swapPastNeighbours();
+    this.#syncReorder();
   };
 
   onpointerup = (event: PointerEvent) => {
@@ -176,7 +198,7 @@ export class PointerDragController<T> {
     const session = this.#session;
     if (!session) return;
 
-    void this.#swapPastNeighbours();
+    this.#syncReorder();
   };
 
   #onWindowKeyDown = (event: KeyboardEvent) => {
@@ -186,7 +208,33 @@ export class PointerDragController<T> {
     this.#endDrag(false);
   };
 
-  async #swapPastNeighbours() {
+  #syncReorder() {
+    if (this.#dragMode === "preview") {
+      void this.#updatePreviewMode();
+    } else {
+      this.#updateDropIndicatorMode();
+    }
+  }
+
+  #updateDropIndicatorMode() {
+    const session = this.#session;
+    if (!session || !this.#listElement) return;
+
+    const node = this.#model.elementFor(session.key);
+    const centre = session.centreIn(this.#listElement);
+
+    // Count the remaining rows above the dragged centre. This is the
+    // final index after removing the source row and inserting it again.
+    const target = this.#model.elements.filter(
+      (element) =>
+        element &&
+        element !== node &&
+        centre > element.offsetTop + element.offsetHeight / 2,
+    ).length;
+    this.#model.moveInSession(target);
+  }
+
+  async #updatePreviewMode() {
     if (this.#isSwappingItem) return;
     this.#isSwappingItem = true;
 

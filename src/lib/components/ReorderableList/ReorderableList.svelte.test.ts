@@ -444,13 +444,173 @@ describe("ReorderableList component", () => {
     });
   });
 
+  describe("drop indicator mode", () => {
+    const indicatorProps = {
+      ...baseProps,
+      dragMode: "drop-indicator",
+    } as const;
+
+    it.each([
+      { from: 0, to: 1, expected: ["Bravo", "Alpha", "Charlie"] },
+      { from: 0, to: 2, expected: ["Bravo", "Charlie", "Alpha"] },
+      { from: 1, to: 0, expected: ["Bravo", "Alpha", "Charlie"] },
+      { from: 1, to: 2, expected: ["Alpha", "Charlie", "Bravo"] },
+      { from: 2, to: 0, expected: ["Charlie", "Alpha", "Bravo"] },
+      { from: 2, to: 1, expected: ["Alpha", "Charlie", "Bravo"] },
+    ])(
+      "keeps rows fixed until dropping from $from to $to",
+      async ({ from, to, expected }) => {
+        const props = $state({ ...indicatorProps });
+        const page = render(Component, props);
+        const rows = page.getByRole("listitem").elements() as HTMLElement[];
+        // Exercise unequal row heights as well as jumps across multiple rows.
+        rows.forEach(
+          (row, index) => (row.style.height = `${50 + index * 25}px`),
+        );
+        const positions = centres(page);
+        const destination = positions[to] + (to > from ? 2 : -2);
+        page
+          .getByRole("button", { name: initialOrder[from] })
+          .element()
+          .dispatchEvent(pointerEvent("pointerdown", positions[from]));
+        dispatchListPointerEvent(page, "pointermove", destination);
+        await tick();
+
+        expect(handleLabels(page)).toEqual(initialOrder);
+        expect(page.getByRole("listitem").elements()).toEqual(rows);
+        expect(centres(page)).toEqual(positions);
+        expect(props.items.map((item) => item.name)).toEqual([
+          "Alpha",
+          "Bravo",
+          "Charlie",
+        ]);
+        const line = page
+          .getByRole("list")
+          .element()
+          .querySelector("[data-dropindicator]");
+        expect(line).toBe(rows[to]);
+        expect(line?.getAttribute("data-dropindicator")).toBe(
+          to > from ? "after" : "before",
+        );
+        expect(getComputedStyle(rows[to], "::after").borderTopStyle).toBe(
+          "solid",
+        );
+
+        dispatchListPointerEvent(page, "pointerup", destination);
+        await expect
+          .poll(() => props.items.map((item) => item.name))
+          .toEqual(expected);
+        expect(
+          page
+            .getByRole("list")
+            .element()
+            .querySelector("[data-dropindicator]"),
+        ).toBeNull();
+        await tick();
+      },
+    );
+
+    it("hides both adjacent insertion edges when returning to the original position", async () => {
+      const props = $state({ ...indicatorProps });
+      const page = render(Component, props);
+      const list = page.getByRole("list").element();
+      const positions = centres(page);
+      page
+        .getByRole("button", { name: "Reorder Bravo" })
+        .element()
+        .dispatchEvent(pointerEvent("pointerdown", positions[1]));
+      for (const destination of [positions[1] - 6, positions[1] + 6]) {
+        dispatchListPointerEvent(page, "pointermove", destination);
+        await tick();
+        expect(list.querySelector("[data-dropindicator]")).toBeNull();
+      }
+      dispatchListPointerEvent(page, "pointermove", positions[2] + 2);
+      await tick();
+      expect(list.querySelector("[data-dropindicator]")).not.toBeNull();
+      dispatchListPointerEvent(page, "pointermove", positions[1]);
+      await tick();
+      expect(list.querySelector("[data-dropindicator]")).toBeNull();
+      dispatchListPointerEvent(page, "pointerup", positions[1]);
+      await tick();
+      expect(props.items.map((item) => item.name)).toEqual([
+        "Alpha",
+        "Bravo",
+        "Charlie",
+      ]);
+    });
+
+    it.each([
+      "pointercancel",
+      "lostpointercapture",
+      "Escape",
+      "disable",
+      "remove",
+    ])("clears the indicator without committing on %s", async (reason) => {
+      const props = $state({ ...indicatorProps, disabled: false });
+      const page = render(Component, props);
+      const list = page.getByRole("list").element();
+      const [from, to] = centres(page);
+      page
+        .getByRole("button", { name: "Reorder Alpha" })
+        .element()
+        .dispatchEvent(pointerEvent("pointerdown", from));
+      dispatchListPointerEvent(page, "pointermove", to + 2);
+      await tick();
+      expect(list.querySelector("[data-dropindicator]")).not.toBeNull();
+
+      if (reason === "disable") props.disabled = true;
+      else if (reason === "remove") props.items = props.items.slice(1);
+      else if (reason === "Escape")
+        window.dispatchEvent(keydownEvent("Escape"));
+      else dispatchListPointerEvent(page, reason, to + 2);
+      await tick();
+
+      expect(list.querySelector("[data-dropindicator]")).toBeNull();
+      expect(props.items.map((item) => item.name)).toEqual(
+        reason === "remove"
+          ? ["Bravo", "Charlie"]
+          : ["Alpha", "Bravo", "Charlie"],
+      );
+    });
+
+    it("still previews keyboard reordering immediately", async () => {
+      const props = $state({ ...indicatorProps });
+      const page = render(Component, props);
+      focus(page.getByRole("button", { name: "Reorder Alpha" }).element());
+      await userEvent.keyboard("{Enter}{ArrowDown}");
+      await expect
+        .poll(() => handleLabels(page))
+        .toEqual(["Reorder Bravo", "Reorder Alpha", "Reorder Charlie"]);
+      expect(
+        page.getByRole("list").element().querySelector("[data-dropindicator]"),
+      ).toBeNull();
+      expect(props.items.map((item) => item.name)).toEqual([
+        "Alpha",
+        "Bravo",
+        "Charlie",
+      ]);
+      await userEvent.keyboard("{Enter}");
+      expect(props.items.map((item) => item.name)).toEqual([
+        "Bravo",
+        "Alpha",
+        "Charlie",
+      ]);
+    });
+  });
+
   describe("pointer dragging", () => {
-    it.each(["pointerup", "pointercancel"])(
-      "settles the overlay without a shadow after %s",
-      async (endEvent) => {
+    it.each([
+      { endEvent: "pointerup", dragMode: "preview" },
+      { endEvent: "pointercancel", dragMode: "preview" },
+      { endEvent: "pointerup", dragMode: "drop-indicator" },
+      { endEvent: "pointercancel", dragMode: "drop-indicator" },
+    ] as const)(
+      "settles the $dragMode overlay without a shadow after $endEvent",
+      async ({ endEvent, dragMode }) => {
         const page = render(Component, {
           ...baseProps,
           animationDuration: 200,
+          dragMode,
         });
         const list = page.getByRole("list").element();
         const [from, to] = centres(page);

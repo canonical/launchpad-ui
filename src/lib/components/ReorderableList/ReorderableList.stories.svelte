@@ -98,6 +98,24 @@
   {/snippet}
 </Story>
 
+<Story name="Drop indicator" args={{ dragMode: "drop-indicator" }}>
+  {#snippet template(args)}
+    {let items = $state(baseItems)}
+    <ReorderableList
+      {...args}
+      bind:items
+      key={(item) => item.id}
+      itemLabel={(item) => item.name}
+    >
+      {#snippet item(props)}
+        <ReorderableList.Item {...props}>
+          <span>{props.item.name}</span>
+        </ReorderableList.Item>
+      {/snippet}
+    </ReorderableList>
+  {/snippet}
+</Story>
+
 <Story name="Nested scroll containers" tags={["!autodocs"]}>
   {#snippet template(args)}
     {let items = $state(baseItems)}
