@@ -302,6 +302,57 @@ describe("ReorderableList component", () => {
   });
 
   describe("position input", () => {
+    describe.each(["Enter", "blur"] as const)("committing on %s", (commit) => {
+      it.each([
+        { value: "1e2", position: 3, expected: ["Bravo", "Charlie", "Alpha"] },
+        {
+          value: "20e-1",
+          position: 2,
+          expected: ["Bravo", "Alpha", "Charlie"],
+        },
+      ])(
+        "interprets $value as a number",
+        async ({ value, position, expected }) => {
+          const props = $state({ ...baseProps });
+          const page = render(Component, props);
+          const input = page.getByRole("spinbutton", {
+            name: "Position of Alpha",
+          });
+
+          await input.fill(value);
+          if (commit === "Enter") await userEvent.keyboard("{Enter}");
+          else (input.element() as HTMLInputElement).blur();
+
+          await expect
+            .poll(() => props.items.map((item) => item.name))
+            .toEqual(expected);
+          await expect.element(input).toHaveValue(position);
+        },
+      );
+
+      it.each(["2.5", "1e-1"])(
+        "rejects fractional position %s",
+        async (value) => {
+          const props = $state({ ...baseProps });
+          const page = render(Component, props);
+          const input = page.getByRole("spinbutton", {
+            name: "Position of Bravo",
+          });
+
+          await input.fill(value);
+          if (commit === "Enter") await userEvent.keyboard("{Enter}");
+          else (input.element() as HTMLInputElement).blur();
+
+          await expect.element(input).toHaveValue(2);
+          expect(props.items.map((item) => item.name)).toEqual([
+            "Alpha",
+            "Bravo",
+            "Charlie",
+          ]);
+        },
+      );
+    });
+
     it("moves the item on Enter", async () => {
       const page = render(Component, baseProps);
       const input = page.getByRole("spinbutton", { name: "Position of Alpha" });
