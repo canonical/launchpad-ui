@@ -445,6 +445,41 @@ describe("ReorderableList component", () => {
   });
 
   describe("pointer dragging", () => {
+    it.each(["pointerup", "pointercancel"])(
+      "settles the overlay without a shadow after %s",
+      async (endEvent) => {
+        const page = render(Component, {
+          ...baseProps,
+          animationDuration: 200,
+        });
+        const list = page.getByRole("list").element();
+        const [from, to] = centres(page);
+        page
+          .getByRole("button", { name: "Reorder Alpha" })
+          .element()
+          .dispatchEvent(pointerEvent("pointerdown", from));
+        dispatchListPointerEvent(page, "pointermove", to + 2);
+        await tick();
+        const overlay = list.querySelector<HTMLElement>(".drag-overlay")!;
+        expect(getComputedStyle(overlay).boxShadow).not.toBe("none");
+
+        dispatchListPointerEvent(page, endEvent, to + 2);
+        await tick();
+        expect(overlay.isConnected).toBe(true);
+        await expect
+          .poll(() => getComputedStyle(overlay).boxShadow)
+          .toBe("none");
+        await expect.poll(() => overlay.isConnected).toBe(false);
+        await expect
+          .poll(() => handleLabels(page))
+          .toEqual(
+            endEvent === "pointerup"
+              ? ["Reorder Bravo", "Reorder Alpha", "Reorder Charlie"]
+              : initialOrder,
+          );
+      },
+    );
+
     it.each([0.5, 1, 2])(
       "converts row positions in both directions at scale %s",
       (scale) => {

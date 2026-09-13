@@ -66,32 +66,24 @@
     },
   });
 
-  // When the drag is already gone, we still need the last travel/key to animate from where it was dropped off to its final position.
-  let lastDragData = $state<DragData>();
-  $effect(() => {
-    if (drag.dragged) {
-      lastDragData = drag.dragged;
-    }
-  });
-
-  function settleOverlay(node: HTMLElement): TransitionConfig {
+  function settleOverlay(
+    _node: HTMLElement,
+    dragData: DragData,
+  ): TransitionConfig {
     // Target the real item's resting spot rather than the overlay's pickup spot.
-    if (!lastDragData || !listElement) return {};
-    const targetElement = list.elementFor(lastDragData.key);
+    if (!listElement) return {};
+    const targetElement = list.elementFor(dragData.key);
     if (!targetElement) return {};
     const targetTop = listCoordinates(listElement).listToViewport(
       targetElement.offsetTop,
     );
-    const correction = targetTop - parseFloat(node.style.top || "0");
+    const correction = targetTop - dragData.rect.top;
 
-    const lastTravel = lastDragData.travel ?? 0;
-
-    node.classList.add("settling");
     return {
       duration: animationDuration,
       easing: TRANSITION_EASING,
       css: (t) =>
-        `transform: translateY(${correction + t * (lastTravel - correction)}px)`,
+        `transform: translateY(${correction + t * (dragData.travel - correction)}px); box-shadow: none;`,
     };
   }
 </script>
@@ -133,25 +125,28 @@
       {@render item({ item: entry, index })}
     </li>
   {/each}
-  {#if drag.dragged && list.indexOf(drag.dragged.key) !== -1}
-    {const index = $derived(list.indexOf(drag.dragged.key))}
+  <!-- 
+    Degraded #each instead of an #if block trick to preserve the dragData for the settle transition without synchronization effects.
+  -->
+  {#each drag.dragged && list.indexOf(drag.dragged.key) !== -1 ? [drag.dragged] : [] as dragData (dragData.key)}
+    {const index = $derived(list.indexOf(dragData.key))}
     <li
-      popover="manual"
       class="drag-overlay"
       aria-hidden="true"
       inert
-      style:top={`${drag.dragged.rect.top}px`}
-      style:left={`${drag.dragged.rect.left}px`}
-      style:width={`${drag.dragged.rect.width}px`}
-      style:height={`${drag.dragged.rect.height}px`}
-      style:transform={`translateY(${drag.dragged.travel}px)`}
-      out:settleOverlay
+      style:top={`${dragData.rect.top}px`}
+      style:left={`${dragData.rect.left}px`}
+      style:width={`${dragData.rect.width}px`}
+      style:height={`${dragData.rect.height}px`}
+      style:transform={`translateY(${dragData.travel}px)`}
+      out:settleOverlay={dragData}
       // A trick to force the element onto the top-layer escaping any potential containing blocks that could throw off the viewport-relative positioning. Also ensures that the overlay isn't clipped now matter what.
+      popover="manual"
       {@attach (el) => el.showPopover()}
     >
       {@render item({ item: list.displayItems[index], index })}
     </li>
-  {/if}
+  {/each}
 </ol>
 
 <div id={instructionsId} class="visually-hidden">
@@ -240,10 +235,6 @@ IDs (for example `$props.id()`) rather than fixed IDs inside the snippet.
         pointer-events: none;
         transition: none;
         box-shadow: var(--grabbed-shadow);
-
-        &.settling {
-          box-shadow: none;
-        }
       }
 
       &.grabbed {

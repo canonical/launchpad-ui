@@ -1,9 +1,7 @@
 import { ReorderSession } from "./ReorderSession.svelte.js";
 import type { ReorderableList } from "./ReorderableList.svelte.js";
 
-class KeyboardSession extends ReorderSession {
-  readonly kind = "grab";
-}
+class KeyboardSession extends ReorderSession {}
 
 export class KeyboardGrabController<T> {
   readonly #model: ReorderableList<T>;
@@ -14,7 +12,7 @@ export class KeyboardGrabController<T> {
 
   isGrabbed(key: string) {
     const session = this.#model.session;
-    return session?.kind === "grab" && session?.key === key;
+    return session instanceof KeyboardSession && session.key === key;
   }
 
   onkeydown(event: KeyboardEvent, key: string) {

@@ -2,7 +2,7 @@ import { flushSync, onDestroy, untrack } from "svelte";
 import type { Attachment } from "svelte/attachments";
 import type { ReorderSession } from "./ReorderSession.svelte.js";
 
-const ANNOUNCEMENT_THROTTLE_MS = 150;
+const ANNOUNCEMENT_DEBOUNCE_MS = 150;
 
 export type ReorderableListOptions<T> = {
   items: () => T[];
@@ -248,7 +248,7 @@ export class ReorderableList<T> {
         if (currentIndex !== -1) {
           this.#announcement = `${this.labelFor(key)} moved to position ${currentIndex + 1} of ${this.count}.`;
         }
-      }, ANNOUNCEMENT_THROTTLE_MS);
+      }, ANNOUNCEMENT_DEBOUNCE_MS);
       return;
     }
 

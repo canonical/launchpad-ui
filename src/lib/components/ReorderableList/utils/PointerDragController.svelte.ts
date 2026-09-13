@@ -12,7 +12,6 @@ export type DragData = {
 const DRAG_THRESHOLD_PX = 5;
 
 class PointerSession extends ReorderSession {
-  readonly kind = "drag";
   readonly pointerId: number;
   readonly pointerStartY: number;
   readonly listeners = new AbortController();

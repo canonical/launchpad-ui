@@ -43,6 +43,5 @@ export type ReorderableListContext<T> = {
   key: (entry: T) => string;
   itemLabel: (entry: T) => string;
   instructionsId: string;
-  children?: Snippet;
   disabled: boolean;
 };
