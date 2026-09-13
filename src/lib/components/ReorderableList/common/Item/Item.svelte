@@ -34,7 +34,10 @@
     aria-pressed={context.grab.isGrabbed(itemKey)}
     onpointerdown={(event) => context.drag.onpointerdown(event, itemKey)}
     onkeydown={(event) => context.grab.onkeydown(event, itemKey)}
-    onblur={() => context.grab.onblur(itemKey)}
+    onblur={() => {
+      context.grab.onblur(itemKey);
+      context.drag.onblur(itemKey);
+    }}
   >
     {#snippet iconLeft()}
       <DragIcon />

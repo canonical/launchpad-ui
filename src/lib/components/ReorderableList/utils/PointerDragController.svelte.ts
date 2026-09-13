@@ -170,6 +170,12 @@ export class PointerDragController<T> {
     this.#endDrag(false);
   };
 
+  onblur = (key: string) => {
+    if (!this.isDragging(key)) return;
+    if (this.#model.isRestoringFocus) return;
+    this.#endDrag(false);
+  };
+
   #onScroll = () => {
     const session = this.#session;
     if (!session) return;
