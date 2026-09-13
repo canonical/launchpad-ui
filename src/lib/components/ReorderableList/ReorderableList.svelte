@@ -10,6 +10,7 @@
   import type { DragData } from "./utils/PointerDragController.svelte.js";
   import { PositionInputController } from "./utils/PositionInputController.js";
   import { ReorderableList } from "./utils/ReorderableList.svelte.js";
+  import { listCoordinates } from "./utils/listCoordinates.js";
   import { browser } from "$app/env";
 
   const componentCssClassName = "ds reorderable-list";
@@ -78,12 +79,10 @@
     if (!lastDragData || !listElement) return {};
     const targetElement = list.elementFor(lastDragData.key);
     if (!targetElement) return {};
-    const listRect = listElement.getBoundingClientRect();
-    const correction =
-      listRect.top +
-      targetElement.offsetTop -
-      listElement.scrollTop -
-      parseFloat(node.style.top || "0");
+    const targetTop = listCoordinates(listElement).listToViewport(
+      targetElement.offsetTop,
+    );
+    const correction = targetTop - parseFloat(node.style.top || "0");
 
     const lastTravel = lastDragData.travel ?? 0;
 

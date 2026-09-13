@@ -8,6 +8,7 @@ import ReorderableList from "./ReorderableList.svelte";
 import { itemSnippet, threeItems } from "./test.fixtures.svelte";
 import type { TestItem } from "./test.fixtures.svelte";
 import type { ReorderableListProps } from "./types.js";
+import { listCoordinates } from "./utils/listCoordinates.js";
 
 // `render` cannot infer the `generics="T"` parameter, so pin it to the fixture type.
 const Component = ReorderableList as unknown as SvelteComponent<
@@ -393,6 +394,95 @@ describe("ReorderableList component", () => {
   });
 
   describe("pointer dragging", () => {
+    it.each([0.5, 1, 2])(
+      "converts row positions in both directions at scale %s",
+      (scale) => {
+        const page = render(Component, {
+          ...baseProps,
+          style: `transform: scale(${scale}); transform-origin: top left; border: 4px solid; padding: 8px; height: 80px; overflow: auto; scroll-behavior: auto;`,
+        });
+        const list = page.getByRole("list").element() as HTMLElement;
+        list.scrollTop = 8;
+        const coordinates = listCoordinates(list);
+
+        for (const element of page.getByRole("listitem").elements()) {
+          const row = element as HTMLElement;
+          const viewportTop = row.getBoundingClientRect().top;
+          expect(coordinates.listToViewport(row.offsetTop)).toBeCloseTo(
+            viewportTop,
+          );
+          expect(coordinates.viewportToList(viewportTop)).toBeCloseTo(
+            row.offsetTop,
+          );
+        }
+      },
+    );
+
+    it.each([
+      {
+        scale: 0.5,
+        fromIndex: 0,
+        direction: 1,
+        name: "Alpha",
+        expected: ["Bravo", "Alpha", "Charlie"],
+      },
+      {
+        scale: 2,
+        fromIndex: 0,
+        direction: 1,
+        name: "Alpha",
+        expected: ["Bravo", "Alpha", "Charlie"],
+      },
+      {
+        scale: 0.5,
+        fromIndex: 2,
+        direction: -1,
+        name: "Charlie",
+        expected: ["Alpha", "Charlie", "Bravo"],
+      },
+      {
+        scale: 2,
+        fromIndex: 2,
+        direction: -1,
+        name: "Charlie",
+        expected: ["Alpha", "Charlie", "Bravo"],
+      },
+    ])(
+      "moves $name one slot with ancestor scale $scale",
+      async ({ scale, fromIndex, direction, name, expected }) => {
+        const props = $state({
+          ...baseProps,
+          style:
+            "border: 4px solid; padding: 8px; height: 80px; overflow: auto; scroll-behavior: auto;",
+        });
+        const page = render(Component, props);
+        const list = page.getByRole("list").element() as HTMLElement;
+        const container = list.parentElement!;
+        container.style.transform = `scale(${scale})`;
+        container.style.transformOrigin = "top left";
+        list.scrollTop = 8;
+        const positions = centres(page);
+        // Pick up away from the centre to exercise conversion of the grab offset too.
+        const grabOffset = 3 * scale;
+        const from = positions[fromIndex] + grabOffset;
+        const to = positions[1] + grabOffset + direction * 2;
+
+        page
+          .getByRole("button", { name: `Reorder ${name}` })
+          .element()
+          .dispatchEvent(pointerEvent("pointerdown", from));
+        dispatchListPointerEvent(page, "pointermove", to);
+        await expect
+          .poll(() => handleLabels(page))
+          .toEqual(expected.map((label) => `Reorder ${label}`));
+        dispatchListPointerEvent(page, "pointerup", to);
+        await expect
+          .poll(() => props.items.map((item) => item.name))
+          .toEqual(expected);
+        await tick();
+      },
+    );
+
     it.each(["pointerup", "pointercancel", "lostpointercapture"] as const)(
       "preserves dragging and forwards consumer handlers when ending with %s",
       async (endEvent) => {

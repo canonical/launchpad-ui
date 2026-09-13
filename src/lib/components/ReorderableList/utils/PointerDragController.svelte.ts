@@ -1,6 +1,7 @@
 import { tick } from "svelte";
 import { ReorderSession } from "./ReorderSession.svelte.js";
 import type { ReorderableList } from "./ReorderableList.svelte.js";
+import { listCoordinates } from "./listCoordinates.js";
 
 export type DragData = {
   rect: DOMRect;
@@ -17,7 +18,6 @@ class PointerSession extends ReorderSession {
   readonly listeners = new AbortController();
 
   readonly #draggedRect: DOMRect;
-  readonly #grabOffsetY: number;
   readonly #captureElement: HTMLElement | undefined;
   readonly #onDragStart: () => void;
 
@@ -36,12 +36,10 @@ class PointerSession extends ReorderSession {
 
   /** Pointer and slot centres share the list's padding-box coordinate system. */
   centreIn(list: HTMLElement) {
-    const pointerInList =
-      this.#pointerY -
-      list.getBoundingClientRect().top -
-      list.clientTop +
-      list.scrollTop;
-    return pointerInList - this.#grabOffsetY + this.#draggedRect.height / 2;
+    const initialCentre = this.#draggedRect.top + this.#draggedRect.height / 2;
+    const centreInViewport = initialCentre + this.#pointerTravel;
+
+    return listCoordinates(list).viewportToList(centreInViewport);
   }
 
   constructor(
@@ -57,7 +55,6 @@ class PointerSession extends ReorderSession {
     this.#pointerY = event.clientY;
     this.#captureElement = captureElement;
     this.#draggedRect = draggedElement.getBoundingClientRect();
-    this.#grabOffsetY = this.pointerStartY - this.#draggedRect.top;
     this.#onDragStart = onDragStart;
   }
 
