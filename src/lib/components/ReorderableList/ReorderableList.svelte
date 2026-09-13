@@ -23,6 +23,10 @@
     item,
     disabled: disabledProp = false,
     animationDuration: animationDurationProp = 200,
+    onpointermove,
+    onpointerup,
+    onpointercancel,
+    onlostpointercapture,
     ...rest
   }: ReorderableListProps<T> = $props();
 
@@ -98,10 +102,22 @@
   role="list"
   class={[componentCssClassName, className]}
   class:dragging={drag.isDragging()}
-  onpointermove={drag.onpointermove}
-  onpointerup={drag.onpointerup}
-  onpointercancel={drag.onpointercancel}
-  onlostpointercapture={drag.onlostpointercapture}
+  onpointermove={(event) => {
+    drag.onpointermove(event);
+    onpointermove?.(event);
+  }}
+  onpointerup={(event) => {
+    drag.onpointerup(event);
+    onpointerup?.(event);
+  }}
+  onpointercancel={(event) => {
+    drag.onpointercancel(event);
+    onpointercancel?.(event);
+  }}
+  onlostpointercapture={(event) => {
+    drag.onlostpointercapture(event);
+    onlostpointercapture?.(event);
+  }}
   style:--reappear-after-settle-delay={`${animationDuration}ms`}
   {...rest}
 >
@@ -123,7 +139,6 @@
     <li
       popover="manual"
       class="drag-overlay"
-      class:settling={!drag.dragged}
       aria-hidden="true"
       inert
       style:top={`${drag.dragged.rect.top}px`}

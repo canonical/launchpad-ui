@@ -1,6 +1,6 @@
 import type { Component as SvelteComponent } from "svelte";
 import { tick } from "svelte";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { userEvent } from "vitest/browser";
 import { render } from "vitest-browser-svelte";
 import type { Component, RenderResult } from "vitest-browser-svelte";
@@ -393,6 +393,59 @@ describe("ReorderableList component", () => {
   });
 
   describe("pointer dragging", () => {
+    it.each(["pointerup", "pointercancel", "lostpointercapture"] as const)(
+      "preserves dragging and forwards consumer handlers when ending with %s",
+      async (endEvent) => {
+        const onpointermove = vi.fn();
+        const onend = vi.fn();
+        const props = $state({
+          ...baseProps,
+          onpointermove,
+          [`on${endEvent}`]: onend,
+        });
+        const page = render(Component, props);
+        const list = page.getByRole("list").element();
+        const [from, to] = centres(page);
+        const moveEvent = pointerEvent("pointermove", to + 2);
+        const finishEvent = pointerEvent(endEvent, to + 2);
+
+        page
+          .getByRole("button", { name: "Reorder Alpha" })
+          .element()
+          .dispatchEvent(pointerEvent("pointerdown", from));
+        list.dispatchEvent(moveEvent);
+
+        await expect
+          .poll(() => handleLabels(page))
+          .toEqual(["Reorder Bravo", "Reorder Alpha", "Reorder Charlie"]);
+        expect(onpointermove).toHaveBeenCalledExactlyOnceWith(moveEvent);
+        expect(props.items.map((item) => item.name)).toEqual([
+          "Alpha",
+          "Bravo",
+          "Charlie",
+        ]);
+
+        list.dispatchEvent(finishEvent);
+
+        await expect
+          .poll(() => props.items.map((item) => item.name))
+          .toEqual(
+            endEvent === "pointerup"
+              ? ["Bravo", "Alpha", "Charlie"]
+              : ["Alpha", "Bravo", "Charlie"],
+          );
+        await expect
+          .element(page.getByRole("status"))
+          .toHaveTextContent(
+            endEvent === "pointerup"
+              ? "Alpha dropped at position 2 of 3."
+              : "Reordering cancelled. Alpha returned to position 1 of 3.",
+          );
+        expect(onend).toHaveBeenCalledExactlyOnceWith(finishEvent);
+        await tick();
+      },
+    );
+
     it("reorders when dragged past the next item", async () => {
       const page = render(Component, baseProps);
       const handle = page.getByRole("button", { name: "Reorder Alpha" });
