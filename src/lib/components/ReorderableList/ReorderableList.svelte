@@ -2,6 +2,7 @@
   import { flip } from "svelte/animate";
   import { cubicOut } from "svelte/easing";
   import { prefersReducedMotion } from "svelte/motion";
+  import { SvelteSet } from "svelte/reactivity";
   import type { TransitionConfig } from "svelte/transition";
   import { setReorderableListContext } from "./context.js";
   import type { ReorderableListProps } from "./types.js";
@@ -33,12 +34,18 @@
   }: ReorderableListProps<T> = $props();
 
   const disabled = $derived(!browser || disabledProp);
+  /* 
+    TODO(@Enzo): Confirm opacity values/tokens
+    TODO: JS design tokens
+  */
+  const overlayOpacity = $derived(dragMode === "drop-indicator" ? 0.5 : 1);
 
   const animationDuration = $derived(
     prefersReducedMotion.current ? 0 : animationDurationProp,
   );
 
   let listElement = $state<HTMLElement>();
+  const settlingKeys = new SvelteSet<string>();
 
   const list = new ReorderableList<T>({
     items: () => items,
@@ -83,12 +90,13 @@
       targetElement.offsetTop,
     );
     const correction = targetTop - dragData.rect.top;
+    const opacity = overlayOpacity;
 
     return {
       duration: animationDuration,
       easing: TRANSITION_EASING,
       css: (t) =>
-        `transform: translateY(${correction + t * (dragData.travel - correction)}px); box-shadow: none;`,
+        `transform: translateY(${correction + t * (dragData.travel - correction)}px); opacity: ${1 + t * (opacity - 1)}; box-shadow: none;`,
     };
   }
 
@@ -120,12 +128,12 @@
     drag.onlostpointercapture(event);
     onlostpointercapture?.(event);
   }}
-  style:--reappear-after-settle-delay={`${animationDuration}ms`}
   {...rest}
 >
   {#each displayItems as entry, index (key(entry))}
     <li
       class:grabbed={grab.isGrabbed(key(entry))}
+      class:settling={settlingKeys.has(key(entry))}
       data-dragging={drag.isDragging(key(entry)) ? dragMode : undefined}
       data-dropindicator={drag.dropIndicator &&
       drag.dropIndicator.index === index
@@ -147,15 +155,17 @@
     {const index = $derived(list.indexOf(dragData.key))}
     <li
       class="drag-overlay"
-      class:drop-indicator={dragMode === "drop-indicator"}
       aria-hidden="true"
       inert
+      style:--overlay-opacity={overlayOpacity}
       style:top={`${dragData.rect.top}px`}
       style:left={`${dragData.rect.left}px`}
       style:width={`${dragData.rect.width}px`}
       style:height={`${dragData.rect.height}px`}
       style:transform={`translateY(${dragData.travel}px)`}
       out:settleOverlay={dragData}
+      onoutrostart={() => settlingKeys.add(dragData.key)}
+      onoutroend={() => settlingKeys.delete(dragData.key)}
       // A trick to force the element onto the top-layer escaping any potential containing blocks that could throw off the viewport-relative positioning. Also ensures that the overlay isn't clipped now matter what.
       popover="manual"
       {@attach (el) => el.showPopover()}
@@ -223,11 +233,8 @@ During pointer dragging, the snippet is also rendered in an inert fixed-position
     > li {
       background-color: var(--color-background);
       box-shadow: none;
-      transition:
-        box-shadow var(--ds-transition-duration-fast)
-          var(--ds-transition-timing-ease-out),
-        /* Delay the reappearance of the item until the overlay comes back into place */
-        opacity 0s linear var(--reappear-after-settle-delay);
+      transition: box-shadow var(--ds-transition-duration-fast)
+        var(--ds-transition-timing-ease-out);
 
       /* TODO: Shadow design tokens */
       --grabbed-shadow:
@@ -242,6 +249,10 @@ During pointer dragging, the snippet is also rendered in an inert fixed-position
         /* TODO(@Enzo): Confirm opacity values/tokens */
         opacity: 0.3;
         transition: none;
+      }
+
+      &.settling {
+        opacity: 0;
       }
 
       &[data-dropindicator] {
@@ -273,11 +284,7 @@ During pointer dragging, the snippet is also rendered in an inert fixed-position
         pointer-events: none;
         transition: none;
         box-shadow: var(--grabbed-shadow);
-
-        &.drop-indicator {
-          /* TODO(@Enzo): Confirm opacity values/tokens */
-          opacity: 0.5;
-        }
+        opacity: var(--overlay-opacity);
       }
 
       &.grabbed {
