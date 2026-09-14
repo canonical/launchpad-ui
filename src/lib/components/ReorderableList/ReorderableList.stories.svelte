@@ -24,6 +24,21 @@
   });
 </script>
 
+<!--
+  Items can be reordered using any of these interaction patterns:
+  - **Drag and drop**: drag the handle to move the item to its new position and
+    release it. Press <kbd>Escape</kbd> while dragging to cancel.
+  - **Immediate keyboard movement**: focus the handle and press
+    <kbd>Alt</kbd>+<kbd>ArrowUp</kbd> or <kbd>Alt</kbd>+<kbd>ArrowDown</kbd> to
+    move the item one position immediately.
+  - **Keyboard pickup**: focus the handle and press <kbd>Enter</kbd> or
+    <kbd>Space</kbd> to pick it up. Use <kbd>ArrowUp</kbd> or
+    <kbd>ArrowDown</kbd> to move it, <kbd>Home</kbd> or <kbd>End</kbd> to move
+    it to the first or last position, then press <kbd>Enter</kbd> or
+    <kbd>Space</kbd>, or defocus the handle, to drop it. Press
+    <kbd>Escape</kbd> to cancel.
+-->
+
 <script lang="ts">
   const baseItems: Item[] = [
     { id: "all", name: "All packages", editable: false, expanded: false },
