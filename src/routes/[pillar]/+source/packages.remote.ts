@@ -15,7 +15,10 @@ const SORT_KEYS = {
   series: "series",
   pocket: "pocket",
   status: "status",
-} as const satisfies Record<(typeof SORTABLE_PACKAGES_COLUMNS)[number], PublishedSourcesSortKey>;
+} as const satisfies Record<
+  (typeof SORTABLE_PACKAGES_COLUMNS)[number],
+  PublishedSourcesSortKey
+>;
 
 const DEFAULT_ORDER_BY = ["-date_created"];
 

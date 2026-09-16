@@ -35,13 +35,15 @@
     },
   });
 
-  const data = $derived(await getSourcePackages({
-    distro: params.pillar,
-    sortKey: queryParams.sort.key,
-    sortOrder: queryParams.sort.direction,
-    page: PAGE,
-    size: PAGE_SIZE,
-  }));
+  const data = $derived(
+    await getSourcePackages({
+      distro: params.pillar,
+      sortKey: queryParams.sort.key,
+      sortOrder: queryParams.sort.direction,
+      page: PAGE,
+      size: PAGE_SIZE,
+    }),
+  );
 </script>
 
 <svelte:head>
