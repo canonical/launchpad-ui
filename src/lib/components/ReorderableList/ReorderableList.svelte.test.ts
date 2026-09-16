@@ -625,9 +625,7 @@ describe("ReorderableList component", () => {
         dispatchListPointerEvent(page, endEvent, to + 2);
         await tick();
         expect(overlay.isConnected).toBe(true);
-        await expect
-          .poll(() => getComputedStyle(overlay).boxShadow)
-          .toBe("none");
+        expect(overlay).toHaveClass("overlay-settling");
         await expect.poll(() => overlay.isConnected).toBe(false);
         await expect
           .poll(() => handleLabels(page))

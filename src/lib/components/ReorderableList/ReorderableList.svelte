@@ -34,11 +34,6 @@
   }: ReorderableListProps<T> = $props();
 
   const disabled = $derived(!browser || disabledProp);
-  /* 
-    TODO(@Enzo): Confirm opacity values/tokens
-    TODO: JS design tokens
-  */
-  const overlayOpacity = $derived(dragMode === "drop-indicator" ? 0.5 : 1);
 
   const animationDuration = $derived(
     prefersReducedMotion.current ? 0 : animationDurationProp,
@@ -79,7 +74,7 @@
   });
 
   function settleOverlay(
-    _node: HTMLElement,
+    node: HTMLElement,
     dragData: DragData,
   ): TransitionConfig {
     // Target the real item's resting spot rather than the overlay's pickup spot.
@@ -90,13 +85,15 @@
       targetElement.offsetTop,
     );
     const correction = targetTop - dragData.rect.top;
-    const opacity = overlayOpacity;
+
+    // Apply shared settling styles outside the Svelte transition's CSS because they also affect the overlay content.
+    node.classList.add("overlay-settling");
 
     return {
       duration: animationDuration,
       easing: TRANSITION_EASING,
       css: (t) =>
-        `transform: translateY(${correction + t * (dragData.travel - correction)}px); opacity: ${1 + t * (opacity - 1)}; box-shadow: none;`,
+        `transform: translateY(${correction + t * (dragData.travel - correction)}px);`,
     };
   }
 
@@ -112,6 +109,7 @@
   role="list"
   class={[componentCssClassName, className]}
   class:dragging={drag.isDragging()}
+  style:--reorderable-list-animation-duration={`${animationDuration}ms`}
   onpointermove={(event) => {
     drag.onpointermove(event);
     onpointermove?.(event);
@@ -155,9 +153,9 @@
     {const index = $derived(list.indexOf(dragData.key))}
     <li
       class="drag-overlay"
+      data-dragmode={dragMode}
       aria-hidden="true"
       inert
-      style:--overlay-opacity={overlayOpacity}
       style:top={`${dragData.rect.top}px`}
       style:left={`${dragData.rect.left}px`}
       style:width={`${dragData.rect.width}px`}
@@ -238,8 +236,9 @@ During pointer dragging, the snippet is also rendered in an inert fixed-position
     > li {
       background-color: var(--color-background);
       box-shadow: none;
-      transition: box-shadow var(--ds-transition-duration-fast)
-        var(--ds-transition-timing-ease-out);
+      transition-property: box-shadow;
+      transition-duration: var(--reorderable-list-animation-duration);
+      transition-timing-function: var(--ds-transition-timing-ease-out);
 
       /* TODO: Shadow design tokens */
       --grabbed-shadow:
@@ -253,7 +252,6 @@ During pointer dragging, the snippet is also rendered in an inert fixed-position
       &[data-dragging="drop-indicator"] {
         /* TODO(@Enzo): Confirm opacity values/tokens */
         opacity: 0.3;
-        transition: none;
       }
 
       &.settling {
@@ -287,9 +285,30 @@ During pointer dragging, the snippet is also rendered in an inert fixed-position
         position: fixed;
         inset: auto;
         pointer-events: none;
-        transition: none;
         box-shadow: var(--grabbed-shadow);
-        opacity: var(--overlay-opacity);
+        transition-property: box-shadow, opacity;
+
+        :global(&.overlay-settling) {
+          box-shadow: none;
+        }
+
+        &[data-dragmode="drop-indicator"] {
+          /* TODO(@Enzo): Confirm opacity values/tokens */
+          opacity: 0.7;
+
+          > :global(*) {
+            opacity: 0;
+            transition: opacity var(--reorderable-list-animation-duration)
+              var(--ds-transition-timing-ease-out);
+          }
+
+          :global(&.overlay-settling) {
+            opacity: 1;
+            > :global(*) {
+              opacity: 1;
+            }
+          }
+        }
       }
 
       &.grabbed {
