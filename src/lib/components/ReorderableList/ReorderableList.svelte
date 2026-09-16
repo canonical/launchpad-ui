@@ -6,9 +6,9 @@
   import type { TransitionConfig } from "svelte/transition";
   import { setReorderableListContext } from "./context.js";
   import type { ReorderableListProps } from "./types.js";
-  import { KeyboardGrabController } from "./utils/KeyboardGrabController.svelte.js";
-  import { PointerDragController } from "./utils/PointerDragController.svelte.js";
-  import type { DragData } from "./utils/PointerDragController.svelte.js";
+  import { DragController } from "./utils/DragController.svelte.js";
+  import type { DragData } from "./utils/DragController.svelte.js";
+  import { KeyboardController } from "./utils/KeyboardController.svelte.js";
   import { PositionInputController } from "./utils/PositionInputController.js";
   import { ReorderableList } from "./utils/ReorderableList.svelte.js";
   import { listCoordinates } from "./utils/listCoordinates.js";
@@ -55,12 +55,12 @@
     disabled: () => disabled,
   });
 
-  const drag = new PointerDragController(
+  const drag = new DragController(
     list,
     () => listElement,
     () => dragMode,
   );
-  const grab = new KeyboardGrabController(list);
+  const keyboard = new KeyboardController(list);
   const position = new PositionInputController(list);
 
   const instructionsId = $props.id();
@@ -68,7 +68,7 @@
   setReorderableListContext({
     list,
     drag,
-    grab,
+    keyboard,
     position,
     key: (entry) => key(entry),
     itemLabel: (entry) => itemLabel(entry),
@@ -103,7 +103,7 @@
   const displayItems = $derived(
     dragMode === "drop-indicator" && drag.isDragging()
       ? items
-      : list.sessionItems,
+      : list.itemsWithPendingReorder,
   );
 </script>
 
@@ -132,7 +132,7 @@
 >
   {#each displayItems as entry, index (key(entry))}
     <li
-      class:grabbed={grab.isGrabbed(key(entry))}
+      class:grabbed={keyboard.isGrabbed(key(entry))}
       class:settling={settlingKeys.has(key(entry))}
       data-dragging={drag.isDragging(key(entry)) ? dragMode : undefined}
       data-dropindicator={drag.dropIndicator &&
@@ -151,7 +151,7 @@
   <!-- 
     Degraded #each instead of an #if block trick to preserve the dragData for the settle transition without synchronization effects.
   -->
-  {#each drag.dragged && list.indexOf(drag.dragged.key) !== -1 ? [drag.dragged] : [] as dragData (dragData.key)}
+  {#each drag.dragData && list.indexOf(drag.dragData.key) !== -1 ? [drag.dragData] : [] as dragData (dragData.key)}
     {const index = $derived(list.indexOf(dragData.key))}
     <li
       class="drag-overlay"
@@ -170,7 +170,7 @@
       popover="manual"
       {@attach (el) => el.showPopover()}
     >
-      {@render item({ item: list.sessionItems[index], index })}
+      {@render item({ item: list.itemsWithPendingReorder[index], index })}
     </li>
   {/each}
 </ol>

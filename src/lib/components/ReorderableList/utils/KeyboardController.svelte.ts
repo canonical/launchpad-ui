@@ -1,9 +1,8 @@
-import { ReorderSession } from "./ReorderSession.svelte.js";
+import { Reorder } from "./Reorder.svelte.js";
 import type { ReorderableList } from "./ReorderableList.svelte.js";
 
-class KeyboardSession extends ReorderSession {}
-
-export class KeyboardGrabController<T> {
+/** Coordinates keyboard-driven reordering for a reorderable list. */
+export class KeyboardController<T> {
   readonly #model: ReorderableList<T>;
 
   constructor(model: ReorderableList<T>) {
@@ -11,8 +10,10 @@ export class KeyboardGrabController<T> {
   }
 
   isGrabbed(key: string) {
-    const session = this.#model.session;
-    return session instanceof KeyboardSession && session.key === key;
+    const pendingReorder = this.#model.pendingReorder;
+    return (
+      pendingReorder instanceof KeyboardReorder && pendingReorder.key === key
+    );
   }
 
   onkeydown(event: KeyboardEvent, key: string) {
@@ -25,19 +26,19 @@ export class KeyboardGrabController<T> {
       switch (event.key) {
         case "ArrowUp":
           event.preventDefault();
-          this.#model.moveInSession(index - 1);
+          this.#model.movePendingReorder(index - 1);
           return;
         case "ArrowDown":
           event.preventDefault();
-          this.#model.moveInSession(index + 1);
+          this.#model.movePendingReorder(index + 1);
           return;
         case "Home":
           event.preventDefault();
-          this.#model.moveInSession(0);
+          this.#model.movePendingReorder(0);
           return;
         case "End":
           event.preventDefault();
-          this.#model.moveInSession(this.#model.count - 1);
+          this.#model.movePendingReorder(this.#model.itemsCount - 1);
           return;
         case "Enter":
         case " ":
@@ -47,7 +48,7 @@ export class KeyboardGrabController<T> {
         case "Escape":
           event.preventDefault();
           event.stopPropagation();
-          this.#model.cancelSession();
+          this.#model.cancelPendingReorder();
           return;
         default:
           return;
@@ -71,7 +72,7 @@ export class KeyboardGrabController<T> {
 
     if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();
-      this.#model.begin(new KeyboardSession(key));
+      this.#model.begin(new KeyboardReorder(key));
     }
   }
 
@@ -81,3 +82,5 @@ export class KeyboardGrabController<T> {
     }
   }
 }
+
+class KeyboardReorder extends Reorder {}

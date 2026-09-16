@@ -1,7 +1,7 @@
 import type { Snippet } from "svelte";
 import type { SvelteHTMLElements } from "svelte/elements";
-import type { KeyboardGrabController } from "./utils/KeyboardGrabController.svelte.js";
-import type { PointerDragController } from "./utils/PointerDragController.svelte.js";
+import type { DragController } from "./utils/DragController.svelte.js";
+import type { KeyboardController } from "./utils/KeyboardController.svelte.js";
 import type { PositionInputController } from "./utils/PositionInputController.js";
 import type { ReorderableList } from "./utils/ReorderableList.svelte.js";
 
@@ -49,11 +49,12 @@ export interface ReorderableListProps<T> extends Omit<BaseProps, "children"> {
 
 export type ReorderableListContext<T> = {
   list: ReorderableList<T>;
-  drag: PointerDragController<T>;
-  grab: KeyboardGrabController<T>;
+  drag: DragController<T>;
+  keyboard: KeyboardController<T>;
   position: PositionInputController<T>;
   key: (entry: T) => string;
   itemLabel: (entry: T) => string;
-  instructionsId: string;
   disabled: boolean;
+  /** ID for the list instructions element. */
+  instructionsId: string;
 };

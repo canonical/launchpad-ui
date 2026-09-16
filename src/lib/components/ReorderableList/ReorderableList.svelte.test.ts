@@ -100,7 +100,6 @@ describe("ReorderableList component", () => {
       await expect
         .poll(() => props.items.map((item) => item.name))
         .toEqual(["Bravo", "Alpha", "Charlie"]);
-      // Let the drop's post-tick settle animation run before unmount tears down the drag session.
       await tick();
     });
 
@@ -798,7 +797,7 @@ describe("ReorderableList component", () => {
       await expect
         .element(page.getByRole("status"))
         .toHaveTextContent("Alpha dropped at position 2 of 3.");
-      // Let the drop's post-tick settle animation run before unmount tears down the drag session.
+
       await tick();
     });
 
@@ -832,7 +831,7 @@ describe("ReorderableList component", () => {
       await expect
         .element(page.getByRole("status"))
         .toHaveTextContent("Reordering cancelled.");
-      // Let the cancel's post-tick settle animation run before unmount tears down the drag session.
+
       await tick();
     });
 
@@ -851,7 +850,7 @@ describe("ReorderableList component", () => {
       await expect
         .element(page.getByRole("status"))
         .toHaveTextContent("Reordering cancelled.");
-      // Let the cancel's post-tick settle animation run before unmount tears down the drag session.
+
       await tick();
     });
 
@@ -872,7 +871,7 @@ describe("ReorderableList component", () => {
       await expect
         .poll(() => handleLabels(page))
         .toEqual(["Reorder Bravo", "Reorder Alpha", "Reorder Charlie"]);
-      // Let the cancel's post-tick settle animation run before unmount tears down the drag session.
+
       await tick();
     });
 
@@ -935,7 +934,7 @@ describe("ReorderableList component", () => {
       await expect.element(other).toHaveAttribute("aria-pressed", "false");
 
       dispatchListPointerEvent(page, "pointerup", to + 2);
-      // Let the drop's post-tick settle animation run before unmount tears down the drag session.
+
       await tick();
     });
 
@@ -964,7 +963,7 @@ describe("ReorderableList component", () => {
       await expect.element(input).toHaveValue(3);
 
       dispatchListPointerEvent(page, "pointerup", to + 2);
-      // Let the drop's post-tick settle animation run before unmount tears down the drag session.
+
       await tick();
     });
 
@@ -989,7 +988,7 @@ describe("ReorderableList component", () => {
       await expect.poll(() => handleLabels(page)).toEqual(draggedOrder);
 
       dispatchListPointerEvent(page, "pointerup", to + 2);
-      // Let the drop's post-tick settle animation run before unmount tears down the drag session.
+
       await tick();
     });
   });

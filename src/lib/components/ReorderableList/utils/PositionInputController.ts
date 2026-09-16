@@ -1,5 +1,6 @@
 import type { ReorderableList } from "./ReorderableList.svelte.js";
 
+/** Controls direct position editing for an item in a reorderable list. */
 export class PositionInputController<T> {
   readonly #model: ReorderableList<T>;
 
@@ -26,11 +27,11 @@ export class PositionInputController<T> {
   }
 
   #commit(node: HTMLInputElement, key: string) {
-    // A gesture elsewhere in the list owns the order, so only the value resets.
     if (this.#model.canStart()) {
       const requested = node.valueAsNumber;
       if (Number.isInteger(requested)) {
         this.#model.moveImmediate(key, requested - 1);
+        return;
       }
     }
 

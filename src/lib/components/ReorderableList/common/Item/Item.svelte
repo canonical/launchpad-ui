@@ -31,11 +31,11 @@
     disabled={context.disabled}
     aria-label="Reorder {context.itemLabel(item)}"
     aria-describedby={context.instructionsId}
-    aria-pressed={context.grab.isGrabbed(itemKey)}
+    aria-pressed={context.keyboard.isGrabbed(itemKey)}
     onpointerdown={(event) => context.drag.onpointerdown(event, itemKey)}
-    onkeydown={(event) => context.grab.onkeydown(event, itemKey)}
+    onkeydown={(event) => context.keyboard.onkeydown(event, itemKey)}
     onblur={() => {
-      context.grab.onblur(itemKey);
+      context.keyboard.onblur(itemKey);
       context.drag.onblur(itemKey);
     }}
   >
@@ -49,7 +49,7 @@
     inputmode="numeric"
     autocomplete="off"
     min="1"
-    max={context.list.count}
+    max={context.list.itemsCount}
     disabled={context.disabled}
     aria-label="Position of {context.itemLabel(item)}"
     value={index + 1}
