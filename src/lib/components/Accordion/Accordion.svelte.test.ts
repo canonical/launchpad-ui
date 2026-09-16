@@ -20,7 +20,7 @@ describe("Accordion component", () => {
   } satisfies ComponentProps<typeof Component>;
 
   it("renders", async () => {
-    const page = render(Component, { ...baseProps });
+    const page = await render(Component, { ...baseProps });
     await expect.element(componentLocator(page)).toBeInTheDocument();
     await expect.element(page.getByText(itemAHeadingText)).toBeInTheDocument();
     await expect.element(page.getByText(itemBHeadingText)).toBeInTheDocument();
@@ -28,7 +28,7 @@ describe("Accordion component", () => {
 
   describe("exclusive mode", () => {
     it("opening one item closes the other", async () => {
-      const page = render(Component, { ...baseProps, exclusive: true });
+      const page = await render(Component, { ...baseProps, exclusive: true });
 
       const itemA = itemDetails(page, "item-a");
       const itemB = itemDetails(page, "item-b");
@@ -43,7 +43,7 @@ describe("Accordion component", () => {
     });
 
     it("multi-open by default leaves siblings open", async () => {
-      const page = render(Component, { ...baseProps });
+      const page = await render(Component, { ...baseProps });
 
       const itemA = itemDetails(page, "item-a");
       const itemB = itemDetails(page, "item-b");
@@ -58,7 +58,7 @@ describe("Accordion component", () => {
 
   describe("keyboard navigation", () => {
     it("ArrowDown moves focus to next item, wrapping at end", async () => {
-      const page = render(Component, {
+      const page = await render(Component, {
         ...baseProps,
         children: threeItems,
       });
@@ -76,7 +76,7 @@ describe("Accordion component", () => {
     });
 
     it("ArrowUp moves focus to previous item, wrapping at start", async () => {
-      const page = render(Component, {
+      const page = await render(Component, {
         ...baseProps,
         children: threeItems,
       });
@@ -94,7 +94,7 @@ describe("Accordion component", () => {
     });
 
     it("Home moves focus to first item, End to last", async () => {
-      const page = render(Component, {
+      const page = await render(Component, {
         ...baseProps,
         children: threeItems,
       });
@@ -110,7 +110,7 @@ describe("Accordion component", () => {
     });
 
     it("renders three labelled items", async () => {
-      const page = render(Component, {
+      const page = await render(Component, {
         ...baseProps,
         children: threeItems,
       });

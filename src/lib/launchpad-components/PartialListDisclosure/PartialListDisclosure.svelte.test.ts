@@ -17,7 +17,7 @@ describe("PartialListDisclosure component", () => {
   } satisfies ComponentProps<typeof Component>;
 
   it("renders", async () => {
-    const page = render(Component, { ...baseProps });
+    const page = await render(Component, { ...baseProps });
     await expect.element(listLocator(page)).toBeVisible();
     await expect.element(visibleItemLocator(page)).toBeVisible();
     await expect.element(hiddenItemLocator(page)).not.toBeVisible();
@@ -25,13 +25,13 @@ describe("PartialListDisclosure component", () => {
 
   describe("attributes", () => {
     it("renders the list with an id", async () => {
-      const page = render(Component, { ...baseProps });
+      const page = await render(Component, { ...baseProps });
       const list = listLocator(page);
       await expect.element(list).toHaveAttribute("id");
     });
 
     it("toggle button has aria-controls matching the list id", async () => {
-      const page = render(Component, { ...baseProps });
+      const page = await render(Component, { ...baseProps });
       const list = listLocator(page);
       const toggleButton = page.getByRole("button");
       await expect
@@ -40,7 +40,7 @@ describe("PartialListDisclosure component", () => {
     });
 
     it("toggle button has aria-expanded set to false initially", async () => {
-      const page = render(Component, { ...baseProps });
+      const page = await render(Component, { ...baseProps });
       const toggleButton = page.getByRole("button");
       await expect
         .element(toggleButton)
@@ -50,7 +50,7 @@ describe("PartialListDisclosure component", () => {
 
   describe("interaction", () => {
     it("reveals hidden items when toggle button is clicked", async () => {
-      const page = render(Component, { ...baseProps });
+      const page = await render(Component, { ...baseProps });
       const toggleButton = page.getByRole("button");
       await toggleButton.click();
       await expect.element(hiddenItemLocator(page)).toBeVisible();

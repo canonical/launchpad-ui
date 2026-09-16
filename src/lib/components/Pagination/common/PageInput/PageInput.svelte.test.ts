@@ -23,20 +23,20 @@ describe("PageInput component", () => {
   } satisfies ComponentProps<typeof Component>;
 
   it("renders", async () => {
-    const page = render(Component, { ...baseProps });
+    const page = await render(Component, { ...baseProps });
     await expect.element(componentElement(page)).toBeVisible();
     await expect.element(inputLocator(page)).toBeVisible();
     await expect.element(page.getByText("of 3 Pages")).toBeVisible();
   });
 
   it("provides an accessible page label", async () => {
-    const page = render(Component, { ...baseProps });
+    const page = await render(Component, { ...baseProps });
     await expect.element(page.getByLabelText("Page:")).toBeVisible();
   });
 
   describe("connects label and input", () => {
     it("when id is provided", async () => {
-      const page = render(Component, {
+      const page = await render(Component, {
         ...baseProps,
         id: "page-input",
       });
@@ -46,25 +46,25 @@ describe("PageInput component", () => {
     });
 
     it("when id is omitted", async () => {
-      const page = render(Component, { ...baseProps });
+      const page = await render(Component, { ...baseProps });
       await expect.element(page.getByLabelText("Page:")).toBeVisible();
     });
   });
 
   it("forwards pagination table id to aria-controls", async () => {
-    const page = render(Component, { ...baseProps });
+    const page = await render(Component, { ...baseProps });
     await expect
       .element(inputLocator(page))
       .toHaveAttribute("aria-controls", tableId);
   });
 
   it("uses singular pagination text for one page", async () => {
-    const page = render(Component, { ...baseProps, totalPages: 1 });
+    const page = await render(Component, { ...baseProps, totalPages: 1 });
     await expect.element(page.getByText("of 1 Page")).toBeVisible();
   });
 
   it("applies classes", async () => {
-    const page = render(Component, { ...baseProps, class: "test-class" });
+    const page = await render(Component, { ...baseProps, class: "test-class" });
     const element = componentElement(page);
     await expect.element(element).toHaveClass("test-class");
     await expect.element(element).toHaveClass("ds");
@@ -72,7 +72,7 @@ describe("PageInput component", () => {
   });
 
   it("applies style", async () => {
-    const page = render(Component, {
+    const page = await render(Component, {
       ...baseProps,
       style: "color: orange;",
     });

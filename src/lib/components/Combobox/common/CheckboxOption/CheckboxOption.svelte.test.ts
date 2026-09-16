@@ -43,7 +43,7 @@ describe("CheckboxOption component", () => {
   } satisfies ComponentProps<typeof Component>;
 
   it("renders", async () => {
-    const page = render(Component, { ...baseProps });
+    const page = await render(Component, { ...baseProps });
     await expect.element(componentLocator(page)).toBeInTheDocument();
   });
 
@@ -52,14 +52,20 @@ describe("CheckboxOption component", () => {
       ["id", "test-id"],
       ["aria-label", "test-aria-label"],
     ])("applies %s", async (attribute, expected) => {
-      const page = render(Component, { ...baseProps, [attribute]: expected });
+      const page = await render(Component, {
+        ...baseProps,
+        [attribute]: expected,
+      });
       await expect
         .element(componentLocator(page))
         .toHaveAttribute(attribute, expected);
     });
 
     it("applies classes", async () => {
-      const page = render(Component, { ...baseProps, class: "test-class" });
+      const page = await render(Component, {
+        ...baseProps,
+        class: "test-class",
+      });
       await expect.element(componentLocator(page)).toHaveClass("test-class");
       await expect.element(componentLocator(page)).toHaveClass("ds");
       await expect
@@ -68,7 +74,7 @@ describe("CheckboxOption component", () => {
     });
 
     it("applies style", async () => {
-      const page = render(Component, {
+      const page = await render(Component, {
         ...baseProps,
         style: "color: orange;",
       });
@@ -80,14 +86,14 @@ describe("CheckboxOption component", () => {
 
   describe("After-mount attributes", () => {
     it("applies inert", async () => {
-      const page = render(Component, { ...baseProps });
+      const page = await render(Component, { ...baseProps });
       await expect.element(checkboxLocator(page)).toHaveAttribute("inert");
     });
   });
 
   describe("Active descendant", () => {
     it("has active class when active", async () => {
-      const page = render(Component, {
+      const page = await render(Component, {
         ...baseProps,
         id: "active-descendant-id",
       });
@@ -95,14 +101,14 @@ describe("CheckboxOption component", () => {
     });
 
     it("doesn't have active class when not active", async () => {
-      const page = render(Component, { ...baseProps, id: "other-id" });
+      const page = await render(Component, { ...baseProps, id: "other-id" });
       await expect.element(componentLocator(page)).not.toHaveClass("active");
     });
   });
 
   describe("aria-selected", () => {
     it('applies aria-selected="true" when checked', async () => {
-      const page = render(Component, {
+      const page = await render(Component, {
         ...baseProps,
         checked: true,
       });
@@ -112,7 +118,7 @@ describe("CheckboxOption component", () => {
     });
 
     it('applies aria-selected="false" when not checked', async () => {
-      const page = render(Component, {
+      const page = await render(Component, {
         ...baseProps,
         checked: false,
       });
@@ -128,7 +134,7 @@ describe("CheckboxOption component", () => {
     });
 
     it("listens for selection when mounted and unregisters when unmounted", async () => {
-      const page = render(Component, { ...baseProps, id: "option-1" });
+      const page = await render(Component, { ...baseProps, id: "option-1" });
       await expect.element(componentLocator(page)).toBeInTheDocument();
       expect(listenForOptionSelect).toHaveBeenCalledExactlyOnceWith(
         "option-1",
@@ -141,7 +147,7 @@ describe("CheckboxOption component", () => {
     it("dispatches change/input events when notified of selection", async () => {
       const onchange = vi.fn();
       const oninput = vi.fn();
-      const page = render(Component, {
+      const page = await render(Component, {
         ...baseProps,
         onchange,
         oninput,
@@ -155,7 +161,7 @@ describe("CheckboxOption component", () => {
     });
 
     it("changes checked state when notified of selection", async () => {
-      const page = render(Component, { ...baseProps, checked: false });
+      const page = await render(Component, { ...baseProps, checked: false });
       const checkbox = checkboxLocator(page);
       await expect.element(checkbox).not.toBeChecked();
       notifyListeners();
@@ -164,7 +170,7 @@ describe("CheckboxOption component", () => {
   });
 
   it("applies context name to input", async () => {
-    const page = render(Component, {
+    const page = await render(Component, {
       ...baseProps,
     });
     await expect

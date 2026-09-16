@@ -28,13 +28,13 @@ const initialOrder = ["Reorder Alpha", "Reorder Bravo", "Reorder Charlie"];
 describe("ReorderableList component", () => {
   describe("markup", () => {
     it("renders a labelled list of items in order", async () => {
-      const page = render(Component, baseProps);
+      const page = await render(Component, baseProps);
       await expect.element(page.getByRole("list")).toBeInTheDocument();
       await expect.poll(() => handleLabels(page)).toEqual(initialOrder);
     });
 
     it("describes every handle with the shared instructions", async () => {
-      const page = render(Component, baseProps);
+      const page = await render(Component, baseProps);
       const handle = page.getByRole("button", { name: "Reorder Alpha" });
       const describedBy = handle.element().getAttribute("aria-describedby");
       expect(describedBy).toBeTruthy();
@@ -44,7 +44,7 @@ describe("ReorderableList component", () => {
     });
 
     it("exposes a position input per item", async () => {
-      const page = render(Component, baseProps);
+      const page = await render(Component, baseProps);
       const input = page.getByRole("spinbutton", { name: "Position of Bravo" });
       await expect.element(input).toHaveValue(2);
       await expect.element(input).toHaveAttribute("max", "3");
@@ -52,7 +52,7 @@ describe("ReorderableList component", () => {
 
     it("re-renders when the items change from the outside", async () => {
       const props = $state({ ...baseProps });
-      const page = render(Component, props);
+      const page = await render(Component, props);
 
       props.items = [threeItems[2], threeItems[0]];
       await expect
@@ -67,7 +67,7 @@ describe("ReorderableList component", () => {
   describe("binding", () => {
     it("writes the new order back to the bound items", async () => {
       const props = $state({ ...baseProps });
-      const page = render(Component, props);
+      const page = await render(Component, props);
       const handle = page.getByRole("button", { name: "Reorder Alpha" });
 
       focus(handle.element());
@@ -80,7 +80,7 @@ describe("ReorderableList component", () => {
 
     it("leaves the bound items untouched until a pointer drag is dropped", async () => {
       const props = $state({ ...baseProps });
-      const page = render(Component, props);
+      const page = await render(Component, props);
       const handle = page.getByRole("button", { name: "Reorder Alpha" });
       const [from, to] = centres(page);
 
@@ -105,7 +105,7 @@ describe("ReorderableList component", () => {
 
     it("leaves the bound items untouched until a keyboard grab is dropped", async () => {
       const props = $state({ ...baseProps });
-      const page = render(Component, props);
+      const page = await render(Component, props);
       const handle = page.getByRole("button", { name: "Reorder Alpha" });
 
       focus(handle.element());
@@ -129,7 +129,7 @@ describe("ReorderableList component", () => {
 
   describe("keyboard reordering", () => {
     it("picks up, moves and drops an item", async () => {
-      const page = render(Component, baseProps);
+      const page = await render(Component, baseProps);
       const handle = page.getByRole("button", { name: "Reorder Alpha" });
 
       focus(handle.element());
@@ -155,7 +155,7 @@ describe("ReorderableList component", () => {
     });
 
     it("moves to the end with End and keeps focus on the handle", async () => {
-      const page = render(Component, baseProps);
+      const page = await render(Component, baseProps);
       const handle = page.getByRole("button", { name: "Reorder Alpha" });
 
       focus(handle.element());
@@ -167,7 +167,7 @@ describe("ReorderableList component", () => {
     });
 
     it("restores the original order when cancelled with Escape", async () => {
-      const page = render(Component, baseProps);
+      const page = await render(Component, baseProps);
       const handle = page.getByRole("button", { name: "Reorder Alpha" });
 
       focus(handle.element());
@@ -184,7 +184,7 @@ describe("ReorderableList component", () => {
     });
 
     it("moves an item without picking it up using Alt and an arrow key", async () => {
-      const page = render(Component, baseProps);
+      const page = await render(Component, baseProps);
       const handle = page.getByRole("button", { name: "Reorder Charlie" });
 
       focus(handle.element());
@@ -201,14 +201,11 @@ describe("ReorderableList component", () => {
 
     it("publishes throttled move announcements with the current item count", async () => {
       const props = $state({ ...baseProps });
-      const page = render(Component, props);
+      const page = await render(Component, props);
       const handle = page.getByRole("button", { name: "Reorder Alpha" });
 
       focus(handle.element());
       await userEvent.keyboard("{Alt>}{ArrowDown}{/Alt}");
-      await expect
-        .poll(() => handleLabels(page))
-        .toEqual(["Reorder Bravo", "Reorder Alpha", "Reorder Charlie"]);
 
       props.items = [threeItems[1], threeItems[0]];
 
@@ -218,7 +215,7 @@ describe("ReorderableList component", () => {
     });
 
     it("moves to the start with Home", async () => {
-      const page = render(Component, baseProps);
+      const page = await render(Component, baseProps);
       const handle = page.getByRole("button", { name: "Reorder Charlie" });
 
       focus(handle.element());
@@ -230,7 +227,7 @@ describe("ReorderableList component", () => {
     });
 
     it("keeps the item in place when moved past the list bounds", async () => {
-      const page = render(Component, baseProps);
+      const page = await render(Component, baseProps);
       const handle = page.getByRole("button", { name: "Reorder Alpha" });
 
       focus(handle.element());
@@ -243,7 +240,7 @@ describe("ReorderableList component", () => {
     });
 
     it("drops a grabbed item when the handle loses focus", async () => {
-      const page = render(Component, baseProps);
+      const page = await render(Component, baseProps);
       const handle = page.getByRole("button", { name: "Reorder Alpha" });
 
       focus(handle.element());
@@ -259,7 +256,7 @@ describe("ReorderableList component", () => {
     });
 
     it("keeps focus on the handle it moves across items", async () => {
-      const page = render(Component, baseProps);
+      const page = await render(Component, baseProps);
       const handle = page.getByRole("button", { name: "Reorder Alpha" });
 
       focus(handle.element());
@@ -273,7 +270,7 @@ describe("ReorderableList component", () => {
 
     it("releases keyboard activity when the grabbed item is removed", async () => {
       const props = $state({ ...baseProps });
-      const page = render(Component, props);
+      const page = await render(Component, props);
       const handle = page.getByRole("button", { name: "Reorder Alpha" });
 
       focus(handle.element());
@@ -313,7 +310,7 @@ describe("ReorderableList component", () => {
         "interprets $value as a number",
         async ({ value, position, expected }) => {
           const props = $state({ ...baseProps });
-          const page = render(Component, props);
+          const page = await render(Component, props);
           const input = page.getByRole("spinbutton", {
             name: "Position of Alpha",
           });
@@ -333,7 +330,7 @@ describe("ReorderableList component", () => {
         "rejects fractional position %s",
         async (value) => {
           const props = $state({ ...baseProps });
-          const page = render(Component, props);
+          const page = await render(Component, props);
           const input = page.getByRole("spinbutton", {
             name: "Position of Bravo",
           });
@@ -353,7 +350,7 @@ describe("ReorderableList component", () => {
     });
 
     it("moves the item on Enter", async () => {
-      const page = render(Component, baseProps);
+      const page = await render(Component, baseProps);
       const input = page.getByRole("spinbutton", { name: "Position of Alpha" });
 
       await input.fill("3");
@@ -368,7 +365,7 @@ describe("ReorderableList component", () => {
     });
 
     it("clamps out of range positions", async () => {
-      const page = render(Component, baseProps);
+      const page = await render(Component, baseProps);
       const input = page.getByRole("spinbutton", { name: "Position of Alpha" });
 
       await input.fill("99");
@@ -381,7 +378,7 @@ describe("ReorderableList component", () => {
     });
 
     it("reverts the typed value on Escape", async () => {
-      const page = render(Component, baseProps);
+      const page = await render(Component, baseProps);
       const input = page.getByRole("spinbutton", { name: "Position of Alpha" });
 
       await input.fill("3");
@@ -392,7 +389,7 @@ describe("ReorderableList component", () => {
     });
 
     it("moves the item on blur", async () => {
-      const page = render(Component, baseProps);
+      const page = await render(Component, baseProps);
       const input = page.getByRole("spinbutton", { name: "Position of Alpha" });
 
       await input.fill("2");
@@ -404,7 +401,7 @@ describe("ReorderableList component", () => {
     });
 
     it("clamps positions below the start of the list", async () => {
-      const page = render(Component, baseProps);
+      const page = await render(Component, baseProps);
       const input = page.getByRole("spinbutton", {
         name: "Position of Charlie",
       });
@@ -419,7 +416,7 @@ describe("ReorderableList component", () => {
     });
 
     it("ignores an empty value", async () => {
-      const page = render(Component, baseProps);
+      const page = await render(Component, baseProps);
       const input = page.getByRole("spinbutton", { name: "Position of Alpha" });
 
       await input.fill("");
@@ -430,7 +427,7 @@ describe("ReorderableList component", () => {
     });
 
     it("keeps focus in the input after a move", async () => {
-      const page = render(Component, baseProps);
+      const page = await render(Component, baseProps);
       const input = page.getByRole("spinbutton", { name: "Position of Alpha" });
 
       await input.fill("3");
@@ -460,7 +457,7 @@ describe("ReorderableList component", () => {
       "keeps rows fixed until dropping from $from to $to",
       async ({ from, to, expected }) => {
         const props = $state({ ...indicatorProps });
-        const page = render(Component, props);
+        const page = await render(Component, props);
         const rows = page.getByRole("listitem").elements() as HTMLElement[];
         // Exercise unequal row heights as well as jumps across multiple rows.
         rows.forEach(
@@ -511,7 +508,7 @@ describe("ReorderableList component", () => {
 
     it("hides both adjacent insertion edges when returning to the original position", async () => {
       const props = $state({ ...indicatorProps });
-      const page = render(Component, props);
+      const page = await render(Component, props);
       const list = page.getByRole("list").element();
       const positions = centres(page);
       page
@@ -546,7 +543,7 @@ describe("ReorderableList component", () => {
       "remove",
     ])("clears the indicator without committing on %s", async (reason) => {
       const props = $state({ ...indicatorProps, disabled: false });
-      const page = render(Component, props);
+      const page = await render(Component, props);
       const list = page.getByRole("list").element();
       const [from, to] = centres(page);
       page
@@ -574,7 +571,7 @@ describe("ReorderableList component", () => {
 
     it("still previews keyboard reordering immediately", async () => {
       const props = $state({ ...indicatorProps });
-      const page = render(Component, props);
+      const page = await render(Component, props);
       focus(page.getByRole("button", { name: "Reorder Alpha" }).element());
       await userEvent.keyboard("{Enter}{ArrowDown}");
       await expect
@@ -606,7 +603,7 @@ describe("ReorderableList component", () => {
     ] as const)(
       "settles the $dragMode overlay without a shadow after $endEvent",
       async ({ endEvent, dragMode }) => {
-        const page = render(Component, {
+        const page = await render(Component, {
           ...baseProps,
           animationDuration: 200,
           dragMode,
@@ -639,8 +636,8 @@ describe("ReorderableList component", () => {
 
     it.each([0.5, 1, 2])(
       "converts row positions in both directions at scale %s",
-      (scale) => {
-        const page = render(Component, {
+      async (scale) => {
+        const page = await render(Component, {
           ...baseProps,
           style: `transform: scale(${scale}); transform-origin: top left; border: 4px solid; padding: 8px; height: 80px; overflow: auto; scroll-behavior: auto;`,
         });
@@ -698,7 +695,7 @@ describe("ReorderableList component", () => {
           style:
             "border: 4px solid; padding: 8px; height: 80px; overflow: auto; scroll-behavior: auto;",
         });
-        const page = render(Component, props);
+        const page = await render(Component, props);
         const list = page.getByRole("list").element() as HTMLElement;
         const container = list.parentElement!;
         container.style.transform = `scale(${scale})`;
@@ -736,7 +733,7 @@ describe("ReorderableList component", () => {
           onpointermove,
           [`on${endEvent}`]: onend,
         });
-        const page = render(Component, props);
+        const page = await render(Component, props);
         const list = page.getByRole("list").element();
         const [from, to] = centres(page);
         const moveEvent = pointerEvent("pointermove", to + 2);
@@ -780,7 +777,7 @@ describe("ReorderableList component", () => {
     );
 
     it("reorders when dragged past the next item", async () => {
-      const page = render(Component, baseProps);
+      const page = await render(Component, baseProps);
       const handle = page.getByRole("button", { name: "Reorder Alpha" });
       const [from, to] = centres(page);
 
@@ -800,7 +797,7 @@ describe("ReorderableList component", () => {
     });
 
     it("does not start a drag below the movement threshold", async () => {
-      const page = render(Component, baseProps);
+      const page = await render(Component, baseProps);
       const handle = page.getByRole("button", { name: "Reorder Alpha" });
       const [from] = centres(page);
 
@@ -813,7 +810,7 @@ describe("ReorderableList component", () => {
     });
 
     it("restores the original order when Escape is pressed mid drag", async () => {
-      const page = render(Component, baseProps);
+      const page = await render(Component, baseProps);
       const handle = page.getByRole("button", { name: "Reorder Alpha" });
       const [from, to] = centres(page);
 
@@ -828,13 +825,15 @@ describe("ReorderableList component", () => {
       await expect.poll(() => handleLabels(page)).toEqual(initialOrder);
       await expect
         .element(page.getByRole("status"))
-        .toHaveTextContent("Reordering cancelled.");
+        .toHaveTextContent(
+          "Reordering cancelled. Alpha returned to position 1 of 3.",
+        );
 
       await tick();
     });
 
     it("restores the original order when the pointer is cancelled", async () => {
-      const page = render(Component, baseProps);
+      const page = await render(Component, baseProps);
       const handle = page.getByRole("button", { name: "Reorder Alpha" });
       const [from, to] = centres(page);
 
@@ -847,13 +846,15 @@ describe("ReorderableList component", () => {
       await expect.poll(() => handleLabels(page)).toEqual(initialOrder);
       await expect
         .element(page.getByRole("status"))
-        .toHaveTextContent("Reordering cancelled.");
+        .toHaveTextContent(
+          "Reordering cancelled. Alpha returned to position 1 of 3.",
+        );
 
       await tick();
     });
 
     it("cancels the drag and releases activity when pointer capture is lost", async () => {
-      const page = render(Component, baseProps);
+      const page = await render(Component, baseProps);
       const handle = page.getByRole("button", { name: "Reorder Alpha" });
       const [from, to] = centres(page);
 
@@ -874,7 +875,7 @@ describe("ReorderableList component", () => {
     });
 
     it("ignores a non primary button", async () => {
-      const page = render(Component, baseProps);
+      const page = await render(Component, baseProps);
       const handle = page.getByRole("button", { name: "Reorder Alpha" });
       const [from, to] = centres(page);
 
@@ -888,7 +889,7 @@ describe("ReorderableList component", () => {
     });
 
     it("ignores moves from another pointer", async () => {
-      const page = render(Component, baseProps);
+      const page = await render(Component, baseProps);
       const handle = page.getByRole("button", { name: "Reorder Alpha" });
       const [from, to] = centres(page);
 
@@ -902,7 +903,7 @@ describe("ReorderableList component", () => {
 
   describe("input method exclusivity", () => {
     it("does not start a drag while an item is grabbed with the keyboard", async () => {
-      const page = render(Component, baseProps);
+      const page = await render(Component, baseProps);
       const grabbed = page.getByRole("button", { name: "Reorder Alpha" });
       const dragged = page.getByRole("button", { name: "Reorder Charlie" });
       const [, , from] = centres(page);
@@ -918,7 +919,7 @@ describe("ReorderableList component", () => {
     });
 
     it("does not grab with the keyboard while dragging", async () => {
-      const page = render(Component, baseProps);
+      const page = await render(Component, baseProps);
       const dragged = page.getByRole("button", { name: "Reorder Alpha" });
       const other = page.getByRole("button", { name: "Reorder Charlie" });
       const [from, to] = centres(page);
@@ -937,7 +938,7 @@ describe("ReorderableList component", () => {
     });
 
     it("ignores the position input of another item while dragging", async () => {
-      const page = render(Component, baseProps);
+      const page = await render(Component, baseProps);
       const dragged = page.getByRole("button", { name: "Reorder Alpha" });
       const input = page.getByRole("spinbutton", {
         name: "Position of Charlie",
@@ -966,7 +967,7 @@ describe("ReorderableList component", () => {
     });
 
     it("ignores an Alt arrow move on another item while dragging", async () => {
-      const page = render(Component, baseProps);
+      const page = await render(Component, baseProps);
       const dragged = page.getByRole("button", { name: "Reorder Alpha" });
       const other = page.getByRole("button", { name: "Reorder Charlie" });
       const [from, to] = centres(page);
@@ -995,7 +996,7 @@ describe("ReorderableList component", () => {
     const disabledProps = { ...baseProps, disabled: true } as const;
 
     it("disables every control", async () => {
-      const page = render(Component, disabledProps);
+      const page = await render(Component, disabledProps);
       await expect
         .element(page.getByRole("button", { name: "Reorder Alpha" }))
         .toBeDisabled();
@@ -1005,7 +1006,7 @@ describe("ReorderableList component", () => {
     });
 
     it("does not reorder with the keyboard", async () => {
-      const page = render(Component, disabledProps);
+      const page = await render(Component, disabledProps);
       const handle = page.getByRole("button", { name: "Reorder Charlie" });
 
       handle.element().dispatchEvent(keydownEvent("Enter"));
@@ -1017,7 +1018,7 @@ describe("ReorderableList component", () => {
     });
 
     it("does not reorder with the pointer", async () => {
-      const page = render(Component, disabledProps);
+      const page = await render(Component, disabledProps);
       const handle = page.getByRole("button", { name: "Reorder Alpha" });
       const [from, to] = centres(page);
 
@@ -1030,7 +1031,7 @@ describe("ReorderableList component", () => {
 
     it("cancels an active pointer drag when disabled changes", async () => {
       const props = $state({ ...baseProps, disabled: false });
-      const page = render(Component, props);
+      const page = await render(Component, props);
       const handle = page.getByRole("button", { name: "Reorder Alpha" });
       const [from, to] = centres(page);
 
@@ -1054,7 +1055,7 @@ describe("ReorderableList component", () => {
 
     it("does not resume the drag when the list is enabled again", async () => {
       const props = $state({ ...baseProps, disabled: false });
-      const page = render(Component, props);
+      const page = await render(Component, props);
       const handle = page.getByRole("button", { name: "Reorder Alpha" });
       const [from, to] = centres(page);
 

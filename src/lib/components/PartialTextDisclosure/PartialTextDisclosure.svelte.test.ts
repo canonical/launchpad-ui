@@ -19,21 +19,21 @@ describe("PartialTextDisclosure component", () => {
   } satisfies ComponentProps<typeof Component>;
 
   it("renders", async () => {
-    const page = render(Component, { ...baseProps });
+    const page = await render(Component, { ...baseProps });
     await expect.element(paragraphLocator(page)).toBeInTheDocument();
-    await expect.element(paragraphLocator(page)).toHaveTextContent("Line 1");
+    await expect.element(paragraphLocator(page)).toMatchTextContent("Line 1");
   });
 
   describe("overflow detection", () => {
     it("shows the toggle button when the text overflows", async () => {
-      const page = render(Component, { ...baseProps });
+      const page = await render(Component, { ...baseProps });
       await expect
         .element(page.getByRole("button", { name: "Visually expand text" }))
         .toBeInTheDocument();
     });
 
     it("does not show the toggle button when the text fits", async () => {
-      const page = render(Component, {
+      const page = await render(Component, {
         ...baseProps,
         text: singleLineText,
         maxLines: 5,
@@ -43,7 +43,7 @@ describe("PartialTextDisclosure component", () => {
     });
 
     it("hides the button when the paragraph grows wide enough to fit the collapsed text while expanded", async () => {
-      const page = render(Component, {
+      const page = await render(Component, {
         text: wrappingText,
         maxLines: 2,
         lineHeightPx,
@@ -71,7 +71,7 @@ describe("PartialTextDisclosure component", () => {
 
   describe("toggling", () => {
     it("expands and collapses when the button is clicked", async () => {
-      const page = render(Component, { ...baseProps });
+      const page = await render(Component, { ...baseProps });
       const toggle = page.getByRole("button");
 
       await expect.element(toggle).toHaveAttribute("aria-expanded", "false");
@@ -93,7 +93,7 @@ describe("PartialTextDisclosure component", () => {
     });
 
     it("associates the button with the paragraph via aria-controls", async () => {
-      const page = render(Component, { ...baseProps });
+      const page = await render(Component, { ...baseProps });
       const paragraph = paragraphLocator(page).element();
       const button = page.getByRole("button").element();
 
@@ -104,19 +104,19 @@ describe("PartialTextDisclosure component", () => {
 
   describe("props", () => {
     it("clamps maxLines to a minimum of 1", async () => {
-      const page = render(Component, { ...baseProps, maxLines: 0 });
+      const page = await render(Component, { ...baseProps, maxLines: 0 });
       const paragraph = paragraphLocator(page).element() as HTMLElement;
       expect(paragraph.style.getPropertyValue("--max-lines")).toBe("1");
     });
 
     it("applies maxLines as a custom property", async () => {
-      const page = render(Component, { ...baseProps, maxLines: 3 });
+      const page = await render(Component, { ...baseProps, maxLines: 3 });
       const paragraph = paragraphLocator(page).element() as HTMLElement;
       expect(paragraph.style.getPropertyValue("--max-lines")).toBe("3");
     });
 
     it("applies lineHeightPx to the paragraph line height", async () => {
-      const page = render(Component, { ...baseProps, lineHeightPx: 24 });
+      const page = await render(Component, { ...baseProps, lineHeightPx: 24 });
       await expect
         .element(paragraphLocator(page))
         .toHaveStyle({ lineHeight: "24px" });

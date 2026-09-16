@@ -21,7 +21,7 @@ describe("PageNavigation component", () => {
   } satisfies ComponentProps<typeof Component>;
 
   it("renders", async () => {
-    const page = render(Component, { ...baseProps });
+    const page = await render(Component, { ...baseProps });
     await expect.element(componentLocator(page)).toBeInTheDocument();
     await expect
       .element(componentLocator(page))
@@ -29,7 +29,7 @@ describe("PageNavigation component", () => {
   });
 
   it("forwards pagination table id to aria-controls", async () => {
-    const page = render(Component, { ...baseProps });
+    const page = await render(Component, { ...baseProps });
     await expect
       .element(componentLocator(page))
       .toHaveAttribute("aria-controls", tableId);
@@ -43,7 +43,7 @@ describe("PageNavigation component", () => {
   ] as const)(
     "maps %s direction to aria label",
     async (direction, expectedLabel) => {
-      const page = render(Component, { direction });
+      const page = await render(Component, { direction });
       await expect
         .element(componentLocator(page))
         .toHaveAttribute("aria-label", expectedLabel);
@@ -51,19 +51,19 @@ describe("PageNavigation component", () => {
   );
 
   it("renders an icon for the selected direction", async () => {
-    const page = render(Component, { ...baseProps });
+    const page = await render(Component, { ...baseProps });
     const button = componentLocator(page).element() as HTMLButtonElement;
     expect(button.querySelector("svg")).not.toBeNull();
   });
 
   it("supports disabled state", async () => {
-    const page = render(Component, { ...baseProps, disabled: true });
+    const page = await render(Component, { ...baseProps, disabled: true });
     await expect.element(componentLocator(page)).toBeDisabled();
   });
 
   it("calls onclick handler", async () => {
     const onclick = vi.fn();
-    const page = render(Component, { ...baseProps, onclick });
+    const page = await render(Component, { ...baseProps, onclick });
     await componentLocator(page).click();
     expect(onclick).toHaveBeenCalledOnce();
   });
@@ -73,14 +73,20 @@ describe("PageNavigation component", () => {
       ["id", "test-id"],
       ["aria-label", "Custom page navigation"],
     ])("applies %s", async (attribute, expected) => {
-      const page = render(Component, { ...baseProps, [attribute]: expected });
+      const page = await render(Component, {
+        ...baseProps,
+        [attribute]: expected,
+      });
       await expect
         .element(componentLocator(page))
         .toHaveAttribute(attribute, expected);
     });
 
     it("applies classes", async () => {
-      const page = render(Component, { ...baseProps, class: "test-class" });
+      const page = await render(Component, {
+        ...baseProps,
+        class: "test-class",
+      });
       await expect.element(componentLocator(page)).toHaveClass("test-class");
       await expect.element(componentLocator(page)).toHaveClass("ds");
       await expect
@@ -89,7 +95,7 @@ describe("PageNavigation component", () => {
     });
 
     it("applies style", async () => {
-      const page = render(Component, {
+      const page = await render(Component, {
         ...baseProps,
         style: "color: orange;",
       });

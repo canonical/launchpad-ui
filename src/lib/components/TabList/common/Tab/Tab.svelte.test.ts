@@ -11,27 +11,33 @@ describe("Tab component", () => {
   const baseProps = {} satisfies ComponentProps<typeof Component>;
 
   it("renders", async () => {
-    const page = render(Component, { ...baseProps });
+    const page = await render(Component, { ...baseProps });
     await expect.element(componentLocator(page)).toBeVisible();
   });
 
   describe("attributes", () => {
     it.each([["id", "test-id"]])("applies %s", async (attribute, expected) => {
-      const page = render(Component, { ...baseProps, [attribute]: expected });
+      const page = await render(Component, {
+        ...baseProps,
+        [attribute]: expected,
+      });
       await expect
         .element(componentLocator(page))
         .toHaveAttribute(attribute, expected);
     });
 
     it("applies classes", async () => {
-      const page = render(Component, { ...baseProps, class: "test-class" });
+      const page = await render(Component, {
+        ...baseProps,
+        class: "test-class",
+      });
       await expect.element(componentLocator(page)).toHaveClass("test-class");
       await expect.element(componentLocator(page)).toHaveClass("ds");
       await expect.element(componentLocator(page)).toHaveClass("tab");
     });
 
     it("applies style", async () => {
-      const page = render(Component, {
+      const page = await render(Component, {
         ...baseProps,
         style: "color: orange;",
       });
@@ -43,13 +49,13 @@ describe("Tab component", () => {
 
   describe("base properties", () => {
     it("applies href", async () => {
-      const page = render(Component, { ...baseProps, href: "/test" });
+      const page = await render(Component, { ...baseProps, href: "/test" });
       const element = page.getByRole("link");
       await expect.element(element).toHaveAttribute("href", "/test");
     });
 
     it("applies aria-attributes", async () => {
-      const page = render(Component, {
+      const page = await render(Component, {
         ...baseProps,
         "aria-disabled": "true",
         href: "/test",
@@ -60,7 +66,7 @@ describe("Tab component", () => {
 
     describe("active state", () => {
       it("is not active by default", async () => {
-        const page = render(Component, { ...baseProps, href: "/test" });
+        const page = await render(Component, { ...baseProps, href: "/test" });
         const listitem = page.getByRole("listitem");
         const link = page.getByRole("link");
 
@@ -69,7 +75,7 @@ describe("Tab component", () => {
       });
 
       it("can be active", async () => {
-        const page = render(Component, {
+        const page = await render(Component, {
           ...baseProps,
           active: true,
           href: "/test",

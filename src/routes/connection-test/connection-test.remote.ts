@@ -1,6 +1,6 @@
 import { error } from "@sveltejs/kit";
-import { Agent, request as undiciRequest } from "undici";
 import * as v from "valibot";
+import { launchpadFetch } from "$lib/server/launchpad/launchpadFetch.js";
 import { form, getRequestEvent, query } from "$app/server";
 import { env } from "$env/dynamic/private";
 
@@ -46,77 +46,46 @@ async function client(
     error(500, "MAIN_LAUNCHPAD_BASE_HOST is not set");
   }
 
-  const ipAddress = env.MAIN_LAUNCHPAD_IP_ADDRESS;
-  const url = new URL(path, ipAddress || baseHost);
+  const url = new URL(path, baseHost);
 
   const headers: Record<string, string> = {};
-  if (ipAddress) {
-    headers["host"] = new URL(baseHost).host;
-  }
   if (lpCookie) {
     headers["cookie"] = `${lpCookieName}=${lpCookie}`;
   }
-
-  const skipTLS = env.MAIN_LAUNCHPAD_SKIP_TLS_VERIFY === "true";
 
   const loggableHeaders = { ...headers };
   if (loggableHeaders.cookie) {
     loggableHeaders.cookie = `<${lpCookieName}>`;
   }
 
-  const logContext = { url: url.toString(), headers: loggableHeaders, skipTLS };
+  const logContext = { url: url.toString(), headers: loggableHeaders };
 
-  let statusCode: number;
+  let status: number;
   let text: string;
   try {
     console.log("Launchpad request started", logContext);
 
     const MAX_REDIRECTS = 5;
-    const baseOrigin = new URL(baseHost).origin;
     let currentUrl: URL = url;
 
     for (let redirects = 0; ; redirects++) {
-      // fetch() treats `Host` as a forbidden header and silently drops it,
-      // breaking vhost routing when connecting to an IP address.
-      // undici.request() does not enforce the Fetch spec's forbidden-header list.
-      const res = await undiciRequest(currentUrl, {
-        headers,
-        dispatcher: skipTLS
-          ? new Agent({ connect: { rejectUnauthorized: false } })
-          : undefined,
-      });
+      const response = await launchpadFetch(currentUrl, { headers });
 
-      const isRedirect = res.statusCode >= 300 && res.statusCode < 400;
-      if (isRedirect && redirects < MAX_REDIRECTS) {
-        const location = Array.isArray(res.headers.location)
-          ? res.headers.location[0]
-          : res.headers.location;
-        await res.body.dump();
-
-        if (!location) {
-          statusCode = res.statusCode;
-          text = "";
-          break;
-        }
-
-        let next = new URL(location, currentUrl);
-        // LP redirects use the canonical hostname; rewrite back to IP so the
-        // Host header override keeps working on every hop.
-        if (ipAddress && next.origin === baseOrigin) {
-          next = new URL(next.pathname + next.search, ipAddress);
-        }
-        currentUrl = next;
+      const isRedirect = response.status >= 300 && response.status < 400;
+      const location = response.headers.get("location");
+      if (isRedirect && location && redirects < MAX_REDIRECTS) {
+        currentUrl = new URL(location, currentUrl);
         continue;
       }
 
-      statusCode = res.statusCode;
-      text = await res.body.text();
+      status = response.status;
+      text = await response.text();
       break;
     }
 
     console.log("Launchpad request finished successfully", {
       ...logContext,
-      status: statusCode,
+      status,
     });
   } catch (e) {
     console.error("Launchpad request failed", {
@@ -130,10 +99,9 @@ async function client(
   }
 
   try {
-    const json = JSON.parse(text);
-    return { status: statusCode, json };
+    return { status, json: JSON.parse(text) };
   } catch {
-    return { status: statusCode, text };
+    return { status, text };
   }
 }
 

@@ -69,7 +69,7 @@ describe("Markdown Editor > Toolbar > Action button component", () => {
   });
 
   it("renders", async () => {
-    const page = render(Component, baseProps);
+    const page = await render(Component, baseProps);
     await expect.element(componentLocator(page)).toBeInTheDocument();
   });
 
@@ -78,21 +78,30 @@ describe("Markdown Editor > Toolbar > Action button component", () => {
       ["id", "test-id"],
       ["aria-label", "test-aria-label"],
     ])("applies %s", async (attribute, value) => {
-      const page = render(Component, { ...baseProps, [attribute]: value });
+      const page = await render(Component, {
+        ...baseProps,
+        [attribute]: value,
+      });
       await expect
         .element(componentLocator(page))
         .toHaveAttribute(attribute, value);
     });
 
     it("applies style", async () => {
-      const page = render(Component, { ...baseProps, style: "color: orange;" });
+      const page = await render(Component, {
+        ...baseProps,
+        style: "color: orange;",
+      });
       await expect
         .element(componentLocator(page))
         .toHaveStyle("color: orange;");
     });
 
     it("applies class", async () => {
-      const page = render(Component, { ...baseProps, class: "test-class" });
+      const page = await render(Component, {
+        ...baseProps,
+        class: "test-class",
+      });
       const element = componentLocator(page);
       await expect.element(element).toHaveClass("ds");
       await expect
@@ -102,20 +111,20 @@ describe("Markdown Editor > Toolbar > Action button component", () => {
     });
   });
 
-  it("registers the action on mount", () => {
-    render(Component, baseProps);
+  it("registers the action on mount", async () => {
+    await render(Component, baseProps);
     expect(registerActionItem).toHaveBeenCalledTimes(1);
   });
 
   it("unregisters the action on unmount", async () => {
-    const page = render(Component, baseProps);
+    const page = await render(Component, baseProps);
     await expect.element(componentLocator(page)).toBeInTheDocument();
     page.unmount();
     expect(unregisterAction).toHaveBeenCalledTimes(1);
   });
 
-  it("sets the active action on focus", () => {
-    const page = render(Component, baseProps);
+  it("sets the active action on focus", async () => {
+    const page = await render(Component, baseProps);
     const button = componentLocator(page);
     const buttonEl = button.element() as HTMLButtonElement;
     buttonEl.focus();
@@ -125,7 +134,7 @@ describe("Markdown Editor > Toolbar > Action button component", () => {
 
   it("shows tooltip with label", async () => {
     const label = "ActionButton";
-    const page = render(Component, { ...baseProps, label });
+    const page = await render(Component, { ...baseProps, label });
     const tooltip = page.getByRole("tooltip", { includeHidden: true });
     await expect.element(tooltip).toBeInTheDocument();
     await expect.element(tooltip).toHaveTextContent(label);
@@ -134,14 +143,14 @@ describe("Markdown Editor > Toolbar > Action button component", () => {
   describe("tab stop", () => {
     it("has tabIndex=-1 if its not the tab stop", async () => {
       setIsTabStop(false);
-      const page = render(Component, baseProps);
+      const page = await render(Component, baseProps);
       const button = componentLocator(page);
       await expect.element(button).toHaveAttribute("tabindex", "-1");
     });
 
     it("has tabIndex=0 if its the tab stop", async () => {
       setIsTabStop(true);
-      const page = render(Component, baseProps);
+      const page = await render(Component, baseProps);
       const button = componentLocator(page);
       await expect.element(button).toHaveAttribute("tabindex", "0");
     });

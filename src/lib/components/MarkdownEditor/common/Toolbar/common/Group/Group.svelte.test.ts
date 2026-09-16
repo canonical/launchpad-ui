@@ -16,7 +16,7 @@ const baseProps = {
 
 describe("Markdown Editor > Toolbar > Group component", () => {
   it("renders", async () => {
-    const page = render(Component, baseProps);
+    const page = await render(Component, baseProps);
     await expect.element(componentLocator(page)).toBeInTheDocument();
   });
 
@@ -25,21 +25,30 @@ describe("Markdown Editor > Toolbar > Group component", () => {
       ["id", "test-id"],
       ["aria-label", "test-aria-label"],
     ])("applies %s", async (attribute, value) => {
-      const page = render(Component, { ...baseProps, [attribute]: value });
+      const page = await render(Component, {
+        ...baseProps,
+        [attribute]: value,
+      });
       await expect
         .element(componentLocator(page))
         .toHaveAttribute(attribute, value);
     });
 
     it("applies style", async () => {
-      const page = render(Component, { ...baseProps, style: "color: orange;" });
+      const page = await render(Component, {
+        ...baseProps,
+        style: "color: orange;",
+      });
       await expect
         .element(componentLocator(page))
         .toHaveStyle("color: orange;");
     });
 
     it("applies class", async () => {
-      const page = render(Component, { ...baseProps, class: "test-class" });
+      const page = await render(Component, {
+        ...baseProps,
+        class: "test-class",
+      });
       const element = componentLocator(page);
       await expect.element(element).toHaveClass("ds");
       await expect

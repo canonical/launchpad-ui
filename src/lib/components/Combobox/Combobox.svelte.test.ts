@@ -19,7 +19,7 @@ describe("Combobox component", () => {
   } satisfies ComponentProps<typeof Component>;
 
   it("renders", async () => {
-    const page = render(Component, { ...baseProps });
+    const page = await render(Component, { ...baseProps });
     await expect.element(componentLocator(page)).toBeInTheDocument();
   });
 
@@ -28,19 +28,25 @@ describe("Combobox component", () => {
       ["id", "test-id"],
       ["aria-label", "test-aria-label"],
     ])("applies %s", async (attribute, expected) => {
-      const page = render(Component, { ...baseProps, [attribute]: expected });
+      const page = await render(Component, {
+        ...baseProps,
+        [attribute]: expected,
+      });
       await expect
         .element(componentLocator(page))
         .toHaveAttribute(attribute, expected);
     });
 
     it("applies classes", async () => {
-      const page = render(Component, { ...baseProps, class: "test-class" });
+      const page = await render(Component, {
+        ...baseProps,
+        class: "test-class",
+      });
       await expect.element(componentLocator(page)).toHaveClass("test-class");
     });
 
     it("applies style", async () => {
-      const page = render(Component, {
+      const page = await render(Component, {
         ...baseProps,
         style: "color: orange;",
       });
@@ -52,14 +58,14 @@ describe("Combobox component", () => {
 
   describe("Renders", () => {
     it("search", async () => {
-      const page = render(Component, { ...baseProps });
+      const page = await render(Component, { ...baseProps });
       await expect
         .element(page.getByTestId("search-input"))
         .toBeInTheDocument();
     });
 
     it("listbox", async () => {
-      const page = render(Component, { ...baseProps });
+      const page = await render(Component, { ...baseProps });
       await expect.element(page.getByRole("listbox")).toBeInTheDocument();
     });
 
@@ -67,7 +73,7 @@ describe("Combobox component", () => {
       const children = createRawSnippet(() => ({
         render: () => '<div data-testid="option-1">Option 1</div>',
       }));
-      const page = render(Component, {
+      const page = await render(Component, {
         ...baseProps,
         children: children,
       });
@@ -77,14 +83,14 @@ describe("Combobox component", () => {
 
   describe("listbox attributes", () => {
     it('applies aria-multiselectable="true" by default', async () => {
-      const page = render(Component, { ...baseProps });
+      const page = await render(Component, { ...baseProps });
       await expect
         .element(page.getByRole("listbox"))
         .toHaveAttribute("aria-multiselectable", "true");
     });
 
     it("applies aria-multiselectable when type prop provided", async () => {
-      let page = render(Component, {
+      let page = await render(Component, {
         ...baseProps,
         type: "single-select",
       });
@@ -94,7 +100,7 @@ describe("Combobox component", () => {
 
       page.unmount();
 
-      page = render(Component, {
+      page = await render(Component, {
         ...baseProps,
         type: "multi-select",
       });
@@ -104,7 +110,7 @@ describe("Combobox component", () => {
     });
 
     it("applies aria-busy when passed as a prop", async () => {
-      let page = render(Component, {
+      let page = await render(Component, {
         ...baseProps,
         "aria-busy": true,
       });
@@ -114,7 +120,7 @@ describe("Combobox component", () => {
 
       page.unmount();
 
-      page = render(Component, {
+      page = await render(Component, {
         ...baseProps,
         "aria-busy": false,
       });
@@ -134,7 +140,7 @@ describe("Combobox component", () => {
           return () => loadingComponent && unmount(loadingComponent);
         },
       }));
-      const page = render(Component, {
+      const page = await render(Component, {
         ...baseProps,
         children: children,
       });

@@ -12,7 +12,7 @@ describe("OptionsPanel component", () => {
   const baseProps = {} satisfies ComponentProps<typeof Component>;
 
   it("renders", async () => {
-    const page = render(Component, { ...baseProps });
+    const page = await render(Component, { ...baseProps });
     await expect.element(componentLocator(page)).toBeInTheDocument();
   });
 
@@ -21,21 +21,27 @@ describe("OptionsPanel component", () => {
       ["id", "test-id"],
       ["aria-label", "test-aria-label"],
     ])("applies %s", async (attribute, expected) => {
-      const page = render(Component, { ...baseProps, [attribute]: expected });
+      const page = await render(Component, {
+        ...baseProps,
+        [attribute]: expected,
+      });
       await expect
         .element(componentLocator(page))
         .toHaveAttribute(attribute, expected);
     });
 
     it("applies classes", async () => {
-      const page = render(Component, { ...baseProps, class: "test-class" });
+      const page = await render(Component, {
+        ...baseProps,
+        class: "test-class",
+      });
       await expect.element(componentLocator(page)).toHaveClass("test-class");
       await expect.element(componentLocator(page)).toHaveClass("ds");
       await expect.element(componentLocator(page)).toHaveClass("options-panel");
     });
 
     it("applies style", async () => {
-      const page = render(Component, {
+      const page = await render(Component, {
         ...baseProps,
         style: "color: orange;",
       });
@@ -47,14 +53,14 @@ describe("OptionsPanel component", () => {
 
   describe("Helper linking", () => {
     it("doesn't have aria-describedby by default", async () => {
-      const page = render(Component, { ...baseProps });
+      const page = await render(Component, { ...baseProps });
       await expect
         .element(componentLocator(page))
         .not.toHaveAttribute("aria-describedby");
     });
 
     it("has aria-describedby properly linked to helper if it is present", async () => {
-      const page = render(Component, {
+      const page = await render(Component, {
         ...baseProps,
         helper: createRawSnippet<[string]>((id) => ({
           render: () => `<div id="${id()}">Test helper text</div>`,

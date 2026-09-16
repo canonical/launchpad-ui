@@ -55,27 +55,33 @@ describe("Search component", () => {
   } satisfies ComponentProps<typeof Component>;
 
   it("renders", async () => {
-    const page = render(Component, { ...baseProps });
+    const page = await render(Component, { ...baseProps });
     await expect.element(componentLocator(page)).toBeInTheDocument();
   });
 
   describe("attributes", () => {
     it.each([["id", "test-id"]])("applies %s", async (attribute, expected) => {
-      const page = render(Component, { ...baseProps, [attribute]: expected });
+      const page = await render(Component, {
+        ...baseProps,
+        [attribute]: expected,
+      });
       await expect
         .element(componentLocator(page))
         .toHaveAttribute(attribute, expected);
     });
 
     it("applies classes", async () => {
-      const page = render(Component, { ...baseProps, class: "test-class" });
+      const page = await render(Component, {
+        ...baseProps,
+        class: "test-class",
+      });
       await expect
         .element(page.getByTestId("search-box"))
         .toHaveClass("test-class");
     });
 
     it("applies style", async () => {
-      const page = render(Component, {
+      const page = await render(Component, {
         ...baseProps,
         style: "color: orange;",
       });
@@ -91,7 +97,7 @@ describe("Search component", () => {
     });
 
     it("calls getSiblingOptionId on arrow up and down", async () => {
-      const page = render(Component, { ...baseProps });
+      const page = await render(Component, { ...baseProps });
       const input = componentLocator(page);
       await expect.element(input).toBeInTheDocument();
       await userEvent.click(input);
@@ -112,7 +118,7 @@ describe("Search component", () => {
     });
 
     it("calls setActiveDescendant on arrow up and down", async () => {
-      const page = render(Component, { ...baseProps });
+      const page = await render(Component, { ...baseProps });
       const input = componentLocator(page);
       await expect.element(input).toBeInTheDocument();
       (input.element() as HTMLElement).focus();
@@ -127,7 +133,7 @@ describe("Search component", () => {
     });
 
     it("calls selectOption on enter", async () => {
-      const page = render(Component, { ...baseProps });
+      const page = await render(Component, { ...baseProps });
       const input = componentLocator(page);
       await expect.element(input).toBeInTheDocument();
       await userEvent.click(input);
@@ -139,7 +145,7 @@ describe("Search component", () => {
   });
 
   it("calls setActiveDescendant with null on blur", async () => {
-    const page = render(Component, { ...baseProps });
+    const page = await render(Component, { ...baseProps });
     const input = componentLocator(page);
     await expect.element(input).toBeInTheDocument();
     await userEvent.click(input);
