@@ -45,7 +45,7 @@ describe("ReorderableList SSR", () => {
       ).toEqual(["Alpha", "Bravo", "Charlie"]);
     });
 
-    it("renders the keyboard instructions and the live region", () => {
+    it("renders the JavaScript requirement and the live region", () => {
       const page = render(Component, { props: baseProps });
       const root = componentLocator(page);
       const describedBy = root
@@ -55,7 +55,7 @@ describe("ReorderableList SSR", () => {
       expect(page.getByRole("status")).toBeDefined();
       expect(
         root.ownerDocument.getElementById(describedBy ?? "")?.textContent,
-      ).toContain("Press Enter or Space to pick up the item");
+      ).toContain("Reordering requires JavaScript");
     });
 
     it("labels the controls of every item", () => {

@@ -176,9 +176,14 @@
 </ol>
 
 <div id={instructionsId} class="visually-hidden">
-  Press Enter or Space to pick up the item, then use the arrow keys to move it
-  and Enter or Space to drop it. Press Escape to cancel. Alternatively, hold Alt
-  and press the up or down arrow key to move the item one position at a time.
+  {#if browser}
+    Press Enter or Space to pick up the item, then use the arrow keys to move it
+    and Enter or Space to drop it. Press Escape to cancel. Alternatively, hold
+    Alt and press the up or down arrow key to move the item one position at a
+    time.
+  {:else}
+    Reordering requires JavaScript.
+  {/if}
 </div>
 <div role="status" aria-atomic="true" class="visually-hidden">
   {list.announcement}
