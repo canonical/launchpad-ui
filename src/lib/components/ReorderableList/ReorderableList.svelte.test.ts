@@ -899,6 +899,32 @@ describe("ReorderableList component", () => {
 
       await expect.poll(() => handleLabels(page)).toEqual(initialOrder);
     });
+
+    it("tells the item snippet whether it is rendered in the overlay", async () => {
+      const page = await render(Component, baseProps);
+      const handle = page.getByRole("button", { name: "Reorder Alpha" });
+      const [from, to] = centres(page);
+      const renderLocationValues = () =>
+        [
+          ...page
+            .getByRole("list")
+            .element()
+            .querySelectorAll("[data-rendered-in-overlay]"),
+        ].map((element) => element.getAttribute("data-rendered-in-overlay"));
+
+      expect(renderLocationValues()).toEqual(["false", "false", "false"]);
+
+      handle.element().dispatchEvent(pointerEvent("pointerdown", from));
+      dispatchListPointerEvent(page, "pointermove", to + 2);
+      await tick();
+
+      expect(renderLocationValues()).toEqual([
+        "false",
+        "false",
+        "false",
+        "true",
+      ]);
+    });
   });
 
   describe("input method exclusivity", () => {

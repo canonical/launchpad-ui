@@ -1,16 +1,12 @@
 import type { Snippet } from "svelte";
 import type { SvelteHTMLElements } from "svelte/elements";
+import type { ItemData } from "./common/Item/types.js";
 import type { DragController } from "./utils/DragController.svelte.js";
 import type { KeyboardController } from "./utils/KeyboardController.svelte.js";
 import type { PositionInputController } from "./utils/PositionInputController.js";
 import type { ReorderableList } from "./utils/ReorderableList.svelte.js";
 
 type BaseProps = SvelteHTMLElements["ol"];
-
-export type ReorderableListItemSnippetProps<T> = {
-  item: T;
-  index: number;
-};
 
 export type DragMode = "preview" | "drop-indicator";
 
@@ -21,8 +17,11 @@ export interface ReorderableListProps<T> extends Omit<BaseProps, "children"> {
   key: (item: T) => string;
   /** Human readable name of an item, used in control labels and announcements. */
   itemLabel: (item: T) => string;
-  /** Render snippet for each item, receiving the current item and index. */
-  item: Snippet<[ReorderableListItemSnippetProps<T>]>;
+  /** Render snippet for each item, receiving:
+   * - `itemData`: The data for the current item, including `item` and `index`.
+   * - `renderedInOverlay`: `true` if the item is rendered in the drag overlay, `false` otherwise.
+   */
+  item: Snippet<[itemData: ItemData<T>, renderedInOverlay: boolean]>;
   /**
    * Disables interaction and prevents dragging or reordering.
    *

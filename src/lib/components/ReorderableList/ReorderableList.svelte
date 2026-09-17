@@ -143,7 +143,7 @@
       }}
       {@attach list.registerItem(key(entry))}
     >
-      {@render item({ item: entry, index })}
+      {@render item({ item: entry, index }, false)}
     </li>
   {/each}
   <!-- 
@@ -168,7 +168,7 @@
       popover="manual"
       {@attach (el) => el.showPopover()}
     >
-      {@render item({ item: list.itemsWithPendingReorder[index], index })}
+      {@render item({ item: list.itemsWithPendingReorder[index], index }, true)}
     </li>
   {/each}
 </ol>
@@ -192,7 +192,7 @@
 
 Provide `items`, a stable `key`, and `itemLabel` for accessible control labels and status announcements. The `item` snippet receives `{ item, index }`, which can be spread onto `ReorderableList.Item` to render the default drag handle and position input around custom item content.
 
-During pointer dragging, the snippet is also rendered in an inert fixed-position preview. Each rendering has independent component state; use instance-specific IDs (for example `$props.id()`) rather than fixed IDs inside the snippet.
+During pointer dragging, the snippet is also rendered in an inert fixed-position preview. The snippet's second argument, `renderedInOverlay`, is `true` for the preview and `false` for the list item, so snippets can distinguish the two render locations if needed.
 
 ## Example Usage
 ```svelte

@@ -1,6 +1,6 @@
 <script lang="ts" module>
   import { Item } from "./common/Item/index.js";
-  import type { ReorderableListItemSnippetProps } from "./types.js";
+  import type { ItemData } from "./common/Item/types.js";
 
   export type TestItem = {
     id: string;
@@ -16,8 +16,8 @@
   export { itemSnippet };
 </script>
 
-{#snippet itemSnippet(props: ReorderableListItemSnippetProps<TestItem>)}
-  <Item {...props}>
+{#snippet itemSnippet(props: ItemData<TestItem>, renderedInOverlay: boolean)}
+  <Item {...props} data-rendered-in-overlay={String(renderedInOverlay)}>
     <span>{props.item.name}</span>
   </Item>
 {/snippet}
