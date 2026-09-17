@@ -14,8 +14,9 @@
   import {
     PACKAGES_TABLE_COLUMNS,
     QueryParams,
-    TABLE_VIEWS,
   } from "$lib/modules/packages/superhref.js";
+  import ManageViewsSidePanel from "$lib/modules/packages/table-views/ManageViewsSidePanel.svelte";
+  import { getTableViews } from "$lib/modules/packages/table-views/table-views.remote.js";
   import type { PageProps } from "./$types.js";
   import { getSourcePackages } from "./packages.remote.js";
   import { resolve } from "$app/paths";
@@ -35,8 +36,8 @@
     },
   });
 
-  const data = $derived(
-    await getSourcePackages({
+  const sourcePackagesPromise = $derived(
+    getSourcePackages({
       distro: params.pillar,
       sortKey: queryParams.sort.key,
       sortOrder: queryParams.sort.direction,
@@ -44,6 +45,10 @@
       size: PAGE_SIZE,
     }),
   );
+  const tableViewsPromise = $derived(getTableViews());
+
+  const data = $derived(await sourcePackagesPromise);
+  const tableViews = $derived(await tableViewsPromise);
 </script>
 
 <svelte:head>
@@ -68,14 +73,18 @@
   <h1>Packages</h1>
   <TableViewBar
     current={queryParams.view}
-    items={TABLE_VIEWS.map(({ name, slug }) => ({
+    items={tableViews.map(({ name, slug }) => ({
       text: name,
       href: queryParams.setView(slug),
       key: slug,
     }))}
     label="Packages table views"
     >{#snippet trailing()}
-      <Button aria-label="Manage package table views" disabled severity="base">
+      <Button
+        aria-label="Manage package table views"
+        severity="base"
+        href={queryParams.set("panel", "manage-views")}
+      >
         {#snippet iconLeft()}
           <SettingsIcon />
         {/snippet}
@@ -177,6 +186,10 @@
 </main>
 
 <BinaryPackageSidePanel name={queryParams["binary-package"]} />
+<ManageViewsSidePanel
+  open={queryParams.panel === "manage-views"}
+  items={tableViews}
+/>
 
 <style>
   main {

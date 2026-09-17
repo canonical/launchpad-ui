@@ -2,6 +2,7 @@ import { settled, tick } from "svelte";
 import type { ComponentProps } from "svelte";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { render } from "vitest-browser-svelte";
+import { DEFAULT_TABLE_VIEWS } from "$lib/modules/packages/table-views/constants.js";
 import type { SourcePackagePublishingEntry } from "$lib/server/launchpad/types.js";
 import Page from "./+page.svelte";
 import type { getSourcePackages as remoteGetSourcePackages } from "./packages.remote.js";
@@ -12,9 +13,14 @@ type PackagesListArgs = Parameters<typeof remoteGetSourcePackages>[0];
 const getSourcePackages = vi.hoisted(() =>
   vi.fn<(args: PackagesListArgs) => Promise<SourcePackagePublishingEntry[]>>(),
 );
+const getTableViews = vi.hoisted(() => vi.fn());
 
 vi.mock("./packages.remote.js", () => ({
   getSourcePackages,
+}));
+
+vi.mock("$lib/modules/packages/table-views/table-views.remote.js", () => ({
+  getTableViews,
 }));
 
 vi.mock(
@@ -64,6 +70,7 @@ const baseProps = {
 beforeEach(() => {
   page.url.search = "";
   getSourcePackages.mockReset().mockResolvedValue(initialRows);
+  getTableViews.mockReset().mockResolvedValue(DEFAULT_TABLE_VIEWS);
 });
 
 describe("packages table sorting", () => {
