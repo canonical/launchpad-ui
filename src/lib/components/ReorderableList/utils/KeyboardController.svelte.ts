@@ -48,7 +48,7 @@ export class KeyboardController<T> {
         case "Escape":
           event.preventDefault();
           event.stopPropagation();
-          this.#model.cancelPendingReorder();
+          this.#model.cancel();
           return;
         default:
           return;
@@ -72,7 +72,7 @@ export class KeyboardController<T> {
 
     if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();
-      this.#model.begin(new KeyboardReorder(key));
+      this.#model.start(new KeyboardReorder(key));
     }
   }
 

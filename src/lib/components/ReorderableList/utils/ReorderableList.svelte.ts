@@ -59,7 +59,7 @@ export class ReorderableList<T> {
 
     onDestroy(() => {
       clearTimeout(this.#announcementTimer);
-      this.discardPendingReorder();
+      this.discard();
     });
 
     // Discards the pending reorder if the list gets disabled or no longer contains the item being dragged.
@@ -67,8 +67,7 @@ export class ReorderableList<T> {
     $effect(() => {
       const pendingReorder = this.#pendingReorder;
       if (pendingReorder === null) return;
-      if (this.#gotInterrupted(pendingReorder))
-        untrack(() => this.discardPendingReorder());
+      if (this.#gotInterrupted(pendingReorder)) untrack(() => this.discard());
     });
   }
 
@@ -91,7 +90,7 @@ export class ReorderableList<T> {
     return this.#announcement;
   }
 
-  /** Whether a new reorder may begin. */
+  /** Whether a new reorder may start. */
   canStart() {
     return !this.disabled && this.#pendingReorder === null;
   }
@@ -132,7 +131,7 @@ export class ReorderableList<T> {
    * dragging uses this until the movement threshold is crossed.
    * @returns Whether a new reorder was started.
    */
-  begin(reorder: Reorder, silent = false) {
+  start(reorder: Reorder, silent = false) {
     const index = this.#rawIndexOf(reorder.key);
     if (index === -1 || !this.canStart()) return false;
 
@@ -177,7 +176,7 @@ export class ReorderableList<T> {
     const pendingReorder = this.#pendingReorder;
     // A blur fired by an element removal may occur before the effect ends a dead reorder.
     if (!pendingReorder || this.#gotInterrupted(pendingReorder)) {
-      this.discardPendingReorder();
+      this.discard();
       return;
     }
 
@@ -193,7 +192,7 @@ export class ReorderableList<T> {
   }
 
   /** Leaves `items` unchanged and announces cancellation of the pending reorder. */
-  cancelPendingReorder() {
+  cancel() {
     const pendingReorder = this.#pendingReorder;
     if (!pendingReorder) return;
     else
@@ -211,7 +210,7 @@ export class ReorderableList<T> {
   }
 
   /** Discards an interrupted pending reorder without an announcement. */
-  discardPendingReorder() {
+  discard() {
     const pendingReorder = this.#pendingReorder;
     if (!pendingReorder) return;
 

@@ -33,10 +33,9 @@ export class DragController<T> {
     return { index: target, edge: target < origin ? "before" : "after" };
   });
 
-  #draggingKey = $derived.by(() => {
-    const pendingReorder = this.#pendingDragReorder;
-    return pendingReorder?.dragData ? pendingReorder.key : null;
-  });
+  #draggingKey = $derived(
+    this.#pendingDragReorder?.dragData ? this.#pendingDragReorder.key : null,
+  );
 
   constructor(
     model: ReorderableList<T>,
@@ -50,9 +49,7 @@ export class DragController<T> {
     // Discard the current pending drag reorder if the drag mode changes.
     $effect(() => {
       void this.#dragMode;
-      untrack(
-        () => this.#pendingDragReorder && this.#model.discardPendingReorder(),
-      );
+      untrack(() => this.#pendingDragReorder && this.#model.discard());
     });
   }
 
@@ -74,7 +71,9 @@ export class DragController<T> {
       node,
       () => this.#model.announceGrab(),
     );
-    if (!this.#model.begin(pendingReorder, true)) return;
+
+    const didStartPendingReorder = this.#model.start(pendingReorder, true);
+    if (!didStartPendingReorder) return;
 
     try {
       this.#listElement?.setPointerCapture(event.pointerId);
@@ -215,12 +214,12 @@ export class DragController<T> {
     if (!pendingReorder) return;
 
     if (!pendingReorder.dragData) {
-      this.#model.discardPendingReorder();
+      this.#model.discard();
       return;
     }
 
     if (commit) this.#model.commit();
-    else this.#model.cancelPendingReorder();
+    else this.#model.cancel();
   }
 }
 
@@ -232,6 +231,9 @@ export type DragData = {
   key: string;
 };
 
+/**
+ * The minimum pointer travel distance before a drag is considered started.
+ */
 const DRAG_THRESHOLD_PX = 5;
 
 /** Tracks pointer movement and position for an in-progress drag reorder. */
