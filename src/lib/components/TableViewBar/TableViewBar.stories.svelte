@@ -58,7 +58,7 @@
       {...args}
     >
       {#snippet trailing()}
-        <Button severity="base">
+        <Button importance="tertiary">
           {#snippet iconLeft()}
             <SettingsIcon />
           {/snippet}
@@ -108,7 +108,7 @@
         {...args}
       >
         {#snippet trailing()}
-          <Button severity="base">
+          <Button importance="tertiary">
             {#snippet iconLeft()}
               <SettingsIcon />
             {/snippet}

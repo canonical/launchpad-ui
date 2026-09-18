@@ -24,7 +24,7 @@
 
 <div class={[componentCssClassName, className]} {...rest}>
   <Button
-    severity="base"
+    importance="tertiary"
     type="button"
     density="dense"
     class="handle"

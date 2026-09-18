@@ -56,7 +56,6 @@ Component supports group binding. See `Radio` for more details.
     > :global(.ds.radio) {
       grid-area: checkable;
       margin-inline-end: var(--dimension-margin-end-option-checkable);
-      opacity: 1;
     }
   }
 </style>

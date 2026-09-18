@@ -2,7 +2,6 @@
   --color-background-option: var(--lp-color-background-default);
   --color-background-option-hover: var(--lp-color-background-hover);
   --color-background-option-active: var(--lp-color-background-active);
-  --opacity-option-disabled: var(--lp-opacity-muted);
   --dimension-padding-inline-option: var(--lp-dimension-spacing-inline-m);
   --dimension-padding-block-option: var(--lp-dimension-spacing-block-xxs);
   --typography-font-option: var(--lp-typography-paragraph-default);
@@ -43,6 +42,7 @@
 
   &.disabled {
     cursor: not-allowed;
-    opacity: var(--opacity-option-disabled);
+    --color-text-option: var(--disabled--color-text);
+    --color-text-option-secondary: var(--disabled--color-text);
   }
 }

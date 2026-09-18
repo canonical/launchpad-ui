@@ -54,7 +54,7 @@
       class={[componentCssClassName, className]}
       tabindex={isTabStop ? 0 : -1}
       density="dense"
-      severity="base"
+      importance="tertiary"
       {onfocus}
       {disabled}
       aria-keyshortcuts={shortcut?.toAriaLabel()}

@@ -54,7 +54,6 @@ Component supports group binding. See `Switch` for more details.
     > :global(.ds.switch) {
       grid-area: switch;
       margin-inline-start: var(--dimension-margin-start-option-switch);
-      opacity: 1;
     }
   }
 </style>

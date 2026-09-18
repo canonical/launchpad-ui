@@ -104,7 +104,7 @@
           {#if item.editable}
             <Button
               density="dense"
-              severity="base"
+              importance="tertiary"
               aria-label="Edit {item.name}"
               href={queryParams["manage-views"].set("edit", item.slug)}
               // TODO: View edit form (https://warthogs.atlassian.net/browse/LP-4570)
@@ -129,7 +129,7 @@
             >
               <Button
                 density="dense"
-                severity="base"
+                importance="tertiary"
                 aria-label="Delete {item.name}"
                 disabled={isItemEdited}
                 {...deleteForm?.fields.slug.as("submit", item.slug)}
@@ -145,11 +145,12 @@
     {/snippet}
   </ReorderableList>
   {#snippet footer(closeButtonProps)}
-    <Button {...closeButtonProps}>Cancel</Button>
+    <Button {...closeButtonProps} importance="tertiary">Cancel</Button>
     <Button
       disabled={!haveItemsChanged}
       loading={saving}
-      severity="positive"
+      importance="primary"
+      anticipation="constructive"
       onclick={async () => {
         saving = true;
         try {

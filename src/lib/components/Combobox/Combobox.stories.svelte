@@ -241,7 +241,7 @@
       {/snippet}
       {#snippet footer()}
         <Combobox.Footer>
-          <Button severity="base" density="dense">Cancel</Button>
+          <Button importance="tertiary" density="dense">Cancel</Button>
           <Button density="dense">Save</Button>
         </Combobox.Footer>
       {/snippet}
@@ -330,7 +330,7 @@
       {/snippet}
       {#snippet footer()}
         <Combobox.Footer>
-          <Button severity="base" density="dense">Cancel</Button>
+          <Button importance="tertiary" density="dense">Cancel</Button>
           <Button density="dense">Save</Button>
         </Combobox.Footer>
       {/snippet}
@@ -426,7 +426,7 @@
             {/snippet}
             {#snippet footer()}
               <Combobox.Footer>
-                <Button {popovertarget} severity="base" density="dense">
+                <Button {popovertarget} importance="tertiary" density="dense">
                   Cancel
                 </Button>
                 <Button {popovertarget} density="dense">Save</Button>

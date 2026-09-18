@@ -82,8 +82,8 @@
     >{#snippet trailing()}
       <Button
         aria-label="Manage package table views"
-        severity="base"
         href={queryParams.set("panel", "manage-views")}
+        importance="tertiary"
       >
         {#snippet iconLeft()}
           <SettingsIcon />

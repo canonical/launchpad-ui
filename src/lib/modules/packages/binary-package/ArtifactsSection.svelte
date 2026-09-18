@@ -16,7 +16,7 @@
     <h3>Artifacts</h3>
     {#if artifacts.length > 1}
       <Button
-        severity="base"
+        importance="tertiary"
         class="download-all"
         density="dense"
         href={downloadUrl}
