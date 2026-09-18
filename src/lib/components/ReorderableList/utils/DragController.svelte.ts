@@ -1,4 +1,4 @@
-import { tick, untrack } from "svelte";
+import { tick } from "svelte";
 import type { DragMode } from "../types.js";
 import { Reorder } from "./Reorder.svelte.js";
 import type { ReorderableList } from "./ReorderableList.svelte.js";
@@ -45,12 +45,6 @@ export class DragController<T> {
     this.#model = model;
     this.#listElement = $derived(listElement());
     this.#dragMode = $derived(dragMode());
-
-    // Discard the current pending drag reorder if the drag mode changes.
-    $effect(() => {
-      void this.#dragMode;
-      untrack(() => this.#pendingDragReorder && this.#model.discard());
-    });
   }
 
   isDragging(key?: string) {
