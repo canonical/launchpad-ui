@@ -204,10 +204,16 @@ describe("ReorderableList component", () => {
       const page = await render(Component, props);
       const handle = page.getByRole("button", { name: "Reorder Alpha" });
 
-      focus(handle.element());
-      await userEvent.keyboard("{Alt>}{ArrowDown}{/Alt}");
+      vi.useFakeTimers();
+      try {
+        focus(handle.element());
+        await userEvent.keyboard("{Alt>}{ArrowDown}{/Alt}");
 
-      props.items = [threeItems[1], threeItems[0]];
+        props.items = [threeItems[1], threeItems[0]];
+        await vi.advanceTimersByTimeAsync(150);
+      } finally {
+        vi.useRealTimers();
+      }
 
       await expect
         .element(page.getByRole("status"))
