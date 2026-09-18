@@ -8,7 +8,7 @@ import ReorderableList from "./ReorderableList.svelte";
 import { itemSnippet, threeItems } from "./test.fixtures.svelte";
 import type { TestItem } from "./test.fixtures.svelte";
 import type { ReorderableListProps } from "./types.js";
-import { listCoordinates } from "./utils/listCoordinates.js";
+import { listCoordinates } from "./utils/index.js";
 
 // `render` cannot infer the `generics="T"` parameter, so pin it to the fixture type.
 const Component = ReorderableList as unknown as SvelteComponent<

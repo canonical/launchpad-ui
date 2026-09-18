@@ -1,10 +1,12 @@
 import type { Snippet } from "svelte";
 import type { SvelteHTMLElements } from "svelte/elements";
 import type { ItemData } from "./common/Item/types.js";
-import type { DragController } from "./utils/DragController.svelte.js";
-import type { KeyboardController } from "./utils/KeyboardController.svelte.js";
-import type { PositionInputController } from "./utils/PositionInputController.js";
-import type { ReorderableList } from "./utils/ReorderableList.svelte.js";
+import type {
+  DragController,
+  KeyboardController,
+  PositionInputController,
+  ReorderableList,
+} from "./utils/index.js";
 
 type BaseProps = SvelteHTMLElements["ol"];
 

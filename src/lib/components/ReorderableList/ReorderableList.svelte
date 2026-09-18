@@ -6,12 +6,14 @@
   import type { TransitionConfig } from "svelte/transition";
   import { setReorderableListContext } from "./context.js";
   import type { ReorderableListProps } from "./types.js";
-  import { DragController } from "./utils/DragController.svelte.js";
-  import type { DragData } from "./utils/DragController.svelte.js";
-  import { KeyboardController } from "./utils/KeyboardController.svelte.js";
-  import { PositionInputController } from "./utils/PositionInputController.js";
-  import { ReorderableList } from "./utils/ReorderableList.svelte.js";
-  import { listCoordinates } from "./utils/listCoordinates.js";
+  import {
+    DragController,
+    KeyboardController,
+    PositionInputController,
+    ReorderableList,
+    listCoordinates,
+  } from "./utils/index.js";
+  import type { DragData } from "./utils/index.js";
   import { browser } from "$app/env";
 
   const componentCssClassName = "ds reorderable-list";
