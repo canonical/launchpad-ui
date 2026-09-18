@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Popover } from "@canonical/svelte-ds-app-launchpad";
+  import { Popover, SideNavigation } from "@canonical/svelte-ds-app-launchpad";
   import {
     CommentsIcon,
     DesktopIcon,
@@ -19,12 +19,8 @@
   import {
     ContextualMenuContent,
     ShortcutsHelpSidePanel,
-    SideNavigation,
   } from "$lib/components/index.js";
-  import {
-    LaunchpadLogo,
-    LaunchpadLogoText,
-  } from "$lib/launchpad-components/index.js";
+  import { LaunchpadLogo } from "$lib/launchpad-components/index.js";
   import {
     GlobalShortcutsProvider,
     Shortcut,
@@ -33,7 +29,6 @@
   import "../app.css";
   import type { Theme } from "$lib/theme.js";
   import { themeCookieName, themes } from "$lib/theme.js";
-  import { cssControlledFade } from "$lib/transitions/cssControlledFade.js";
   import { ThemeSetter } from "./(common)/ThemeSetter/index.js";
   import { sideNavigationStateCookieName } from "./(common)/side-navigation-state.js";
   import {
@@ -110,20 +105,7 @@
       <SideNavigation expanded={isSideNavigationExpanded}>
         {#snippet logo()}
           <a href={resolve("/")} aria-label="Launchpad Home" class="logo-link">
-            {#if isSideNavigationExpanded}
-              <div
-                aria-hidden="true"
-                transition:cssControlledFade={{
-                  durationVar: "--transition-duration-side-navigation",
-                  easingVar: "--transition-easing-side-navigation",
-                }}
-              >
-                <LaunchpadLogoText />
-              </div>
-            {/if}
-            <div aria-hidden="true">
-              <LaunchpadLogo />
-            </div>
+            <LaunchpadLogo open={isSideNavigationExpanded} />
           </a>
         {/snippet}
         {#snippet expandToggle(toggleProps)}
@@ -266,14 +248,5 @@
   .app-layout {
     display: grid;
     grid-template-columns: auto 1fr;
-  }
-
-  .logo-link {
-    display: grid;
-    grid-template-areas: "one";
-
-    > * {
-      grid-area: one;
-    }
   }
 </style>
