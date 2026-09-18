@@ -10,12 +10,13 @@
   import { SettingsIcon } from "@canonical/svelte-icons";
   import { Pagination, TableViewBar } from "$lib/components/index.js";
   import BinaryPackageSidePanel from "$lib/modules/packages/BinaryPackageSidePanel/BinaryPackageSidePanel.svelte";
+  import PackagesQueryForm from "$lib/modules/packages/PackagesQueryForm.svelte";
   import { setPackagesContext } from "$lib/modules/packages/context.js";
   import {
     PACKAGES_TABLE_COLUMNS,
+    PAGE_SIZE_OPTIONS,
     QueryParams,
     TABLE_VIEWS,
-    preservedParams,
   } from "$lib/modules/packages/superhref.js";
   import type { PageProps } from "./$types.js";
   import {
@@ -27,32 +28,34 @@
 
   const { params }: PageProps = $props();
 
-  const PAGE_SIZES = [10, 25, 50, 100];
-
   const queryParams = $derived(QueryParams.bind(page.url));
+
   setPackagesContext({
     get queryParams() {
       return queryParams;
     },
   });
 
-  const { data, hasNext } = $derived(
-    await getSourcePackages({
-      distro: params.pillar,
-      series: queryParams.series ?? undefined,
-      sortKey: queryParams.sort.key,
-      sortOrder: queryParams.sort.direction,
-      page: queryParams.page,
-      size: queryParams["page-size"],
-    }),
+  const [sourcePackages, sourcePackagesTotal] = $derived(
+    await Promise.all([
+      getSourcePackages({
+        distro: params.pillar,
+        series: queryParams.series ?? undefined,
+        sortKey: queryParams.sort.key,
+        sortOrder: queryParams.sort.direction,
+        page: queryParams.page,
+        size: queryParams["page-size"],
+      }),
+      getSourcePackagesTotal({
+        distro: params.pillar,
+        series: queryParams.series ?? undefined,
+      }),
+    ]),
   );
 
-  const total = $derived(
-    (await getSourcePackagesTotal({
-      distro: params.pillar,
-      series: queryParams.series ?? undefined,
-    })) ?? undefined,
-  );
+  const { data, hasNext } = $derived(sourcePackages);
+
+  const total = $derived(sourcePackagesTotal ?? undefined);
 
   const totalPages = $derived(
     total === undefined
@@ -175,49 +178,47 @@
   </Table>
   <Pagination class="pagination">
     {#snippet leftGroup()}
-      <form
-        method="GET"
+      <PackagesQueryForm
+        replaceParams={["page-size", "page"]}
         class="pagination-form"
         data-sveltekit-noscroll
         data-sveltekit-keepfocus
       >
-        {#each preservedParams( page.url, ["page-size", "page"], ) as [name, value], index (index)}
-          <input type="hidden" {name} {value} />
-        {/each}
         <Pagination.ItemsPerPageSelect
           name="page-size"
           value={queryParams["page-size"]}
           onchange={(event) => event.currentTarget.form?.requestSubmit()}
         >
-          {#each PAGE_SIZES as size (size)}
+          {#each PAGE_SIZE_OPTIONS as size (size)}
             <option value={size}>{size}</option>
           {/each}
-          {#if !PAGE_SIZES.some((size) => size === queryParams["page-size"])}
+          {#if !PAGE_SIZE_OPTIONS.some((size) => size === queryParams["page-size"])}
             <option value={queryParams["page-size"]}>
               {queryParams["page-size"]}
             </option>
           {/if}
         </Pagination.ItemsPerPageSelect>
-        <span class="no-js-only">
+        <noscript>
           <Button type="submit" severity="base">Apply</Button>
-        </span>
-      </form>
+        </noscript>
+      </PackagesQueryForm>
       <Pagination.ItemsCount showing={data.length} {total} />
     {/snippet}
     {#snippet rightGroup()}
-      <form method="GET" class="pagination-form" data-sveltekit-keepfocus>
-        {#each preservedParams( page.url, ["page"], ) as [name, value], index (index)}
-          <input type="hidden" {name} {value} />
-        {/each}
+      <PackagesQueryForm
+        replaceParams={["page"]}
+        class="pagination-form"
+        data-sveltekit-keepfocus
+      >
         <Pagination.PageInput
           name="page"
           value={queryParams.page}
           {totalPages}
         />
-        <span class="no-js-only">
+        <noscript>
           <Button type="submit" severity="base">Go</Button>
-        </span>
-      </form>
+        </noscript>
+      </PackagesQueryForm>
     {/snippet}
     <Pagination.PageNavigation
       direction="first"
@@ -237,12 +238,14 @@
       disabled={!hasNext}
       data-sveltekit-keepfocus
     />
-    <Pagination.PageNavigation
-      direction="last"
-      href={queryParams.set("page", totalPages ?? queryParams.page)}
-      disabled={totalPages === undefined || queryParams.page >= totalPages}
-      data-sveltekit-keepfocus
-    />
+    {#if totalPages !== undefined}
+      <Pagination.PageNavigation
+        direction="last"
+        href={queryParams.set("page", totalPages)}
+        disabled={queryParams.page >= totalPages}
+        data-sveltekit-keepfocus
+      />
+    {/if}
   </Pagination>
 </main>
 
@@ -336,19 +339,8 @@
       bottom: 0;
     }
 
-    .pagination-form {
-      display: flex;
-      align-items: stretch;
-    }
-
-    .no-js-only {
-      display: none;
-    }
-
-    @media (scripting: none) {
-      .no-js-only {
-        display: contents;
-      }
+    :global(.pagination-form) {
+      display: contents;
     }
   }
 </style>

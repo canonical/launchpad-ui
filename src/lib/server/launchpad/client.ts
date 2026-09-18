@@ -28,7 +28,7 @@ export function getPublishedSources(
       "ws.size": query.size,
       "ws.start": query.start,
       order_by: query.orderBy,
-      ...filterParams(distro, query),
+      ...sourcePackagesFilterParams(distro, query),
     }),
   );
 }
@@ -39,7 +39,7 @@ export async function getPublishedSourcesTotal(
 ): Promise<number> {
   const url = archiveUrl(distro, "getPublishedSources", {
     "ws.show": "total_size",
-    ...filterParams(distro, filter),
+    ...sourcePackagesFilterParams(distro, filter),
   });
   const total: unknown = await getJson(url);
   if (typeof total !== "number") {
@@ -58,7 +58,7 @@ async function getJson<T>(url: string): Promise<T> {
   return response.json();
 }
 
-function filterParams(
+function sourcePackagesFilterParams(
   distro: string,
   filter: PublishedSourcesFilter,
 ): Record<string, QueryParamValue | QueryParamValue[]> {

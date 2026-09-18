@@ -1,14 +1,13 @@
 <script lang="ts">
   import { SidePanel, Spinner } from "@canonical/svelte-ds-app-launchpad";
   import { PartialTextDisclosure } from "$lib/components/index.js";
-  import { QueryParamHiddenInput } from "$lib/launchpad-components/index.js";
+  import PackagesQueryForm from "../PackagesQueryForm.svelte";
   import { getPackagesContext } from "../context.js";
   import { BINARY_PACKAGE_QUERY_PARAM } from "../superhref.js";
   import ArtifactsSection from "./ArtifactsSection.svelte";
   import { getBinaryPackage } from "./binary-package.remote.js";
   import { browser } from "$app/environment";
   import { goto } from "$app/navigation";
-  import { page } from "$app/state";
 
   let {
     name,
@@ -54,15 +53,12 @@ FIXME(DAL): When underlying dialog is upgrading to modal, it should suppress `on
           <SidePanel.Content.Header.CloseButton {commandfor} command="close" />
         {:else}
           <!-- We need to clear the query param when no JS is available -->
-          <form method="GET" class="close-button-form">
-            <!-- TODO(superhref): Replace with superhref when form inputs helper is added -->
-            {#each page.url.searchParams
-              .keys()
-              .filter((name) => name !== BINARY_PACKAGE_QUERY_PARAM) as name (name)}
-              <QueryParamHiddenInput {name} />
-            {/each}
+          <PackagesQueryForm
+            replaceParams={[BINARY_PACKAGE_QUERY_PARAM]}
+            class="close-button-form"
+          >
             <SidePanel.Content.Header.CloseButton type="submit" />
-          </form>
+          </PackagesQueryForm>
         {/if}
       </SidePanel.Content.Header>
       <SidePanel.Content.Body>
@@ -101,7 +97,7 @@ FIXME(DAL): When underlying dialog is upgrading to modal, it should suppress `on
     gap: var(--lp-dimension-spacing-inline-xxs);
   }
 
-  .close-button-form {
+  :global(.close-button-form) {
     display: contents;
 
     > :global(button) {

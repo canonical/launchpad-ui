@@ -1,6 +1,9 @@
 import { error } from "@sveltejs/kit";
 import * as v from "valibot";
-import { SORTABLE_PACKAGES_COLUMNS } from "$lib/modules/packages/superhref.js";
+import {
+  MAX_PAGE_SIZE,
+  SORTABLE_PACKAGES_COLUMNS,
+} from "$lib/modules/packages/superhref.js";
 import {
   getPublishedSources,
   getPublishedSourcesTotal,
@@ -40,7 +43,12 @@ const listArgsSchema = v.object({
   sortKey: v.nullable(v.picklist(SORTABLE_PACKAGES_COLUMNS)),
   sortOrder: v.picklist(SORT_DIRECTIONS),
   page: v.pipe(v.number(), v.integer(), v.minValue(1)),
-  size: v.pipe(v.number(), v.integer(), v.minValue(1), v.maxValue(100)),
+  size: v.pipe(
+    v.number(),
+    v.integer(),
+    v.minValue(1),
+    v.maxValue(MAX_PAGE_SIZE),
+  ),
 });
 
 const totalArgsSchema = v.object({
@@ -48,12 +56,6 @@ const totalArgsSchema = v.object({
   series: seriesSchema,
 });
 
-export type PackagesListArgs = v.InferInput<typeof listArgsSchema>;
-
-export type PackagesListing = {
-  data: SourcePackagePublishingEntry[];
-  hasNext: boolean;
-};
 
 export const getSourcePackages = query(
   listArgsSchema,
@@ -64,7 +66,10 @@ export const getSourcePackages = query(
     sortOrder,
     page,
     size,
-  }): Promise<PackagesListing> => {
+  }): Promise<{
+  data: SourcePackagePublishingEntry[];
+  hasNext: boolean;
+}> => {
     try {
       const { entries, next_collection_link } = await getPublishedSources(
         distro,

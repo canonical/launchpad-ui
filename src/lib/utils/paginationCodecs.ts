@@ -15,15 +15,15 @@ export function paginationCodecs(opts: {
   };
 }
 
-function positiveIntCodec(fallback: number, max: number): Codec<number> {
+function positiveIntCodec(defaultValue: number, max: number): Codec<number> {
   return {
     parse: (raw) => {
       const value = Number(raw);
-      if (!Number.isInteger(value) || value < 1) return fallback;
+      if (!Number.isInteger(value) || value < 1) return defaultValue;
       return Math.min(value, max);
     },
     serialize: (value) =>
-      value === null || value === fallback ? null : String(value),
-    default: fallback,
+      value === null || value === defaultValue ? null : String(value),
+    default: defaultValue,
   };
 }

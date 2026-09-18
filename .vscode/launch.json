@@ -3,6 +3,25 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "type": "node",
+      "request": "launch",
+      "name": "Debug SvelteKit SSR (vite dev)",
+      "program": "${workspaceFolder}/node_modules/vite/bin/vite.js",
+      "args": ["dev"],
+      "cwd": "${workspaceFolder}",
+      "runtimeVersion": "26",
+      "console": "integratedTerminal",
+      "skipFiles": [
+        "<node_internals>/**",
+        "${workspaceFolder}/node_modules/**"
+      ],
+      "serverReadyAction": {
+        "pattern": "Local:\\s+(https?://\\S+)",
+        "uriFormat": "%s",
+        "action": "openExternally"
+      }
+    },
+    {
       "type": "chrome",
       "request": "attach",
       "name": "Attach to Vitest Browser",

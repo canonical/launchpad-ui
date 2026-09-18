@@ -5,8 +5,11 @@ import { userEvent } from "vitest/browser";
 import { render } from "vitest-browser-svelte";
 import type { SourcePackagePublishingEntry } from "$lib/server/launchpad/types.js";
 import Page from "./+page.svelte";
-import type { PackagesListArgs, PackagesListing } from "./packages.remote.js";
+import type { getSourcePackages as getSourcePackagesQuery } from "./packages.remote.js";
 import { page } from "$app/state";
+
+type PackagesListArgs = Parameters<typeof getSourcePackagesQuery>[0];
+type PackagesListing = Awaited<ReturnType<typeof getSourcePackagesQuery>>;
 
 const getSourcePackages = vi.hoisted(() =>
   vi.fn<(args: PackagesListArgs) => Promise<PackagesListing>>(),
@@ -275,7 +278,7 @@ describe("packages pagination", () => {
     await expect.element(screen.getByText("of many Pages")).toBeVisible();
     await expect
       .element(screen.getByRole("link", { name: "Go to last page" }))
-      .toHaveAttribute("aria-disabled", "true");
+      .not.toBeInTheDocument();
   });
 
   it("links the navigation to the neighbouring pages and keeps the other params", async () => {
@@ -366,5 +369,44 @@ describe("packages pagination", () => {
     await userEvent.keyboard("{Enter}");
 
     expect(await submitted).toEqual({ "page-size": "50", page: "4" });
+  });
+
+  it("keeps the no-JS submit buttons out of the scripted page", async () => {
+    const screen = await render(Page, { ...baseProps });
+    await expect
+      .element(screen.getByText("Showing 2 of 40 items"))
+      .toBeVisible();
+
+    expect(screen.container.querySelectorAll("noscript")).toHaveLength(2);
+    expect(screen.container.querySelectorAll("form button")).toHaveLength(0);
+  });
+
+  it("submits the default page size as an absent key", async () => {
+    page.url.search = "?sort=series&page=3&page-size=50";
+    const screen = await render(Page, { ...baseProps });
+    await expect
+      .element(screen.getByText("Showing 2 of 40 items"))
+      .toBeVisible();
+    const submitted = submittedParams(screen.container);
+
+    await screen.getByLabelText("Items per page:").selectOptions("25");
+
+    expect(await submitted).toEqual({ sort: "series" });
+  });
+
+  it("submits the first page as an absent key", async () => {
+    page.url.search = "?page-size=50&sort=series&page=3";
+    getSourcePackagesTotal.mockResolvedValue(400);
+    const screen = await render(Page, { ...baseProps });
+    await expect
+      .element(screen.getByText("Showing 2 of 400 items"))
+      .toBeVisible();
+    const submitted = submittedParams(screen.container);
+
+    const input = screen.getByRole("spinbutton");
+    await input.fill("1");
+    await userEvent.keyboard("{Enter}");
+
+    expect(await submitted).toEqual({ "page-size": "50", sort: "series" });
   });
 });
