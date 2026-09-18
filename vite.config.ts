@@ -8,6 +8,7 @@ export default defineConfig({
     expect: {
       requireAssertions: true,
     },
+    execArgv: ["--no-webstorage"],
     projects: [
       {
         extends: true,
