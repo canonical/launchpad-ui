@@ -313,7 +313,7 @@
             >
             <Button
               density="compact"
-              severity="base"
+              importance="tertiary"
               onclick={showHelp}
               aria-label="Open command guide"
             >

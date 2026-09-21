@@ -86,7 +86,7 @@
             {#if props.item.editable}
               <Button
                 density="dense"
-                severity="base"
+                importance="tertiary"
                 aria-label="Edit {props.item.name}"
                 onclick={() => (props.item.expanded = !props.item.expanded)}
               >
@@ -96,7 +96,7 @@
               </Button>
               <Button
                 density="dense"
-                severity="base"
+                importance="tertiary"
                 aria-label="Delete {props.item.name}"
                 onclick={() =>
                   (items = items.filter((i) => i.id !== props.item.id))}
@@ -171,7 +171,7 @@
             <span style="margin-inline-end: auto;">{props.item.name}</span>
             <Button
               density="dense"
-              severity="base"
+              importance="tertiary"
               aria-label="Delete {props.item.name}"
               onclick={() =>
                 (items = items.filter((i) => i.id !== props.item.id))}

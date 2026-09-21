@@ -22,7 +22,7 @@
 ## Example Usage
 ```svelte
 <Combobox.Footer>
-  <Button severity="base" density="dense">
+  <Button importance="tertiary" density="dense">
     Cancel
   </Button>
   <Button density="dense">Save</Button>

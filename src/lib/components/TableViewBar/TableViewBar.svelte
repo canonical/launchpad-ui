@@ -67,7 +67,11 @@
       bind:this={menuPopoverMethods}
     >
       {#snippet trigger(triggerProps)}
-        <Button {...triggerProps} severity="base" aria-label="{label} menu">
+        <Button
+          {...triggerProps}
+          importance="tertiary"
+          aria-label="{label} menu"
+        >
           {#snippet iconLeft()}
             <MenuContextualIcon />
           {/snippet}
@@ -113,7 +117,7 @@
   ]}
 >
   {#snippet trailing()}
-    <Button severity="base">Settings</Button>
+    <Button importance="tertiary">Settings</Button>
   {/snippet}
 </TableViewBar>
 ```

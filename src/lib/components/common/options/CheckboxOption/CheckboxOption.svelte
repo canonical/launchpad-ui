@@ -45,7 +45,6 @@
     > :global(.ds.checkbox) {
       grid-area: checkable;
       margin-inline-end: var(--dimension-margin-end-option-checkable);
-      opacity: 1;
     }
   }
 </style>

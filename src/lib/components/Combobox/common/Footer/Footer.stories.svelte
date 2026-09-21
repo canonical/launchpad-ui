@@ -13,7 +13,7 @@
 
 <Story name="Default" asChild>
   <Combobox.Footer>
-    <Button severity="base" density="dense">Cancel</Button>
+    <Button importance="tertiary" density="dense">Cancel</Button>
     <Button density="dense">Save</Button>
   </Combobox.Footer>
 </Story>
