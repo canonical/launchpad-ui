@@ -1,20 +1,25 @@
 import { error } from "@sveltejs/kit";
 import * as v from "valibot";
+import { LAUNCHPAD_NAME_PATTERN } from "$lib/launchpadName.js";
 import {
   MAX_PAGE_SIZE,
+  POCKETS,
+  SEARCH_MATCHES,
   SORTABLE_PACKAGES_COLUMNS,
 } from "$lib/modules/packages/superhref.js";
+import { getCurrentUser } from "$lib/modules/people/people.remote.js";
+import { CURRENT_PERSON } from "$lib/modules/people/personCodec.js";
 import {
+  LaunchpadApiError,
   getPublishedSources,
   getPublishedSourcesTotal,
 } from "$lib/server/launchpad/client.js";
 import type {
+  PublishedSourcesFilter,
   PublishedSourcesSortKey,
-  PublishingStatus,
   SourcePackagePublishingEntry,
 } from "$lib/server/launchpad/types.js";
 import { SORT_DIRECTIONS } from "$lib/utils/sortCodec.js";
-import type { SortDirection } from "$lib/utils/sortCodec.js";
 import { query } from "$app/server";
 
 const SORT_KEYS = {
@@ -27,62 +32,113 @@ const SORT_KEYS = {
   PublishedSourcesSortKey
 >;
 
-const DEFAULT_ORDER_BY = ["-date_created"];
-const LISTED_STATUSES: PublishingStatus[] = [
-  "Pending",
-  "Published",
-  "Obsolete",
-];
+const MAX_SEARCH_LENGTH = 200;
 
 const distroSchema = v.pipe(v.string(), v.trim(), v.minLength(1));
-const seriesSchema = v.optional(v.pipe(v.string(), v.trim(), v.minLength(1)));
+const launchpadNameSchema = v.pipe(v.string(), v.regex(LAUNCHPAD_NAME_PATTERN));
+const personSchema = v.union([v.literal(CURRENT_PERSON), launchpadNameSchema]);
 
-const listArgsSchema = v.object({
-  distro: distroSchema,
-  series: seriesSchema,
-  sortKey: v.nullable(v.picklist(SORTABLE_PACKAGES_COLUMNS)),
-  sortOrder: v.picklist(SORT_DIRECTIONS),
-  page: v.pipe(v.number(), v.integer(), v.minValue(1)),
-  size: v.pipe(
-    v.number(),
-    v.integer(),
-    v.minValue(1),
-    v.maxValue(MAX_PAGE_SIZE),
-  ),
-});
+const filterArgsSchema = v.pipeAsync(
+  v.object({
+    search: v.nullish(
+      v.pipe(
+        v.string(),
+        v.trim(),
+        v.minLength(1),
+        v.maxLength(MAX_SEARCH_LENGTH),
+      ),
+    ),
+    match: v.nullish(v.picklist(SEARCH_MATCHES)),
+    series: v.nullish(launchpadNameSchema),
+    pocket: v.nullish(v.picklist(POCKETS)),
+    maintainer: v.nullish(personSchema),
+    signer: v.nullish(personSchema),
+    ubuntuChange: v.nullish(v.boolean()),
+    allStatuses: v.nullish(v.boolean()),
+  }),
+  v.transformAsync(async (filters): Promise<PublishedSourcesFilter> => {
+    const currentUser =
+      filters.maintainer === CURRENT_PERSON || filters.signer === CURRENT_PERSON
+        ? await getCurrentUser()
+        : null;
+    return {
+      series: filters.series,
+      status: filters.allStatuses
+        ? undefined
+        : ["Pending", "Published", "Obsolete"],
+      sourceName: filters.search,
+      exactMatch: filters.match === "exact",
+      pocket: filters.pocket,
+      maintainedBy:
+        filters.maintainer === CURRENT_PERSON
+          ? currentUser?.name
+          : filters.maintainer,
+      signedBy:
+        filters.signer === CURRENT_PERSON ? currentUser?.name : filters.signer,
+      ubuntuChange: filters.ubuntuChange,
+    };
+  }),
+);
 
-const totalArgsSchema = v.object({
-  distro: distroSchema,
-  series: seriesSchema,
-});
+const listArgsSchema = v.intersectAsync([
+  v.object({
+    distro: distroSchema,
+    sortKey: v.nullable(v.picklist(SORTABLE_PACKAGES_COLUMNS)),
+    sortOrder: v.picklist(SORT_DIRECTIONS),
+    page: v.pipe(v.number(), v.integer(), v.minValue(1)),
+    size: v.pipe(
+      v.number(),
+      v.integer(),
+      v.minValue(1),
+      v.maxValue(MAX_PAGE_SIZE),
+    ),
+  }),
+  filterArgsSchema,
+]);
+
+const totalArgsSchema = v.intersectAsync([
+  v.object({ distro: distroSchema }),
+  filterArgsSchema,
+]);
+
+type PackagesListing = {
+  data: SourcePackagePublishingEntry[];
+  hasNext: boolean;
+};
+
+const EMPTY_LISTING: PackagesListing = { data: [], hasNext: false };
 
 export const getSourcePackages = query(
   listArgsSchema,
   async ({
     distro,
-    series,
     sortKey,
     sortOrder,
     page,
     size,
-  }): Promise<{
-    data: SourcePackagePublishingEntry[];
-    hasNext: boolean;
-  }> => {
+    ...filters
+  }): Promise<PackagesListing> => {
     try {
       const { entries, next_collection_link } = await getPublishedSources(
         distro,
         {
-          series,
-          status: LISTED_STATUSES,
+          ...filters,
           size,
           start: (page - 1) * size,
-          orderBy: toOrderBy(sortKey, sortOrder),
+          orderBy:
+            sortKey === null || sortOrder === "none"
+              ? ["-date_created"]
+              : [
+                  `${sortOrder === "descending" ? "-" : ""}${SORT_KEYS[sortKey]}`,
+                ],
         },
       );
       return { data: entries, hasNext: next_collection_link !== undefined };
     } catch (requestError) {
       console.error("Failed to load source packages", requestError);
+      if (isRejectedFilter(requestError)) {
+        return EMPTY_LISTING;
+      }
       error(503, "Couldn't load packages from Launchpad. Try again shortly.");
     }
   },
@@ -90,24 +146,21 @@ export const getSourcePackages = query(
 
 export const getSourcePackagesTotal = query(
   totalArgsSchema,
-  async ({ distro, series }): Promise<number | null> => {
+  async ({ distro, ...filters }): Promise<number | null> => {
     try {
-      return await getPublishedSourcesTotal(distro, {
-        series,
-        status: LISTED_STATUSES,
-      });
+      return await getPublishedSourcesTotal(distro, filters);
     } catch (requestError) {
       console.error("Failed to count source packages", requestError);
+      if (isRejectedFilter(requestError)) {
+        return 0;
+      }
       return null;
     }
   },
 );
 
-function toOrderBy(
-  sortKey: (typeof SORTABLE_PACKAGES_COLUMNS)[number] | null,
-  sortOrder: SortDirection,
-): string[] {
-  return sortKey === null || sortOrder === "none"
-    ? DEFAULT_ORDER_BY
-    : [`${sortOrder === "descending" ? "-" : ""}${SORT_KEYS[sortKey]}`];
+function isRejectedFilter(requestError: unknown): boolean {
+  return (
+    requestError instanceof LaunchpadApiError && requestError.status === 400
+  );
 }
