@@ -24,7 +24,7 @@ vi.mock("$lib/modules/packages/table-views/table-views.remote.js", () => ({
 }));
 
 vi.mock(
-  "$lib/modules/packages/BinaryPackageSidePanel/BinaryPackageSidePanel.svelte",
+  "$lib/modules/packages/binary-package/BinaryPackageSidePanel.svelte",
   () => ({ default: vi.fn() }),
 );
 

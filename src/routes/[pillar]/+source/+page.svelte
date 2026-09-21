@@ -9,7 +9,7 @@
   } from "@canonical/svelte-ds-app-launchpad";
   import { SettingsIcon } from "@canonical/svelte-icons";
   import { Pagination, TableViewBar } from "$lib/components/index.js";
-  import BinaryPackageSidePanel from "$lib/modules/packages/BinaryPackageSidePanel/BinaryPackageSidePanel.svelte";
+  import BinaryPackageSidePanel from "$lib/modules/packages/binary-package/BinaryPackageSidePanel.svelte";
   import { setPackagesContext } from "$lib/modules/packages/context.js";
   import {
     PACKAGES_TABLE_COLUMNS,
