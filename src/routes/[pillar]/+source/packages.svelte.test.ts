@@ -20,8 +20,15 @@ vi.mock("./packages.remote.js", () => ({
 }));
 
 vi.mock("$lib/modules/packages/table-views/table-views.remote.js", () => ({
-  getTableViews,
+  getTableViews: vi.fn(() => Promise.resolve(DEFAULT_TABLE_VIEWS)),
 }));
+
+vi.mock(
+  "$lib/modules/packages/table-views/ManageViewsSidePanel.svelte",
+  () => ({
+    default: vi.fn(),
+  }),
+);
 
 vi.mock(
   "$lib/modules/packages/binary-package/BinaryPackageSidePanel.svelte",
