@@ -12,3 +12,4 @@ export * from "./paginationCodecs.js";
 export * from "./booleanSearchParam.js";
 export * from "./flagCodec.js";
 export * from "./textCodec.js";
+export * from "./launchpadNameCodec.js";

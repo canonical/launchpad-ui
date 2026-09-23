@@ -5,6 +5,7 @@ import { DEFAULT_TABLE_VIEW_SLUG } from "$lib/modules/packages/table-views/const
 import { personCodec } from "$lib/modules/people/personCodec.js";
 import type { Pocket } from "$lib/server/launchpad/types.js";
 import { flagCodec } from "$lib/utils/flagCodec.js";
+import { launchpadNameCodec } from "$lib/utils/launchpadNameCodec.js";
 import { paginationCodecs } from "$lib/utils/paginationCodecs.js";
 import { sortCodec } from "$lib/utils/sortCodec.js";
 import { textCodec } from "$lib/utils/textCodec.js";
@@ -61,7 +62,7 @@ export const QueryParams = superhref(
     },
     search: textCodec(),
     match: enumCodec(SEARCH_MATCHES),
-    series: textCodec(),
+    series: launchpadNameCodec(),
     pocket: enumCodec(POCKETS),
     maintainer: personCodec(),
     signer: personCodec(),
