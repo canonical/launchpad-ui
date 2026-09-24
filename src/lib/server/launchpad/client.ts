@@ -52,16 +52,11 @@ export async function getPublishedSourcesTotal(
   return total;
 }
 
-export function findPeople(
-  text: string,
-  page: { size: number; start: number },
-): Promise<Collection<PersonEntry>> {
+export function findPeople(text: string): Promise<Collection<PersonEntry>> {
   return getJson(
     `${apiBase()}/people?${searchParams({
       "ws.op": "find",
       text,
-      "ws.size": page.size,
-      "ws.start": page.start,
     })}`,
   );
 }
@@ -72,23 +67,6 @@ export async function getPerson(name: string): Promise<PersonEntry | null> {
     accept: "application/json",
   });
   if (response.status === 404 || response.status === 410) {
-    return null;
-  }
-  if (!response.ok) {
-    throw new LaunchpadApiError(response.status, url);
-  }
-  return response.json();
-}
-
-export async function getCurrentPerson(
-  sessionCookie: string,
-): Promise<PersonEntry | null> {
-  const url = `${apiBase()}/people/+me`;
-  const response = await fetchFollowingRedirects(url, {
-    accept: "application/json",
-    cookie: `${cookieName()}=${sessionCookie}`,
-  });
-  if (response.status === 401 || response.status === 403) {
     return null;
   }
   if (!response.ok) {
@@ -180,10 +158,6 @@ function searchParams(params: QueryParams): URLSearchParams {
 
 function personLink(name: string): string {
   return `${apiBase()}/~${encodeURIComponent(name)}`;
-}
-
-function cookieName(): string {
-  return env.MAIN_LAUNCHPAD_COOKIE_NAME || "lp";
 }
 
 function apiBase(): string {

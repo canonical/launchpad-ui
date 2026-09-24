@@ -181,14 +181,14 @@ describe("packages queries", () => {
 describe("packages URL filters", () => {
   const search =
     "?search=superhref&match=exact&series=stonking&pocket=Proposed" +
-    "&maintainer=ubuntu-mozillateam&signer=me&ubuntu-change=1&all-statuses=1";
+    "&maintainer=ubuntu-mozillateam&signer=userl&ubuntu-change=1&all-statuses=1";
   const filters = {
     search: "superhref",
     match: "exact",
     series: "stonking",
     pocket: "Proposed",
     maintainer: "ubuntu-mozillateam",
-    signer: "me",
+    signer: "userl",
     ubuntuChange: true,
     allStatuses: true,
   } satisfies Partial<PackagesTotalArgs>;
@@ -231,7 +231,7 @@ describe("packages URL filters", () => {
     ["series=stonking", { series: "stonking" }],
     ["pocket=Updates", { pocket: "Updates" }],
     ["maintainer=~ubuntu-mozillateam", { maintainer: "ubuntu-mozillateam" }],
-    ["signer=me", { signer: "me" }],
+    ["signer=userl", { signer: "userl" }],
     ["ubuntu-change=1", { ubuntuChange: true }],
     ["all-statuses=1", { allStatuses: true }],
   ] as const)(

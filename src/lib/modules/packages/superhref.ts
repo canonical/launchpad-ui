@@ -2,7 +2,6 @@
 
 import { enumCodec, strCodec, superhref } from "@canonical/superhref";
 import { DEFAULT_TABLE_VIEW_SLUG } from "$lib/modules/packages/table-views/constants.js";
-import { personCodec } from "$lib/modules/people/personCodec.js";
 import type { Pocket } from "$lib/server/launchpad/types.js";
 import { flagCodec } from "$lib/utils/flagCodec.js";
 import { launchpadNameCodec } from "$lib/utils/launchpadNameCodec.js";
@@ -64,8 +63,8 @@ export const QueryParams = superhref(
     match: enumCodec(SEARCH_MATCHES),
     series: launchpadNameCodec(),
     pocket: enumCodec(POCKETS),
-    maintainer: personCodec(),
-    signer: personCodec(),
+    maintainer: launchpadNameCodec(),
+    signer: launchpadNameCodec(),
     "ubuntu-change": flagCodec(),
     "all-statuses": flagCodec(),
     ...paginationCodecs({

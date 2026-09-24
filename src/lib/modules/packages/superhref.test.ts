@@ -9,7 +9,7 @@ describe("package filter query parameters", () => {
         new URL(
           "https://example.test/ubuntu/+source?search=%20superhref%20&match=exact" +
             "&series=stonking&pocket=Updates&maintainer=~Ubuntu-MozillaTeam" +
-            "&signer=me&ubuntu-change=1&all-statuses=1",
+            "&signer=userl&ubuntu-change=1&all-statuses=1",
         ),
       ),
     ).toEqual({
@@ -23,7 +23,7 @@ describe("package filter query parameters", () => {
       series: "stonking",
       pocket: "Updates",
       maintainer: "ubuntu-mozillateam",
-      signer: "me",
+      signer: "userl",
       "ubuntu-change": true,
       "all-statuses": true,
       page: 1,

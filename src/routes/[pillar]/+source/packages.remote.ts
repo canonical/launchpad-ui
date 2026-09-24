@@ -7,8 +7,6 @@ import {
   SEARCH_MATCHES,
   SORTABLE_PACKAGES_COLUMNS,
 } from "$lib/modules/packages/superhref.js";
-import { getCurrentUser } from "$lib/modules/people/people.remote.js";
-import { CURRENT_PERSON } from "$lib/modules/people/personCodec.js";
 import {
   LaunchpadApiError,
   getPublishedSources,
@@ -36,9 +34,8 @@ const MAX_SEARCH_LENGTH = 200;
 
 const distroSchema = v.pipe(v.string(), v.trim(), v.minLength(1));
 const launchpadNameSchema = v.pipe(v.string(), v.regex(LAUNCHPAD_NAME_PATTERN));
-const personSchema = v.union([v.literal(CURRENT_PERSON), launchpadNameSchema]);
 
-const filterArgsSchema = v.pipeAsync(
+const filterArgsSchema = v.pipe(
   v.object({
     search: v.nullish(
       v.pipe(
@@ -51,17 +48,13 @@ const filterArgsSchema = v.pipeAsync(
     match: v.nullish(v.picklist(SEARCH_MATCHES)),
     series: v.nullish(launchpadNameSchema),
     pocket: v.nullish(v.picklist(POCKETS)),
-    maintainer: v.nullish(personSchema),
-    signer: v.nullish(personSchema),
+    maintainer: v.nullish(launchpadNameSchema),
+    signer: v.nullish(launchpadNameSchema),
     ubuntuChange: v.nullish(v.boolean()),
     allStatuses: v.nullish(v.boolean()),
   }),
-  v.transformAsync(async (filters): Promise<PublishedSourcesFilter> => {
-    const currentUser =
-      filters.maintainer === CURRENT_PERSON || filters.signer === CURRENT_PERSON
-        ? await getCurrentUser()
-        : null;
-    return {
+  v.transform(
+    (filters): PublishedSourcesFilter => ({
       series: filters.series,
       status: filters.allStatuses
         ? undefined
@@ -69,18 +62,14 @@ const filterArgsSchema = v.pipeAsync(
       sourceName: filters.search,
       exactMatch: filters.match === "exact",
       pocket: filters.pocket,
-      maintainedBy:
-        filters.maintainer === CURRENT_PERSON
-          ? currentUser?.name
-          : filters.maintainer,
-      signedBy:
-        filters.signer === CURRENT_PERSON ? currentUser?.name : filters.signer,
+      maintainedBy: filters.maintainer,
+      signedBy: filters.signer,
       ubuntuChange: filters.ubuntuChange,
-    };
-  }),
+    }),
+  ),
 );
 
-const listArgsSchema = v.intersectAsync([
+const listArgsSchema = v.intersect([
   v.object({
     distro: distroSchema,
     sortKey: v.nullable(v.picklist(SORTABLE_PACKAGES_COLUMNS)),
@@ -96,7 +85,7 @@ const listArgsSchema = v.intersectAsync([
   filterArgsSchema,
 ]);
 
-const totalArgsSchema = v.intersectAsync([
+const totalArgsSchema = v.intersect([
   v.object({ distro: distroSchema }),
   filterArgsSchema,
 ]);

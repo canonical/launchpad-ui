@@ -1,6 +1,5 @@
 import * as v from "valibot";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { getCurrentUser } from "$lib/modules/people/people.remote.js";
 import {
   LaunchpadApiError,
   getPublishedSources,
@@ -13,17 +12,12 @@ import {
 
 vi.mock("$app/server", () => ({
   query: (
-    schema: v.GenericSchema | v.GenericSchemaAsync,
+    schema: v.GenericSchema,
     handler: (args: unknown) => Promise<unknown>,
   ) =>
-    Object.assign(
-      async (args: unknown) => handler(await v.parseAsync(schema, args)),
-      { __: { type: "query" } },
-    ),
-}));
-
-vi.mock("$lib/modules/people/people.remote.js", () => ({
-  getCurrentUser: vi.fn(),
+    Object.assign(async (args: unknown) => handler(v.parse(schema, args)), {
+      __: { type: "query" },
+    }),
 }));
 
 vi.mock("$lib/server/launchpad/client.js", async (importOriginal) => ({
@@ -46,7 +40,6 @@ beforeEach(() => {
     entries: [],
   });
   vi.mocked(getPublishedSourcesTotal).mockReset().mockResolvedValue(12);
-  vi.mocked(getCurrentUser).mockReset();
 });
 
 afterEach(() => {
@@ -56,7 +49,7 @@ afterEach(() => {
 describe("package filter queries", () => {
   it("uses the same filters for rows and totals and applies pagination only to rows", async () => {
     const filters = {
-      search: "superhref",
+      search: " superhref ",
       match: "exact",
       series: "stonking",
       pocket: "Updates",
@@ -85,7 +78,6 @@ describe("package filter queries", () => {
       orderBy: ["-date_created"],
     });
     expect(getPublishedSourcesTotal).toHaveBeenCalledWith("ubuntu", expected);
-    expect(getCurrentUser).not.toHaveBeenCalled();
   });
 
   it.each([undefined, null, false])(
@@ -112,7 +104,6 @@ describe("package filter queries", () => {
         orderBy: ["-date_created"],
       });
       expect(getPublishedSourcesTotal).toHaveBeenCalledWith("ubuntu", expected);
-      expect(getCurrentUser).not.toHaveBeenCalled();
     },
   );
 
@@ -147,7 +138,6 @@ describe("package filter queries", () => {
       orderBy: ["-date_created"],
     });
     expect(getPublishedSourcesTotal).toHaveBeenCalledWith("ubuntu", expected);
-    expect(getCurrentUser).not.toHaveBeenCalled();
   });
 
   it.each([
@@ -169,7 +159,6 @@ describe("package filter queries", () => {
     ).rejects.toBeInstanceOf(v.ValiError);
     expect(getPublishedSources).not.toHaveBeenCalled();
     expect(getPublishedSourcesTotal).not.toHaveBeenCalled();
-    expect(getCurrentUser).not.toHaveBeenCalled();
   });
 
   it.each([undefined, null, "contains"] as const)(
@@ -185,44 +174,37 @@ describe("package filter queries", () => {
       });
       expect(getPublishedSources).toHaveBeenCalledWith("ubuntu", expected);
       expect(getPublishedSourcesTotal).toHaveBeenCalledWith("ubuntu", expected);
-      expect(getCurrentUser).not.toHaveBeenCalled();
     },
   );
 
   it.each([
-    [{ maintainer: "me" }, { maintainedBy: "userl", signedBy: undefined }],
-    [{ signer: "me" }, { maintainedBy: undefined, signedBy: "userl" }],
+    [{ maintainer: "userl" }, { maintainedBy: "userl", signedBy: undefined }],
+    [{ signer: "userl" }, { maintainedBy: undefined, signedBy: "userl" }],
     [
-      { maintainer: "me", signer: null },
+      { maintainer: "userl", signer: null },
       { maintainedBy: "userl", signedBy: null },
     ],
     [
-      { maintainer: null, signer: "me" },
+      { maintainer: null, signer: "userl" },
       { maintainedBy: null, signedBy: "userl" },
     ],
     [
-      { maintainer: "me", signer: "me" },
+      { maintainer: "userl", signer: "userl" },
       { maintainedBy: "userl", signedBy: "userl" },
     ],
     [
-      { maintainer: "me", signer: "userl-other" },
+      { maintainer: "userl", signer: "userl-other" },
       { maintainedBy: "userl", signedBy: "userl-other" },
     ],
     [
-      { maintainer: "ubuntu-mozillateam", signer: "me" },
+      { maintainer: "ubuntu-mozillateam", signer: "userl" },
       { maintainedBy: "ubuntu-mozillateam", signedBy: "userl" },
     ],
   ])(
-    "resolves me once per query when signed in with %j",
+    "passes person and team names directly to both queries with %j",
     async (filters, expected) => {
-      vi.mocked(getCurrentUser).mockResolvedValue({
-        name: "userl",
-        displayName: "User Launchpadio",
-      });
       await getSourcePackages({ ...listArgs, ...filters });
-      expect(getCurrentUser).toHaveBeenCalledTimes(1);
       await getSourcePackagesTotal({ distro: "ubuntu", ...filters });
-      expect(getCurrentUser).toHaveBeenCalledTimes(2);
 
       expect(getPublishedSources).toHaveBeenCalledWith(
         "ubuntu",
@@ -232,69 +214,6 @@ describe("package filter queries", () => {
         "ubuntu",
         expect.objectContaining(expected),
       );
-    },
-  );
-
-  it.each([
-    [{ maintainer: "me" }, { maintainedBy: undefined, signedBy: undefined }],
-    [{ signer: "me" }, { maintainedBy: undefined, signedBy: undefined }],
-    [
-      { maintainer: "me", signer: null },
-      { maintainedBy: undefined, signedBy: null },
-    ],
-    [
-      { maintainer: null, signer: "me" },
-      { maintainedBy: null, signedBy: undefined },
-    ],
-    [
-      { maintainer: "me", signer: "me" },
-      { maintainedBy: undefined, signedBy: undefined },
-    ],
-    [
-      { maintainer: "me", signer: "userl" },
-      { maintainedBy: undefined, signedBy: "userl" },
-    ],
-    [
-      { maintainer: "ubuntu-mozillateam", signer: "me" },
-      { maintainedBy: "ubuntu-mozillateam", signedBy: undefined },
-    ],
-  ])(
-    "drops only me filters when signed out with %j",
-    async (people, expectedPeople) => {
-      vi.mocked(getCurrentUser).mockResolvedValue(null);
-      const filters = {
-        ...people,
-        search: "superhref",
-        match: "exact",
-        series: "stonking",
-        pocket: "Updates",
-        ubuntuChange: true,
-        allStatuses: true,
-      } as const;
-      await expect(
-        getSourcePackages({ ...listArgs, ...filters }),
-      ).resolves.toEqual({ data: [], hasNext: false });
-      await expect(
-        getSourcePackagesTotal({ distro: "ubuntu", ...filters }),
-      ).resolves.toBe(12);
-
-      const expected = {
-        ...expectedPeople,
-        sourceName: "superhref",
-        exactMatch: true,
-        series: "stonking",
-        pocket: "Updates",
-        ubuntuChange: true,
-        status: undefined,
-      };
-      expect(getPublishedSources).toHaveBeenCalledWith("ubuntu", {
-        ...expected,
-        size: 25,
-        start: 0,
-        orderBy: ["-date_created"],
-      });
-      expect(getPublishedSourcesTotal).toHaveBeenCalledWith("ubuntu", expected);
-      expect(getCurrentUser).toHaveBeenCalledTimes(2);
     },
   );
 

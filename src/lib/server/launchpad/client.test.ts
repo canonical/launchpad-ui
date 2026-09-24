@@ -2,7 +2,6 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   LaunchpadApiError,
   findPeople,
-  getCurrentPerson,
   getPerson,
   getPublishedSources,
   getPublishedSourcesTotal,
@@ -13,7 +12,6 @@ import type { PersonEntry, SourcePackagePublishingEntry } from "./types.js";
 vi.mock("$env/dynamic/private", () => ({
   env: {
     MAIN_LAUNCHPAD_BASE_HOST: "https://lp.example",
-    MAIN_LAUNCHPAD_COOKIE_NAME: "lp",
   },
 }));
 
@@ -377,16 +375,16 @@ describe("empty and unset published source filters", () => {
 });
 
 describe("findPeople", () => {
-  it("searches people and teams by text from an offset", async () => {
-    respondWith({ start: 40, entries: [person()] });
-    const collection = await findPeople("user", { size: 20, start: 40 });
+  it("searches people and teams by text without pagination parameters", async () => {
+    respondWith({ start: 0, entries: [person()] });
+    const collection = await findPeople("user");
 
     const url = requestedUrl();
     expect(url.pathname).toBe("/api/devel/people");
-    expect(url.searchParams.get("ws.op")).toBe("find");
-    expect(url.searchParams.get("text")).toBe("user");
-    expect(url.searchParams.get("ws.size")).toBe("20");
-    expect(url.searchParams.get("ws.start")).toBe("40");
+    expect(Object.fromEntries(url.searchParams)).toEqual({
+      "ws.op": "find",
+      text: "user",
+    });
     expect(collection.entries[0].display_name).toBe("User Launchpadio");
   });
 });
@@ -412,25 +410,15 @@ describe("getPerson", () => {
     respondWith({}, 500);
     await expect(getPerson("userl")).rejects.toBeInstanceOf(LaunchpadApiError);
   });
-});
-
-describe("getCurrentPerson", () => {
-  it("sends the Launchpad session cookie", async () => {
-    respondWith(person());
-    await getCurrentPerson("session-value");
-
-    expect(requestedUrl().pathname).toBe("/api/devel/people/+me");
-    expect(requestedHeaders().cookie).toBe("lp=session-value");
-  });
 
   it("follows the redirect to the person", async () => {
     respondOnceWithRedirect("/api/devel/~userl");
     respondOnceWith(person());
-    const currentPerson = await getCurrentPerson("session-value");
+    const found = await getPerson("userl-old");
 
     expect(requestedUrl(1).pathname).toBe("/api/devel/~userl");
-    expect(requestedHeaders(1).cookie).toBe("lp=session-value");
-    expect(currentPerson?.name).toBe("userl");
+    expect(requestedHeaders(1)).toEqual({ accept: "application/json" });
+    expect(found?.name).toBe("userl");
   });
 
   it("returns the person reached after five redirects", async () => {
@@ -445,11 +433,11 @@ describe("getCurrentPerson", () => {
     }
     respondOnceWith(person());
 
-    const currentPerson = await getCurrentPerson("session-value");
+    const found = await getPerson("userl-older");
 
     expect(launchpadFetch).toHaveBeenCalledTimes(6);
     expect(requestedUrl(5).pathname).toBe("/api/devel/~userl");
-    expect(currentPerson?.name).toBe("userl");
+    expect(found?.name).toBe("userl");
   });
 
   it("stops after five redirects and rejects a further redirect", async () => {
@@ -460,7 +448,7 @@ describe("getCurrentPerson", () => {
       }),
     );
 
-    await expect(getCurrentPerson("session-value")).rejects.toMatchObject({
+    await expect(getPerson("userl-old")).rejects.toMatchObject({
       name: "LaunchpadApiError",
       status: 303,
     });
@@ -470,22 +458,10 @@ describe("getCurrentPerson", () => {
   it("stops when a redirect has no location", async () => {
     respondWith({}, 303);
 
-    await expect(getCurrentPerson("session-value")).rejects.toMatchObject({
+    await expect(getPerson("userl-old")).rejects.toMatchObject({
       name: "LaunchpadApiError",
       status: 303,
     });
     expect(launchpadFetch).toHaveBeenCalledTimes(1);
-  });
-
-  it("returns no person when the session is not signed in", async () => {
-    respondWith("You need to be logged in to view this URL.", 401);
-    await expect(getCurrentPerson("stale")).resolves.toBeNull();
-  });
-
-  it("throws LaunchpadApiError on other failures", async () => {
-    respondWith({}, 500);
-    await expect(getCurrentPerson("session-value")).rejects.toBeInstanceOf(
-      LaunchpadApiError,
-    );
   });
 });
