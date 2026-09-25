@@ -4,6 +4,7 @@ import type { Locator } from "vitest/browser";
 import { render } from "vitest-browser-svelte";
 import type { RenderResult } from "vitest-browser-svelte";
 import type { PersonEntry } from "$lib/server/launchpad/types.js";
+import { MIN_PEOPLE_SEARCH_LENGTH } from "../constants.js";
 import PersonFilterCombobox from "./PersonFilterCombobox.svelte";
 import {
   FILTERS_FORM_ID,
@@ -136,15 +137,18 @@ describe("PersonFilterCombobox", () => {
     expect(findPeople).toHaveBeenCalledExactlyOnceWith({ text: "example" });
   });
 
-  it.each(["ab", "  ab  "])(
-    "does not search for fewer than 3 non-blank characters (%j)",
+  const tooShort = "a".repeat(MIN_PEOPLE_SEARCH_LENGTH - 1);
+  it.each([tooShort, `  ${tooShort}  `])(
+    "does not search for fewer non-blank characters than the minimum (%j)",
     async (text) => {
       const screen = await render(PersonFilterCombobox, baseProps);
       await openAndSearch(screen, text);
 
       await expect
         .element(searchBox(screen))
-        .toHaveAccessibleDescription("Enter at least 3 characters");
+        .toHaveAccessibleDescription(
+          `Enter at least ${MIN_PEOPLE_SEARCH_LENGTH} characters`,
+        );
       await expect
         .element(screen.getByRole("group", { name: "Search results" }))
         .not.toBeInTheDocument();
@@ -201,7 +205,7 @@ describe("PersonFilterCombobox", () => {
       .element(screen.getByRole("listbox"))
       .toHaveAttribute("aria-busy", "false");
 
-    await searchFor(screen, "bob");
+    await searchFor(screen, "bob example");
     await expect
       .element(screen.getByRole("option", { name: /Bob Example/ }))
       .toBeVisible();

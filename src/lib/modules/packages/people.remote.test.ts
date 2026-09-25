@@ -5,6 +5,10 @@ import {
   getPerson,
 } from "$lib/server/launchpad/client.js";
 import type { PersonEntry } from "$lib/server/launchpad/types.js";
+import {
+  MAX_PEOPLE_SEARCH_LENGTH,
+  MIN_PEOPLE_SEARCH_LENGTH,
+} from "./constants.js";
 import { findPeople, getPersonByName } from "./people.remote.js";
 
 vi.mock("$app/server", () => ({
@@ -106,21 +110,28 @@ describe("findPeople", () => {
     expect(getPerson).not.toHaveBeenCalled();
   });
 
-  it.each([3, 200])("accepts %i-character search text", async (length) => {
-    const text = "a".repeat(length);
-    await findPeople({ text });
+  it.each([MIN_PEOPLE_SEARCH_LENGTH, MAX_PEOPLE_SEARCH_LENGTH])(
+    "accepts %i-character search text",
+    async (length) => {
+      const text = "a".repeat(length);
+      await findPeople({ text });
 
-    expect(findLaunchpadPeople).toHaveBeenCalledExactlyOnceWith(text);
-  });
-
-  it.each(["", " ", "ab", " ab ", "a".repeat(201)])(
-    "rejects search text outside the length limits (%s)",
-    async (text) => {
-      await expect(findPeople({ text })).rejects.toBeInstanceOf(v.ValiError);
-      expect(findLaunchpadPeople).not.toHaveBeenCalled();
-      expect(getPerson).not.toHaveBeenCalled();
+      expect(findLaunchpadPeople).toHaveBeenCalledExactlyOnceWith(text);
     },
   );
+
+  const tooShort = "a".repeat(MIN_PEOPLE_SEARCH_LENGTH - 1);
+  it.each([
+    "",
+    " ",
+    tooShort,
+    ` ${tooShort} `,
+    "a".repeat(MAX_PEOPLE_SEARCH_LENGTH + 1),
+  ])("rejects search text outside the length limits (%s)", async (text) => {
+    await expect(findPeople({ text })).rejects.toBeInstanceOf(v.ValiError);
+    expect(findLaunchpadPeople).not.toHaveBeenCalled();
+    expect(getPerson).not.toHaveBeenCalled();
+  });
 
   it("logs an exact-name lookup failure and keeps the search results", async () => {
     const failure = new Error("Lookup failed");
