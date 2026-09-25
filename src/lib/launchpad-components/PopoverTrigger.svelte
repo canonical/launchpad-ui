@@ -10,7 +10,7 @@
 
 <script lang="ts">
   import { Button, Popover } from "@canonical/svelte-ds-app-launchpad";
-  import { ChevronUpIcon } from "@canonical/svelte-icons";
+  import { ChevronDownIcon } from "@canonical/svelte-icons";
   import type { ComponentProps, Snippet } from "svelte";
 
   let {
@@ -41,13 +41,13 @@
   {...rest}
 >
   {#if children}
-    <span id={valueId}>{@render children?.()}</span>
+    <span id={valueId}>{@render children()}</span>
   {/if}
   {#snippet iconRight()}
     {#if icon}
       {@render icon()}
     {:else}
-      <ChevronUpIcon class="chevron" />
+      <ChevronDownIcon class="chevron" />
     {/if}
   {/snippet}
 </Button>

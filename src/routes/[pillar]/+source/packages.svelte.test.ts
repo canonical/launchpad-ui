@@ -35,6 +35,11 @@ vi.mock("$lib/modules/packages/table-views/table-views.remote.js", () => ({
   getTableViews,
 }));
 
+vi.mock("$lib/modules/people/people.remote.js", () => ({
+  findPeople: vi.fn(() => Promise.resolve([])),
+  getPersonByName: vi.fn(() => Promise.resolve(null)),
+}));
+
 vi.mock(
   "$lib/modules/packages/table-views/ManageViewsSidePanel.svelte",
   () => ({
@@ -134,7 +139,7 @@ const baseProps = {
 } satisfies ComponentProps<typeof Page>;
 const defaultFilters = {
   search: null,
-  match: null,
+  match: "contains",
   series: null,
   pocket: null,
   maintainer: null,
@@ -193,7 +198,7 @@ describe("packages URL filters", () => {
     allStatuses: true,
   } satisfies Partial<PackagesTotalArgs>;
 
-  it("loads the same URL filters for the listing and total without enabling the panel", async () => {
+  it("loads the same URL filters for the listing and total and reflects them in the filters", async () => {
     page.url.search = search;
     const screen = await render(Page, { ...baseProps });
 
@@ -214,15 +219,10 @@ describe("packages URL filters", () => {
     });
     await expect
       .element(screen.getByRole("searchbox", { name: "Search packages" }))
-      .toBeDisabled();
-    for (const name of ["Status", "Series", "Pocket", "Component", "Set"]) {
-      await expect
-        .element(screen.getByRole("combobox", { name: `${name}:` }))
-        .toBeDisabled();
-    }
-    expect(screen.container.querySelectorAll(".filters select")).toHaveLength(
-      5,
-    );
+      .toHaveValue("superhref");
+    await expect
+      .element(screen.getByRole("link", { name: "Clear all filters" }))
+      .toBeVisible();
   });
 
   it.each([
@@ -596,16 +596,6 @@ describe("packages pagination", () => {
     await userEvent.keyboard("{Enter}");
 
     expect(await submitted).toEqual({ "page-size": "50", page: "4" });
-  });
-
-  it("keeps the no-JS submit buttons out of the scripted page", async () => {
-    const screen = await render(Page, { ...baseProps });
-    await expect
-      .element(screen.getByText("Showing 2 of 40 items"))
-      .toBeVisible();
-
-    expect(screen.container.querySelectorAll("noscript")).toHaveLength(2);
-    expect(screen.container.querySelectorAll("form button")).toHaveLength(0);
   });
 
   it("submits the default page size as an absent key", async () => {

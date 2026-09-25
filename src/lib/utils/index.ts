@@ -9,3 +9,4 @@ export * from "./isEventTargetInElement.js";
 export * from "./stripAnsi.js";
 export * from "./booleanSearchParam.js";
 export * from "./subId.js";
+export * from "./minTrimmedLength.js";
