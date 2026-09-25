@@ -36,10 +36,16 @@
     type="number"
     aria-controls={paginationContext.tableId}
     min="1"
-    max={totalPages}
+    max={totalPages ?? undefined}
     autocomplete="off"
     disabled={totalPages === 1}
     {...rest}
   />
-  <span>of {totalPages} Page{totalPages === 1 ? "" : "s"}</span>
+  <span>
+    {#if totalPages === undefined}
+      of many Pages
+    {:else}
+      of {totalPages} Page{totalPages === 1 ? "" : "s"}
+    {/if}
+  </span>
 </div>

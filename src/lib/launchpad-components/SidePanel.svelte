@@ -1,17 +1,21 @@
 <script lang="ts" module>
 </script>
 
-<script lang="ts">
+<script lang="ts" generics="S extends SuperhrefSchema">
+  import type { SuperhrefSchema } from "@canonical/superhref";
   import { SidePanel } from "@canonical/svelte-ds-app-launchpad";
   import type { SidePanelProps } from "@canonical/svelte-ds-app-launchpad";
   import type { Snippet } from "svelte";
+  import { QueryParamsForm } from "$lib/components/index.js";
+  import type { QueryParamsFormProps } from "$lib/components/index.js";
   import { browser } from "$app/environment";
+  import { page } from "$app/state";
 
   let {
     title,
     children: childrenSnippet,
     footer,
-    closeFormContent,
+    closeForm,
     ...rest
   }: Omit<SidePanelProps, "children" | "closeOnOutsideClick" | "closedby"> & {
     title?: string;
@@ -20,16 +24,13 @@
      * Footer content of the SidePanel. It receives props for buttons that should close the panel.
      */
     footer?: Snippet<[ReturnType<typeof closeButtonProps>]>;
-    /**
-     * Form with hidden inputs to keep keep the query parameters intact when closing the SidePanel in the absence of JavaScript.
-     */
-    closeFormContent?: Snippet;
+    closeForm?: Pick<QueryParamsFormProps<S>, "schema" | "replaceParams">;
   } = $props();
 
   const closeFormId = $props.id();
 
   function closeButtonProps(commandfor: string) {
-    if (browser || !closeFormContent) {
+    if (browser || !closeForm) {
       return {
         commandfor,
         command: "close",
@@ -76,10 +77,14 @@ TODO(DAL):
   {/snippet}
 </SidePanel>
 
-{#if closeFormContent}
-  <form id={closeFormId} class="visually-hidden" method="GET">
-    {@render closeFormContent()}
-  </form>
+{#if closeForm}
+  <QueryParamsForm
+    id={closeFormId}
+    class="visually-hidden"
+    schema={closeForm.schema}
+    url={page.url}
+    replaceParams={closeForm.replaceParams}
+  />
 {/if}
 
 <!-- @component

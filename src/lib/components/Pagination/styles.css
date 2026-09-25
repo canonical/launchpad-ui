@@ -21,21 +21,17 @@
     align-items: stretch;
     gap: var(--dimension-pagination-group-gap);
 
-    & > *:not(:last-child) {
+    > :not(:first-child) {
       position: relative;
 
-      &::after {
+      &::before {
         content: "";
         position: absolute;
         display: block;
         width: var(--dimension-pagination-divider-width);
         background-color: var(--lp-color-border-low-contrast);
-        /* height: calc(
-          100% - (var(--dimension-pagination-group-padding-block) * 2)
-        ); */
-        /* top: var(--dimension-pagination-group-padding-block); */
-        height: 100%;
-        right: calc(
+        inset-block: 0;
+        left: calc(
           var(--dimension-pagination-group-gap) / -2 -
             var(--dimension-pagination-divider-width) / 2
         );
@@ -51,10 +47,8 @@
   > .right-group {
     margin-left: auto;
 
-    & > *:not(:last-child)::after {
-      height: calc(
-        100% - (var(--dimension-pagination-group-padding-block) * 2)
-      );
+    > :not(:first-child)::before {
+      inset-block: var(--dimension-pagination-group-padding-block);
     }
 
     > .page-navigation {

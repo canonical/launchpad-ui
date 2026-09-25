@@ -3,19 +3,16 @@
   import { DeleteIcon, EditIcon } from "@canonical/svelte-icons";
   import { tick, untrack } from "svelte";
   import { ReorderableList } from "$lib/components/ReorderableList/index.js";
-  import {
-    QueryParamHiddenInput,
-    SidePanel,
-  } from "$lib/launchpad-components/index.js";
+  import { SidePanel } from "$lib/launchpad-components/index.js";
   import {
     MANAGE_VIEWS_PANEL,
     PANEL_QUERY_PARAM,
+    QueryParams,
   } from "$lib/modules/packages/superhref.js";
   import { getPackagesContext } from "../context.js";
   import type { TableView } from "./constants.js";
   import { deleteTableView, updateTableViews } from "./table-views.remote.js";
   import { goto } from "$app/navigation";
-  import { page } from "$app/state";
 
   let {
     open,
@@ -67,6 +64,10 @@
 <SidePanel
   title="Packages table views"
   {open}
+  closeForm={{
+    schema: QueryParams,
+    replaceParams: [PANEL_QUERY_PARAM, MANAGE_VIEWS_PANEL],
+  }}
   onclose={() => {
     goto(
       // eslint-disable-next-line svelte/no-navigation-without-resolve
@@ -176,13 +177,6 @@
     >
       Save
     </Button>
-  {/snippet}
-  {#snippet closeFormContent()}
-    {#each page.url.searchParams
-      .keys()
-      .filter((name) => name !== PANEL_QUERY_PARAM && !name.startsWith(MANAGE_VIEWS_PANEL)) as name (name)}
-      <QueryParamHiddenInput {name} />
-    {/each}
   {/snippet}
 </SidePanel>
 

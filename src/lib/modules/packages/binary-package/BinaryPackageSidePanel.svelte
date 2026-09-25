@@ -1,17 +1,13 @@
 <script lang="ts">
   import { Spinner } from "@canonical/svelte-ds-app-launchpad";
   import { PartialTextDisclosure } from "$lib/components/index.js";
-  import {
-    QueryParamHiddenInput,
-    SidePanel,
-  } from "$lib/launchpad-components/index.js";
+  import { SidePanel } from "$lib/launchpad-components/index.js";
   import { getPackagesContext } from "../context.js";
-  import { BINARY_PACKAGE_QUERY_PARAM } from "../superhref.js";
+  import { BINARY_PACKAGE_QUERY_PARAM, QueryParams } from "../superhref.js";
   import ArtifactsSection from "./ArtifactsSection.svelte";
   import { getBinaryPackage } from "./binary-package.remote.js";
   import { browser } from "$app/environment";
   import { goto } from "$app/navigation";
-  import { page } from "$app/state";
 
   let {
     name,
@@ -29,6 +25,10 @@
 <SidePanel
   title={name ?? undefined}
   {open}
+  closeForm={{
+    schema: QueryParams,
+    replaceParams: [BINARY_PACKAGE_QUERY_PARAM],
+  }}
   onclose={() =>
     // eslint-disable-next-line svelte/no-navigation-without-resolve
     goto(queryParams.set("binary-package", null), {
@@ -54,13 +54,6 @@
       {/snippet}
     </svelte:boundary>
   {/if}
-  {#snippet closeFormContent()}
-    {#each page.url.searchParams
-      .keys()
-      .filter((name) => name !== BINARY_PACKAGE_QUERY_PARAM) as name (name)}
-      <QueryParamHiddenInput {name} />
-    {/each}
-  {/snippet}
 </SidePanel>
 
 {#snippet pending()}

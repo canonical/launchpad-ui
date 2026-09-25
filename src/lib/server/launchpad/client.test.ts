@@ -1,5 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { LaunchpadApiError, getPublishedSources } from "./client.js";
+import {
+  LaunchpadApiError,
+  getPublishedSources,
+  getPublishedSourcesTotal,
+} from "./client.js";
 import type { SourcePackagePublishingEntry } from "./types.js";
 
 // Hoisted above the imports by vitest; stubs the private env for client.ts.
@@ -81,6 +85,16 @@ describe("getPublishedSources", () => {
     expect(url.searchParams.getAll("status")).toEqual(["Published", "Pending"]);
   });
 
+  it("filters by series through the distro series link", async () => {
+    respondWith({ start: 0, entries: [] });
+    await getPublishedSources("ubuntu", { series: "stonking" });
+
+    const url = new URL(launchpadFetch.mock.calls[0][0] as string);
+    expect(url.searchParams.get("distro_series")).toBe(
+      "https://lp.example/api/devel/ubuntu/stonking",
+    );
+  });
+
   it("returns the parsed collection", async () => {
     respondWith({ start: 0, entries: [entry()] });
     const result = await getPublishedSources("ubuntu", {});
@@ -92,6 +106,42 @@ describe("getPublishedSources", () => {
     respondWith({}, 503);
     await expect(getPublishedSources("ubuntu", {})).rejects.toBeInstanceOf(
       LaunchpadApiError,
+    );
+  });
+});
+
+describe("getPublishedSourcesTotal", () => {
+  it("asks for the bare total of the filtered collection without paging", async () => {
+    respondWith(461194);
+    const total = await getPublishedSourcesTotal("ubuntu", {
+      series: "stonking",
+      status: ["Published"],
+    });
+
+    expect(total).toBe(461194);
+    const url = new URL(launchpadFetch.mock.calls[0][0] as string);
+    expect(url.pathname).toBe("/api/devel/ubuntu/+archive/primary");
+    expect(url.searchParams.get("ws.op")).toBe("getPublishedSources");
+    expect(url.searchParams.get("ws.show")).toBe("total_size");
+    expect(url.searchParams.get("distro_series")).toBe(
+      "https://lp.example/api/devel/ubuntu/stonking",
+    );
+    expect(url.searchParams.getAll("status")).toEqual(["Published"]);
+    expect(url.searchParams.has("ws.size")).toBe(false);
+    expect(url.searchParams.has("ws.start")).toBe(false);
+  });
+
+  it("throws LaunchpadApiError when Launchpad times out", async () => {
+    respondWith("Error: Timeout", 503);
+    await expect(getPublishedSourcesTotal("ubuntu", {})).rejects.toBeInstanceOf(
+      LaunchpadApiError,
+    );
+  });
+
+  it("rejects a response that is not a number", async () => {
+    respondWith({ total_size: 3 });
+    await expect(getPublishedSourcesTotal("ubuntu", {})).rejects.toThrow(
+      "did not return a total",
     );
   });
 });

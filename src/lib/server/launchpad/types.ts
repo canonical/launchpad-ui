@@ -56,13 +56,16 @@ export type PublishedSourcesSortKey =
   | "pocket"
   | "status";
 
-export type PublishedSourcesQuery = {
+export type PublishedSourcesFilter = {
+  series?: string;
+  status?: PublishingStatus[];
+};
+
+export type PublishedSourcesQuery = PublishedSourcesFilter & {
   /** Page size (`ws.size`). */
   size?: number;
   /** Zero-based offset of the first entry (`ws.start`). */
   start?: number;
   /** Repeated `order_by` params; prefix with `-` for descending. */
   orderBy?: string[];
-  /** Repeated `status` params. */
-  status?: PublishingStatus[];
 };

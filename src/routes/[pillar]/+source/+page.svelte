@@ -8,46 +8,75 @@
     Table,
   } from "@canonical/svelte-ds-app-launchpad";
   import { SettingsIcon } from "@canonical/svelte-icons";
-  import { Pagination, TableViewBar } from "$lib/components/index.js";
+  import { untrack } from "svelte";
+  import {
+    Pagination,
+    QueryParamsForm,
+    TableViewBar,
+  } from "$lib/components/index.js";
   import BinaryPackageSidePanel from "$lib/modules/packages/binary-package/BinaryPackageSidePanel.svelte";
   import { setPackagesContext } from "$lib/modules/packages/context.js";
   import {
     PACKAGES_TABLE_COLUMNS,
+    PAGE_SIZE_OPTIONS,
     QueryParams,
   } from "$lib/modules/packages/superhref.js";
   import ManageViewsSidePanel from "$lib/modules/packages/table-views/ManageViewsSidePanel.svelte";
   import { getTableViews } from "$lib/modules/packages/table-views/table-views.remote.js";
   import type { PageProps } from "./$types.js";
-  import { getSourcePackages } from "./packages.remote.js";
+  import {
+    getSourcePackages,
+    getSourcePackagesTotal,
+  } from "./packages.remote.js";
   import { resolve } from "$app/paths";
   import { page } from "$app/state";
 
   const { params }: PageProps = $props();
 
-  // TODO: Implement pagination and total count from API
-  const PAGE = 1;
-  const PAGE_SIZE = 25;
-  const TOTAL = 100;
-
   const queryParams = $derived(QueryParams.bind(page.url));
+
   setPackagesContext({
     get queryParams() {
       return queryParams;
     },
   });
 
+  const tableViewsPromise = $derived(getTableViews());
+
   const sourcePackagesPromise = $derived(
     getSourcePackages({
       distro: params.pillar,
+      series: queryParams.series ?? undefined,
       sortKey: queryParams.sort.key,
       sortOrder: queryParams.sort.direction,
-      page: PAGE,
-      size: PAGE_SIZE,
+      page: queryParams.page,
+      size: queryParams["page-size"],
     }),
   );
-  const tableViewsPromise = $derived(getTableViews());
+  const sourcePackagesTotalPromise = $derived(
+    getSourcePackagesTotal({
+      distro: params.pillar,
+      series: queryParams.series ?? undefined,
+    }),
+  );
 
-  const data = $derived(await sourcePackagesPromise);
+  // loading is to actually run promises in parallel https://github.com/sveltejs/svelte/issues/16483#issuecomment-4803286374
+  // untrack is to avoid registering dependencies and a state_referenced_locally warning
+  untrack(() => {
+    void tableViewsPromise.loading;
+    void sourcePackagesPromise.loading;
+    void sourcePackagesTotalPromise.loading;
+  });
+
+  const { data, hasNext } = $derived(await sourcePackagesPromise);
+
+  const total = $derived((await sourcePackagesTotalPromise) ?? undefined);
+
+  const totalPages = $derived(
+    total === undefined
+      ? undefined
+      : Math.max(1, Math.ceil(total / queryParams["page-size"])),
+  );
   const tableViews = $derived(await tableViewsPromise);
 </script>
 
@@ -102,7 +131,12 @@
       <label>
         <span class="label-text">{filter}:</span>
         <Select severity="base" class="packages-filter" disabled>
-          <option>All</option>
+          <!-- TODO Replace when filters land -->
+          {#if filter === "Series" && queryParams.series !== null}
+            <option>{queryParams.series}</option>
+          {:else}
+            <option>All</option>
+          {/if}
         </Select>
       </label>
     {/each}
@@ -126,7 +160,7 @@
               {#if column.sortable}
                 {const next = $derived(queryParams.sort.cycle(column.key))}
                 <Table.TH.SortButton
-                  href={queryParams.set("sort", next)}
+                  href={queryParams.patch({ sort: next, page: 1 })}
                   aria-label={next.direction === "none"
                     ? `Remove sorting by ${column.label}`
                     : `Sort by ${column.label} ${next.direction}`}
@@ -152,6 +186,7 @@
             >
               {item.source_package_name}
             </Link>
+            - {item.source_package_version}
           </th>
           <td>{item.distro_series_link.split("/").pop() ?? ""}</td>
           <td>{item.pocket}</td>
@@ -163,25 +198,78 @@
   </Table>
   <Pagination class="pagination">
     {#snippet leftGroup()}
-      <Pagination.ItemsPerPageSelect disabled>
-        <option value={10}>10</option>
-        <option value={25} selected>25</option>
-        <option value={50}>50</option>
-        <option value={100}>100</option>
-      </Pagination.ItemsPerPageSelect>
-      <Pagination.ItemsCount showing={data.length} total={TOTAL} />
+      <QueryParamsForm
+        schema={QueryParams}
+        url={page.url}
+        replaceParams={["page-size", "page"]}
+        class="pagination-form"
+        data-sveltekit-noscroll
+        data-sveltekit-keepfocus
+      >
+        <Pagination.ItemsPerPageSelect
+          name="page-size"
+          value={queryParams["page-size"]}
+          onchange={(event) => event.currentTarget.form?.requestSubmit()}
+        >
+          {#each PAGE_SIZE_OPTIONS as size (size)}
+            <option value={size}>{size}</option>
+          {/each}
+          {#if !PAGE_SIZE_OPTIONS.some((size) => size === queryParams["page-size"])}
+            <option value={queryParams["page-size"]}>
+              {queryParams["page-size"]}
+            </option>
+          {/if}
+        </Pagination.ItemsPerPageSelect>
+        <noscript>
+          <Button type="submit" importance="tertiary">Apply</Button>
+        </noscript>
+      </QueryParamsForm>
+      <Pagination.ItemsCount showing={data.length} {total} />
     {/snippet}
     {#snippet rightGroup()}
-      <Pagination.PageInput
-        value={PAGE}
-        totalPages={Math.ceil(TOTAL / PAGE_SIZE) || 1}
-        disabled
-      />
+      <QueryParamsForm
+        schema={QueryParams}
+        url={page.url}
+        replaceParams={["page"]}
+        class="pagination-form"
+        data-sveltekit-keepfocus
+      >
+        <Pagination.PageInput
+          name="page"
+          value={queryParams.page}
+          {totalPages}
+        />
+        <noscript>
+          <Button type="submit" importance="tertiary">Go</Button>
+        </noscript>
+      </QueryParamsForm>
     {/snippet}
-    <Pagination.PageNavigation direction="first" disabled />
-    <Pagination.PageNavigation direction="previous" disabled />
-    <Pagination.PageNavigation direction="next" disabled />
-    <Pagination.PageNavigation direction="last" disabled />
+    <Pagination.PageNavigation
+      direction="first"
+      href={queryParams.set("page", 1)}
+      disabled={queryParams.page === 1}
+      data-sveltekit-keepfocus
+    />
+    <Pagination.PageNavigation
+      direction="previous"
+      href={queryParams.set("page", queryParams.page - 1)}
+      disabled={queryParams.page === 1}
+      data-sveltekit-keepfocus
+    />
+    <Pagination.PageNavigation
+      direction="next"
+      href={queryParams.set("page", queryParams.page + 1)}
+      disabled={!hasNext}
+      data-sveltekit-keepfocus
+    />
+    {#if totalPages !== undefined}
+      <Pagination.PageNavigation
+        direction="last"
+        href={queryParams.set("page", totalPages)}
+        disabled={queryParams.page >= totalPages}
+        data-sveltekit-keepfocus
+      />
+    {/if}
   </Pagination>
 </main>
 
@@ -277,6 +365,10 @@
     :global(.pagination) {
       position: sticky;
       bottom: 0;
+    }
+
+    :global(.pagination-form) {
+      display: contents;
     }
   }
 </style>

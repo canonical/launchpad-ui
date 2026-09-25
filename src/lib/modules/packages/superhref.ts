@@ -2,6 +2,7 @@
 
 import { enumCodec, strCodec, superhref } from "@canonical/superhref";
 import { DEFAULT_TABLE_VIEW_SLUG } from "$lib/modules/packages/table-views/constants.js";
+import { paginationCodecs } from "$lib/utils/paginationCodecs.js";
 import { sortCodec } from "$lib/utils/sortCodec.js";
 
 /** The packages table columns, in display order.*/
@@ -30,6 +31,10 @@ export const BINARY_PACKAGE_QUERY_PARAM = "binary-package";
 export const PANEL_QUERY_PARAM = "panel";
 export const MANAGE_VIEWS_PANEL = "manage-views";
 
+export const DEFAULT_PAGE_SIZE = 25;
+export const MAX_PAGE_SIZE = 100;
+export const PAGE_SIZE_OPTIONS = [10, 25, 50, MAX_PAGE_SIZE];
+
 export const QueryParams = superhref(
   {
     [BINARY_PACKAGE_QUERY_PARAM]: strCodec(),
@@ -41,6 +46,11 @@ export const QueryParams = superhref(
       // TODO(superhref): Add array codec and replace this afterwards.
       edit: strCodec(),
     },
+    series: strCodec(), //TODO proper type when filters land
+    ...paginationCodecs({
+      defaultSize: DEFAULT_PAGE_SIZE,
+      maxSize: MAX_PAGE_SIZE,
+    }),
   },
   {
     actions: {
@@ -49,6 +59,7 @@ export const QueryParams = superhref(
         return patch({
           view: isDefaultView ? null : view,
           sort: isDefaultView ? sort : null,
+          page: 1,
         });
       },
     },

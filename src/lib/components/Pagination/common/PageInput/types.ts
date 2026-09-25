@@ -5,5 +5,5 @@ export interface PageInputProps extends Omit<
   NumberInputPrimitiveProps,
   "type"
 > {
-  totalPages: number;
+  totalPages?: number;
 }
