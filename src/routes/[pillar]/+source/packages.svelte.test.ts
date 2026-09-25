@@ -300,6 +300,36 @@ describe("packages URL filters", () => {
     });
   });
 
+  it("keeps the filter controls in sync with client-side navigation", async () => {
+    const screen = await render(Page, { ...baseProps });
+    const clearAll = screen.getByRole("link", { name: "Clear all filters" });
+    await expect
+      .element(screen.getByRole("button", { name: "Pocket: All" }))
+      .toBeVisible();
+    await expect.element(clearAll).not.toBeInTheDocument();
+
+    page.url.search = "?pocket=Updates&series=noble";
+
+    await expect
+      .element(screen.getByRole("button", { name: "Pocket: Updates" }))
+      .toBeVisible();
+    await expect
+      .element(
+        screen.getByRole("button", {
+          name: "Series: 24.04 LTS (Noble Numbat)",
+        }),
+      )
+      .toBeVisible();
+    await expect.element(clearAll).toHaveAttribute("href", "?");
+
+    page.url.search = "";
+
+    await expect
+      .element(screen.getByRole("button", { name: "Pocket: All" }))
+      .toBeVisible();
+    await expect.element(clearAll).not.toBeInTheDocument();
+  });
+
   it("preserves filters in sort links, page links, and pagination forms", async () => {
     page.url.search = `${search}&page=3`;
     getSourcePackages.mockResolvedValue(

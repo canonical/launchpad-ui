@@ -61,7 +61,12 @@
     loadingShown: () => {
       loadingCount += 1;
       return () => {
-        loadingCount -= 1;
+        // Deferred, as writing state while an erroring boundary tears down trips the "Batch has scheduled roots" invariant (svelte@5.56.4).
+        // Seen in `PersonFilterCombobox`: a failed search swaps `Combobox.Loading` for the boundary's `failed` snippet, unmounting it mid-teardown.
+        // TODO: Check whether newer Svelte versions still hit this; if they do, report it to Svelte and remove the deferral once fixed.
+        queueMicrotask(() => {
+          loadingCount -= 1;
+        });
       };
     },
   });
