@@ -43,10 +43,21 @@
 
   const tableViewsPromise = $derived(getTableViews());
 
+  const filters = $derived({
+    search: queryParams.search,
+    match: queryParams.match,
+    series: queryParams.series,
+    pocket: queryParams.pocket,
+    maintainer: queryParams.maintainer,
+    signer: queryParams.signer,
+    ubuntuChange: queryParams["ubuntu-change"],
+    allStatuses: queryParams["all-statuses"],
+  });
+
   const sourcePackagesPromise = $derived(
     getSourcePackages({
       distro: params.pillar,
-      series: queryParams.series ?? undefined,
+      ...filters,
       sortKey: queryParams.sort.key,
       sortOrder: queryParams.sort.direction,
       page: queryParams.page,
@@ -56,7 +67,7 @@
   const sourcePackagesTotalPromise = $derived(
     getSourcePackagesTotal({
       distro: params.pillar,
-      series: queryParams.series ?? undefined,
+      ...filters,
     }),
   );
 

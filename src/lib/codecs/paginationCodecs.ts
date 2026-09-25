@@ -15,7 +15,10 @@ export function paginationCodecs(opts: {
   };
 }
 
-function positiveIntCodec(defaultValue: number, max: number): Codec<number> {
+export function positiveIntCodec(
+  defaultValue: number,
+  max: number,
+): Codec<number> {
   return {
     parse: (raw) => {
       const value = Number(raw);

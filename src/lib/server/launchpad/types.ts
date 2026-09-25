@@ -56,9 +56,24 @@ export type PublishedSourcesSortKey =
   | "pocket"
   | "status";
 
+/** Null and undefined represent unset filters; empty name strings are also omitted. */
 export type PublishedSourcesFilter = {
-  series?: string;
-  status?: PublishingStatus[];
+  series?: string | null;
+  status?: PublishingStatus[] | null;
+  sourceName?: string | null;
+  exactMatch?: boolean | null;
+  pocket?: Pocket | null;
+  maintainedBy?: string | null;
+  signedBy?: string | null;
+  ubuntuChange?: boolean | null;
+};
+
+export type PersonEntry = {
+  self_link: string;
+  resource_type_link: string;
+  name: string;
+  display_name: string;
+  is_team: boolean;
 };
 
 export type PublishedSourcesQuery = PublishedSourcesFilter & {

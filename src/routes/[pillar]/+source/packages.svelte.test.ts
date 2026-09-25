@@ -6,19 +6,21 @@ import { render } from "vitest-browser-svelte";
 import { DEFAULT_TABLE_VIEWS } from "$lib/modules/packages/table-views/constants.js";
 import type { SourcePackagePublishingEntry } from "$lib/server/launchpad/types.js";
 import Page from "./+page.svelte";
-import type { getSourcePackages as getSourcePackagesQuery } from "./packages.remote.js";
+import type {
+  getSourcePackages as getSourcePackagesQuery,
+  getSourcePackagesTotal as getSourcePackagesTotalQuery,
+} from "./packages.remote.js";
 import { page } from "$app/state";
 
 type PackagesListArgs = Parameters<typeof getSourcePackagesQuery>[0];
+type PackagesTotalArgs = Parameters<typeof getSourcePackagesTotalQuery>[0];
 type PackagesListing = Awaited<ReturnType<typeof getSourcePackagesQuery>>;
 
 const getSourcePackages = vi.hoisted(() =>
   vi.fn<(args: PackagesListArgs) => Promise<PackagesListing>>(),
 );
 const getSourcePackagesTotal = vi.hoisted(() =>
-  vi.fn<
-    (args: { distro: string; series?: string }) => Promise<number | null>
-  >(),
+  vi.fn<(args: PackagesTotalArgs) => Promise<number | null>>(),
 );
 const getTableViews = vi.hoisted(() =>
   vi.fn<() => Promise<typeof DEFAULT_TABLE_VIEWS>>(),
@@ -130,6 +132,16 @@ const baseProps = {
   params: { pillar: "ubuntu" },
   data: {},
 } satisfies ComponentProps<typeof Page>;
+const defaultFilters = {
+  search: null,
+  match: null,
+  series: null,
+  pocket: null,
+  maintainer: null,
+  signer: null,
+  ubuntuChange: false,
+  allStatuses: false,
+} satisfies Partial<PackagesTotalArgs>;
 
 beforeEach(() => {
   page.url.search = "";
@@ -163,6 +175,155 @@ describe("packages queries", () => {
       views.resolve(DEFAULT_TABLE_VIEWS);
       await rendering;
     }
+  });
+});
+
+describe("packages URL filters", () => {
+  const search =
+    "?search=superhref&match=exact&series=stonking&pocket=Proposed" +
+    "&maintainer=ubuntu-mozillateam&signer=userl&ubuntu-change=1&all-statuses=1";
+  const filters = {
+    search: "superhref",
+    match: "exact",
+    series: "stonking",
+    pocket: "Proposed",
+    maintainer: "ubuntu-mozillateam",
+    signer: "userl",
+    ubuntuChange: true,
+    allStatuses: true,
+  } satisfies Partial<PackagesTotalArgs>;
+
+  it("loads the same URL filters for the listing and total without enabling the panel", async () => {
+    page.url.search = search;
+    const screen = await render(Page, { ...baseProps });
+
+    await expect
+      .element(screen.getByText("Showing 2 of 40 items"))
+      .toBeVisible();
+    expect(getSourcePackages).toHaveBeenCalledWith({
+      distro: "ubuntu",
+      ...filters,
+      sortKey: null,
+      sortOrder: "none",
+      page: 1,
+      size: 25,
+    });
+    expect(getSourcePackagesTotal).toHaveBeenCalledWith({
+      distro: "ubuntu",
+      ...filters,
+    });
+    await expect
+      .element(screen.getByRole("searchbox", { name: "Search packages" }))
+      .toBeDisabled();
+    for (const name of ["Status", "Series", "Pocket", "Component", "Set"]) {
+      await expect
+        .element(screen.getByRole("combobox", { name: `${name}:` }))
+        .toBeDisabled();
+    }
+    expect(screen.container.querySelectorAll(".filters select")).toHaveLength(
+      5,
+    );
+  });
+
+  it.each([
+    ["search=superhref", { search: "superhref" }],
+    ["search=superhref&match=exact", { search: "superhref", match: "exact" }],
+    ["series=stonking", { series: "stonking" }],
+    ["pocket=Updates", { pocket: "Updates" }],
+    ["maintainer=~ubuntu-mozillateam", { maintainer: "ubuntu-mozillateam" }],
+    ["signer=userl", { signer: "userl" }],
+    ["ubuntu-change=1", { ubuntuChange: true }],
+    ["all-statuses=1", { allStatuses: true }],
+  ] as const)(
+    "updates the rows and total when the URL changes to %s",
+    async (query, expected) => {
+      const screen = await render(Page, { ...baseProps });
+      const rows = () =>
+        Array.from(screen.container.querySelectorAll("tbody th"), (row) =>
+          row.textContent?.trim(),
+        );
+      await expect
+        .element(screen.getByText("Showing 2 of 40 items"))
+        .toBeVisible();
+      const response = Promise.withResolvers<PackagesListing>();
+      const count = Promise.withResolvers<number>();
+      getSourcePackages.mockReturnValueOnce(response.promise);
+      getSourcePackagesTotal.mockReturnValueOnce(count.promise);
+
+      page.url.search = `?${query}`;
+
+      await expect
+        .poll(() => getSourcePackages.mock.lastCall?.[0])
+        .toMatchObject(expected);
+      await expect
+        .poll(() => getSourcePackagesTotal.mock.lastCall?.[0])
+        .toMatchObject(expected);
+      expect(rows()).toEqual(["zulu - 1.0", "alpha - 1.0"]);
+
+      response.resolve(listing([alpha]));
+      count.resolve(1);
+      await expect.poll(rows).toEqual(["alpha - 1.0"]);
+      await expect
+        .element(screen.getByText("Showing 1 of 1 item"))
+        .toBeVisible();
+
+      getSourcePackages.mockResolvedValueOnce(listing(initialRows));
+      getSourcePackagesTotal.mockResolvedValueOnce(40);
+      page.url.search = "";
+      await expect.poll(rows).toEqual(["zulu - 1.0", "alpha - 1.0"]);
+      await expect
+        .element(screen.getByText("Showing 2 of 40 items"))
+        .toBeVisible();
+      expect(getSourcePackages.mock.lastCall?.[0]).toMatchObject(
+        defaultFilters,
+      );
+      expect(getSourcePackagesTotal.mock.lastCall?.[0]).toEqual({
+        distro: "ubuntu",
+        ...defaultFilters,
+      });
+    },
+  );
+
+  it("passes null and false for blank and malformed filters in both requests", async () => {
+    page.url.search =
+      "?search=%20%20&match=wrong&series=Bad%20Value&pocket=nope" +
+      "&maintainer=Bad%20Name&signer=-invalid&ubuntu-change=0&all-statuses=false";
+    const screen = await render(Page, { ...baseProps });
+    await expect
+      .element(screen.getByText("Showing 2 of 40 items"))
+      .toBeVisible();
+
+    expect(getSourcePackages.mock.lastCall?.[0]).toMatchObject(defaultFilters);
+    expect(getSourcePackagesTotal.mock.lastCall?.[0]).toEqual({
+      distro: "ubuntu",
+      ...defaultFilters,
+    });
+  });
+
+  it("preserves filters in sort links, page links, and pagination forms", async () => {
+    page.url.search = `${search}&page=3`;
+    getSourcePackages.mockResolvedValue(
+      listing(initialRows, { hasNext: true }),
+    );
+    getSourcePackagesTotal.mockResolvedValue(100);
+    const screen = await render(Page, { ...baseProps });
+
+    await expect
+      .element(
+        screen
+          .getByRole("columnheader", { name: "Series", exact: true })
+          .getByRole("link"),
+      )
+      .toHaveAttribute("href", `${search}&sort=series`);
+    await expect
+      .element(screen.getByRole("link", { name: "Go to next page" }))
+      .toHaveAttribute("href", `${search}&page=4`);
+    const submitted = submittedParams(screen.container);
+    await screen.getByLabelText("Items per page:").selectOptions("50");
+    expect(await submitted).toEqual({
+      ...Object.fromEntries(new URLSearchParams(search)),
+      "page-size": "50",
+    });
   });
 });
 
@@ -327,14 +488,13 @@ describe("packages pagination", () => {
       .element(screen.getByText("Showing 2 of 40 items"))
       .toBeVisible();
     await expect.element(screen.getByText("of 2 Pages")).toBeVisible();
-    expect(getSourcePackagesTotal).toHaveBeenCalledWith({
+    const expected = {
       distro: "ubuntu",
+      ...defaultFilters,
       series: "stonking",
-    });
-    expect(getSourcePackages.mock.lastCall?.[0]).toMatchObject({
-      distro: "ubuntu",
-      series: "stonking",
-    });
+    };
+    expect(getSourcePackagesTotal).toHaveBeenCalledWith(expected);
+    expect(getSourcePackages.mock.lastCall?.[0]).toMatchObject(expected);
   });
 
   it("shows the counts without a total when the count failed", async () => {

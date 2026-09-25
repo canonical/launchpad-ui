@@ -1,9 +1,15 @@
 // This could/should be moved somewhere when we notice that config or its parts need to be shared between different routes.
 
 import { enumCodec, strCodec, superhref } from "@canonical/superhref";
+import {
+  flagCodec,
+  launchpadNameCodec,
+  paginationCodecs,
+  sortCodec,
+  textCodec,
+} from "$lib/codecs/index.js";
 import { DEFAULT_TABLE_VIEW_SLUG } from "$lib/modules/packages/table-views/constants.js";
-import { paginationCodecs } from "$lib/utils/paginationCodecs.js";
-import { sortCodec } from "$lib/utils/sortCodec.js";
+import type { Pocket } from "$lib/server/launchpad/types.js";
 
 /** The packages table columns, in display order.*/
 export const PACKAGES_TABLE_COLUMNS = [
@@ -35,6 +41,15 @@ export const DEFAULT_PAGE_SIZE = 25;
 export const MAX_PAGE_SIZE = 100;
 export const PAGE_SIZE_OPTIONS = [10, 25, 50, MAX_PAGE_SIZE];
 
+export const SEARCH_MATCHES = ["contains", "exact"] as const;
+export const POCKETS = [
+  "Release",
+  "Security",
+  "Updates",
+  "Proposed",
+  "Backports",
+] as const satisfies readonly Pocket[];
+
 export const QueryParams = superhref(
   {
     [BINARY_PACKAGE_QUERY_PARAM]: strCodec(),
@@ -46,7 +61,14 @@ export const QueryParams = superhref(
       // TODO(superhref): Add array codec and replace this afterwards.
       edit: strCodec(),
     },
-    series: strCodec(), //TODO proper type when filters land
+    search: textCodec(),
+    match: enumCodec(SEARCH_MATCHES),
+    series: launchpadNameCodec(),
+    pocket: enumCodec(POCKETS),
+    maintainer: launchpadNameCodec(),
+    signer: launchpadNameCodec(),
+    "ubuntu-change": flagCodec(),
+    "all-statuses": flagCodec(),
     ...paginationCodecs({
       defaultSize: DEFAULT_PAGE_SIZE,
       maxSize: MAX_PAGE_SIZE,

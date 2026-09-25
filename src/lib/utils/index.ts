@@ -7,6 +7,4 @@ export * from "./getLastElement.js";
 export * from "./getSiblingElement.js";
 export * from "./isEventTargetInElement.js";
 export * from "./stripAnsi.js";
-export * from "./sortCodec.js";
-export * from "./paginationCodecs.js";
 export * from "./booleanSearchParam.js";

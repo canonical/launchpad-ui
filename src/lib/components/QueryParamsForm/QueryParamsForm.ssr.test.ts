@@ -3,7 +3,7 @@ import { render } from "@canonical/svelte-ssr-test";
 import { createRawSnippet } from "svelte";
 import type { Component } from "svelte";
 import { describe, expect, it } from "vitest";
-import { paginationCodecs } from "$lib/utils/paginationCodecs.js";
+import { paginationCodecs } from "$lib/codecs/paginationCodecs.js";
 import QueryParamsForm from "./QueryParamsForm.svelte";
 import type { QueryParamsFormProps } from "./types.js";
 
