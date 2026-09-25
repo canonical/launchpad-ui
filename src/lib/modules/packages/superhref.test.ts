@@ -42,7 +42,7 @@ describe("package filter query parameters", () => {
       ),
     ).toMatchObject({
       search: null,
-      match: null,
+      match: "contains",
       series: null,
       pocket: null,
       maintainer: null,

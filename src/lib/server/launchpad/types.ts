@@ -74,6 +74,7 @@ export type PersonEntry = {
   name: string;
   display_name: string;
   is_team: boolean;
+  mugshot_link: string;
 };
 
 export type PublishedSourcesQuery = PublishedSourcesFilter & {

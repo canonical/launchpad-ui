@@ -5,7 +5,7 @@ import {
   getPerson,
 } from "$lib/server/launchpad/client.js";
 import type { PersonEntry } from "$lib/server/launchpad/types.js";
-import { findPeople } from "./people.remote.js";
+import { findPeople, getPersonByName } from "./people.remote.js";
 
 vi.mock("$app/server", () => ({
   query: (
@@ -28,6 +28,7 @@ const userl: PersonEntry = {
   name: "userl",
   display_name: "User Launchpadio",
   is_team: false,
+  mugshot_link: "https://lp.example/media/userl.jpg",
 };
 const team: PersonEntry = {
   ...userl,
@@ -35,16 +36,6 @@ const team: PersonEntry = {
   name: "userl-team",
   display_name: "User Launchpadio team",
   is_team: true,
-};
-const userlOption = {
-  name: "userl",
-  displayName: "User Launchpadio",
-  isTeam: false,
-};
-const teamOption = {
-  name: "userl-team",
-  displayName: "User Launchpadio team",
-  isTeam: true,
 };
 
 beforeEach(() => {
@@ -68,19 +59,19 @@ describe("findPeople", () => {
       description: "puts the exact match first without duplicating it",
       entries: [team, userl],
       exactMatch: userl,
-      expected: [userlOption, teamOption],
+      expected: [userl, team],
     },
     {
       description: "includes an exact match missing from the search results",
       entries: [team],
       exactMatch: userl,
-      expected: [userlOption, teamOption],
+      expected: [userl, team],
     },
     {
       description: "keeps every result when there is no exact match",
       entries: [team, userl],
       exactMatch: null,
-      expected: [teamOption, userlOption],
+      expected: [team, userl],
     },
     {
       description: "returns an empty list when nobody matches",
@@ -98,10 +89,7 @@ describe("findPeople", () => {
   it.each([" UserL ", "~userl", "https://launchpad.net/~userl"])(
     "normalizes %s and searches once without pagination",
     async (text) => {
-      await expect(findPeople({ text })).resolves.toEqual([
-        userlOption,
-        teamOption,
-      ]);
+      await expect(findPeople({ text })).resolves.toEqual([userl, team]);
       expect(findLaunchpadPeople).toHaveBeenCalledExactlyOnceWith("userl");
       expect(getPerson).toHaveBeenCalledExactlyOnceWith("userl");
     },
@@ -109,8 +97,8 @@ describe("findPeople", () => {
 
   it("searches display names without an exact-name lookup", async () => {
     await expect(findPeople({ text: " User Launchpadio " })).resolves.toEqual([
-      teamOption,
-      userlOption,
+      team,
+      userl,
     ]);
     expect(findLaunchpadPeople).toHaveBeenCalledExactlyOnceWith(
       "User Launchpadio",
@@ -118,14 +106,14 @@ describe("findPeople", () => {
     expect(getPerson).not.toHaveBeenCalled();
   });
 
-  it.each([2, 200])("accepts %i-character search text", async (length) => {
+  it.each([3, 200])("accepts %i-character search text", async (length) => {
     const text = "a".repeat(length);
     await findPeople({ text });
 
     expect(findLaunchpadPeople).toHaveBeenCalledExactlyOnceWith(text);
   });
 
-  it.each(["", " ", "a", " a ", "a".repeat(201)])(
+  it.each(["", " ", "ab", " ab ", "a".repeat(201)])(
     "rejects search text outside the length limits (%s)",
     async (text) => {
       await expect(findPeople({ text })).rejects.toBeInstanceOf(v.ValiError);
@@ -139,25 +127,46 @@ describe("findPeople", () => {
     const log = vi.spyOn(console, "error").mockImplementation(() => {});
     vi.mocked(getPerson).mockRejectedValue(failure);
 
-    await expect(findPeople({ text: "userl" })).resolves.toEqual([
-      teamOption,
-      userlOption,
-    ]);
+    await expect(findPeople({ text: "userl" })).resolves.toEqual([team, userl]);
     expect(log).toHaveBeenCalledWith(
       "Failed to look up the Launchpad person userl",
       failure,
     );
   });
 
-  it("logs a search failure and returns an empty list", async () => {
+  it("propagates a search failure", async () => {
     const failure = new Error("Search failed");
-    const log = vi.spyOn(console, "error").mockImplementation(() => {});
     vi.mocked(findLaunchpadPeople).mockRejectedValue(failure);
 
-    await expect(findPeople({ text: "userl" })).resolves.toEqual([]);
-    expect(log).toHaveBeenCalledWith(
-      "Failed to search Launchpad people",
-      failure,
-    );
+    await expect(findPeople({ text: "userl" })).rejects.toBe(failure);
+  });
+});
+
+describe("getPersonByName", () => {
+  it.each(["userl", " UserL ", "~userl", "https://launchpad.net/~userl"])(
+    "normalizes %s and looks the person up",
+    async (text) => {
+      await expect(getPersonByName({ text })).resolves.toEqual(userl);
+      expect(getPerson).toHaveBeenCalledExactlyOnceWith("userl");
+    },
+  );
+
+  it("looks up names shorter than the minimum search length", async () => {
+    await getPersonByName({ text: "ab" });
+
+    expect(getPerson).toHaveBeenCalledExactlyOnceWith("ab");
+  });
+
+  it("returns null for text that is not a Launchpad name", async () => {
+    await expect(
+      getPersonByName({ text: "User Launchpadio" }),
+    ).resolves.toBeNull();
+    expect(getPerson).not.toHaveBeenCalled();
+  });
+
+  it("returns null when the person does not exist", async () => {
+    vi.mocked(getPerson).mockResolvedValue(null);
+
+    await expect(getPersonByName({ text: "userl" })).resolves.toBeNull();
   });
 });

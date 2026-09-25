@@ -1,6 +1,7 @@
 // This could/should be moved somewhere when we notice that config or its parts need to be shared between different routes.
 
 import { enumCodec, strCodec, superhref } from "@canonical/superhref";
+import type { OwnedKey } from "@canonical/superhref";
 import {
   flagCodec,
   launchpadNameCodec,
@@ -50,42 +51,43 @@ export const POCKETS = [
   "Backports",
 ] as const satisfies readonly Pocket[];
 
-export const QueryParams = superhref(
-  {
-    [BINARY_PACKAGE_QUERY_PARAM]: strCodec(),
-    sort: sortCodec(SORTABLE_PACKAGES_COLUMNS),
-    view: strCodec({ default: DEFAULT_TABLE_VIEW_SLUG }),
-    [PANEL_QUERY_PARAM]: enumCodec([MANAGE_VIEWS_PANEL]),
-    [MANAGE_VIEWS_PANEL]: {
-      // There is no array codec yet, so only one item can be edited at a time.
-      // TODO(superhref): Add array codec and replace this afterwards.
-      edit: strCodec(),
-    },
-    search: textCodec(),
-    match: enumCodec(SEARCH_MATCHES),
-    series: launchpadNameCodec(),
-    pocket: enumCodec(POCKETS),
-    maintainer: launchpadNameCodec(),
-    signer: launchpadNameCodec(),
-    "ubuntu-change": flagCodec(),
-    "all-statuses": flagCodec(),
-    ...paginationCodecs({
-      defaultSize: DEFAULT_PAGE_SIZE,
-      maxSize: MAX_PAGE_SIZE,
-    }),
+const packagesQuerySchema = {
+  [BINARY_PACKAGE_QUERY_PARAM]: strCodec(),
+  sort: sortCodec(SORTABLE_PACKAGES_COLUMNS),
+  view: strCodec({ default: DEFAULT_TABLE_VIEW_SLUG }),
+  [PANEL_QUERY_PARAM]: enumCodec([MANAGE_VIEWS_PANEL]),
+  [MANAGE_VIEWS_PANEL]: {
+    // There is no array codec yet, so only one item can be edited at a time.
+    // TODO(superhref): Add array codec and replace this afterwards.
+    edit: strCodec(),
   },
-  {
-    actions: {
-      setView: (patch, { sort }, view) => {
-        const isDefaultView = view === DEFAULT_TABLE_VIEW_SLUG;
-        return patch({
-          view: isDefaultView ? null : view,
-          sort: isDefaultView ? sort : null,
-          page: 1,
-        });
-      },
+  search: textCodec(),
+  match: enumCodec(SEARCH_MATCHES, { default: "contains" }),
+  series: launchpadNameCodec(),
+  pocket: enumCodec(POCKETS),
+  maintainer: launchpadNameCodec(),
+  signer: launchpadNameCodec(),
+  "ubuntu-change": flagCodec(),
+  "all-statuses": flagCodec(),
+  ...paginationCodecs({
+    defaultSize: DEFAULT_PAGE_SIZE,
+    maxSize: MAX_PAGE_SIZE,
+  }),
+};
+
+export const QueryParams = superhref(packagesQuerySchema, {
+  actions: {
+    setView: (patch, { sort }, view) => {
+      const isDefaultView = view === DEFAULT_TABLE_VIEW_SLUG;
+      return patch({
+        view: isDefaultView ? null : view,
+        sort: isDefaultView ? sort : null,
+        page: 1,
+      });
     },
   },
-);
+});
 
 export type BoundPackagesQueryParams = ReturnType<typeof QueryParams.bind>;
+
+export type PackageOwnedQueryKey = OwnedKey<typeof packagesQuerySchema>;

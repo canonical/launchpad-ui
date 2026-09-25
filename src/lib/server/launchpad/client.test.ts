@@ -83,6 +83,7 @@ function person(overrides: Partial<PersonEntry> = {}): PersonEntry {
     name: "userl",
     display_name: "User Launchpadio",
     is_team: false,
+    mugshot_link: "https://lp.example/media/userl.jpg",
     ...overrides,
   };
 }
