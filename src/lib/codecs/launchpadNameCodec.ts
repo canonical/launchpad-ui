@@ -1,5 +1,5 @@
 import type { Codec } from "@canonical/superhref";
-import { toLaunchpadName } from "./launchpad/launchpadName.js";
+import { toLaunchpadName } from "$lib/utils/launchpad/launchpadName.js";
 
 export function launchpadNameCodec(): Codec<string | null> {
   return {

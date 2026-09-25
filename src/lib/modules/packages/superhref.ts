@@ -1,13 +1,15 @@
 // This could/should be moved somewhere when we notice that config or its parts need to be shared between different routes.
 
 import { enumCodec, strCodec, superhref } from "@canonical/superhref";
+import {
+  flagCodec,
+  launchpadNameCodec,
+  paginationCodecs,
+  sortCodec,
+  textCodec,
+} from "$lib/codecs/index.js";
 import { DEFAULT_TABLE_VIEW_SLUG } from "$lib/modules/packages/table-views/constants.js";
 import type { Pocket } from "$lib/server/launchpad/types.js";
-import { flagCodec } from "$lib/utils/flagCodec.js";
-import { launchpadNameCodec } from "$lib/utils/launchpadNameCodec.js";
-import { paginationCodecs } from "$lib/utils/paginationCodecs.js";
-import { sortCodec } from "$lib/utils/sortCodec.js";
-import { textCodec } from "$lib/utils/textCodec.js";
 
 /** The packages table columns, in display order.*/
 export const PACKAGES_TABLE_COLUMNS = [

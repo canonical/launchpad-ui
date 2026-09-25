@@ -1,6 +1,6 @@
 import { numCodec, strCodec, superhref } from "@canonical/superhref";
 import { describe, expect, it } from "vitest";
-import { paginationCodecs } from "$lib/utils/paginationCodecs.js";
+import { paginationCodecs } from "$lib/codecs/paginationCodecs.js";
 import { createQueryParamsForm } from "./createQueryParamsForm.js";
 import type {
   FormDataEntries,

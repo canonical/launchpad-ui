@@ -6,7 +6,7 @@ import { SvelteURL } from "svelte/reactivity";
 import { describe, expect, expectTypeOf, it } from "vitest";
 import { render } from "vitest-browser-svelte";
 import type { RenderResult } from "vitest-browser-svelte";
-import { paginationCodecs } from "$lib/utils/paginationCodecs.js";
+import { paginationCodecs } from "$lib/codecs/paginationCodecs.js";
 import QueryParamsForm from "./QueryParamsForm.svelte";
 import type { QueryParamsFormProps } from "./types.js";
 

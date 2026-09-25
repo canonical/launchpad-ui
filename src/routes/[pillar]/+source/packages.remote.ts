@@ -1,5 +1,6 @@
 import { error } from "@sveltejs/kit";
 import * as v from "valibot";
+import { SORT_DIRECTIONS } from "$lib/codecs/sortCodec.js";
 import {
   MAX_PAGE_SIZE,
   POCKETS,
@@ -17,7 +18,6 @@ import type {
   SourcePackagePublishingEntry,
 } from "$lib/server/launchpad/types.js";
 import { LAUNCHPAD_NAME_PATTERN } from "$lib/utils/launchpad/launchpadName.js";
-import { SORT_DIRECTIONS } from "$lib/utils/sortCodec.js";
 import { query } from "$app/server";
 
 const SORT_KEYS = {
