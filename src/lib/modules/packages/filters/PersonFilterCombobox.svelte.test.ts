@@ -19,7 +19,7 @@ const { findPeople, getPersonByName, seedPerson } = vi.hoisted(() => ({
   seedPerson: vi.fn(),
 }));
 
-vi.mock("$lib/modules/people/people.remote.js", () => ({
+vi.mock("$lib/modules/packages/people.remote.js", () => ({
   findPeople,
   getPersonByName,
 }));
@@ -82,8 +82,8 @@ beforeEach(() => {
     .mockImplementation(() => remoteQuery(Promise.resolve([alice, bob])));
   getPersonByName
     .mockReset()
-    .mockImplementation(({ text }: { text: string }) =>
-      remoteQuery(Promise.resolve(people[text] ?? null)),
+    .mockImplementation((name: string) =>
+      remoteQuery(Promise.resolve(people[name] ?? null)),
     );
   seedPerson.mockReset();
   vi.mocked(goto).mockReset();
@@ -118,7 +118,7 @@ describe("PersonFilterCombobox", () => {
     await expect
       .element(screen.getByRole("option", { name: "All" }))
       .toHaveAttribute("aria-selected", "false");
-    expect(getPersonByName).toHaveBeenCalledWith({ text: "alice" });
+    expect(getPersonByName).toHaveBeenCalledWith("alice");
   });
 
   it("lists search results without repeating the selected person", async () => {
@@ -215,7 +215,7 @@ describe("PersonFilterCombobox", () => {
     await choose(screen, screen.getByRole("option", { name: /Bob Example/ }));
 
     expect(submissions).toEqual([[["maintainer", "bob"]]]);
-    expect(getPersonByName).toHaveBeenLastCalledWith({ text: "bob" });
+    expect(getPersonByName).toHaveBeenLastCalledWith("bob");
     expect(seedPerson).toHaveBeenCalledExactlyOnceWith(bob);
   });
 

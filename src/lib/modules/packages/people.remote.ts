@@ -51,11 +51,9 @@ export const findPeople = query(
 );
 
 export const getPersonByName = query(
-  v.object({
-    text: v.pipe(v.string(), v.trim(), v.maxLength(MAX_PEOPLE_SEARCH_LENGTH)),
-  }),
-  async ({ text }): Promise<PersonEntry | null> => {
-    const name = toLaunchpadName(text);
+  v.pipe(v.string(), v.trim(), v.maxLength(MAX_PEOPLE_SEARCH_LENGTH)),
+  async (reference): Promise<PersonEntry | null> => {
+    const name = toLaunchpadName(reference);
     if (!name) return null;
 
     return await getPerson(name);

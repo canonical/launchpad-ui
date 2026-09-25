@@ -35,7 +35,7 @@ vi.mock("$lib/modules/packages/table-views/table-views.remote.js", () => ({
   getTableViews,
 }));
 
-vi.mock("$lib/modules/people/people.remote.js", () => ({
+vi.mock("$lib/modules/packages/people.remote.js", () => ({
   findPeople: vi.fn(() => Promise.resolve([])),
   getPersonByName: vi.fn(() => Promise.resolve(null)),
 }));

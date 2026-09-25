@@ -23,12 +23,12 @@ vi.mock("../context.js", async () => {
   };
 });
 
-vi.mock("$lib/modules/people/people.remote.js", () => ({
+vi.mock("$lib/modules/packages/people.remote.js", () => ({
   findPeople: vi.fn(() => Promise.resolve([])),
-  getPersonByName: vi.fn(({ text }: { text: string }) =>
+  getPersonByName: vi.fn((name: string) =>
     Promise.resolve({
-      name: text,
-      display_name: `Display ${text}`,
+      name,
+      display_name: `Display ${name}`,
       is_team: false,
       mugshot_link: "",
     }),

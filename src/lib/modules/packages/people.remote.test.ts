@@ -145,28 +145,26 @@ describe("findPeople", () => {
 describe("getPersonByName", () => {
   it.each(["userl", " UserL ", "~userl", "https://launchpad.net/~userl"])(
     "normalizes %s and looks the person up",
-    async (text) => {
-      await expect(getPersonByName({ text })).resolves.toEqual(userl);
+    async (reference) => {
+      await expect(getPersonByName(reference)).resolves.toEqual(userl);
       expect(getPerson).toHaveBeenCalledExactlyOnceWith("userl");
     },
   );
 
   it("looks up names shorter than the minimum search length", async () => {
-    await getPersonByName({ text: "ab" });
+    await getPersonByName("ab");
 
     expect(getPerson).toHaveBeenCalledExactlyOnceWith("ab");
   });
 
-  it("returns null for text that is not a Launchpad name", async () => {
-    await expect(
-      getPersonByName({ text: "User Launchpadio" }),
-    ).resolves.toBeNull();
+  it("returns null for a reference that is not a Launchpad name", async () => {
+    await expect(getPersonByName("User Launchpadio")).resolves.toBeNull();
     expect(getPerson).not.toHaveBeenCalled();
   });
 
   it("returns null when the person does not exist", async () => {
     vi.mocked(getPerson).mockResolvedValue(null);
 
-    await expect(getPersonByName({ text: "userl" })).resolves.toBeNull();
+    await expect(getPersonByName("userl")).resolves.toBeNull();
   });
 });

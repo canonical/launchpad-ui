@@ -6,11 +6,11 @@
   import {
     MAX_PEOPLE_SEARCH_LENGTH,
     MIN_PEOPLE_SEARCH_LENGTH,
-  } from "$lib/modules/people/constants.js";
+  } from "$lib/modules/packages/constants.js";
   import {
     findPeople,
     getPersonByName,
-  } from "$lib/modules/people/people.remote.js";
+  } from "$lib/modules/packages/people.remote.js";
   import type { PersonEntry } from "$lib/server/launchpad/types.js";
   import { minTrimmedLength, subId } from "$lib/utils/index.js";
   import { browser } from "$app/env";
@@ -61,7 +61,7 @@
     person: PersonEntry | null,
   ) {
     if (person) {
-      selectedPersonQuery = getPersonByName({ text: person.name });
+      selectedPersonQuery = getPersonByName(person.name);
       selectedPersonQuery.set(person);
     }
     event.currentTarget.form?.requestSubmit();
@@ -71,7 +71,7 @@
     selectedPersonName === null
       ? null
       : // TODO: Currently this path returns null instead of 404-ing, which should IMO should not be the case. A bogus hand-typed person in the URL should probably throw the page as it's gonna end up in the filters.
-        await getPersonByName({ text: selectedPersonName }),
+        await getPersonByName(selectedPersonName),
   );
 </script>
 
