@@ -145,10 +145,13 @@ describe("package filter queries", () => {
     { search: " " },
     { search: "a".repeat(201) },
     { series: "" },
+    { series: "x" },
     { series: "Bad Value" },
     { maintainer: "" },
+    { maintainer: "x" },
     { maintainer: "Bad Name" },
     { signer: "" },
+    { signer: "x" },
     { signer: "-invalid" },
   ])("still rejects invalid non-null filters: %j", async (filters) => {
     await expect(
@@ -159,6 +162,20 @@ describe("package filter queries", () => {
     ).rejects.toBeInstanceOf(v.ValiError);
     expect(getPublishedSources).not.toHaveBeenCalled();
     expect(getPublishedSourcesTotal).not.toHaveBeenCalled();
+  });
+
+  it("accepts two-character names for both rows and totals", async () => {
+    const filters = { series: "xx", maintainer: "xx", signer: "xx" };
+    await getSourcePackages({ ...listArgs, ...filters });
+    await getSourcePackagesTotal({ distro: "ubuntu", ...filters });
+
+    const expected = expect.objectContaining({
+      series: "xx",
+      maintainedBy: "xx",
+      signedBy: "xx",
+    });
+    expect(getPublishedSources).toHaveBeenCalledWith("ubuntu", expected);
+    expect(getPublishedSourcesTotal).toHaveBeenCalledWith("ubuntu", expected);
   });
 
   it.each([undefined, null, "contains"] as const)(

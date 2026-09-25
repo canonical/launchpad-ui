@@ -1,9 +1,9 @@
 import * as v from "valibot";
-import { toLaunchpadName } from "$lib/launchpadName.js";
 import {
   findPeople as findLaunchpadPeople,
   getPerson,
 } from "$lib/server/launchpad/client.js";
+import { toLaunchpadName } from "$lib/utils/launchpad/launchpadName.js";
 import { query } from "$app/server";
 
 export type PersonOption = {

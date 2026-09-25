@@ -53,4 +53,21 @@ describe("package filter query parameters", () => {
       "page-size": 50,
     });
   });
+
+  it.each([
+    ["x", null],
+    ["xx", "xx"],
+  ])("applies the minimum name length to %j filters", (name, expected) => {
+    expect(
+      QueryParams.parse(
+        new URL(
+          `https://example.test/ubuntu/+source?series=${name}&maintainer=~${name}&signer=${name}`,
+        ),
+      ),
+    ).toMatchObject({
+      series: expected,
+      maintainer: expected,
+      signer: expected,
+    });
+  });
 });
