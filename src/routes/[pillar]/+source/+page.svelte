@@ -3,8 +3,6 @@
     Breadcrumbs,
     Button,
     Link,
-    SearchBox,
-    Select,
     Table,
   } from "@canonical/svelte-ds-app-launchpad";
   import { SettingsIcon } from "@canonical/svelte-icons";
@@ -16,6 +14,7 @@
   } from "$lib/components/index.js";
   import BinaryPackageSidePanel from "$lib/modules/packages/binary-package/BinaryPackageSidePanel.svelte";
   import { setPackagesContext } from "$lib/modules/packages/context.js";
+  import Filters from "$lib/modules/packages/filters/Filters.svelte";
   import {
     PACKAGES_TABLE_COLUMNS,
     PAGE_SIZE_OPTIONS,
@@ -131,28 +130,7 @@
       </Button>
     {/snippet}
   </TableViewBar>
-  <div class="filters">
-    <SearchBox
-      placeholder="Search"
-      aria-label="Search packages"
-      class="packages-search"
-      disabled
-    />
-    {#each ["Status", "Series", "Pocket", "Component", "Set"] as filter (filter)}
-      <label>
-        <span class="label-text">{filter}:</span>
-        <Select severity="base" class="packages-filter" disabled>
-          <!-- TODO Replace when filters land -->
-          {#if filter === "Series" && queryParams.series !== null}
-            <option>{queryParams.series}</option>
-          {:else}
-            <option>All</option>
-          {/if}
-        </Select>
-      </label>
-    {/each}
-  </div>
-
+  <Filters />
   <Table class="packages-table">
     <thead>
       <tr>
@@ -302,26 +280,6 @@
 
     h1 {
       margin-block-end: var(--lp-dimension-spacing-block-m);
-    }
-
-    .filters {
-      display: flex;
-      flex-wrap: wrap;
-      gap: var(--lp-dimension-spacing-inline-m);
-      margin-block: var(--lp-dimension-spacing-block-m);
-      align-items: center;
-
-      :global(.packages-search) {
-        flex-basis: 318px;
-      }
-
-      .label-text {
-        color: var(--lp-color-text-muted);
-      }
-
-      :global(.packages-filter) {
-        font: var(--lp-typography-paragraph-s);
-      }
     }
 
     :global(.packages-table) {
