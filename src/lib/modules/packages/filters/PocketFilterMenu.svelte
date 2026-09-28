@@ -3,16 +3,21 @@
   import { ContextualMenuContent } from "$lib/components/index.js";
   import { PopoverTrigger } from "$lib/launchpad-components/index.js";
   import { POCKETS } from "../superhref.js";
+  import type { FilterChangeHandler } from "./packages-filters.js";
+
+  type Pocket = (typeof POCKETS)[number];
 
   const {
     form,
     inputName,
     value,
+    onchange,
     "aria-labelledby": ariaLabelledBy,
   }: {
     form: string;
     inputName: string;
-    value: (typeof POCKETS)[number] | null;
+    value: Pocket | null;
+    onchange: FilterChangeHandler<Pocket | null>;
     "aria-labelledby": string;
   } = $props();
 
@@ -33,7 +38,7 @@
         text="All"
         checked={!value}
         {form}
-        onchange={(e) => e.currentTarget.form?.requestSubmit()}
+        onchange={(e) => onchange(e, null)}
       />
       {#each POCKETS as pocket (pocket)}
         <ContextualMenuContent.RadioItem
@@ -42,7 +47,7 @@
           text={pocket}
           checked={value === pocket}
           {form}
-          onchange={(e) => e.currentTarget.form?.requestSubmit()}
+          onchange={(e) => onchange(e, pocket)}
         />
       {/each}
     </ContextualMenuContent.Group>

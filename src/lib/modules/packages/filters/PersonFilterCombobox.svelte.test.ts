@@ -10,6 +10,7 @@ import {
   FILTERS_FORM_ID,
   FILTER_LABEL_ID,
   mountFiltersForm,
+  submitOnChange,
 } from "./test.fixtures.js";
 import { goto } from "$app/navigation";
 import { page } from "$app/state";
@@ -65,11 +66,14 @@ const alice = person("alice", "Alice Example");
 const bob = person("bob", "Bob Example");
 const people: Record<string, PersonEntry> = { alice, bob };
 
+const onchange = vi.fn(submitOnChange);
+
 const baseProps = {
   form: FILTERS_FORM_ID,
   inputName: "maintainer",
   selectedPersonName: null,
   groupName: "maintainers",
+  onchange,
   "aria-labelledby": FILTER_LABEL_ID,
 };
 
@@ -78,6 +82,7 @@ let submissions: [string, string][][];
 beforeEach(() => {
   page.url.search = "";
   submissions = mountFiltersForm("Maintained by:");
+  onchange.mockClear();
   findPeople
     .mockReset()
     .mockImplementation(() => remoteQuery(Promise.resolve([alice, bob])));
@@ -218,6 +223,7 @@ describe("PersonFilterCombobox", () => {
 
     await choose(screen, screen.getByRole("option", { name: /Bob Example/ }));
 
+    expect(onchange).toHaveBeenCalledExactlyOnceWith(expect.any(Event), "bob");
     expect(submissions).toEqual([[["maintainer", "bob"]]]);
     expect(getPersonByName).toHaveBeenLastCalledWith("bob");
     expect(seedPerson).toHaveBeenCalledExactlyOnceWith(bob);
@@ -233,12 +239,13 @@ describe("PersonFilterCombobox", () => {
 
     await choose(screen, screen.getByRole("option", { name: "All" }));
 
+    expect(onchange).toHaveBeenCalledExactlyOnceWith(expect.any(Event), null);
     expect(submissions).toEqual([[["maintainer", ""]]]);
     expect(seedPerson).not.toHaveBeenCalled();
   });
 
   it("restores a search submitted without JavaScript and drops it from the URL", async () => {
-    page.url.search = "?page=2&maintainer-combobox-search=example";
+    page.url.search = `?page=2&${FILTERS_FORM_ID}-maintainer-search=example`;
     const screen = await render(PersonFilterCombobox, baseProps);
     await screen.getByRole("button", { name: /^Maintained by:/ }).click();
 
@@ -249,6 +256,23 @@ describe("PersonFilterCombobox", () => {
     expect(findPeople).toHaveBeenCalledWith({ text: "example" });
     expect(goto).toHaveBeenCalledExactlyOnceWith(
       new URL("https://launchpad.test/ubuntu/+source?page=2"),
+      { replaceState: true, keepFocus: true, noScroll: true },
+    );
+  });
+
+  it("restores a no-JS search only from its own form's search param", async () => {
+    page.url.search =
+      "?other-form-maintainer-search=example" +
+      `&${FILTERS_FORM_ID}-maintainer-search=alice`;
+    const screen = await render(PersonFilterCombobox, baseProps);
+    await screen.getByRole("button", { name: /^Maintained by:/ }).click();
+
+    await expect.element(searchBox(screen)).toHaveValue("alice");
+    expect(findPeople).toHaveBeenCalledWith({ text: "alice" });
+    expect(goto).toHaveBeenCalledExactlyOnceWith(
+      new URL(
+        "https://launchpad.test/ubuntu/+source?other-form-maintainer-search=example",
+      ),
       { replaceState: true, keepFocus: true, noScroll: true },
     );
   });

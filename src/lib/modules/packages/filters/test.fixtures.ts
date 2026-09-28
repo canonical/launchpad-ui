@@ -1,7 +1,12 @@
 import { onTestFinished } from "vitest";
+import type { FilterChangeHandler } from "./packages-filters.js";
 
 export const FILTERS_FORM_ID = "filters-form";
 export const FILTER_LABEL_ID = "filter-label";
+
+/** Submits the control's form, like the filters bar does. */
+export const submitOnChange: FilterChangeHandler<unknown> = (event) =>
+  event.currentTarget.form?.requestSubmit();
 
 /**
  * Mounts the external label and form that a filter control references by id,

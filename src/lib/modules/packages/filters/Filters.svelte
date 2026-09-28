@@ -33,10 +33,13 @@
   import PocketFilterMenu from "./PocketFilterMenu.svelte";
   import SearchModeMenu from "./SearchModeMenu.svelte";
   import SeriesFilterMenu from "./SeriesFilterMenu.svelte";
+  import { PACKAGES_FILTER_LABELS as labels } from "./packages-filters.js";
+  import type { FilterChangeHandler } from "./packages-filters.js";
   import { page } from "$app/state";
 
   const id = $props.id();
-  const filtersFormId = subId(id, "filters-form");
+  // Fixed, because the person comboboxes key their no-JS search on it.
+  const filtersFormId = "packages-filters";
   const searchModeLabelId = subId(id, "search-mode-label");
   const maintainerLabelId = subId(id, "maintainer-label");
   const signerLabelId = subId(id, "signer-label");
@@ -57,15 +60,19 @@
       queryParams["all-statuses"],
     ),
   );
+
+  const submitFilters: FilterChangeHandler<unknown> = (event) =>
+    event.currentTarget.form?.requestSubmit();
 </script>
 
 <div class="filters-bar">
   <div class="search">
-    <span id={searchModeLabelId} class="visually-hidden">Search mode:</span>
+    <span id={searchModeLabelId} class="visually-hidden">{labels.match}:</span>
     <SearchModeMenu
       form={filtersFormId}
       inputName={filterInputsNames.match}
       value={queryParams.match}
+      onchange={submitFilters}
       aria-labelledby={searchModeLabelId}
     />
     <!-- TODO(DAL): Style the searchbox according to the design -->
@@ -80,59 +87,63 @@
   </div>
   <div class="filters">
     <div class="filter">
-      <span id={maintainerLabelId}>Maintained by:</span>
+      <span id={maintainerLabelId}>{labels.maintainer}:</span>
       <PersonFilterCombobox
         form={filtersFormId}
         inputName={filterInputsNames.maintainer}
         selectedPersonName={queryParams.maintainer}
         groupName="maintainers"
+        onchange={submitFilters}
         aria-labelledby={maintainerLabelId}
       />
     </div>
     <div class="filter">
-      <span id={signerLabelId}>Signed by:</span>
+      <span id={signerLabelId}>{labels.signer}:</span>
       <PersonFilterCombobox
         form={filtersFormId}
         inputName={filterInputsNames.signer}
         selectedPersonName={queryParams.signer}
         groupName="signers"
+        onchange={submitFilters}
         aria-labelledby={signerLabelId}
       />
     </div>
     <div class="filter">
-      <span id={seriesLabelId}>Series:</span>
+      <span id={seriesLabelId}>{labels.series}:</span>
       <SeriesFilterMenu
         form={filtersFormId}
         inputName={filterInputsNames.series}
         value={queryParams.series}
+        onchange={submitFilters}
         aria-labelledby={seriesLabelId}
       />
     </div>
     <div class="filter">
-      <span id={pocketLabelId}>Pocket:</span>
+      <span id={pocketLabelId}>{labels.pocket}:</span>
       <PocketFilterMenu
         form={filtersFormId}
         inputName={filterInputsNames.pocket}
         value={queryParams.pocket}
+        onchange={submitFilters}
         aria-labelledby={pocketLabelId}
       />
     </div>
     <div class="filter-controls">
       <div class="filter">
         <span id={moreFiltersLabelId} class="visually-hidden"
-          >More filters:</span
+          >{labels.moreFilters}:</span
         >
         <MoreFiltersMenu
           form={filtersFormId}
           switches={[
             {
               inputName: filterInputsNames["ubuntu-change"],
-              text: "Only show packages changed by Ubuntu",
+              text: labels.ubuntuChange,
               checked: queryParams["ubuntu-change"],
             },
             {
               inputName: filterInputsNames["all-statuses"],
-              text: "Include Superseded and Deleted",
+              text: labels.allStatuses,
               checked: queryParams["all-statuses"],
             },
           ]}

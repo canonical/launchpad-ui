@@ -13,6 +13,7 @@
   } from "$lib/modules/packages/people.remote.js";
   import type { PersonEntry } from "$lib/server/launchpad/types.js";
   import { minTrimmedLength, subId } from "$lib/utils/index.js";
+  import type { FilterChangeHandler } from "./packages-filters.js";
   import { browser } from "$app/env";
   import { goto } from "$app/navigation";
   import { page } from "$app/state";
@@ -22,19 +23,24 @@
     inputName,
     selectedPersonName,
     groupName,
+    onchange,
     "aria-labelledby": ariaLabelledBy,
   }: {
+    /** Must be the same across requests (not `$props.id()`), as it keys the no-JS search in the URL. */
     form: string;
     inputName: string;
     selectedPersonName: string | null;
     groupName: string;
+    /** Called with the chosen person's Launchpad name, or `null` for All. */
+    onchange: FilterChangeHandler<string | null>;
     "aria-labelledby": string;
   } = $props();
 
   const id = $props.id();
 
-  // This is only used for the no-JS SSR path, where the intermediary combobox search parameter is submitted to populate the combobox on the server side.
-  const comboboxSearchParam = $derived(`${inputName}-combobox-search`);
+  // No-JS search goes through this URL param; a form + field pair can't be shared by two comboboxes.
+  const comboboxSearchParam = $derived(`${form}-${inputName}-search`);
+
   let searchInputValue = $state(
     // svelte-check and eslint have different perceptions of whether this state is referenced locally or not
     // eslint-disable-next-line svelte/no-unused-svelte-ignore
@@ -56,15 +62,15 @@
   // Keeps the seeded query cache entry alive until the next selection.
   let selectedPersonQuery: ReturnType<typeof getPersonByName> | null = null;
 
-  function submitPersonChange(
-    event: Event & { currentTarget: HTMLInputElement },
+  function changePerson(
+    event: Event & { currentTarget: EventTarget & HTMLInputElement },
     person: PersonEntry | null,
   ) {
     if (person) {
       selectedPersonQuery = getPersonByName(person.name);
       selectedPersonQuery.set(person);
     }
-    event.currentTarget.form?.requestSubmit();
+    onchange(event, person?.name ?? null);
   }
 
   const selectedPerson = $derived(
@@ -121,7 +127,7 @@
         text="All"
         value=""
         checked={!selectedPersonName}
-        onchange={(e) => submitPersonChange(e, null)}
+        onchange={(e) => changePerson(e, null)}
         {form}
       />
       {#if selectedPerson}
@@ -132,7 +138,7 @@
             secondaryText={selectedPerson.name}
             value={selectedPerson.name}
             checked={true}
-            onchange={(e) => submitPersonChange(e, selectedPerson)}
+            onchange={(e) => changePerson(e, selectedPerson)}
             {form}
             id={subId(id, selectedPerson.name)}
           >
@@ -164,7 +170,7 @@
                 text={person.display_name}
                 secondaryText={person.name}
                 value={person.name}
-                onchange={(e) => submitPersonChange(e, person)}
+                onchange={(e) => changePerson(e, person)}
                 {form}
                 id={subId(id, person.name)}
               >

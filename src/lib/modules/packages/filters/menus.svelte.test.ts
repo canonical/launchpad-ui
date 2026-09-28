@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { render } from "vitest-browser-svelte";
 import MoreFiltersMenu from "./MoreFiltersMenu.svelte";
 import PocketFilterMenu from "./PocketFilterMenu.svelte";
@@ -8,12 +8,21 @@ import {
   FILTERS_FORM_ID,
   FILTER_LABEL_ID,
   mountFiltersForm,
+  submitOnChange,
 } from "./test.fixtures.js";
 
-const controlProps = {
+const onchange = vi.fn(submitOnChange);
+
+beforeEach(() => {
+  onchange.mockClear();
+});
+
+const labelledFormProps = {
   form: FILTERS_FORM_ID,
   "aria-labelledby": FILTER_LABEL_ID,
 };
+
+const controlProps = { ...labelledFormProps, onchange };
 
 describe("SeriesFilterMenu", () => {
   let submissions: [string, string][][];
@@ -42,20 +51,27 @@ describe("SeriesFilterMenu", () => {
   );
 
   it.each([
-    [null, "26.04 LTS (Resolute Raccoon)", "resolute"],
-    ["noble", "All", ""],
-  ])("submits the picked series from %s", async (value, option, submitted) => {
-    const screen = await render(SeriesFilterMenu, {
-      ...controlProps,
-      inputName: "series",
-      value,
-    });
+    [null, "26.04 LTS (Resolute Raccoon)", "resolute", "resolute"],
+    ["noble", "All", "", null],
+  ])(
+    "submits the picked series from %s",
+    async (value, option, submitted, changedTo) => {
+      const screen = await render(SeriesFilterMenu, {
+        ...controlProps,
+        inputName: "series",
+        value,
+      });
 
-    await screen.getByRole("button", { name: /^Series:/ }).click();
-    await screen.getByRole("radio", { name: option }).click();
+      await screen.getByRole("button", { name: /^Series:/ }).click();
+      await screen.getByRole("radio", { name: option }).click();
 
-    expect(submissions).toEqual([[["series", submitted]]]);
-  });
+      expect(onchange).toHaveBeenCalledExactlyOnceWith(
+        expect.any(Event),
+        changedTo,
+      );
+      expect(submissions).toEqual([[["series", submitted]]]);
+    },
+  );
 });
 
 describe("PocketFilterMenu", () => {
@@ -85,11 +101,11 @@ describe("PocketFilterMenu", () => {
   );
 
   it.each([
-    [null, "Proposed", "Proposed"],
-    ["Updates", "All", ""],
+    [null, "Proposed", "Proposed", "Proposed"],
+    ["Updates", "All", "", null],
   ] as const)(
     "submits the picked pocket from %s",
-    async (value, option, submitted) => {
+    async (value, option, submitted, changedTo) => {
       const screen = await render(PocketFilterMenu, {
         ...controlProps,
         inputName: "pocket",
@@ -99,6 +115,10 @@ describe("PocketFilterMenu", () => {
       await screen.getByRole("button", { name: /^Pocket:/ }).click();
       await screen.getByRole("radio", { name: option }).click();
 
+      expect(onchange).toHaveBeenCalledExactlyOnceWith(
+        expect.any(Event),
+        changedTo,
+      );
       expect(submissions).toEqual([[["pocket", submitted]]]);
     },
   );
@@ -123,6 +143,10 @@ describe("SearchModeMenu", () => {
       .toBeChecked();
     await screen.getByRole("radio", { name: "Exact Match" }).click();
 
+    expect(onchange).toHaveBeenCalledExactlyOnceWith(
+      expect.any(Event),
+      "exact",
+    );
     expect(submissions).toEqual([[["match", "exact"]]]);
   });
 });
@@ -154,7 +178,7 @@ describe("MoreFiltersMenu", () => {
     "announces how many filters are active (%s, %s)",
     async (ubuntuChange, allStatuses, triggerName) => {
       const screen = await render(MoreFiltersMenu, {
-        ...controlProps,
+        ...labelledFormProps,
         switches: switches(ubuntuChange, allStatuses),
       });
 
@@ -177,7 +201,7 @@ describe("MoreFiltersMenu", () => {
     "submits the remaining active filters after toggling %s",
     async (text, submitted) => {
       const screen = await render(MoreFiltersMenu, {
-        ...controlProps,
+        ...labelledFormProps,
         switches: switches(false, true),
       });
 

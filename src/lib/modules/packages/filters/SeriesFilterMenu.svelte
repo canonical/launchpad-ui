@@ -34,16 +34,19 @@
   import { Popover } from "@canonical/svelte-ds-app-launchpad";
   import { ContextualMenuContent } from "$lib/components/index.js";
   import { PopoverTrigger } from "$lib/launchpad-components/index.js";
+  import type { FilterChangeHandler } from "./packages-filters.js";
 
   const {
     form,
     inputName,
     value,
+    onchange,
     "aria-labelledby": ariaLabelledBy,
   }: {
     form: string;
     inputName: string;
     value: string | null;
+    onchange: FilterChangeHandler<string | null>;
     "aria-labelledby": string;
   } = $props();
 </script>
@@ -62,7 +65,7 @@
         text="All"
         checked={!value}
         {form}
-        onchange={(e) => e.currentTarget.form?.requestSubmit()}
+        onchange={(e) => onchange(e, null)}
       />
     </ContextualMenuContent.Group>
     {#each seriesGroups as group (group.label)}
@@ -74,7 +77,7 @@
             text={option.label}
             checked={value === option.value}
             {form}
-            onchange={(e) => e.currentTarget.form?.requestSubmit()}
+            onchange={(e) => onchange(e, option.value)}
           />
         {/each}
       </ContextualMenuContent.Group>
