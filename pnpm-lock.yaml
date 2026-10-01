@@ -20,8 +20,8 @@ importers:
         specifier: ^0.1.0
         version: 0.1.0
       '@canonical/svelte-ds-app-launchpad':
-        specifier: ^0.40.0
-        version: 0.40.0(svelte@5.56.4(@typescript-eslint/types@8.62.0))(typescript@6.0.3)
+        specifier: ^0.43.0
+        version: 0.43.0(svelte@5.56.4(@typescript-eslint/types@8.62.0))
       '@canonical/svelte-icons':
         specifier: ^0.0.9
         version: 0.0.9(svelte@5.56.4(@typescript-eslint/types@8.62.0))
@@ -185,21 +185,19 @@ packages:
     resolution: {integrity: sha512-ctxtJ/eA+t+6q2++vj5j7FYX3nRu311q1wfYH3xjlLOsczhlhxAg2FWNUXhpGvAw3BWo1xBcvOV6/YLc2r5FJw==}
     hasBin: true
 
-  '@canonical/design-tokens@0.10.0':
-    resolution: {integrity: sha512-Z+yDzIukpfgyIHLINHCk07KVqX7+NlIafo+WJrOBH+8GL8mPx+mT06ZnaHW0tzXzmCpqyiDZSG0tFOH71UXrEQ==}
+  '@canonical/design-tokens@0.43.0':
+    resolution: {integrity: sha512-mTzlUV9L1v0cc+6STx2rQwopztzbx9bxTVLDCzpkOKqjtFCS5363NcM6AEuWGBQq58mFQC1PtqvDlNIlv6U2WA==}
     engines: {bun: '>=1.3', node: '>=22'}
 
   '@canonical/launchpad-design-tokens@1.1.1':
     resolution: {integrity: sha512-rOrV4TxC9bOyA4DlgxNAwssFfsA/h5XHPqM0plmYbaODodd7EakntM3ZOSHnoNqViskxieVSc7TEbZY+JyFHoA==}
 
-  '@canonical/styles-typography@0.40.0':
-    resolution: {integrity: sha512-mhXBY/E60eQHrD3ybmZzrVnzw41cg4NK58ZKIrWCgtIa4mpF0lovYI2xlNFH7U62766Jmw1qrac4NhIjACLDoQ==}
+  '@canonical/styles-typography@0.43.0':
+    resolution: {integrity: sha512-yoLi+mJ62is/9hGEnLMPBqniBs5zWBMi2TWN+sAX06k4ttBiT4ulMCnQ/8+OdS4LsUvTM5SmYknGwEPI5fIjTA==}
     hasBin: true
-    peerDependencies:
-      typescript: ^5.9.3
 
-  '@canonical/styles@0.40.0':
-    resolution: {integrity: sha512-3U3LQlU8apAwN48SYuI14AHk3BnObQLPrbJJGtWRwV8nrOndfqQ6MCYKseoFt8I2MggbiM4PkJhqXQNyidKpxw==}
+  '@canonical/styles@0.43.0':
+    resolution: {integrity: sha512-/jE/V0SgX1F7vO3x3D4xANZeXotMJs8FJKviHlvgBftPVU1ISGDqRq/IzGcAPG058aCeu5t1XwPZ+dlkGnFPHQ==}
     peerDependencies:
       '@canonical/ds-assets': '>=0.18.0'
     peerDependenciesMeta:
@@ -210,8 +208,8 @@ packages:
     resolution: {integrity: sha512-MhWZdgHaekNMEDfgijE5XGPJC3T4Foc6bQmlWPMv5asWn9t7SIxDSXTb7mvzpq7MIW5jBDqyUa887xuMKcn1kQ==}
     engines: {node: '>=20'}
 
-  '@canonical/svelte-ds-app-launchpad@0.40.0':
-    resolution: {integrity: sha512-e1cXtJu+nAK739SaQk6myYtzhknHruL1qKyFi7QIyD9jgQwT563rfBqSdVCra34ALnhfQj7SZSehfR47ayxwCw==}
+  '@canonical/svelte-ds-app-launchpad@0.43.0':
+    resolution: {integrity: sha512-3U1EF22+JivrfCZhG2U0yRE5SdQ+07ma0aXBPz453UXNpVn5IoABIa1ID6b8h5KHEdBXw0s/MX/gszDq65Fhlg==}
     peerDependencies:
       svelte: ^5.47.1
 
@@ -224,15 +222,6 @@ packages:
     resolution: {integrity: sha512-CFUkwI0VYrAnwfYEsAc441Q+qngn/GO5SxE4JxfTu6c90oCvsOvnvt4zp3jhVWSkO5FkEyWmduA8BPP33UEtxA==}
     peerDependencies:
       svelte: ^5.38.2
-
-  '@canonical/terrazzo-lsp@0.10.0':
-    resolution: {integrity: sha512-tT7HqfhoLcW6IjdF52gzYlv+LgKgCofQ832cfsdTIR0Z2Yk3PItzZQyJIPJ558Z13HIeU/1I0rkktMm1Vql+cw==}
-    engines: {bun: '>=1.3', node: '>=22'}
-    hasBin: true
-
-  '@canonical/token-types@0.10.0':
-    resolution: {integrity: sha512-Rrz70fhFmBbGVKplKCw9OGMN4nok4B06YTCeP+SkSXXu0nAjFlpWUUWtsROAPsvGe//+KAu8jQKNiDjt90iCMw==}
-    engines: {bun: '>=1.3', node: '>=22'}
 
   '@chromatic-com/storybook@5.2.1':
     resolution: {integrity: sha512-z6I7NJk/0VngA64y5TNYaB4Hc2X8+90n4op6lBt9PvWk5TmIlFLDqdX33rlrwbNRkkYijVgA/wO04rVYXi5Mlg==}
@@ -594,18 +583,6 @@ packages:
 
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
-
-  '@lezer/common@1.5.2':
-    resolution: {integrity: sha512-sxQE460fPZyU3sdc8lafxiPwJHBzZRy/udNFynGQky1SePYBdhkBl1kOagA9uT3pxR8K09bOrmTUqA9wb/PjSQ==}
-
-  '@lezer/css@1.3.6':
-    resolution: {integrity: sha512-YJE78Wcg+zX8f10hiHWQ4Az48Qr/c13eId0VtRQYLBpxHDmDeSrXIlkbl+fJGW42rWC/uoUco9mhBZeVWP/A1g==}
-
-  '@lezer/highlight@1.2.3':
-    resolution: {integrity: sha512-qXdH7UqTvGfdVBINrgKhDsVTJTxactNNxLk7+UMwZhU13lMHaOBlJe9Vqp907ya56Y3+ed2tlqzys7jDkTmW0g==}
-
-  '@lezer/lr@1.4.10':
-    resolution: {integrity: sha512-rnCpTIBafOx4mRp43xOxDJbFipJm/c0cia/V5TiGlhmMa+wsSdoGmUN3w5Bqrks/09Q/D4tNAmWaT8p6NRi77A==}
 
   '@mdx-js/react@3.1.1':
     resolution: {integrity: sha512-f++rKLQgUVYDAtECQ6fn/is15GkEH9+nZPM3MS0RcxVqoTfawHvDlSCH7JbMhAM6uJ32v3eXLvLmLvjGu7PTQw==}
@@ -1651,9 +1628,6 @@ packages:
 
   color-name@1.1.4:
     resolution: {integrity: sha512-dOy+3AuW3a2wNbZHIuMZpTcgjGuLU/uBL/ubcZF9OXbDo8ff4O8yVp5Bf0efS8uEoYo5q4Fx7dY9OgQGXgAsQA==}
-
-  colorjs.io@0.7.1:
-    resolution: {integrity: sha512-LY7OHnJZxHwT5UlzNa9bbhHHDbzB6yE5+3MIPwJEQKRvSCt/T4G7epsj+9j2BExUIIfXFIJGsIXUKdfrK9Q5tA==}
 
   commondir@1.0.1:
     resolution: {integrity: sha512-W9pAhw0ja1Edb5GVdIF1mjZw/ASI0AlShXM83UUGe2DVr5TdAPEA1OA8m/g8zWp9x6On7gqufY+FatDbC3MDQg==}
@@ -3408,37 +3382,32 @@ snapshots:
     dependencies:
       css-tree: 3.2.1
 
-  '@canonical/design-tokens@0.10.0':
-    dependencies:
-      '@canonical/terrazzo-lsp': 0.10.0
+  '@canonical/design-tokens@0.43.0': {}
 
   '@canonical/launchpad-design-tokens@1.1.1': {}
 
-  '@canonical/styles-typography@0.40.0(typescript@6.0.3)':
+  '@canonical/styles-typography@0.43.0':
     dependencies:
-      '@canonical/design-tokens': 0.10.0
+      '@canonical/design-tokens': 0.43.0
       opentype.js: 1.3.4
-      typescript: 6.0.3
 
-  '@canonical/styles@0.40.0(typescript@6.0.3)':
+  '@canonical/styles@0.43.0':
     dependencies:
-      '@canonical/design-tokens': 0.10.0
-      '@canonical/styles-typography': 0.40.0(typescript@6.0.3)
-    transitivePeerDependencies:
-      - typescript
+      '@canonical/design-tokens': 0.43.0
+      '@canonical/styles-typography': 0.43.0
 
   '@canonical/superhref@0.1.0': {}
 
-  '@canonical/svelte-ds-app-launchpad@0.40.0(svelte@5.56.4(@typescript-eslint/types@8.62.0))(typescript@6.0.3)':
+  '@canonical/svelte-ds-app-launchpad@0.43.0(svelte@5.56.4(@typescript-eslint/types@8.62.0))':
     dependencies:
+      '@canonical/design-tokens': 0.43.0
       '@canonical/launchpad-design-tokens': 1.1.1
-      '@canonical/styles': 0.40.0(typescript@6.0.3)
+      '@canonical/styles': 0.43.0
       '@canonical/svelte-icons': 0.0.9(svelte@5.56.4(@typescript-eslint/types@8.62.0))
       '@floating-ui/dom': 1.7.6
       svelte: 5.56.4(@typescript-eslint/types@8.62.0)
     transitivePeerDependencies:
       - '@canonical/ds-assets'
-      - typescript
 
   '@canonical/svelte-icons@0.0.9(svelte@5.56.4(@typescript-eslint/types@8.62.0))':
     dependencies:
@@ -3453,15 +3422,6 @@ snapshots:
       - '@noble/hashes'
       - canvas
       - supports-color
-
-  '@canonical/terrazzo-lsp@0.10.0':
-    dependencies:
-      '@canonical/token-types': 0.10.0
-      '@lezer/common': 1.5.2
-      '@lezer/css': 1.3.6
-      colorjs.io: 0.7.1
-
-  '@canonical/token-types@0.10.0': {}
 
   '@chromatic-com/storybook@5.2.1(storybook@10.4.6(@testing-library/dom@10.4.1)(@types/react@19.2.15)(prettier@3.8.4)(react@19.2.7))':
     dependencies:
@@ -3746,22 +3706,6 @@ snapshots:
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
-
-  '@lezer/common@1.5.2': {}
-
-  '@lezer/css@1.3.6':
-    dependencies:
-      '@lezer/common': 1.5.2
-      '@lezer/highlight': 1.2.3
-      '@lezer/lr': 1.4.10
-
-  '@lezer/highlight@1.2.3':
-    dependencies:
-      '@lezer/common': 1.5.2
-
-  '@lezer/lr@1.4.10':
-    dependencies:
-      '@lezer/common': 1.5.2
 
   '@mdx-js/react@3.1.1(@types/react@19.2.15)(react@19.2.7)':
     dependencies:
@@ -4742,8 +4686,6 @@ snapshots:
       color-name: 1.1.4
 
   color-name@1.1.4: {}
-
-  colorjs.io@0.7.1: {}
 
   commondir@1.0.1: {}
 
