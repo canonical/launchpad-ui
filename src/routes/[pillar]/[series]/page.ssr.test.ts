@@ -44,6 +44,14 @@ describe("series overview SSR", () => {
     }
   });
 
+  it("renders the breadcrumb trail without JavaScript", async () => {
+    const { body } = await render(Page, { props: baseProps });
+
+    expect(body).toContain('aria-label="Breadcrumbs"');
+    expect(body).toMatch(/<a [^>]*href="[^"]*ubuntu"[^>]*>(<!---->)?Ubuntu/);
+    expect(body).toMatch(/<span aria-current="page"[^>]*>Series<\/span>/);
+  });
+
   it("does not render the excluded statistics", async () => {
     const { body } = await render(Page, { props: baseProps });
 

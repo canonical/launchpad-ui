@@ -1,5 +1,9 @@
 <script lang="ts">
   import { ContentLayout } from "@canonical/svelte-ds-app";
+  import {
+    PageLayout,
+    distroSegment,
+  } from "$lib/launchpad-components/index.js";
   import type { PageProps } from "./$types.js";
   import GetInvolved from "./GetInvolved.svelte";
   import SeriesHeader from "./SeriesHeader.svelte";
@@ -20,25 +24,29 @@
   <title>{displayName} - Launchpad</title>
 </svelte:head>
 
-<div class="series-overview app">
-  <ContentLayout grid="responsive">
-    <SeriesHeader {displayName} {status} />
+<PageLayout
+  breadcrumbsSegments={[distroSegment(params.pillar), { label: "Series" }]}
+>
+  <div class="series-overview app">
+    <ContentLayout grid="responsive">
+      <SeriesHeader {displayName} {status} />
 
-    <div class="overview subgrid">
-      <section class="description" aria-label="About this series">
-        <p>{description}</p>
-      </section>
+      <div class="overview subgrid">
+        <section class="description" aria-label="About this series">
+          <p>{description}</p>
+        </section>
 
-      <GetInvolved class="involvement" {links} />
+        <GetInvolved class="involvement" {links} />
 
-      <SeriesMilestones
-        class="milestones"
-        {milestones}
-        allMilestonesHref={links.milestones}
-      />
-    </div>
-  </ContentLayout>
-</div>
+        <SeriesMilestones
+          class="milestones"
+          {milestones}
+          allMilestonesHref={links.milestones}
+        />
+      </div>
+    </ContentLayout>
+  </div>
+</PageLayout>
 
 <style>
   .series-overview {
