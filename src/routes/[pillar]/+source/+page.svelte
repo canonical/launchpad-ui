@@ -1,10 +1,5 @@
 <script lang="ts">
-  import {
-    Breadcrumbs,
-    Button,
-    Link,
-    Table,
-  } from "@canonical/svelte-ds-app-launchpad";
+  import { Button, Link, Table } from "@canonical/svelte-ds-app-launchpad";
   import { SettingsIcon } from "@canonical/svelte-icons";
   import { untrack } from "svelte";
   import {
@@ -95,20 +90,7 @@
 </svelte:head>
 
 <!-- TODO(@Enzo): Mobile layout -->
-<main>
-  <Breadcrumbs
-    segments={[
-      {
-        label: params.pillar,
-        href: resolve("/[pillar]", { pillar: params.pillar }),
-        style: "text-transform: capitalize;",
-      },
-      {
-        label: "Packages",
-      },
-    ]}
-    class="breadcrumbs"
-  />
+<div class="packages">
   <h1>Packages</h1>
   <TableViewBar
     current={queryParams.view}
@@ -260,7 +242,7 @@
       />
     {/if}
   </Pagination>
-</main>
+</div>
 
 <BinaryPackageSidePanel name={queryParams["binary-package"]} />
 <ManageViewsSidePanel
@@ -269,15 +251,7 @@
 />
 
 <style>
-  main {
-    padding: var(--lp-dimension-spacing-block-m)
-      var(--lp-dimension-spacing-inline-l);
-
-    :global(.breadcrumbs) {
-      padding: 0;
-      margin-block-end: var(--lp-dimension-spacing-block-xs);
-    }
-
+  .packages {
     h1 {
       margin-block-end: var(--lp-dimension-spacing-block-m);
     }

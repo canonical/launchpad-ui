@@ -1,3 +1,4 @@
+@import "@canonical/styles/layout.css";
 @import "@canonical/svelte-ds-app-launchpad/styles.css";
 @import "@canonical/launchpad-design-tokens/dist/css/dimension/responsive.css";
 @import "@canonical/launchpad-design-tokens/dist/css/typography/responsive.css";
