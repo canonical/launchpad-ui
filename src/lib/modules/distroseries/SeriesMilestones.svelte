@@ -1,16 +1,13 @@
 <script lang="ts">
   import { Link } from "@canonical/svelte-ds-app-launchpad";
   import type { ClassValue } from "svelte/elements";
-  import type { getSeriesOverview } from "./series.remote.js";
-
-  type SeriesOverview = Awaited<ReturnType<typeof getSeriesOverview>>;
 
   let {
     milestones,
     allMilestonesHref,
     class: className,
   }: {
-    milestones: SeriesOverview["milestones"];
+    milestones: { name: string; date: string; url: string }[];
     allMilestonesHref: string;
     class?: ClassValue;
   } = $props();

@@ -9,18 +9,17 @@
   import type { IconProps } from "@canonical/svelte-icons";
   import type { Component } from "svelte";
   import type { ClassValue } from "svelte/elements";
-  import type { getSeriesOverview } from "./series.remote.js";
-
-  type SeriesLinks = Awaited<ReturnType<typeof getSeriesOverview>>["links"];
 
   let {
     links,
     class: className,
   }: {
-    links: Pick<
-      SeriesLinks,
-      "reportBug" | "askQuestion" | "translate" | "subscribeToBugs"
-    >;
+    links: {
+      reportBug: string;
+      askQuestion: string;
+      translate: string;
+      subscribeToBugs: string;
+    };
     class?: ClassValue;
   } = $props();
 </script>

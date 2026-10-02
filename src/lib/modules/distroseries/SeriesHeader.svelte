@@ -27,13 +27,14 @@
 <style>
   header {
     grid-column: 1 / -1;
-    display: grid;
-    grid-template-columns: minmax(0, 1fr) auto;
+    display: flex;
+    justify-content: space-between;
     align-items: start;
     gap: var(--space-300);
   }
 
   .page-title {
+    flex: 1;
     display: flex;
     flex-direction: column;
     align-items: start;

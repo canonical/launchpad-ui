@@ -4,10 +4,10 @@
     PageLayout,
     distroSegment,
   } from "$lib/launchpad-components/index.js";
+  import GetInvolved from "$lib/modules/distroseries/GetInvolved.svelte";
+  import SeriesHeader from "$lib/modules/distroseries/SeriesHeader.svelte";
+  import SeriesMilestones from "$lib/modules/distroseries/SeriesMilestones.svelte";
   import type { PageProps } from "./$types.js";
-  import GetInvolved from "./GetInvolved.svelte";
-  import SeriesHeader from "./SeriesHeader.svelte";
-  import SeriesMilestones from "./SeriesMilestones.svelte";
   import { getSeriesOverview } from "./series.remote.js";
 
   let { params }: PageProps = $props();
@@ -52,7 +52,6 @@
   .series-overview {
     --grid-column-gap: var(--space-300);
     container-type: inline-size;
-    overflow-wrap: anywhere;
   }
 
   .overview {
