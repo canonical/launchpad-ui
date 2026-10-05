@@ -15,7 +15,7 @@ export function packagesSegment(distro: string): Segment {
   };
 }
 
-export function packageSegment(distro: string, name: string): Segment {
+export function sourcePackageSegment(distro: string, name: string): Segment {
   return {
     label: name,
     href: resolve("/[pillar]/+source/[name]", { pillar: distro, name }),

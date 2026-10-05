@@ -16,12 +16,18 @@
 <section class={className} aria-labelledby="milestones-heading">
   <h2 id="milestones-heading">Milestones</h2>
   <table aria-labelledby="milestones-heading">
+    <thead class="visually-hidden">
+      <tr>
+        <th scope="col">Milestone name</th>
+        <th scope="col">Date</th>
+      </tr>
+    </thead>
     <tbody>
       {#each milestones as milestone (milestone.url)}
         <tr>
-          <th scope="row">
+          <td>
             <Link href={milestone.url} soft>{milestone.name}</Link>
-          </th>
+          </td>
           <td>
             <time datetime={milestone.date}>{milestone.date}</time>
           </td>
@@ -43,18 +49,12 @@
     border-collapse: collapse;
   }
 
-  th,
   td {
     padding: 0 0 var(--space-050);
     vertical-align: top;
-  }
 
-  th {
-    text-align: start;
-    font-weight: inherit;
-  }
-
-  td {
-    padding-inline-start: var(--space-150);
+    &:first-child {
+      padding-inline-end: var(--space-150);
+    }
   }
 </style>

@@ -3,13 +3,13 @@ import type { ComponentProps } from "svelte";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { userEvent } from "vitest/browser";
 import { render } from "vitest-browser-svelte";
-import { DEFAULT_TABLE_VIEWS } from "$lib/modules/packages/table-views/constants.js";
-import type { SourcePackagePublishingEntry } from "$lib/server/launchpad/types.js";
-import Page from "./+page.svelte";
 import type {
   getSourcePackages as getSourcePackagesQuery,
   getSourcePackagesTotal as getSourcePackagesTotalQuery,
-} from "./packages.remote.js";
+} from "$lib/modules/packages/packages.remote.js";
+import { DEFAULT_TABLE_VIEWS } from "$lib/modules/packages/table-views/constants.js";
+import type { SourcePackagePublishingEntry } from "$lib/server/launchpad/types.js";
+import Page from "./+page.svelte";
 import { page } from "$app/state";
 
 type PackagesListArgs = Parameters<typeof getSourcePackagesQuery>[0];
@@ -26,7 +26,7 @@ const getTableViews = vi.hoisted(() =>
   vi.fn<() => Promise<typeof DEFAULT_TABLE_VIEWS>>(),
 );
 
-vi.mock("./packages.remote.js", () => ({
+vi.mock("$lib/modules/packages/packages.remote.js", () => ({
   getSourcePackages,
   getSourcePackagesTotal,
 }));

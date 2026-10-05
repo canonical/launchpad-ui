@@ -2,9 +2,9 @@ import { settled } from "svelte";
 import type { ComponentProps } from "svelte";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { render } from "vitest-browser-svelte";
+import { seriesOverview } from "$lib/modules/distroseries/series.fixtures.js";
+import type { getSeriesOverview as getSeriesOverviewQuery } from "$lib/modules/distroseries/series.remote.js";
 import Page from "./+page.svelte";
-import { seriesOverview } from "./series.fixtures.js";
-import type { getSeriesOverview as getSeriesOverviewQuery } from "./series.remote.js";
 
 type SeriesArgs = Parameters<typeof getSeriesOverviewQuery>[0];
 type SeriesOverview = Awaited<ReturnType<typeof getSeriesOverviewQuery>>;
@@ -13,7 +13,9 @@ const getSeriesOverview = vi.hoisted(() =>
   vi.fn<(args: SeriesArgs) => Promise<SeriesOverview>>(),
 );
 
-vi.mock("./series.remote.js", () => ({ getSeriesOverview }));
+vi.mock("$lib/modules/distroseries/series.remote.js", () => ({
+  getSeriesOverview,
+}));
 
 const baseProps = {
   params: { pillar: "ubuntu", series: "resolute" },
@@ -73,6 +75,12 @@ describe("series overview", () => {
     await expect
       .element(page.getByRole("navigation", { name: "Get involved" }))
       .toBeVisible();
+    const milestonesTable = page.getByRole("table", { name: "Milestones" });
+    for (const name of ["Milestone name", "Date"]) {
+      await expect
+        .element(milestonesTable.getByRole("columnheader", { name }))
+        .toBeInTheDocument();
+    }
     for (const milestone of seriesOverview.milestones) {
       await expect
         .element(

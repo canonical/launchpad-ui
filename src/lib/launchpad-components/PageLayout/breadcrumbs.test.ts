@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
   distroSegment,
-  packageSegment,
   packagesSegment,
+  sourcePackageSegment,
 } from "./breadcrumbs.js";
 
 describe("breadcrumb segments", () => {
@@ -20,8 +20,8 @@ describe("breadcrumb segments", () => {
     });
   });
 
-  it("links a package by name", () => {
-    expect(packageSegment("ubuntu", "libreoffice")).toEqual({
+  it("links a source package by name", () => {
+    expect(sourcePackageSegment("ubuntu", "libreoffice")).toEqual({
       label: "libreoffice",
       href: "/ubuntu/+source/libreoffice",
     });

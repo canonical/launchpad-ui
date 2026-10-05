@@ -7,8 +7,8 @@
   import GetInvolved from "$lib/modules/distroseries/GetInvolved.svelte";
   import SeriesHeader from "$lib/modules/distroseries/SeriesHeader.svelte";
   import SeriesMilestones from "$lib/modules/distroseries/SeriesMilestones.svelte";
+  import { getSeriesOverview } from "$lib/modules/distroseries/series.remote.js";
   import type { PageProps } from "./$types.js";
-  import { getSeriesOverview } from "./series.remote.js";
 
   let { params }: PageProps = $props();
 
@@ -51,7 +51,6 @@
 <style>
   .series-overview {
     --grid-column-gap: var(--space-300);
-    container-type: inline-size;
   }
 
   .overview {
@@ -75,16 +74,6 @@
       > :global(.milestones) {
         grid-column: span 4;
       }
-    }
-  }
-
-  @container (min-width: 940px) {
-    .overview > :global(.involvement) {
-      grid-column: span 1;
-    }
-
-    .overview > :global(.milestones) {
-      grid-column: span 2;
     }
   }
 

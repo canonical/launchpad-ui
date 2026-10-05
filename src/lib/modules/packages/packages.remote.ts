@@ -2,12 +2,6 @@ import { error } from "@sveltejs/kit";
 import * as v from "valibot";
 import { SORT_DIRECTIONS } from "$lib/codecs/sortCodec.js";
 import {
-  MAX_PAGE_SIZE,
-  POCKETS,
-  SEARCH_MATCHES,
-  SORTABLE_PACKAGES_COLUMNS,
-} from "$lib/modules/packages/superhref.js";
-import {
   LaunchpadApiError,
   getPublishedSources,
   getPublishedSourcesTotal,
@@ -18,6 +12,12 @@ import type {
   SourcePackagePublishingEntry,
 } from "$lib/server/launchpad/types.js";
 import { LAUNCHPAD_NAME_PATTERN } from "$lib/utils/launchpad/launchpadName.js";
+import {
+  MAX_PAGE_SIZE,
+  POCKETS,
+  SEARCH_MATCHES,
+  SORTABLE_PACKAGES_COLUMNS,
+} from "./superhref.js";
 import { query } from "$app/server";
 
 const SORT_KEYS = {

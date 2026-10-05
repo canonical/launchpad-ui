@@ -2,8 +2,8 @@
   import {
     PageLayout,
     distroSegment,
-    packageSegment,
     packagesSegment,
+    sourcePackageSegment,
   } from "$lib/launchpad-components/index.js";
   import type { PageProps } from "./$types.js";
   let { params }: PageProps = $props();
@@ -17,7 +17,7 @@
   breadcrumbsSegments={[
     distroSegment(params.pillar),
     packagesSegment(params.pillar),
-    packageSegment(params.pillar, params.name),
+    sourcePackageSegment(params.pillar, params.name),
     { label: "Version" },
   ]}
 >

@@ -15,6 +15,10 @@
   import { setPackagesContext } from "$lib/modules/packages/context.js";
   import Filters from "$lib/modules/packages/filters/Filters.svelte";
   import {
+    getSourcePackages,
+    getSourcePackagesTotal,
+  } from "$lib/modules/packages/packages.remote.js";
+  import {
     PACKAGES_TABLE_COLUMNS,
     PAGE_SIZE_OPTIONS,
     QueryParams,
@@ -22,10 +26,6 @@
   import ManageViewsSidePanel from "$lib/modules/packages/table-views/ManageViewsSidePanel.svelte";
   import { getTableViews } from "$lib/modules/packages/table-views/table-views.remote.js";
   import type { PageProps } from "./$types.js";
-  import {
-    getSourcePackages,
-    getSourcePackagesTotal,
-  } from "./packages.remote.js";
   import { resolve } from "$app/paths";
   import { page } from "$app/state";
 

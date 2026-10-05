@@ -6,7 +6,9 @@
 </script>
 
 <main>
-  <Breadcrumbs segments={breadcrumbsSegments} />
+  {#if breadcrumbsSegments?.length}
+    <Breadcrumbs segments={breadcrumbsSegments} />
+  {/if}
   <div class="page-content">
     {@render children()}
   </div>

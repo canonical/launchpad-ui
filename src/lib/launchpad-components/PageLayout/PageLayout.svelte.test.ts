@@ -45,4 +45,24 @@ describe("page layout", () => {
         ) & Node.DOCUMENT_POSITION_FOLLOWING,
     ).toBeTruthy();
   });
+
+  it.each([
+    { case: "omitted", breadcrumbsSegments: undefined },
+    { case: "empty", breadcrumbsSegments: [] },
+  ])(
+    "renders no breadcrumbs when segments are $case",
+    async ({ breadcrumbsSegments }) => {
+      const screen = await render(PageLayout, {
+        breadcrumbsSegments,
+        children,
+      });
+
+      await expect
+        .element(screen.getByRole("heading", { level: 1 }))
+        .toBeVisible();
+      await expect
+        .element(screen.getByRole("navigation", { name: "Breadcrumbs" }))
+        .not.toBeInTheDocument();
+    },
+  );
 });
