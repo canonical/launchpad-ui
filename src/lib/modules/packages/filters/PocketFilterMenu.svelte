@@ -2,7 +2,7 @@
   import { Popover } from "@canonical/svelte-ds-app-launchpad";
   import { ContextualMenuContent } from "$lib/components/index.js";
   import { PopoverTrigger } from "$lib/launchpad-components/index.js";
-  import { POCKETS } from "../superhref.js";
+  import { POCKETS } from "./constants.js";
   import type { FilterChangeHandler } from "./types.js";
 
   type Pocket = (typeof POCKETS)[number];

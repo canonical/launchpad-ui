@@ -1,5 +1,5 @@
 <script lang="ts" module>
-  import type { SEARCH_MATCHES } from "../superhref.js";
+  import type { SEARCH_MATCHES } from "./constants.js";
 
   type SearchMatch = (typeof SEARCH_MATCHES)[number];
 

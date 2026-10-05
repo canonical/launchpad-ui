@@ -1,6 +1,16 @@
+import type { Pocket } from "$lib/server/launchpad/types.js";
 import type { PackagesFilters } from "./schema.js";
 
 export const MAX_PACKAGES_SEARCH_LENGTH = 200;
+
+export const SEARCH_MATCHES = ["contains", "exact"] as const;
+export const POCKETS = [
+  "Release",
+  "Security",
+  "Updates",
+  "Proposed",
+  "Backports",
+] as const satisfies readonly Pocket[];
 
 export const PACKAGES_FILTER_LABELS = {
   match: "Search mode",

@@ -1,9 +1,29 @@
 import * as v from "valibot";
 import { LAUNCHPAD_NAME_PATTERN } from "$lib/utils/launchpad/launchpadName.js";
-import { POCKETS, SEARCH_MATCHES } from "../superhref.js";
-import { MAX_PACKAGES_SEARCH_LENGTH } from "./constants.js";
+import {
+  MAX_PACKAGES_SEARCH_LENGTH,
+  POCKETS,
+  SEARCH_MATCHES,
+} from "./constants.js";
 
 const launchpadNameSchema = v.pipe(v.string(), v.regex(LAUNCHPAD_NAME_PATTERN));
+
+/** The rule for each filter's set value */
+export const PackagesFilterFields = {
+  search: v.pipe(
+    v.string(),
+    v.trim(),
+    v.nonEmpty(),
+    v.maxLength(MAX_PACKAGES_SEARCH_LENGTH),
+  ),
+  match: v.picklist(SEARCH_MATCHES),
+  series: launchpadNameSchema,
+  pocket: v.picklist(POCKETS),
+  maintainer: launchpadNameSchema,
+  signer: launchpadNameSchema,
+  ubuntuChange: v.boolean(),
+  allStatuses: v.boolean(),
+};
 
 function nullIfEmpty<TSchema extends v.GenericSchema<string>>(schema: TSchema) {
   return v.pipe(
@@ -18,15 +38,15 @@ export const PackagesFiltersSchema = v.object({
     v.optional(v.string(), ""),
     v.trim(),
     v.transform((value) => value || null),
-    v.nullable(v.pipe(v.string(), v.maxLength(MAX_PACKAGES_SEARCH_LENGTH))),
+    v.nullable(PackagesFilterFields.search),
   ),
-  match: v.optional(v.picklist(SEARCH_MATCHES), "contains"),
-  series: nullIfEmpty(launchpadNameSchema),
-  pocket: nullIfEmpty(v.picklist(POCKETS)),
-  maintainer: nullIfEmpty(launchpadNameSchema),
-  signer: nullIfEmpty(launchpadNameSchema),
-  ubuntuChange: v.optional(v.boolean(), false),
-  allStatuses: v.optional(v.boolean(), false),
+  match: v.optional(PackagesFilterFields.match, "contains"),
+  series: nullIfEmpty(PackagesFilterFields.series),
+  pocket: nullIfEmpty(PackagesFilterFields.pocket),
+  maintainer: nullIfEmpty(PackagesFilterFields.maintainer),
+  signer: nullIfEmpty(PackagesFilterFields.signer),
+  ubuntuChange: v.optional(PackagesFilterFields.ubuntuChange, false),
+  allStatuses: v.optional(PackagesFilterFields.allStatuses, false),
 });
 
 export type PackagesFilters = v.InferOutput<typeof PackagesFiltersSchema>;
