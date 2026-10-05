@@ -1,5 +1,5 @@
 import { onTestFinished } from "vitest";
-import type { FilterChangeHandler } from "./packages-filters.js";
+import type { FilterChangeHandler } from "./types.js";
 
 export const FILTERS_FORM_ID = "filters-form";
 export const FILTER_LABEL_ID = "filter-label";

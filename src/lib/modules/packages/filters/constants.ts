@@ -1,3 +1,7 @@
+import type { PackagesFilters } from "./schema.js";
+
+export const MAX_PACKAGES_SEARCH_LENGTH = 200;
+
 export const PACKAGES_FILTER_LABELS = {
   match: "Search mode",
   search: "Keyword",
@@ -10,8 +14,13 @@ export const PACKAGES_FILTER_LABELS = {
   allStatuses: "Include Superseded and Deleted",
 } as const;
 
-/** Called when a filter control picks a new value. */
-export type FilterChangeHandler<T> = (
-  event: Event & { currentTarget: EventTarget & HTMLInputElement },
-  value: T,
-) => void;
+export const DEFAULT_PACKAGES_FILTERS: PackagesFilters = {
+  search: null,
+  match: "contains",
+  series: null,
+  pocket: null,
+  maintainer: null,
+  signer: null,
+  ubuntuChange: false,
+  allStatuses: false,
+};

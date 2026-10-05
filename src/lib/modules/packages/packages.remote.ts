@@ -1,6 +1,7 @@
 import { error } from "@sveltejs/kit";
 import * as v from "valibot";
 import { SORT_DIRECTIONS } from "$lib/codecs/sortCodec.js";
+import { MAX_PACKAGES_SEARCH_LENGTH } from "$lib/modules/packages/filters/constants.js";
 import {
   LaunchpadApiError,
   getPublishedSources,
@@ -30,8 +31,6 @@ const SORT_KEYS = {
   PublishedSourcesSortKey
 >;
 
-const MAX_SEARCH_LENGTH = 200;
-
 const distroSchema = v.pipe(v.string(), v.trim(), v.minLength(1));
 const launchpadNameSchema = v.pipe(v.string(), v.regex(LAUNCHPAD_NAME_PATTERN));
 
@@ -42,7 +41,7 @@ const filterArgsSchema = v.pipe(
         v.string(),
         v.trim(),
         v.minLength(1),
-        v.maxLength(MAX_SEARCH_LENGTH),
+        v.maxLength(MAX_PACKAGES_SEARCH_LENGTH),
       ),
     ),
     match: v.nullish(v.picklist(SEARCH_MATCHES)),

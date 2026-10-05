@@ -33,8 +33,8 @@
   import PocketFilterMenu from "./PocketFilterMenu.svelte";
   import SearchModeMenu from "./SearchModeMenu.svelte";
   import SeriesFilterMenu from "./SeriesFilterMenu.svelte";
-  import { PACKAGES_FILTER_LABELS as labels } from "./packages-filters.js";
-  import type { FilterChangeHandler } from "./packages-filters.js";
+  import { PACKAGES_FILTER_LABELS as labels } from "./constants.js";
+  import type { FilterChangeHandler } from "./types.js";
   import { page } from "$app/state";
 
   const id = $props.id();

@@ -13,7 +13,7 @@
   } from "$lib/modules/packages/people.remote.js";
   import type { PersonEntry } from "$lib/server/launchpad/types.js";
   import { minTrimmedLength, subId } from "$lib/utils/index.js";
-  import type { FilterChangeHandler } from "./packages-filters.js";
+  import type { FilterChangeHandler } from "./types.js";
   import { browser } from "$app/env";
   import { goto } from "$app/navigation";
   import { page } from "$app/state";

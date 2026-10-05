@@ -164,7 +164,7 @@
       onclick={async () => {
         saving = true;
         try {
-          await updateTableViews(modifiedItems.map((item) => item.slug));
+          await updateTableViews(modifiedItems.map(({ slug }) => ({ slug })));
           goto(
             // eslint-disable-next-line svelte/no-navigation-without-resolve
             queryParams.patch({
