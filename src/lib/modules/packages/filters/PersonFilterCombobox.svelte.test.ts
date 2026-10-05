@@ -12,8 +12,6 @@ import {
   mountFiltersForm,
   submitOnChange,
 } from "./test.fixtures.js";
-import { goto } from "$app/navigation";
-import { page } from "$app/state";
 
 const { findPeople, getPersonByName, seedPerson } = vi.hoisted(() => ({
   findPeople: vi.fn(),
@@ -25,15 +23,6 @@ vi.mock("$lib/modules/packages/people.remote.js", () => ({
   findPeople,
   getPersonByName,
 }));
-
-vi.mock("$app/navigation", () => ({ goto: vi.fn() }));
-
-vi.mock("$app/state", async () => {
-  const { SvelteURL } = await import("svelte/reactivity");
-  return {
-    page: { url: new SvelteURL("https://launchpad.test/ubuntu/+source") },
-  };
-});
 
 /** Mimics the parts of a remote query the combobox relies on. */
 function remoteQuery<T>(result: Promise<T>) {
@@ -71,6 +60,8 @@ const onchange = vi.fn(submitOnChange);
 const baseProps = {
   form: FILTERS_FORM_ID,
   inputName: "maintainer",
+  searchInputName: "maintainer-search",
+  initialSearch: null,
   selectedPersonName: null,
   groupName: "maintainers",
   onchange,
@@ -80,7 +71,6 @@ const baseProps = {
 let submissions: [string, string][][];
 
 beforeEach(() => {
-  page.url.search = "";
   submissions = mountFiltersForm("Maintained by:");
   onchange.mockClear();
   findPeople
@@ -92,7 +82,6 @@ beforeEach(() => {
       remoteQuery(Promise.resolve(people[name] ?? null)),
     );
   seedPerson.mockReset();
-  vi.mocked(goto).mockReset();
 });
 
 describe("PersonFilterCombobox", () => {
@@ -105,7 +94,6 @@ describe("PersonFilterCombobox", () => {
       .element(screen.getByRole("option", { name: "All" }))
       .toHaveAttribute("aria-selected", "true");
     expect(getPersonByName).not.toHaveBeenCalled();
-    expect(goto).not.toHaveBeenCalled();
   });
 
   it("names the trigger after the selected person and lists them as selected", async () => {
@@ -244,9 +232,56 @@ describe("PersonFilterCombobox", () => {
     expect(seedPerson).not.toHaveBeenCalled();
   });
 
-  it("restores a search submitted without JavaScript and drops it from the URL", async () => {
-    page.url.search = `?page=2&${FILTERS_FORM_ID}-maintainer-search=example`;
+  it("searches again on Enter once Escape clears the active option", async () => {
     const screen = await render(PersonFilterCombobox, baseProps);
+    await openAndSearch(screen, "example");
+    await expect
+      .element(screen.getByRole("option", { name: /Bob Example/ }))
+      .toBeVisible();
+    await userEvent.keyboard("{ArrowDown}");
+    await searchBox(screen).fill("alice");
+
+    await userEvent.keyboard("{Escape}");
+    await expect
+      .element(searchBox(screen))
+      .not.toHaveAttribute("aria-activedescendant");
+    await expect.element(searchBox(screen)).toHaveValue("alice");
+    await userEvent.keyboard("{Enter}");
+
+    expect(findPeople).toHaveBeenLastCalledWith({ text: "alice" });
+    expect(onchange).not.toHaveBeenCalled();
+  });
+
+  it("searches with the search button", async () => {
+    const screen = await render(PersonFilterCombobox, baseProps);
+    await screen.getByRole("button", { name: /^Maintained by:/ }).click();
+    await searchBox(screen).fill("example");
+
+    await screen.getByRole("button", { name: "Search maintainers" }).click();
+
+    await expect
+      .element(screen.getByRole("option", { name: /Bob Example/ }))
+      .toBeVisible();
+    expect(findPeople).toHaveBeenCalledExactlyOnceWith({ text: "example" });
+  });
+
+  it("keeps an unfinished search out of the form's submissions", async () => {
+    const screen = await render(PersonFilterCombobox, baseProps);
+    await screen.getByRole("button", { name: /^Maintained by:/ }).click();
+    await searchBox(screen).fill("ab");
+
+    document
+      .querySelector<HTMLFormElement>(`#${FILTERS_FORM_ID}`)!
+      .requestSubmit();
+
+    expect(submissions).toEqual([[["maintainer", ""]]]);
+  });
+
+  it("starts with a search submitted without JavaScript", async () => {
+    const screen = await render(PersonFilterCombobox, {
+      ...baseProps,
+      initialSearch: "example",
+    });
     await screen.getByRole("button", { name: /^Maintained by:/ }).click();
 
     await expect.element(searchBox(screen)).toHaveValue("example");
@@ -254,27 +289,6 @@ describe("PersonFilterCombobox", () => {
       .element(screen.getByRole("option", { name: /Bob Example/ }))
       .toBeVisible();
     expect(findPeople).toHaveBeenCalledWith({ text: "example" });
-    expect(goto).toHaveBeenCalledExactlyOnceWith(
-      new URL("https://launchpad.test/ubuntu/+source?page=2"),
-      { replaceState: true, keepFocus: true, noScroll: true },
-    );
-  });
-
-  it("restores a no-JS search only from its own form's search param", async () => {
-    page.url.search =
-      "?other-form-maintainer-search=example" +
-      `&${FILTERS_FORM_ID}-maintainer-search=alice`;
-    const screen = await render(PersonFilterCombobox, baseProps);
-    await screen.getByRole("button", { name: /^Maintained by:/ }).click();
-
-    await expect.element(searchBox(screen)).toHaveValue("alice");
-    expect(findPeople).toHaveBeenCalledWith({ text: "alice" });
-    expect(goto).toHaveBeenCalledExactlyOnceWith(
-      new URL(
-        "https://launchpad.test/ubuntu/+source?other-form-maintainer-search=example",
-      ),
-      { replaceState: true, keepFocus: true, noScroll: true },
-    );
   });
 });
 

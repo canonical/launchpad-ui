@@ -24,6 +24,8 @@ describe("package filter query parameters", () => {
       pocket: "Updates",
       maintainer: "ubuntu-mozillateam",
       signer: "userl",
+      "maintainer-search": null,
+      "signer-search": null,
       "ubuntu-change": true,
       "all-statuses": true,
       page: 1,

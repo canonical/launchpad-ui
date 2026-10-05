@@ -61,6 +61,8 @@ const packagesQuerySchema = {
   pocket: enumCodec(POCKETS),
   maintainer: launchpadNameCodec(),
   signer: launchpadNameCodec(),
+  "maintainer-search": textCodec(),
+  "signer-search": textCodec(),
   "ubuntu-change": flagCodec(),
   "all-statuses": flagCodec(),
   ...paginationCodecs({

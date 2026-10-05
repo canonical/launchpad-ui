@@ -6,6 +6,8 @@
     match: "match",
     maintainer: "maintainer",
     signer: "signer",
+    "maintainer-search": "maintainer-search",
+    "signer-search": "signer-search",
     series: "series",
     pocket: "pocket",
     "ubuntu-change": "ubuntu-change",
@@ -24,6 +26,7 @@
 <script lang="ts">
   import { Button, SearchBox } from "@canonical/svelte-ds-app-launchpad";
   import { CloseIcon } from "@canonical/svelte-icons";
+  import { onMount } from "svelte";
   import { QueryParamsForm } from "$lib/components/index.js";
   import { subId } from "$lib/utils/index.js";
   import { getPackagesContext } from "../context.js";
@@ -35,11 +38,11 @@
   import SeriesFilterMenu from "./SeriesFilterMenu.svelte";
   import { PACKAGES_FILTER_LABELS as labels } from "./constants.js";
   import type { FilterChangeHandler } from "./types.js";
+  import { goto } from "$app/navigation";
   import { page } from "$app/state";
 
   const id = $props.id();
-  // Fixed, because the person comboboxes key their no-JS search on it.
-  const filtersFormId = "packages-filters";
+  const filtersFormId = subId(id, "form");
   const searchModeLabelId = subId(id, "search-mode-label");
   const maintainerLabelId = subId(id, "maintainer-label");
   const signerLabelId = subId(id, "signer-label");
@@ -63,6 +66,18 @@
 
   const submitFilters: FilterChangeHandler<unknown> = (event) =>
     event.currentTarget.form?.requestSubmit();
+
+  // With JS the person searches run in the comboboxes and shouldn't stay in the URL
+  onMount(() => {
+    if (!queryParams["maintainer-search"] && !queryParams["signer-search"]) {
+      return;
+    }
+    goto(
+      // eslint-disable-next-line svelte/no-navigation-without-resolve
+      queryParams.patch({ "maintainer-search": null, "signer-search": null }),
+      { replaceState: true, keepFocus: true, noScroll: true },
+    );
+  });
 </script>
 
 <div class="filters-bar">
@@ -91,6 +106,8 @@
       <PersonFilterCombobox
         form={filtersFormId}
         inputName={filterInputsNames.maintainer}
+        searchInputName={filterInputsNames["maintainer-search"]}
+        initialSearch={queryParams["maintainer-search"]}
         selectedPersonName={queryParams.maintainer}
         groupName="maintainers"
         onchange={submitFilters}
@@ -102,6 +119,8 @@
       <PersonFilterCombobox
         form={filtersFormId}
         inputName={filterInputsNames.signer}
+        searchInputName={filterInputsNames["signer-search"]}
+        initialSearch={queryParams["signer-search"]}
         selectedPersonName={queryParams.signer}
         groupName="signers"
         onchange={submitFilters}

@@ -1,6 +1,9 @@
 <script lang="ts">
-  import { Popover, UserAvatar } from "@canonical/svelte-ds-app-launchpad";
-  import { onMount } from "svelte";
+  import {
+    Popover,
+    SearchBox,
+    UserAvatar,
+  } from "@canonical/svelte-ds-app-launchpad";
   import { Combobox } from "$lib/components/index.js";
   import { PopoverTrigger } from "$lib/launchpad-components/index.js";
   import {
@@ -15,20 +18,21 @@
   import { minTrimmedLength, subId } from "$lib/utils/index.js";
   import type { FilterChangeHandler } from "./types.js";
   import { browser } from "$app/env";
-  import { goto } from "$app/navigation";
-  import { page } from "$app/state";
 
   const {
     form,
     inputName,
+    searchInputName,
+    initialSearch,
     selectedPersonName,
     groupName,
     onchange,
     "aria-labelledby": ariaLabelledBy,
   }: {
-    /** Must be the same across requests (not `$props.id()`), as it keys the no-JS search in the URL. */
     form: string;
     inputName: string;
+    searchInputName: string;
+    initialSearch: string | null;
     selectedPersonName: string | null;
     groupName: string;
     /** Called with the chosen person's Launchpad name, or `null` for All. */
@@ -38,27 +42,23 @@
 
   const id = $props.id();
 
-  // No-JS search goes through this URL param; a form + field pair can't be shared by two comboboxes.
-  const comboboxSearchParam = $derived(`${form}-${inputName}-search`);
+  // With JS the search runs here, so pointing `form` at no form keeps it from being submitted or validated with any
+  const searchForm = $derived(browser ? subId(id, "no-form") : form);
 
-  let searchInputValue = $state(
-    // svelte-check and eslint have different perceptions of whether this state is referenced locally or not
-    // eslint-disable-next-line svelte/no-unused-svelte-ignore
-    // svelte-ignore state_referenced_locally
-    page.url.searchParams.get(comboboxSearchParam) ?? "",
-  );
   // svelte-ignore state_referenced_locally
-  let searchValue = $state(searchInputValue);
-
-  onMount(() => {
-    if (!page.url.searchParams.has(comboboxSearchParam)) return;
-    const url = new URL(page.url);
-    url.searchParams.delete(comboboxSearchParam);
-    // eslint-disable-next-line svelte/no-navigation-without-resolve
-    goto(url, { replaceState: true, keepFocus: true, noScroll: true });
-  });
+  let searchInputValue = $state(initialSearch ?? "");
+  // svelte-ignore state_referenced_locally
+  let searchValue = $state(initialSearch ?? "");
+  let searchInput = $state<HTMLInputElement>();
 
   let resetError: (() => void) | null = null;
+
+  function runSearch() {
+    if (!searchInput?.reportValidity()) return;
+    searchValue = searchInputValue;
+    resetError?.();
+    resetError = null;
+  }
   // Keeps the seeded query cache entry alive until the next selection.
   let selectedPersonQuery: ReturnType<typeof getPersonByName> | null = null;
 
@@ -89,38 +89,35 @@
   {/snippet}
   <Combobox inputsName={inputName} type="single-select">
     {#snippet search()}
-      <form
-        method="GET"
-        onsubmit={(e) => {
-          e.preventDefault();
-          searchValue = searchInputValue;
-          resetError?.();
-          resetError = null;
-        }}
-      >
-        <!-- eslint-disable-next-line svelte/require-each-key -->
-        {#each Array.from(page.url.searchParams).filter(([key]) => key !== comboboxSearchParam) as [key, value]}
-          <input type="hidden" name={key} {value} />
-        {/each}
-        <Combobox.Search
-          aria-label="Search {groupName}"
-          placeholder="Search {groupName}..."
-          shouldRenderInvalidStyles
-          bind:value={
-            () => searchInputValue,
-            (value) => {
-              searchInputValue = value;
-              if (value === "") {
-                searchValue = "";
-              }
+      <Combobox.Search
+        aria-label="Search {groupName}"
+        placeholder="Search {groupName}..."
+        shouldRenderInvalidStyles
+        bind:value={
+          () => searchInputValue,
+          (value) => {
+            searchInputValue = value;
+            if (value === "") {
+              searchValue = "";
             }
           }
-          name={comboboxSearchParam}
-          required
-          maxlength={MAX_PEOPLE_SEARCH_LENGTH}
-          {...minTrimmedLength(MIN_PEOPLE_SEARCH_LENGTH)}
-        />
-      </form>
+        }
+        form={searchForm}
+        name={browser ? undefined : searchInputName}
+        maxlength={MAX_PEOPLE_SEARCH_LENGTH}
+        {...minTrimmedLength(MIN_PEOPLE_SEARCH_LENGTH)}
+        onkeydown={(event) => {
+          if (event.key !== "Enter") return;
+          event.preventDefault();
+          runSearch();
+        }}
+        {@attach (input: HTMLInputElement) => {
+          searchInput = input;
+          return () => (searchInput = undefined);
+        }}
+      >
+        <SearchBox.SearchButton form={searchForm} onclick={runSearch} />
+      </Combobox.Search>
     {/snippet}
     <Combobox.Group>
       <Combobox.RadioOption
