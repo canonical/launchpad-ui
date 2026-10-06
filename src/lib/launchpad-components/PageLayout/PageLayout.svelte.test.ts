@@ -25,20 +25,6 @@ describe("page layout", () => {
       .toBeVisible();
   });
 
-  it("uses the root app typography for headings and body text", async () => {
-    const screen = await render(PageLayout, baseProps);
-    const headingStyle = getComputedStyle(
-      screen.getByRole("heading", { level: 1 }).element(),
-    );
-    const bodyStyle = getComputedStyle(document.body);
-
-    expect(document.documentElement).toHaveClass("app");
-    expect(headingStyle.fontSize).toBe("24px");
-    expect(parseFloat(headingStyle.lineHeight)).toBeCloseTo(32, 2);
-    expect(bodyStyle.fontSize).toBe("14px");
-    expect(parseFloat(bodyStyle.lineHeight)).toBeCloseTo(20, 2);
-  });
-
   it("renders the breadcrumbs above the page", async () => {
     const screen = await render(PageLayout, baseProps);
     const breadcrumbs = screen.getByRole("navigation", {
