@@ -93,15 +93,14 @@ describe("TableViewEditForm", () => {
       ]);
   });
 
-  it("doesn't stage an empty name", async () => {
+  it("doesn't stage a blank name", async () => {
     const { screen, onstage } = await renderForm();
+    const name = screen.getByRole("textbox", { name: "* View name" });
 
-    await screen.getByRole("textbox", { name: "* View name" }).fill("  ");
+    await name.fill("");
     await screen.getByRole("button", { name: "Confirm" }).click();
 
-    await expect
-      .element(screen.getByText("Enter a view name"))
-      .toBeInTheDocument();
+    await expect.element(name).toBeInvalid();
     expect(onstage).not.toHaveBeenCalled();
   });
 
