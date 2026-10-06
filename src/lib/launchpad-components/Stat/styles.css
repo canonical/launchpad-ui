@@ -1,0 +1,10 @@
+.stat {
+  font: var(--ds-typography-text-primary);
+
+  > .stat-item:first-child > .stat-description {
+    font: var(--typography-heading-3-font-weight)
+      var(--typography-heading-3-font-size) /
+      var(--typography-heading-3-line-height)
+      var(--typography-heading-3-font-family);
+  }
+}
