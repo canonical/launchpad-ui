@@ -34,8 +34,7 @@ The following Contextual Menu example can be assembled using:
           {/snippet}
         </Button>
       {/snippet}
-      <!-- TODO(@Enzo): Add max-width tokens and replace this hardcoded value -->
-      <ContextualMenuContent style="max-width: 17.38rem;">
+      <ContextualMenuContent>
         <ContextualMenuContent.Group groupTitle="Diff layout">
           <ContextualMenuContent.RadioItem
             name="layout"
