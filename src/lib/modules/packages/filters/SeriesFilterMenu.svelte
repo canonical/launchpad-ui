@@ -34,24 +34,19 @@
   import { Popover } from "@canonical/svelte-ds-app-launchpad";
   import { ContextualMenuContent } from "$lib/components/index.js";
   import { PopoverTrigger } from "$lib/launchpad-components/index.js";
-  import type { FilterChangeHandler } from "./types.js";
+  import type { ChoiceFilterProps } from "./types.js";
 
   const {
     form,
-    inputName,
+    name,
     value,
     onchange,
+    position,
     "aria-labelledby": ariaLabelledBy,
-  }: {
-    form: string;
-    inputName: string;
-    value: string | null;
-    onchange: FilterChangeHandler<string | null>;
-    "aria-labelledby": string;
-  } = $props();
+  }: ChoiceFilterProps<string | null> = $props();
 </script>
 
-<Popover>
+<Popover {position}>
   {#snippet trigger(triggerProps)}
     <PopoverTrigger aria-labelledby={ariaLabelledBy} {...triggerProps}>
       {value && seriesLabels[value] ? seriesLabels[value] : "All"}
@@ -60,24 +55,24 @@
   <ContextualMenuContent>
     <ContextualMenuContent.Group groupTitle="Series">
       <ContextualMenuContent.RadioItem
-        name={inputName}
+        {name}
         value=""
         text="All"
         checked={!value}
         {form}
-        onchange={(e) => onchange(e, null)}
+        onchange={(e) => onchange?.(e, null)}
       />
     </ContextualMenuContent.Group>
     {#each seriesGroups as group (group.label)}
       <ContextualMenuContent.Group groupTitle={group.label}>
         {#each group.options as option (option.value)}
           <ContextualMenuContent.RadioItem
-            name={inputName}
+            {name}
             value={option.value}
             text={option.label}
             checked={value === option.value}
             {form}
-            onchange={(e) => onchange(e, option.value)}
+            onchange={(e) => onchange?.(e, option.value)}
           />
         {/each}
       </ContextualMenuContent.Group>

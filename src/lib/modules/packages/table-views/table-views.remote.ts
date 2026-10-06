@@ -1,4 +1,4 @@
-import { error } from "@sveltejs/kit";
+import { error, invalid } from "@sveltejs/kit";
 import * as v from "valibot";
 import { DEFAULT_TABLE_VIEWS } from "./constants.js";
 import {
@@ -41,6 +41,8 @@ export const deleteTableView = form(
 /**
  * Saves a single view's settings. Used by the no-JS path only; with JS the edit is staged
  * and sent with {@link updateTableViews} instead.
+ *
+ * A no-JS person search is submitted here too, so that the other fields' values survive it.
  */
 export const editTableView = form(TableViewEditFormSchema, (data) => {
   const view = tableViews.find((view) => view.slug === data.id);
@@ -51,6 +53,11 @@ export const editTableView = form(TableViewEditFormSchema, (data) => {
 
   if (!view.editable) {
     error(400, "This table view cannot be edited");
+  }
+
+  if (data.intent !== undefined && data.intent !== "confirm") {
+    // Re-renders the form with the submitted values, which kit only keeps for an invalid submission.
+    invalid("The view hasn't been saved yet");
   }
 
   // TODO: Persist the view settings

@@ -59,10 +59,9 @@ const onchange = vi.fn(submitOnChange);
 
 const baseProps = {
   form: FILTERS_FORM_ID,
-  inputName: "maintainer",
-  searchInputName: "maintainer-search",
-  initialSearch: null,
-  selectedPersonName: null,
+  name: "maintainer",
+  searchInputProps: { name: "maintainer-search" },
+  value: null,
   groupName: "maintainers",
   onchange,
   "aria-labelledby": FILTER_LABEL_ID,
@@ -99,7 +98,7 @@ describe("PersonFilterCombobox", () => {
   it("names the trigger after the selected person and lists them as selected", async () => {
     const screen = await render(PersonFilterCombobox, {
       ...baseProps,
-      selectedPersonName: "alice",
+      value: "alice",
     });
 
     await screen
@@ -118,7 +117,7 @@ describe("PersonFilterCombobox", () => {
   it("lists search results without repeating the selected person", async () => {
     const screen = await render(PersonFilterCombobox, {
       ...baseProps,
-      selectedPersonName: "alice",
+      value: "alice",
     });
     await openAndSearch(screen, "example");
 
@@ -220,7 +219,7 @@ describe("PersonFilterCombobox", () => {
   it("submits an empty value when All is chosen", async () => {
     const screen = await render(PersonFilterCombobox, {
       ...baseProps,
-      selectedPersonName: "alice",
+      value: "alice",
     });
     await screen.getByRole("button", { name: /^Maintained by:/ }).click();
     await searchBox(screen).click();
@@ -280,7 +279,7 @@ describe("PersonFilterCombobox", () => {
   it("starts with a search submitted without JavaScript", async () => {
     const screen = await render(PersonFilterCombobox, {
       ...baseProps,
-      initialSearch: "example",
+      searchInputProps: { name: "maintainer-search", value: "example" },
     });
     await screen.getByRole("button", { name: /^Maintained by:/ }).click();
 
@@ -289,6 +288,24 @@ describe("PersonFilterCombobox", () => {
       .element(screen.getByRole("option", { name: /Bob Example/ }))
       .toBeVisible();
     expect(findPeople).toHaveBeenCalledWith({ text: "example" });
+  });
+
+  it("keeps an invalid submitted search without running it", async () => {
+    const screen = await render(PersonFilterCombobox, {
+      ...baseProps,
+      searchInputProps: {
+        name: "maintainer-search",
+        value: "ab",
+        "aria-invalid": "true",
+      },
+    });
+    await screen.getByRole("button", { name: /^Maintained by:/ }).click();
+
+    await expect.element(searchBox(screen)).toHaveValue("ab");
+    await expect
+      .element(screen.getByRole("group", { name: "Search results" }))
+      .not.toBeInTheDocument();
+    expect(findPeople).not.toHaveBeenCalled();
   });
 });
 

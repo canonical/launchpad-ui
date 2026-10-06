@@ -4,6 +4,10 @@
     SearchBox,
     UserAvatar,
   } from "@canonical/svelte-ds-app-launchpad";
+  import type {
+    SearchBoxProps,
+    SearchBoxSearchButtonProps,
+  } from "@canonical/svelte-ds-app-launchpad";
   import { Combobox } from "$lib/components/index.js";
   import { PopoverTrigger } from "$lib/launchpad-components/index.js";
   import {
@@ -16,28 +20,32 @@
   } from "$lib/modules/packages/people.remote.js";
   import type { PersonEntry } from "$lib/server/launchpad/types.js";
   import { minTrimmedLength, subId } from "$lib/utils/index.js";
-  import type { FilterChangeHandler } from "./types.js";
+  import type { ChoiceFilterProps } from "./types.js";
   import { browser } from "$app/env";
 
   const {
-    form,
-    inputName,
-    searchInputName,
-    initialSearch,
-    selectedPersonName,
-    groupName,
+    value,
     onchange,
+    groupName,
     "aria-labelledby": ariaLabelledBy,
-  }: {
-    form: string;
-    inputName: string;
-    searchInputName: string;
-    initialSearch: string | null;
-    selectedPersonName: string | null;
+    form,
+    name,
+    searchInputProps,
+    searchButtonProps,
+    position,
+  }: ChoiceFilterProps<string | null> & {
+    /** Plural label used in the search prompt, e.g. "maintainers". */
     groupName: string;
-    /** Called with the chosen person's Launchpad name, or `null` for All. */
-    onchange: FilterChangeHandler<string | null>;
-    "aria-labelledby": string;
+    /**
+     * Search input attributes for submitting the search without JavaScript, e.g. a remote form's `field.as("text")`.
+     * `value` seeds the search on creation; later changes are ignored.
+     */
+    searchInputProps: Pick<SearchBoxProps, "name" | "aria-invalid"> & {
+      // TODO(DAL): Loosen the value type inputs on text-input based components to interop with Kit's remote form types.
+      value?: string | number | null;
+    };
+    /** Search button attributes */
+    searchButtonProps?: SearchBoxSearchButtonProps;
   } = $props();
 
   const id = $props.id();
@@ -46,9 +54,14 @@
   const searchForm = $derived(browser ? subId(id, "no-form") : form);
 
   // svelte-ignore state_referenced_locally
-  let searchInputValue = $state(initialSearch ?? "");
+  const initialSearch = String(searchInputProps.value ?? "");
   // svelte-ignore state_referenced_locally
-  let searchValue = $state(initialSearch ?? "");
+  const isInitialSearchInvalid =
+    searchInputProps["aria-invalid"] === true ||
+    searchInputProps["aria-invalid"] === "true";
+  let searchInputValue = $state(initialSearch);
+  // Running an invalid search would only fail to load the results
+  let searchValue = $state(isInitialSearchInvalid ? "" : initialSearch);
   let searchInput = $state<HTMLInputElement>();
 
   let resetError: (() => void) | null = null;
@@ -70,24 +83,24 @@
       selectedPersonQuery = getPersonByName(person.name);
       selectedPersonQuery.set(person);
     }
-    onchange(event, person?.name ?? null);
+    onchange?.(event, person?.name ?? null);
   }
 
   const selectedPerson = $derived(
-    selectedPersonName === null
+    !value
       ? null
       : // TODO: Currently this path returns null instead of 404-ing, which should IMO should not be the case. A bogus hand-typed person in the URL should probably throw the page as it's gonna end up in the filters.
-        await getPersonByName(selectedPersonName),
+        await getPersonByName(value),
   );
 </script>
 
-<Popover>
+<Popover {position}>
   {#snippet trigger(triggerProps)}
     <PopoverTrigger aria-labelledby={ariaLabelledBy} {...triggerProps}>
       {selectedPerson ? selectedPerson.display_name : "All"}
     </PopoverTrigger>
   {/snippet}
-  <Combobox inputsName={inputName} type="single-select">
+  <Combobox inputsName={name} type="single-select">
     {#snippet search()}
       <Combobox.Search
         aria-label="Search {groupName}"
@@ -103,7 +116,8 @@
           }
         }
         form={searchForm}
-        name={browser ? undefined : searchInputName}
+        name={browser ? undefined : searchInputProps.name}
+        aria-invalid={searchInputProps["aria-invalid"]}
         maxlength={MAX_PEOPLE_SEARCH_LENGTH}
         {...minTrimmedLength(MIN_PEOPLE_SEARCH_LENGTH)}
         onkeydown={(event) => {
@@ -116,14 +130,18 @@
           return () => (searchInput = undefined);
         }}
       >
-        <SearchBox.SearchButton form={searchForm} onclick={runSearch} />
+        <SearchBox.SearchButton
+          {...searchButtonProps}
+          form={searchForm}
+          onclick={runSearch}
+        />
       </Combobox.Search>
     {/snippet}
     <Combobox.Group>
       <Combobox.RadioOption
         text="All"
         value=""
-        checked={!selectedPersonName}
+        checked={!value}
         onchange={(e) => changePerson(e, null)}
         {form}
       />

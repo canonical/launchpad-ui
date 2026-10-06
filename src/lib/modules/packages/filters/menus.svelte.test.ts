@@ -38,7 +38,7 @@ describe("SeriesFilterMenu", () => {
     async (value, triggerName, checkedOption) => {
       const screen = await render(SeriesFilterMenu, {
         ...controlProps,
-        inputName: "series",
+        name: "series",
         value,
       });
 
@@ -58,7 +58,7 @@ describe("SeriesFilterMenu", () => {
     async (value, option, submitted, changedTo) => {
       const screen = await render(SeriesFilterMenu, {
         ...controlProps,
-        inputName: "series",
+        name: "series",
         value,
       });
 
@@ -88,7 +88,7 @@ describe("PocketFilterMenu", () => {
     async (value, triggerName, checkedOption) => {
       const screen = await render(PocketFilterMenu, {
         ...controlProps,
-        inputName: "pocket",
+        name: "pocket",
         value,
       });
 
@@ -108,7 +108,7 @@ describe("PocketFilterMenu", () => {
     async (value, option, submitted, changedTo) => {
       const screen = await render(PocketFilterMenu, {
         ...controlProps,
-        inputName: "pocket",
+        name: "pocket",
         value,
       });
 
@@ -133,7 +133,7 @@ describe("SearchModeMenu", () => {
   it("names the trigger after the selected mode and submits the picked one", async () => {
     const screen = await render(SearchModeMenu, {
       ...controlProps,
-      inputName: "match",
+      name: "match",
       value: "contains",
     });
 
@@ -149,6 +149,24 @@ describe("SearchModeMenu", () => {
     );
     expect(submissions).toEqual([[["match", "exact"]]]);
   });
+
+  it.each(["", "fuzzy", null])(
+    "falls back to Contain for %j",
+    async (value) => {
+      const screen = await render(SearchModeMenu, {
+        ...controlProps,
+        name: "match",
+        value,
+      });
+
+      await screen
+        .getByRole("button", { name: "Search mode: Contain" })
+        .click();
+      await expect
+        .element(screen.getByRole("radio", { name: "Contain" }))
+        .toBeChecked();
+    },
+  );
 });
 
 describe("MoreFiltersMenu", () => {
@@ -159,12 +177,12 @@ describe("MoreFiltersMenu", () => {
 
   const switches = (ubuntuChange: boolean, allStatuses: boolean) => [
     {
-      inputName: "ubuntu-change",
+      name: "ubuntu-change",
       text: "Only show packages changed by Ubuntu",
       checked: ubuntuChange,
     },
     {
-      inputName: "all-statuses",
+      name: "all-statuses",
       text: "Include Superseded and Deleted",
       checked: allStatuses,
     },

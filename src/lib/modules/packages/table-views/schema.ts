@@ -1,7 +1,7 @@
 import * as v from "valibot";
 import { PackagesFiltersSchema } from "../filters/schema.js";
-
-export const MAX_TABLE_VIEW_NAME_LENGTH = 100;
+import { PersonSearchSchema } from "../schema.js";
+import { MAX_TABLE_VIEW_NAME_LENGTH } from "./constants.js";
 
 export const TableViewSlugSchema = v.pipe(v.string(), v.nonEmpty());
 
@@ -22,8 +22,34 @@ export const TableViewSettingsSchema = v.object({
 
 export type TableViewSettings = v.InferOutput<typeof TableViewSettingsSchema>;
 
-export const TableViewEditFormSchema = v.object({
-  /** The view's slug, injected by `editTableView.for(slug)` rather than submitted. */
+const TableViewEditFormCommonEntries = {
   id: TableViewSlugSchema,
-  ...TableViewSettingsSchema.entries,
-});
+  filters: v.optional(PackagesFiltersSchema, {}),
+  // Have to be optional in every variant, as kit only types field keys common to all of them
+  maintainerSearch: v.optional(v.string()),
+  signerSearch: v.optional(v.string()),
+};
+
+// A search doesn't save, so an unfinished name mustn't block it
+const TableViewSearchCommonEntries = {
+  ...TableViewEditFormCommonEntries,
+  name: v.optional(v.string()),
+};
+
+export const TableViewEditFormSchema = v.variant("intent", [
+  v.object({
+    ...TableViewEditFormCommonEntries,
+    intent: v.optional(v.literal("confirm")),
+    name: TableViewNameSchema,
+  }),
+  v.object({
+    ...TableViewSearchCommonEntries,
+    intent: v.literal("search-maintainer"),
+    maintainerSearch: PersonSearchSchema,
+  }),
+  v.object({
+    ...TableViewSearchCommonEntries,
+    intent: v.literal("search-signer"),
+    signerSearch: PersonSearchSchema,
+  }),
+]);

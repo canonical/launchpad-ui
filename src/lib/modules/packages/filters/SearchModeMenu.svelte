@@ -1,5 +1,5 @@
 <script lang="ts" module>
-  import type { SEARCH_MATCHES } from "./constants.js";
+  import { SEARCH_MATCHES } from "./constants.js";
 
   type SearchMatch = (typeof SEARCH_MATCHES)[number];
 
@@ -19,39 +19,38 @@
   import { InformationIcon } from "@canonical/svelte-icons";
   import { ContextualMenuContent } from "$lib/components/index.js";
   import { PopoverTrigger } from "$lib/launchpad-components/index.js";
-  import type { FilterChangeHandler } from "./types.js";
+  import type { ChoiceFilterProps } from "./types.js";
 
   let {
     form,
-    inputName,
+    name,
     value,
     onchange,
+    position,
     "aria-labelledby": ariaLabelledBy,
-  }: {
-    form: string;
-    inputName: string;
-    value: SearchMatch;
-    onchange: FilterChangeHandler<SearchMatch>;
-    "aria-labelledby": string;
-  } = $props();
+  }: ChoiceFilterProps<SearchMatch> = $props();
+
+  const selected = $derived(
+    SEARCH_MATCHES.find((match) => match === value) ?? "contains",
+  );
 </script>
 
-<Popover>
+<Popover {position}>
   {#snippet trigger(triggerProps)}
     <PopoverTrigger aria-labelledby={ariaLabelledBy} {...triggerProps}>
-      {searchModeLabels[value]}
+      {searchModeLabels[selected]}
     </PopoverTrigger>
   {/snippet}
   <ContextualMenuContent>
     <ContextualMenuContent.Group groupTitle="Keyword search mode">
       {#each searchModes as [key, label] (key)}
         <ContextualMenuContent.RadioItem
-          name={inputName}
+          {name}
           value={key}
-          checked={value === key}
+          checked={selected === key}
           text={label}
           {form}
-          onchange={(e) => onchange(e, key)}
+          onchange={(e) => onchange?.(e, key)}
         />
       {/each}
     </ContextualMenuContent.Group>

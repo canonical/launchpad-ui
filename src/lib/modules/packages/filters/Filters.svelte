@@ -80,12 +80,12 @@
   });
 </script>
 
-<div class="filters-bar">
+<div class="filters-bar dense">
   <div class="search">
     <span id={searchModeLabelId} class="visually-hidden">{labels.match}:</span>
     <SearchModeMenu
       form={filtersFormId}
-      inputName={filterInputsNames.match}
+      name={filterInputsNames.match}
       value={queryParams.match}
       onchange={submitFilters}
       aria-labelledby={searchModeLabelId}
@@ -105,10 +105,12 @@
       <span id={maintainerLabelId}>{labels.maintainer}:</span>
       <PersonFilterCombobox
         form={filtersFormId}
-        inputName={filterInputsNames.maintainer}
-        searchInputName={filterInputsNames["maintainer-search"]}
-        initialSearch={queryParams["maintainer-search"]}
-        selectedPersonName={queryParams.maintainer}
+        name={filterInputsNames.maintainer}
+        searchInputProps={{
+          name: filterInputsNames["maintainer-search"],
+          value: queryParams["maintainer-search"],
+        }}
+        value={queryParams.maintainer}
         groupName="maintainers"
         onchange={submitFilters}
         aria-labelledby={maintainerLabelId}
@@ -118,10 +120,12 @@
       <span id={signerLabelId}>{labels.signer}:</span>
       <PersonFilterCombobox
         form={filtersFormId}
-        inputName={filterInputsNames.signer}
-        searchInputName={filterInputsNames["signer-search"]}
-        initialSearch={queryParams["signer-search"]}
-        selectedPersonName={queryParams.signer}
+        name={filterInputsNames.signer}
+        searchInputProps={{
+          name: filterInputsNames["signer-search"],
+          value: queryParams["signer-search"],
+        }}
+        value={queryParams.signer}
         groupName="signers"
         onchange={submitFilters}
         aria-labelledby={signerLabelId}
@@ -131,7 +135,7 @@
       <span id={seriesLabelId}>{labels.series}:</span>
       <SeriesFilterMenu
         form={filtersFormId}
-        inputName={filterInputsNames.series}
+        name={filterInputsNames.series}
         value={queryParams.series}
         onchange={submitFilters}
         aria-labelledby={seriesLabelId}
@@ -141,7 +145,7 @@
       <span id={pocketLabelId}>{labels.pocket}:</span>
       <PocketFilterMenu
         form={filtersFormId}
-        inputName={filterInputsNames.pocket}
+        name={filterInputsNames.pocket}
         value={queryParams.pocket}
         onchange={submitFilters}
         aria-labelledby={pocketLabelId}
@@ -156,12 +160,12 @@
           form={filtersFormId}
           switches={[
             {
-              inputName: filterInputsNames["ubuntu-change"],
+              name: filterInputsNames["ubuntu-change"],
               text: labels.ubuntuChange,
               checked: queryParams["ubuntu-change"],
             },
             {
-              inputName: filterInputsNames["all-statuses"],
+              name: filterInputsNames["all-statuses"],
               text: labels.allStatuses,
               checked: queryParams["all-statuses"],
             },
@@ -174,7 +178,6 @@
           type="submit"
           form={filtersFormId}
           importance="tertiary"
-          density="dense"
           class="filter-control-button"
         >
           Apply Filters
@@ -190,7 +193,6 @@
           })}
           aria-label="Clear all filters"
           importance="tertiary"
-          density="dense"
           class="filter-control-button"
         >
           {#snippet iconLeft()}

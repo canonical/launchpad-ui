@@ -1,5 +1,6 @@
 <script lang="ts">
   import { Popover } from "@canonical/svelte-ds-app-launchpad";
+  import type { PopoverProps } from "@canonical/svelte-ds-app-launchpad";
   import { FilterIcon } from "@canonical/svelte-icons";
   import { ContextualMenuContent } from "$lib/components/index.js";
   import { PopoverTrigger } from "$lib/launchpad-components/index.js";
@@ -7,14 +8,16 @@
   const {
     form,
     switches,
+    position,
     "aria-labelledby": ariaLabelledBy,
   }: {
     form: string;
     switches: {
-      inputName: string;
+      name: string;
       text: string;
       checked: boolean;
     }[];
+    position?: PopoverProps["position"];
     "aria-labelledby": string;
   } = $props();
 
@@ -24,7 +27,7 @@
   const activeCountId = $props.id();
 </script>
 
-<Popover>
+<Popover {position}>
   {#snippet trigger(triggerProps)}
     <PopoverTrigger
       aria-labelledby={activeCount
@@ -46,9 +49,9 @@
   {/snippet}
   <ContextualMenuContent>
     <ContextualMenuContent.Group groupTitle="More Filters">
-      {#each switches as filter (filter.inputName)}
+      {#each switches as filter (filter.name)}
         <ContextualMenuContent.SwitchItem
-          name={filter.inputName}
+          name={filter.name}
           {form}
           text={filter.text}
           checked={filter.checked}
