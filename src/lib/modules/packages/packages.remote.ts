@@ -1,7 +1,7 @@
 import { error } from "@sveltejs/kit";
 import * as v from "valibot";
 import { SORT_DIRECTIONS } from "$lib/codecs/sortCodec.js";
-import { PackagesFilterFields } from "$lib/modules/packages/filters/schema.js";
+import { ParsedPackagesFiltersSchema } from "$lib/modules/packages/filters/schema.js";
 import {
   LaunchpadApiError,
   getPublishedSources,
@@ -28,16 +28,7 @@ const SORT_KEYS = {
 const distroSchema = v.pipe(v.string(), v.trim(), v.minLength(1));
 
 const filterArgsSchema = v.pipe(
-  v.object({
-    search: v.nullish(PackagesFilterFields.search),
-    match: v.nullish(PackagesFilterFields.match),
-    series: v.nullish(PackagesFilterFields.series),
-    pocket: v.nullish(PackagesFilterFields.pocket),
-    maintainer: v.nullish(PackagesFilterFields.maintainer),
-    signer: v.nullish(PackagesFilterFields.signer),
-    ubuntuChange: v.nullish(PackagesFilterFields.ubuntuChange),
-    allStatuses: v.nullish(PackagesFilterFields.allStatuses),
-  }),
+  ParsedPackagesFiltersSchema,
   v.transform(
     (filters): PublishedSourcesFilter => ({
       series: filters.series,

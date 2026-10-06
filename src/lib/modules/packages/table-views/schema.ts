@@ -1,5 +1,8 @@
 import * as v from "valibot";
-import { PackagesFiltersSchema } from "../filters/schema.js";
+import {
+  PackagesFiltersSchema,
+  ParsedPackagesFiltersSchema,
+} from "../filters/schema.js";
 import { PersonSearchSchema } from "../schema.js";
 import { MAX_TABLE_VIEW_NAME_LENGTH } from "./constants.js";
 
@@ -21,6 +24,12 @@ export const TableViewSettingsSchema = v.object({
 });
 
 export type TableViewSettings = v.InferOutput<typeof TableViewSettingsSchema>;
+
+/** Already-parsed settings, e.g. staged on the client */
+export const ParsedTableViewSettingsSchema = v.object({
+  name: TableViewNameSchema,
+  filters: ParsedPackagesFiltersSchema,
+});
 
 const TableViewEditFormCommonEntries = {
   id: TableViewSlugSchema,

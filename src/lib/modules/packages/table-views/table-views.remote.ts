@@ -2,8 +2,8 @@ import { error, invalid } from "@sveltejs/kit";
 import * as v from "valibot";
 import { DEFAULT_TABLE_VIEWS } from "./constants.js";
 import {
+  ParsedTableViewSettingsSchema,
   TableViewEditFormSchema,
-  TableViewSettingsSchema,
   TableViewSlugSchema,
 } from "./schema.js";
 import { command, form, query } from "$app/server";
@@ -74,7 +74,7 @@ export const updateTableViews = command(
   v.array(
     v.object({
       slug: TableViewSlugSchema,
-      settings: v.optional(TableViewSettingsSchema),
+      settings: v.optional(ParsedTableViewSettingsSchema),
     }),
   ),
   (views) => {

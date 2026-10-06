@@ -50,3 +50,14 @@ export const PackagesFiltersSchema = v.object({
 });
 
 export type PackagesFilters = v.InferOutput<typeof PackagesFiltersSchema>;
+
+export const ParsedPackagesFiltersSchema = v.object({
+  search: v.nullable(PackagesFilterFields.search),
+  match: PackagesFilterFields.match,
+  series: v.nullable(PackagesFilterFields.series),
+  pocket: v.nullable(PackagesFilterFields.pocket),
+  maintainer: v.nullable(PackagesFilterFields.maintainer),
+  signer: v.nullable(PackagesFilterFields.signer),
+  ubuntuChange: PackagesFilterFields.ubuntuChange,
+  allStatuses: PackagesFilterFields.allStatuses,
+});

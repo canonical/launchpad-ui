@@ -1,11 +1,34 @@
 import * as v from "valibot";
-import { describe, expect, it } from "vitest";
+import { describe, expect, expectTypeOf, it } from "vitest";
 import {
   DEFAULT_PACKAGES_FILTERS,
   MAX_PACKAGES_SEARCH_LENGTH,
 } from "./constants.js";
-import { PackagesFiltersSchema } from "./schema.js";
+import {
+  PackagesFiltersSchema,
+  ParsedPackagesFiltersSchema,
+} from "./schema.js";
 import type { PackagesFilters } from "./schema.js";
+
+describe("ParsedPackagesFiltersSchema", () => {
+  it("accepts what PackagesFiltersSchema parses to", () => {
+    expectTypeOf<
+      v.InferInput<typeof ParsedPackagesFiltersSchema>
+    >().toEqualTypeOf<PackagesFilters>();
+    expect(
+      v.parse(ParsedPackagesFiltersSchema, DEFAULT_PACKAGES_FILTERS),
+    ).toEqual(DEFAULT_PACKAGES_FILTERS);
+  });
+
+  it("rejects form-shaped empty values", () => {
+    expect(
+      v.safeParse(ParsedPackagesFiltersSchema, {
+        ...DEFAULT_PACKAGES_FILTERS,
+        pocket: "",
+      }).success,
+    ).toBe(false);
+  });
+});
 
 describe("PackagesFiltersSchema", () => {
   it("treats absent fields as the defaults", () => {
