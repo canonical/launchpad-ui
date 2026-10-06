@@ -7,6 +7,8 @@ import {
   transformSnippetArgs,
 } from "./utils";
 
+document.documentElement.classList.add("app");
+
 const preview: Preview = {
   parameters: {
     controls: {

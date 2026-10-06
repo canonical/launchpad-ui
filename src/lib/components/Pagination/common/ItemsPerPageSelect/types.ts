@@ -4,5 +4,5 @@ import type { SelectProps } from "@canonical/svelte-ds-app-launchpad";
 
 export type ItemsPerPageSelectProps = Omit<
   SelectProps,
-  "multiple" | "ref" | "severity" | "density"
+  "multiple" | "ref" | "criticality" | "density" | "importance"
 >;

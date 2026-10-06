@@ -17,7 +17,7 @@
     footer,
     closeForm,
     ...rest
-  }: Omit<SidePanelProps, "children" | "closeOnOutsideClick" | "closedby"> & {
+  }: Omit<SidePanelProps, "children" | "closedby"> & {
     title?: string;
     children: Snippet;
     /**
@@ -42,21 +42,11 @@
       type: "submit",
     } as const;
   }
-
-  // Disable light dismiss when no JS, because otherwise we wouldn't have a way to clear the query param.
-  const closeOnOutsideSuppress = !browser
-    ? // Use `closedby: none` directly to also suppress the native platform dismissal (e.g. Escape key)
-      { closedby: "none" as const }
-    : // After hydration, switch to `closeOnOutsideClick` to get the WebKit fallback. To be removed, when the below TODO(DAL) is resolved.
-      { closeOnOutsideClick: true };
 </script>
 
-<!-- 
-TODO(DAL):
-- Update SidePanel spacing to match the design
-- Get rid of the `closeOnOutsideClick` prop and instead make the consumer use the native `closedby` directly while still keeping the fallback behavior for WebKit. (https://warthogs.atlassian.net/browse/LP-4467)
--->
-<SidePanel {...closeOnOutsideSuppress} {...rest}>
+<!-- TODO(DAL): Update SidePanel spacing to match the design. -->
+<!-- Without JS, dismissal must use the close form to clear the query param. -->
+<SidePanel closedby={browser ? "any" : "none"} {...rest}>
   {#snippet children(commandfor)}
     <SidePanel.Content>
       <SidePanel.Content.Header>
