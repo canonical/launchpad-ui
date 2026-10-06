@@ -7,7 +7,7 @@
     allMilestonesHref,
     class: className,
   }: {
-    milestones: { name: string; date: string; url: string }[];
+    milestones: { name: string; date: string | null; url: string }[];
     allMilestonesHref: string;
     class?: ClassValue;
   } = $props();
@@ -29,7 +29,9 @@
             <Link href={milestone.url} soft>{milestone.name}</Link>
           </td>
           <td>
-            <time datetime={milestone.date}>{milestone.date}</time>
+            {#if milestone.date}
+              <time datetime={milestone.date}>{milestone.date}</time>
+            {/if}
           </td>
         </tr>
       {/each}

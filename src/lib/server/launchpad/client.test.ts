@@ -2,11 +2,18 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   LaunchpadApiError,
   findPeople,
+  getActiveSeriesMilestones,
+  getDistroSeries,
   getPerson,
   getPublishedSources,
   getPublishedSourcesTotal,
 } from "./client.js";
-import type { PersonEntry, SourcePackagePublishingEntry } from "./types.js";
+import type {
+  DistroSeriesEntry,
+  MilestoneEntry,
+  PersonEntry,
+  SourcePackagePublishingEntry,
+} from "./types.js";
 
 // Hoisted above the imports by vitest; stubs the private env for client.ts.
 vi.mock("$env/dynamic/private", () => ({
@@ -95,6 +102,96 @@ beforeEach(() => {
 afterEach(() => {
   vi.restoreAllMocks();
 });
+
+describe("getDistroSeries", () => {
+  it.each([
+    ["ubuntu", "resolute", "/api/devel/ubuntu/resolute"],
+    ["debian", "sid", "/api/devel/debian/sid"],
+    ["my+distro", "release+1", "/api/devel/my%2Bdistro/release%2B1"],
+  ])("reads the series for %s/%s", async (distro, series, path) => {
+    const body = {
+      version: "26.04",
+      title: "The Resolute Raccoon",
+      status: "Current Stable Release",
+      summary: "Release summary",
+      web_link: "https://launchpad.net/ubuntu/resolute",
+      translations_usage: "Launchpad",
+    } satisfies DistroSeriesEntry;
+    respondWith(body);
+
+    await expect(getDistroSeries(distro, series)).resolves.toEqual(body);
+    expect(requestedUrl().origin).toBe("https://lp.example");
+    expect(requestedUrl().pathname).toBe(path);
+    expect(requestedUrl().search).toBe("");
+    expect(requestedHeaders()).toEqual({ accept: "application/json" });
+    expect(launchpadFetch).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("getActiveSeriesMilestones", () => {
+  it("requests only the first three active milestones in target-date order", async () => {
+    const body = {
+      start: 0,
+      entries: [
+        {
+          name: "release",
+          date_targeted: null,
+          web_link: "https://launchpad.net/my+distro/+milestone/release",
+        } satisfies MilestoneEntry,
+      ],
+      next_collection_link:
+        "https://lp.example/api/devel/my%2Bdistro/release%2B1?ws.start=3",
+    };
+    respondWith(body);
+
+    await expect(
+      getActiveSeriesMilestones("my+distro", "release+1"),
+    ).resolves.toEqual(body);
+    expect(requestedUrl().origin).toBe("https://lp.example");
+    expect(requestedUrl().pathname).toBe("/api/devel/my%2Bdistro/release%2B1");
+    expect(Object.fromEntries(requestedUrl().searchParams)).toEqual({
+      "ws.op": "searchMilestones",
+      is_active: "true",
+      order_by: "date_targeted",
+      "ws.size": "3",
+    });
+    expect(requestedHeaders()).toEqual({ accept: "application/json" });
+    expect(launchpadFetch).toHaveBeenCalledTimes(1);
+  });
+
+  it("returns an empty collection without additional requests", async () => {
+    respondWith({ start: 0, entries: [] });
+
+    await expect(getActiveSeriesMilestones("debian", "sid")).resolves.toEqual({
+      start: 0,
+      entries: [],
+    });
+    expect(launchpadFetch).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe.each([getDistroSeries, getActiveSeriesMilestones])(
+  "%s failures",
+  (request) => {
+    it.each([404, 503])("preserves upstream status %i", async (status) => {
+      respondWith({}, status);
+
+      await expect(request("ubuntu", "unknown")).rejects.toMatchObject({
+        name: "LaunchpadApiError",
+        status,
+      });
+      expect(launchpadFetch).toHaveBeenCalledTimes(1);
+    });
+
+    it("propagates network failures without retrying", async () => {
+      const failure = new TypeError("Connection failed");
+      launchpadFetch.mockRejectedValue(failure);
+
+      await expect(request("ubuntu", "resolute")).rejects.toBe(failure);
+      expect(launchpadFetch).toHaveBeenCalledTimes(1);
+    });
+  },
+);
 
 describe("getPublishedSources", () => {
   it("builds the primary-archive URL with ws.op and paging params", async () => {
