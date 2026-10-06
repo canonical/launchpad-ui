@@ -10,6 +10,7 @@
   let {
     onkeydown: onkeydownProp,
     onblur: onblurProp,
+    onkeydownUnhandled,
     value = $bindable(),
     class: className,
     ...rest
@@ -21,20 +22,26 @@
 
   const onkeydown: typeof onkeydownProp = (event) => {
     onkeydownProp?.(event);
-    if (!comboboxContext || !comboboxContext.listBoxElement) return;
+    if (event.defaultPrevented) return;
 
-    if (event.key === "ArrowDown" || event.key === "ArrowUp") {
-      const nextId = getSiblingOptionId(
-        comboboxContext.listBoxElement,
-        comboboxContext.activeDescendant,
-        event.key === "ArrowDown" ? "next" : "previous",
-      );
-      event.preventDefault();
-      comboboxContext.activeDescendant = nextId;
-    } else if (event.key === "Enter" && comboboxContext.activeDescendant) {
-      comboboxContext.selectOption(comboboxContext.activeDescendant);
-      event.preventDefault();
+    if (comboboxContext?.listBoxElement) {
+      if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+        const nextId = getSiblingOptionId(
+          comboboxContext.listBoxElement,
+          comboboxContext.activeDescendant,
+          event.key === "ArrowDown" ? "next" : "previous",
+        );
+        event.preventDefault();
+        comboboxContext.activeDescendant = nextId;
+        return;
+      }
+      if (event.key === "Enter" && comboboxContext.activeDescendant) {
+        event.preventDefault();
+        comboboxContext.selectOption(comboboxContext.activeDescendant);
+        return;
+      }
     }
+    onkeydownUnhandled?.(event);
   };
 
   const onblur: typeof onblurProp = (event) => {

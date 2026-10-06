@@ -2,4 +2,7 @@
 
 import type { SearchBoxProps } from "@canonical/svelte-ds-app-launchpad";
 
-export type SearchProps = SearchBoxProps;
+export type SearchProps = SearchBoxProps & {
+  /** Called for keys neither cancelled by onkeydown nor handled internally. */
+  onkeydownUnhandled?: SearchBoxProps["onkeydown"];
+};
