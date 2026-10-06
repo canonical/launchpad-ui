@@ -37,10 +37,11 @@
     /** Plural label used in the search prompt, e.g. "maintainers". */
     groupName: string;
     /**
-     * Search input attributes for submitting the search without JavaScript, e.g. a remote form's `field.as("text")`.
-     * `value` seeds the search on creation; later changes are ignored.
+     * Search input attributes.
+     *
+     * `value` seeds only the search on creation and is ignored for subsequent changes.
      */
-    searchInputProps: Pick<SearchBoxProps, "name" | "aria-invalid"> & {
+    searchInputProps: Omit<SearchBoxProps, "value" | "aria-label"> & {
       // TODO(DAL): Loosen the value type inputs on text-input based components to interop with Kit's remote form types.
       value?: string | number | null;
     };
@@ -53,15 +54,23 @@
   // With JS the search runs here, so pointing `form` at no form keeps it from being submitted or validated with any
   const searchForm = $derived(browser ? subId(id, "no-form") : form);
 
+  const { value: searchInputValueProp, ...restSearchInputProps } = $derived.by(
+    () => {
+      const { value, ...rest } = searchInputProps;
+      return { value: String(value ?? ""), ...rest };
+    },
+  );
   // svelte-ignore state_referenced_locally
-  const initialSearch = String(searchInputProps.value ?? "");
+  let searchInputValue = $state(searchInputValueProp);
+
+  // Kit reports schema validation errors for an input via aria-invalid and running an invalid search would only fail to load the results
   // svelte-ignore state_referenced_locally
-  const isInitialSearchInvalid =
+  let searchValue = $state(
     searchInputProps["aria-invalid"] === true ||
-    searchInputProps["aria-invalid"] === "true";
-  let searchInputValue = $state(initialSearch);
-  // Running an invalid search would only fail to load the results
-  let searchValue = $state(isInitialSearchInvalid ? "" : initialSearch);
+      searchInputProps["aria-invalid"] === "true"
+      ? ""
+      : searchInputValueProp,
+  );
   let searchInput = $state<HTMLInputElement>();
 
   let resetError: (() => void) | null = null;
@@ -103,6 +112,7 @@
   <Combobox inputsName={name} type="single-select">
     {#snippet search()}
       <Combobox.Search
+        {...restSearchInputProps}
         aria-label="Search {groupName}"
         placeholder="Search {groupName}..."
         shouldRenderInvalidStyles
@@ -116,11 +126,10 @@
           }
         }
         form={searchForm}
-        name={browser ? undefined : searchInputProps.name}
-        aria-invalid={searchInputProps["aria-invalid"]}
+        name={browser ? undefined : restSearchInputProps.name}
         maxlength={MAX_PEOPLE_SEARCH_LENGTH}
         {...minTrimmedLength(MIN_PEOPLE_SEARCH_LENGTH)}
-        onkeydown={(event) => {
+        onkeydownUnhandled={(event) => {
           if (event.key !== "Enter") return;
           event.preventDefault();
           runSearch();
