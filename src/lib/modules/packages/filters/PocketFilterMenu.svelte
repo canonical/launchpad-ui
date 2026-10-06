@@ -8,7 +8,6 @@
   type Pocket = (typeof POCKETS)[number];
 
   const {
-    form,
     name,
     value,
     onchange,
@@ -32,7 +31,6 @@
         value=""
         text="All"
         checked={!value}
-        {form}
         onchange={(e) => onchange?.(e, null)}
       />
       {#each POCKETS as pocket (pocket)}
@@ -41,7 +39,6 @@
           value={pocket}
           text={pocket}
           checked={value === pocket}
-          {form}
           onchange={(e) => onchange?.(e, pocket)}
         />
       {/each}

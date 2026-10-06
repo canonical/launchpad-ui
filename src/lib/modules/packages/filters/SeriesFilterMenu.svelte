@@ -37,7 +37,6 @@
   import type { ChoiceFilterProps } from "./types.js";
 
   const {
-    form,
     name,
     value,
     onchange,
@@ -59,7 +58,6 @@
         value=""
         text="All"
         checked={!value}
-        {form}
         onchange={(e) => onchange?.(e, null)}
       />
     </ContextualMenuContent.Group>
@@ -71,7 +69,6 @@
             value={option.value}
             text={option.label}
             checked={value === option.value}
-            {form}
             onchange={(e) => onchange?.(e, option.value)}
           />
         {/each}

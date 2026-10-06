@@ -1,17 +1,21 @@
+import type { ComponentProps } from "svelte";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { userEvent } from "vitest/browser";
 import type { Locator } from "vitest/browser";
 import { render } from "vitest-browser-svelte";
-import type { RenderResult } from "vitest-browser-svelte";
+import type { RenderResult, SetupOptions } from "vitest-browser-svelte";
 import type { PersonEntry } from "$lib/server/launchpad/types.js";
 import { MIN_PEOPLE_SEARCH_LENGTH } from "../constants.js";
 import PersonFilterCombobox from "./PersonFilterCombobox.svelte";
-import {
-  FILTERS_FORM_ID,
+import FiltersFormFixture, {
   FILTER_LABEL_ID,
-  mountFiltersForm,
   submitOnChange,
-} from "./test.fixtures.js";
+} from "./test.fixtures.svelte";
+
+type PersonFilterScreen = RenderResult<
+  typeof PersonFilterCombobox,
+  typeof FiltersFormFixture
+>;
 
 const { findPeople, getPersonByName, seedPerson } = vi.hoisted(() => ({
   findPeople: vi.fn(),
@@ -58,19 +62,23 @@ const people: Record<string, PersonEntry> = { alice, bob };
 const onchange = vi.fn(submitOnChange);
 
 const baseProps = {
-  form: FILTERS_FORM_ID,
   name: "maintainer",
   searchInputProps: { name: "maintainer-search" },
   value: null,
   groupName: "maintainers",
   onchange,
   "aria-labelledby": FILTER_LABEL_ID,
-};
+} satisfies ComponentProps<typeof PersonFilterCombobox>;
 
 let submissions: [string, string][][];
+let formOptions: SetupOptions<typeof FiltersFormFixture>;
 
 beforeEach(() => {
-  submissions = mountFiltersForm("Maintained by:");
+  submissions = [];
+  formOptions = {
+    wrapper: FiltersFormFixture,
+    wrapperProps: { label: "Maintained by:", submissions },
+  };
   onchange.mockClear();
   findPeople
     .mockReset()
@@ -85,7 +93,7 @@ beforeEach(() => {
 
 describe("PersonFilterCombobox", () => {
   it("names the trigger All when nobody is selected", async () => {
-    const screen = await render(PersonFilterCombobox, baseProps);
+    const screen = await render(PersonFilterCombobox, baseProps, formOptions);
 
     await screen.getByRole("button", { name: "Maintained by: All" }).click();
 
@@ -96,10 +104,14 @@ describe("PersonFilterCombobox", () => {
   });
 
   it("names the trigger after the selected person and lists them as selected", async () => {
-    const screen = await render(PersonFilterCombobox, {
-      ...baseProps,
-      value: "alice",
-    });
+    const screen = await render(
+      PersonFilterCombobox,
+      {
+        ...baseProps,
+        value: "alice",
+      },
+      formOptions,
+    );
 
     await screen
       .getByRole("button", { name: "Maintained by: Alice Example" })
@@ -115,10 +127,14 @@ describe("PersonFilterCombobox", () => {
   });
 
   it("lists search results without repeating the selected person", async () => {
-    const screen = await render(PersonFilterCombobox, {
-      ...baseProps,
-      value: "alice",
-    });
+    const screen = await render(
+      PersonFilterCombobox,
+      {
+        ...baseProps,
+        value: "alice",
+      },
+      formOptions,
+    );
     await openAndSearch(screen, "example");
 
     const results = screen.getByRole("group", { name: "Search results" });
@@ -133,7 +149,7 @@ describe("PersonFilterCombobox", () => {
   it.each([tooShort, `  ${tooShort}  `])(
     "does not search for fewer non-blank characters than the minimum (%j)",
     async (text) => {
-      const screen = await render(PersonFilterCombobox, baseProps);
+      const screen = await render(PersonFilterCombobox, baseProps, formOptions);
       await openAndSearch(screen, text);
 
       await expect
@@ -151,7 +167,7 @@ describe("PersonFilterCombobox", () => {
   it("shows a loading state instead of the previous results on every search", async () => {
     const first = Promise.withResolvers<PersonEntry[]>();
     findPeople.mockImplementation(() => remoteQuery(first.promise));
-    const screen = await render(PersonFilterCombobox, baseProps);
+    const screen = await render(PersonFilterCombobox, baseProps, formOptions);
     await openAndSearch(screen, "example");
 
     await expect.element(screen.getByText("Loading…")).toBeVisible();
@@ -177,7 +193,7 @@ describe("PersonFilterCombobox", () => {
 
   it("shows when nobody matches the search", async () => {
     findPeople.mockImplementation(() => remoteQuery(Promise.resolve([])));
-    const screen = await render(PersonFilterCombobox, baseProps);
+    const screen = await render(PersonFilterCombobox, baseProps, formOptions);
     await openAndSearch(screen, "nobody");
 
     await expect.element(screen.getByText("No results.")).toBeVisible();
@@ -189,7 +205,7 @@ describe("PersonFilterCombobox", () => {
     findPeople.mockImplementationOnce(() =>
       remoteQuery(Promise.reject(new Error("Launchpad is down"))),
     );
-    const screen = await render(PersonFilterCombobox, baseProps);
+    const screen = await render(PersonFilterCombobox, baseProps, formOptions);
     await openAndSearch(screen, "example");
 
     await expect.element(screen.getByText(message)).toBeVisible();
@@ -205,7 +221,7 @@ describe("PersonFilterCombobox", () => {
   });
 
   it("submits the chosen person and seeds its lookup with the search result", async () => {
-    const screen = await render(PersonFilterCombobox, baseProps);
+    const screen = await render(PersonFilterCombobox, baseProps, formOptions);
     await openAndSearch(screen, "example");
 
     await choose(screen, screen.getByRole("option", { name: /Bob Example/ }));
@@ -217,10 +233,14 @@ describe("PersonFilterCombobox", () => {
   });
 
   it("submits an empty value when All is chosen", async () => {
-    const screen = await render(PersonFilterCombobox, {
-      ...baseProps,
-      value: "alice",
-    });
+    const screen = await render(
+      PersonFilterCombobox,
+      {
+        ...baseProps,
+        value: "alice",
+      },
+      formOptions,
+    );
     await screen.getByRole("button", { name: /^Maintained by:/ }).click();
     await searchBox(screen).click();
 
@@ -232,7 +252,7 @@ describe("PersonFilterCombobox", () => {
   });
 
   it("searches again on Enter once Escape clears the active option", async () => {
-    const screen = await render(PersonFilterCombobox, baseProps);
+    const screen = await render(PersonFilterCombobox, baseProps, formOptions);
     await openAndSearch(screen, "example");
     await expect
       .element(screen.getByRole("option", { name: /Bob Example/ }))
@@ -252,7 +272,7 @@ describe("PersonFilterCombobox", () => {
   });
 
   it("searches with the search button", async () => {
-    const screen = await render(PersonFilterCombobox, baseProps);
+    const screen = await render(PersonFilterCombobox, baseProps, formOptions);
     await screen.getByRole("button", { name: /^Maintained by:/ }).click();
     await searchBox(screen).fill("example");
 
@@ -265,22 +285,29 @@ describe("PersonFilterCombobox", () => {
   });
 
   it("keeps an unfinished search out of the form's submissions", async () => {
-    const screen = await render(PersonFilterCombobox, baseProps);
+    const screen = await render(PersonFilterCombobox, baseProps, formOptions);
     await screen.getByRole("button", { name: /^Maintained by:/ }).click();
     await searchBox(screen).fill("ab");
 
-    document
-      .querySelector<HTMLFormElement>(`#${FILTERS_FORM_ID}`)!
-      .requestSubmit();
+    const form = screen
+      .getByRole("form", {
+        name: "Maintained by:",
+      })
+      .element() as HTMLFormElement;
+    form.requestSubmit();
 
     expect(submissions).toEqual([[["maintainer", ""]]]);
   });
 
   it("starts with a search submitted without JavaScript", async () => {
-    const screen = await render(PersonFilterCombobox, {
-      ...baseProps,
-      searchInputProps: { name: "maintainer-search", value: "example" },
-    });
+    const screen = await render(
+      PersonFilterCombobox,
+      {
+        ...baseProps,
+        searchInputProps: { name: "maintainer-search", value: "example" },
+      },
+      formOptions,
+    );
     await screen.getByRole("button", { name: /^Maintained by:/ }).click();
 
     await expect.element(searchBox(screen)).toHaveValue("example");
@@ -291,14 +318,18 @@ describe("PersonFilterCombobox", () => {
   });
 
   it("keeps an invalid submitted search without running it", async () => {
-    const screen = await render(PersonFilterCombobox, {
-      ...baseProps,
-      searchInputProps: {
-        name: "maintainer-search",
-        value: "ab",
-        "aria-invalid": "true",
+    const screen = await render(
+      PersonFilterCombobox,
+      {
+        ...baseProps,
+        searchInputProps: {
+          name: "maintainer-search",
+          value: "ab",
+          "aria-invalid": "true",
+        },
       },
-    });
+      formOptions,
+    );
     await screen.getByRole("button", { name: /^Maintained by:/ }).click();
 
     await expect.element(searchBox(screen)).toHaveValue("ab");
@@ -309,12 +340,12 @@ describe("PersonFilterCombobox", () => {
   });
 });
 
-function searchBox(screen: RenderResult<typeof PersonFilterCombobox>): Locator {
+function searchBox(screen: PersonFilterScreen): Locator {
   return screen.getByRole("combobox", { name: "Search maintainers" });
 }
 
 async function searchFor(
-  screen: RenderResult<typeof PersonFilterCombobox>,
+  screen: PersonFilterScreen,
   text: string,
 ): Promise<void> {
   await searchBox(screen).fill(text);
@@ -322,7 +353,7 @@ async function searchFor(
 }
 
 async function openAndSearch(
-  screen: RenderResult<typeof PersonFilterCombobox>,
+  screen: PersonFilterScreen,
   text: string,
 ): Promise<void> {
   await screen.getByRole("button", { name: /^Maintained by:/ }).click();
@@ -330,7 +361,7 @@ async function openAndSearch(
 }
 
 async function choose(
-  screen: RenderResult<typeof PersonFilterCombobox>,
+  screen: PersonFilterScreen,
   option: Locator,
 ): Promise<void> {
   const optionId = option.element().id;

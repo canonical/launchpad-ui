@@ -9,8 +9,6 @@ export type FilterChangeHandler<T> = (
 
 /** Props of a single-choice filter control, matching a remote form's `field.as("select")`. */
 export type ChoiceFilterProps<T> = {
-  /** ID of the form the choice is submitted with. */
-  form: string;
   /** Form field name for the choice. */
   name: string;
   /** The chosen value; empty or nullish means "All". */

@@ -22,7 +22,6 @@
   import type { ChoiceFilterProps } from "./types.js";
 
   let {
-    form,
     name,
     value,
     onchange,
@@ -49,7 +48,6 @@
           value={key}
           checked={selected === key}
           text={label}
-          {form}
           onchange={(e) => onchange?.(e, key)}
         />
       {/each}

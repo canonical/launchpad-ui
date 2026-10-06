@@ -6,12 +6,10 @@
   import { PopoverTrigger } from "$lib/launchpad-components/index.js";
 
   const {
-    form,
     switches,
     position,
     "aria-labelledby": ariaLabelledBy,
   }: {
-    form: string;
     switches: {
       name: string;
       text: string;
@@ -52,7 +50,6 @@
       {#each switches as filter (filter.name)}
         <ContextualMenuContent.SwitchItem
           name={filter.name}
-          {form}
           text={filter.text}
           checked={filter.checked}
           onchange={(e) => e.currentTarget.form?.requestSubmit()}

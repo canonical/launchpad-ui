@@ -28,7 +28,6 @@
     onchange,
     groupName,
     "aria-labelledby": ariaLabelledBy,
-    form,
     name,
     searchInputProps,
     searchButtonProps,
@@ -50,9 +49,6 @@
   } = $props();
 
   const id = $props.id();
-
-  // With JS the search runs here, so pointing `form` at no form keeps it from being submitted or validated with any
-  const searchForm = $derived(browser ? subId(id, "no-form") : form);
 
   const { value: searchInputValueProp, ...restSearchInputProps } = $derived.by(
     () => {
@@ -125,8 +121,6 @@
             }
           }
         }
-        form={searchForm}
-        name={browser ? undefined : restSearchInputProps.name}
         maxlength={MAX_PEOPLE_SEARCH_LENGTH}
         {...minTrimmedLength(MIN_PEOPLE_SEARCH_LENGTH)}
         onkeydownUnhandled={(event) => {
@@ -138,11 +132,13 @@
           searchInput = input;
           return () => (searchInput = undefined);
         }}
+        // Detach the search from the surrounding form, when running the search with JavaScript
+        form={browser ? "" : undefined}
       >
         <SearchBox.SearchButton
           {...searchButtonProps}
-          form={searchForm}
           onclick={runSearch}
+          form={browser ? "" : undefined}
         />
       </Combobox.Search>
     {/snippet}
@@ -152,7 +148,6 @@
         value=""
         checked={!value}
         onchange={(e) => changePerson(e, null)}
-        {form}
       />
       {#if selectedPerson}
         <!-- Without this remount, svelte reuses the component, and updates the props. The `checked` value however doesn't change (true -> true), so Svelte doesn't update the internal radio state. -->
@@ -163,7 +158,6 @@
             value={selectedPerson.name}
             checked={true}
             onchange={(e) => changePerson(e, selectedPerson)}
-            {form}
             id={subId(id, selectedPerson.name)}
           >
             {#snippet icon()}
@@ -195,7 +189,6 @@
                 secondaryText={person.name}
                 value={person.name}
                 onchange={(e) => changePerson(e, person)}
-                {form}
                 id={subId(id, person.name)}
               >
                 {#snippet icon()}

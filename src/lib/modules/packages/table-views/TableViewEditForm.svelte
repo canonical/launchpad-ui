@@ -124,7 +124,6 @@
   <div class="filter-group" aria-label="Search">
     <span id={searchModeLabelId}>{labels.match}</span>
     <SearchModeMenu
-      form={formId}
       {...fields.filters.match.as("select")}
       aria-labelledby={searchModeLabelId}
       position="block-end span-inline-start"
@@ -142,7 +141,6 @@
     <span id={maintainerLabelId}>{labels.maintainer}</span>
 
     <PersonFilterCombobox
-      form={formId}
       {...fields.filters.maintainer.as("select")}
       searchInputProps={fields.maintainerSearch.as("text")}
       searchButtonProps={intent.as("submit", "search-maintainer")}
@@ -154,7 +152,6 @@
     <span id={signerLabelId}>{labels.signer}</span>
 
     <PersonFilterCombobox
-      form={formId}
       {...fields.filters.signer.as("select")}
       searchInputProps={fields.signerSearch.as("text")}
       searchButtonProps={intent.as("submit", "search-signer")}
@@ -165,7 +162,6 @@
 
     <span id={seriesLabelId}>{labels.series}</span>
     <SeriesFilterMenu
-      form={formId}
       {...fields.filters.series.as("select")}
       aria-labelledby={seriesLabelId}
       position="block-end span-inline-start"
@@ -173,7 +169,6 @@
 
     <span id={pocketLabelId}>{labels.pocket}</span>
     <PocketFilterMenu
-      form={formId}
       {...fields.filters.pocket.as("select")}
       aria-labelledby={pocketLabelId}
       position="block-end span-inline-start"

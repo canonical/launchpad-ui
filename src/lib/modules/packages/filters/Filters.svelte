@@ -42,7 +42,6 @@
   import { page } from "$app/state";
 
   const id = $props.id();
-  const filtersFormId = subId(id, "form");
   const searchModeLabelId = subId(id, "search-mode-label");
   const maintainerLabelId = subId(id, "maintainer-label");
   const signerLabelId = subId(id, "signer-label");
@@ -80,139 +79,131 @@
   });
 </script>
 
-<div class="filters-bar dense">
-  <div class="search">
-    <span id={searchModeLabelId} class="visually-hidden">{labels.match}:</span>
-    <SearchModeMenu
-      form={filtersFormId}
-      name={filterInputsNames.match}
-      value={queryParams.match}
-      onchange={submitFilters}
-      aria-labelledby={searchModeLabelId}
-    />
-    <!-- TODO(DAL): Style the searchbox according to the design -->
-    <SearchBox
-      form={filtersFormId}
-      name={filterInputsNames.search}
-      value={queryParams.search ?? ""}
-      placeholder="Search"
-      aria-label="Search packages"
-      class="search-box"
-    />
-  </div>
-  <div class="filters">
-    <div class="filter">
-      <span id={maintainerLabelId}>{labels.maintainer}:</span>
-      <PersonFilterCombobox
-        form={filtersFormId}
-        name={filterInputsNames.maintainer}
-        searchInputProps={{
-          name: filterInputsNames["maintainer-search"],
-          value: queryParams["maintainer-search"],
-        }}
-        value={queryParams.maintainer}
-        groupName="maintainers"
-        onchange={submitFilters}
-        aria-labelledby={maintainerLabelId}
-      />
-    </div>
-    <div class="filter">
-      <span id={signerLabelId}>{labels.signer}:</span>
-      <PersonFilterCombobox
-        form={filtersFormId}
-        name={filterInputsNames.signer}
-        searchInputProps={{
-          name: filterInputsNames["signer-search"],
-          value: queryParams["signer-search"],
-        }}
-        value={queryParams.signer}
-        groupName="signers"
-        onchange={submitFilters}
-        aria-labelledby={signerLabelId}
-      />
-    </div>
-    <div class="filter">
-      <span id={seriesLabelId}>{labels.series}:</span>
-      <SeriesFilterMenu
-        form={filtersFormId}
-        name={filterInputsNames.series}
-        value={queryParams.series}
-        onchange={submitFilters}
-        aria-labelledby={seriesLabelId}
-      />
-    </div>
-    <div class="filter">
-      <span id={pocketLabelId}>{labels.pocket}:</span>
-      <PocketFilterMenu
-        form={filtersFormId}
-        name={filterInputsNames.pocket}
-        value={queryParams.pocket}
-        onchange={submitFilters}
-        aria-labelledby={pocketLabelId}
-      />
-    </div>
-    <div class="filter-controls">
-      <div class="filter">
-        <span id={moreFiltersLabelId} class="visually-hidden"
-          >{labels.moreFilters}:</span
-        >
-        <MoreFiltersMenu
-          form={filtersFormId}
-          switches={[
-            {
-              name: filterInputsNames["ubuntu-change"],
-              text: labels.ubuntuChange,
-              checked: queryParams["ubuntu-change"],
-            },
-            {
-              name: filterInputsNames["all-statuses"],
-              text: labels.allStatuses,
-              checked: queryParams["all-statuses"],
-            },
-          ]}
-          aria-labelledby={moreFiltersLabelId}
-        />
-      </div>
-      <noscript>
-        <Button
-          type="submit"
-          form={filtersFormId}
-          importance="tertiary"
-          class="filter-control-button"
-        >
-          Apply Filters
-        </Button>
-      </noscript>
-      {#if hasActiveFilters}
-        <Button
-          href={queryParams.patch({
-            ...Object.fromEntries(
-              clearableFilterNames.map((name) => [name, null]),
-            ),
-            page: null,
-          })}
-          aria-label="Clear all filters"
-          importance="tertiary"
-          class="filter-control-button"
-        >
-          {#snippet iconLeft()}
-            <CloseIcon />
-          {/snippet}
-          Clear all
-        </Button>
-      {/if}
-    </div>
-  </div>
-</div>
-
 <QueryParamsForm
-  id={filtersFormId}
   schema={QueryParams}
   url={page.url}
   replaceParams={[...filterNames, "page"]}
   data-sveltekit-keepfocus
   data-sveltekit-noscroll
-/>
+>
+  <div class="filters-bar dense">
+    <div class="search">
+      <span id={searchModeLabelId} class="visually-hidden">{labels.match}:</span
+      >
+      <SearchModeMenu
+        name={filterInputsNames.match}
+        value={queryParams.match}
+        onchange={submitFilters}
+        aria-labelledby={searchModeLabelId}
+      />
+      <!-- TODO(DAL): Style the searchbox according to the design -->
+      <SearchBox
+        name={filterInputsNames.search}
+        value={queryParams.search ?? ""}
+        placeholder="Search"
+        aria-label="Search packages"
+        class="search-box"
+      />
+    </div>
+    <div class="filters">
+      <div class="filter">
+        <span id={maintainerLabelId}>{labels.maintainer}:</span>
+        <PersonFilterCombobox
+          name={filterInputsNames.maintainer}
+          searchInputProps={{
+            name: filterInputsNames["maintainer-search"],
+            value: queryParams["maintainer-search"],
+          }}
+          value={queryParams.maintainer}
+          groupName="maintainers"
+          onchange={submitFilters}
+          aria-labelledby={maintainerLabelId}
+        />
+      </div>
+      <div class="filter">
+        <span id={signerLabelId}>{labels.signer}:</span>
+        <PersonFilterCombobox
+          name={filterInputsNames.signer}
+          searchInputProps={{
+            name: filterInputsNames["signer-search"],
+            value: queryParams["signer-search"],
+          }}
+          value={queryParams.signer}
+          groupName="signers"
+          onchange={submitFilters}
+          aria-labelledby={signerLabelId}
+        />
+      </div>
+      <div class="filter">
+        <span id={seriesLabelId}>{labels.series}:</span>
+        <SeriesFilterMenu
+          name={filterInputsNames.series}
+          value={queryParams.series}
+          onchange={submitFilters}
+          aria-labelledby={seriesLabelId}
+        />
+      </div>
+      <div class="filter">
+        <span id={pocketLabelId}>{labels.pocket}:</span>
+        <PocketFilterMenu
+          name={filterInputsNames.pocket}
+          value={queryParams.pocket}
+          onchange={submitFilters}
+          aria-labelledby={pocketLabelId}
+        />
+      </div>
+      <div class="filter-controls">
+        <div class="filter">
+          <span id={moreFiltersLabelId} class="visually-hidden"
+            >{labels.moreFilters}:</span
+          >
+          <MoreFiltersMenu
+            switches={[
+              {
+                name: filterInputsNames["ubuntu-change"],
+                text: labels.ubuntuChange,
+                checked: queryParams["ubuntu-change"],
+              },
+              {
+                name: filterInputsNames["all-statuses"],
+                text: labels.allStatuses,
+                checked: queryParams["all-statuses"],
+              },
+            ]}
+            aria-labelledby={moreFiltersLabelId}
+          />
+        </div>
+        <noscript>
+          <Button
+            type="submit"
+            importance="tertiary"
+            class="filter-control-button"
+          >
+            Apply Filters
+          </Button>
+        </noscript>
+        {#if hasActiveFilters}
+          <Button
+            href={queryParams.patch({
+              ...Object.fromEntries(
+                clearableFilterNames.map((name) => [name, null]),
+              ),
+              page: null,
+            })}
+            aria-label="Clear all filters"
+            importance="tertiary"
+            class="filter-control-button"
+          >
+            {#snippet iconLeft()}
+              <CloseIcon />
+            {/snippet}
+            Clear all
+          </Button>
+        {/if}
+      </div>
+    </div>
+  </div>
+</QueryParamsForm>
 
 <style>
   .filters-bar {
