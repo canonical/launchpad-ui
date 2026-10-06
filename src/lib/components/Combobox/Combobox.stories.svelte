@@ -348,7 +348,7 @@
           <Button {...triggerProps}>Open Combobox</Button>
         {/snippet}
         {#snippet children(popovertarget)}
-          <Combobox {...args}>
+          <Combobox style="margin-block-start: var(--dimension-050);" {...args}>
             {#snippet search()}
               <Combobox.Search
                 autofocus

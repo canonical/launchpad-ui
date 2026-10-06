@@ -20,11 +20,8 @@ The following Contextual Menu example can be assembled using:
 <Story name="ContextualMenu" asChild>
   <div style="min-height: 350px;">
     <Popover>
-      {#snippet trigger({ style, ...triggerProps }, open)}
-        <Button
-          {...triggerProps}
-          style="{style}; {open && 'border-bottom: 0;'}"
-        >
+      {#snippet trigger(triggerProps, open)}
+        <Button {...triggerProps}>
           Options
           {#snippet iconRight()}
             <!-- TODO: Replace with <Chevron /> -->
@@ -34,7 +31,7 @@ The following Contextual Menu example can be assembled using:
           {/snippet}
         </Button>
       {/snippet}
-      <ContextualMenuContent>
+      <ContextualMenuContent style="margin-block-start: var(--dimension-050);">
         <ContextualMenuContent.Group groupTitle="Diff layout">
           <ContextualMenuContent.RadioItem
             name="layout"
