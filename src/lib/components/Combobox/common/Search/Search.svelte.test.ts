@@ -149,6 +149,21 @@ describe("Search component", () => {
       );
     });
 
+    it("clears the active option on Escape, keeping the search", async () => {
+      const onkeydown = vi.fn();
+      const page = await render(Component, { ...baseProps, onkeydown });
+      const input = componentLocator(page);
+      await input.fill("abc");
+
+      await userEvent.keyboard("{Escape}");
+
+      expect(setActiveDescendant).toHaveBeenCalledExactlyOnceWith(null);
+      expect(onkeydown).toHaveBeenCalledWith(
+        expect.objectContaining({ key: "Escape" }),
+      );
+      await expect.element(input).toHaveValue("abc");
+    });
+
     it("calls onkeydown before handling keys", async () => {
       const onkeydown = vi.fn();
       const page = await render(Component, { ...baseProps, onkeydown });

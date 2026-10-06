@@ -40,6 +40,11 @@
         comboboxContext.selectOption(comboboxContext.activeDescendant);
         return;
       }
+      if (event.key === "Escape" && comboboxContext.activeDescendant) {
+        comboboxContext.activeDescendant = null;
+        event.preventDefault();
+        return;
+      }
     }
     onkeydownUnhandled?.(event);
   };
