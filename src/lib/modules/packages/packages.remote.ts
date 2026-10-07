@@ -1,6 +1,7 @@
 import { error } from "@sveltejs/kit";
 import * as v from "valibot";
 import { SORT_DIRECTIONS } from "$lib/codecs/sortCodec.js";
+import { ParsedPackagesFiltersSchema } from "$lib/modules/packages/filters/schema.js";
 import {
   LaunchpadApiError,
   getPublishedSources,
@@ -11,13 +12,7 @@ import type {
   PublishedSourcesSortKey,
   SourcePackagePublishingEntry,
 } from "$lib/server/launchpad/types.js";
-import { LAUNCHPAD_NAME_PATTERN } from "$lib/utils/launchpad/launchpadName.js";
-import {
-  MAX_PAGE_SIZE,
-  POCKETS,
-  SEARCH_MATCHES,
-  SORTABLE_PACKAGES_COLUMNS,
-} from "./superhref.js";
+import { MAX_PAGE_SIZE, SORTABLE_PACKAGES_COLUMNS } from "./superhref.js";
 import { query } from "$app/server";
 
 const SORT_KEYS = {
@@ -30,29 +25,10 @@ const SORT_KEYS = {
   PublishedSourcesSortKey
 >;
 
-const MAX_SEARCH_LENGTH = 200;
-
 const distroSchema = v.pipe(v.string(), v.trim(), v.minLength(1));
-const launchpadNameSchema = v.pipe(v.string(), v.regex(LAUNCHPAD_NAME_PATTERN));
 
 const filterArgsSchema = v.pipe(
-  v.object({
-    search: v.nullish(
-      v.pipe(
-        v.string(),
-        v.trim(),
-        v.minLength(1),
-        v.maxLength(MAX_SEARCH_LENGTH),
-      ),
-    ),
-    match: v.nullish(v.picklist(SEARCH_MATCHES)),
-    series: v.nullish(launchpadNameSchema),
-    pocket: v.nullish(v.picklist(POCKETS)),
-    maintainer: v.nullish(launchpadNameSchema),
-    signer: v.nullish(launchpadNameSchema),
-    ubuntuChange: v.nullish(v.boolean()),
-    allStatuses: v.nullish(v.boolean()),
-  }),
+  ParsedPackagesFiltersSchema,
   v.transform(
     (filters): PublishedSourcesFilter => ({
       series: filters.series,

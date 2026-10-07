@@ -1,5 +1,6 @@
 import * as v from "valibot";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { DEFAULT_PACKAGES_FILTERS } from "$lib/modules/packages/filters/constants.js";
 import {
   LaunchpadApiError,
   getPublishedSources,
@@ -32,7 +33,10 @@ const listArgs = {
   sortOrder: "none",
   page: 1,
   size: 25,
+  ...DEFAULT_PACKAGES_FILTERS,
 } as const;
+
+const totalArgs = { distro: "ubuntu", ...DEFAULT_PACKAGES_FILTERS } as const;
 
 beforeEach(() => {
   vi.mocked(getPublishedSources).mockReset().mockResolvedValue({
@@ -59,7 +63,7 @@ describe("package filter queries", () => {
       allStatuses: true,
     } as const;
     await getSourcePackages({ ...listArgs, ...filters, page: 3, size: 50 });
-    await getSourcePackagesTotal({ distro: "ubuntu", ...filters });
+    await getSourcePackagesTotal({ ...totalArgs, ...filters });
 
     const expected = {
       sourceName: "superhref",
@@ -80,46 +84,9 @@ describe("package filter queries", () => {
     expect(getPublishedSourcesTotal).toHaveBeenCalledWith("ubuntu", expected);
   });
 
-  it.each([undefined, null, false])(
-    "preserves default statuses and ordering with flags set to %s",
-    async (flag) => {
-      const filters = { allStatuses: flag, ubuntuChange: flag };
-      await getSourcePackages({ ...listArgs, ...filters });
-      await getSourcePackagesTotal({ distro: "ubuntu", ...filters });
-
-      const expected = {
-        series: undefined,
-        status: ["Pending", "Published", "Obsolete"],
-        sourceName: undefined,
-        exactMatch: false,
-        pocket: undefined,
-        maintainedBy: undefined,
-        signedBy: undefined,
-        ubuntuChange: flag,
-      };
-      expect(getPublishedSources).toHaveBeenCalledWith("ubuntu", {
-        ...expected,
-        size: 25,
-        start: 0,
-        orderBy: ["-date_created"],
-      });
-      expect(getPublishedSourcesTotal).toHaveBeenCalledWith("ubuntu", expected);
-    },
-  );
-
-  it("passes null filters through to the client for both rows and totals", async () => {
-    const filters = {
-      search: null,
-      match: null,
-      series: null,
-      pocket: null,
-      maintainer: null,
-      signer: null,
-      ubuntuChange: null,
-      allStatuses: null,
-    };
-    await getSourcePackages({ ...listArgs, ...filters });
-    await getSourcePackagesTotal({ distro: "ubuntu", ...filters });
+  it("passes the default filters through as null, with default statuses and ordering", async () => {
+    await getSourcePackages(listArgs);
+    await getSourcePackagesTotal(totalArgs);
 
     const expected = {
       sourceName: null,
@@ -128,7 +95,7 @@ describe("package filter queries", () => {
       pocket: null,
       maintainedBy: null,
       signedBy: null,
-      ubuntuChange: null,
+      ubuntuChange: false,
       status: ["Pending", "Published", "Obsolete"],
     };
     expect(getPublishedSources).toHaveBeenCalledWith("ubuntu", {
@@ -138,6 +105,20 @@ describe("package filter queries", () => {
       orderBy: ["-date_created"],
     });
     expect(getPublishedSourcesTotal).toHaveBeenCalledWith("ubuntu", expected);
+  });
+
+  it.each([
+    { match: null },
+    { match: undefined },
+    { ubuntuChange: null },
+    { allStatuses: undefined },
+  ])("rejects missing required filters: %j", async (filters) => {
+    await expect(
+      getSourcePackages({ ...listArgs, ...filters } as never),
+    ).rejects.toBeInstanceOf(v.ValiError);
+    await expect(
+      getSourcePackagesTotal({ ...totalArgs, ...filters } as never),
+    ).rejects.toBeInstanceOf(v.ValiError);
   });
 
   it.each([
@@ -158,7 +139,7 @@ describe("package filter queries", () => {
       getSourcePackages({ ...listArgs, ...filters }),
     ).rejects.toBeInstanceOf(v.ValiError);
     await expect(
-      getSourcePackagesTotal({ distro: "ubuntu", ...filters }),
+      getSourcePackagesTotal({ ...totalArgs, ...filters }),
     ).rejects.toBeInstanceOf(v.ValiError);
     expect(getPublishedSources).not.toHaveBeenCalled();
     expect(getPublishedSourcesTotal).not.toHaveBeenCalled();
@@ -167,7 +148,7 @@ describe("package filter queries", () => {
   it("accepts two-character names for both rows and totals", async () => {
     const filters = { series: "xx", maintainer: "xx", signer: "xx" };
     await getSourcePackages({ ...listArgs, ...filters });
-    await getSourcePackagesTotal({ distro: "ubuntu", ...filters });
+    await getSourcePackagesTotal({ ...totalArgs, ...filters });
 
     const expected = expect.objectContaining({
       series: "xx",
@@ -178,25 +159,22 @@ describe("package filter queries", () => {
     expect(getPublishedSourcesTotal).toHaveBeenCalledWith("ubuntu", expected);
   });
 
-  it.each([undefined, null, "contains"] as const)(
-    "matches partial names when match is %s",
-    async (match) => {
-      const filters = { search: "super", match };
-      await getSourcePackages({ ...listArgs, ...filters });
-      await getSourcePackagesTotal({ distro: "ubuntu", ...filters });
+  it("matches partial names with the contains mode", async () => {
+    const filters = { search: "super", match: "contains" } as const;
+    await getSourcePackages({ ...listArgs, ...filters });
+    await getSourcePackagesTotal({ ...totalArgs, ...filters });
 
-      const expected = expect.objectContaining({
-        sourceName: "super",
-        exactMatch: false,
-      });
-      expect(getPublishedSources).toHaveBeenCalledWith("ubuntu", expected);
-      expect(getPublishedSourcesTotal).toHaveBeenCalledWith("ubuntu", expected);
-    },
-  );
+    const expected = expect.objectContaining({
+      sourceName: "super",
+      exactMatch: false,
+    });
+    expect(getPublishedSources).toHaveBeenCalledWith("ubuntu", expected);
+    expect(getPublishedSourcesTotal).toHaveBeenCalledWith("ubuntu", expected);
+  });
 
   it.each([
-    [{ maintainer: "userl" }, { maintainedBy: "userl", signedBy: undefined }],
-    [{ signer: "userl" }, { maintainedBy: undefined, signedBy: "userl" }],
+    [{ maintainer: "userl" }, { maintainedBy: "userl", signedBy: null }],
+    [{ signer: "userl" }, { maintainedBy: null, signedBy: "userl" }],
     [
       { maintainer: "userl", signer: null },
       { maintainedBy: "userl", signedBy: null },
@@ -221,7 +199,7 @@ describe("package filter queries", () => {
     "passes person and team names directly to both queries with %j",
     async (filters, expected) => {
       await getSourcePackages({ ...listArgs, ...filters });
-      await getSourcePackagesTotal({ distro: "ubuntu", ...filters });
+      await getSourcePackagesTotal({ ...totalArgs, ...filters });
 
       expect(getPublishedSources).toHaveBeenCalledWith(
         "ubuntu",
@@ -244,7 +222,7 @@ describe("package filter queries", () => {
       getSourcePackages({ ...listArgs, series: "unknown-series" }),
     ).resolves.toEqual({ data: [], hasNext: false });
     await expect(
-      getSourcePackagesTotal({ distro: "ubuntu", series: "unknown-series" }),
+      getSourcePackagesTotal({ ...totalArgs, series: "unknown-series" }),
     ).resolves.toBe(0);
     expect(log).toHaveBeenCalledWith("Failed to load source packages", failure);
     expect(log).toHaveBeenCalledWith(
@@ -262,9 +240,7 @@ describe("package filter queries", () => {
     await expect(getSourcePackages(listArgs)).rejects.toMatchObject({
       status: 503,
     });
-    await expect(
-      getSourcePackagesTotal({ distro: "ubuntu" }),
-    ).resolves.toBeNull();
+    await expect(getSourcePackagesTotal(totalArgs)).resolves.toBeNull();
     expect(log).toHaveBeenCalledTimes(2);
   });
 });

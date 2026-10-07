@@ -2,7 +2,10 @@ import { describe, expect, it, vi } from "vitest";
 import { userEvent } from "vitest/browser";
 import { render } from "vitest-browser-svelte";
 import Filters from "./Filters.svelte";
+import { goto } from "$app/navigation";
 import { page } from "$app/state";
+
+vi.mock("$app/navigation", () => ({ goto: vi.fn() }));
 
 vi.mock("$app/state", async () => {
   const { SvelteURL } = await import("svelte/reactivity");
@@ -113,6 +116,22 @@ describe("Filters", () => {
     await userEvent.keyboard("{Enter}");
 
     expect(await submitted).toEqual({ search: "linux", match: "contains" });
+  });
+
+  it("restores person searches submitted without JS and drops them from the URL", async () => {
+    vi.mocked(goto).mockClear();
+    page.url.search = "?maintainer-search=alice&signer-search=bob&page=2";
+    const screen = await render(Filters);
+
+    await screen.getByRole("button", { name: /^Maintained by:/ }).click();
+    await expect
+      .element(screen.getByRole("combobox", { name: "Search maintainers" }))
+      .toHaveValue("alice");
+    expect(goto).toHaveBeenCalledExactlyOnceWith("?page=2", {
+      replaceState: true,
+      keepFocus: true,
+      noScroll: true,
+    });
   });
 
   it("clears every filter except the search mode and returns to the first page", async () => {
