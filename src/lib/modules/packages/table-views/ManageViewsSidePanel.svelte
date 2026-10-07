@@ -11,7 +11,10 @@
   } from "$lib/modules/packages/superhref.js";
   import { preserveQueryParams } from "$lib/utils/index.js";
   import { getPackagesContext } from "../context.js";
+  import { DEFAULT_PACKAGES_FILTERS } from "../filters/constants.js";
+  import TableViewEditForm from "./TableViewEditForm.svelte";
   import type { TableView } from "./constants.js";
+  import type { TableViewSettings } from "./schema.js";
   import { deleteTableView, updateTableViews } from "./table-views.remote.js";
   import { goto } from "$app/navigation";
   import { page } from "$app/state";
@@ -26,10 +29,14 @@
 
   const context = getPackagesContext();
   const queryParams = $derived(context.queryParams);
+  const cancelViewEditHref = $derived(
+    queryParams["manage-views"].set("edit", null),
+  );
 
-  // Snapshot of the items for local modifications
+  // Snapshot of the items for local modifications, with edits staged until Save
   // svelte-ignore state_referenced_locally
-  let modifiedItems = $state(items);
+  let modifiedItems =
+    $state<(TableView & { stagedSettings?: TableViewSettings })[]>(items);
   let suspendReorderAnimations = $state(false);
   // Refresh the snapshot each time the panel is opened. Suspend the reorder animation to not see it while panel opens.
   $effect.pre(() => {
@@ -44,8 +51,12 @@
   });
 
   const haveItemsChanged = $derived(
+    // deleted
     items.length !== modifiedItems.length ||
-      items.some(({ slug }, index) => slug !== modifiedItems[index].slug),
+      // reordered
+      items.some(({ slug }, index) => slug !== modifiedItems[index].slug) ||
+      // edited
+      modifiedItems.some(({ stagedSettings }) => stagedSettings),
   );
 
   const willCurrentViewBeDeleted = $derived(
@@ -59,6 +70,20 @@
       ({ slug, editable }) => slug === editedItemSlug && editable,
     );
   });
+
+  function stageViewSettings(slug: string, settings: TableViewSettings) {
+    modifiedItems = modifiedItems.map((modifiedItem) =>
+      modifiedItem.slug === slug
+        ? {
+            ...modifiedItem,
+            name: settings.name,
+            stagedSettings: settings,
+          }
+        : modifiedItem,
+    );
+    // eslint-disable-next-line svelte/no-navigation-without-resolve
+    goto(cancelViewEditHref, { keepFocus: true, noScroll: true });
+  }
 
   let saving = $state(false);
 </script>
@@ -95,12 +120,15 @@
   >
     {#snippet item({ item, index }, renderedInOverlay)}
       {#if item.editable && queryParams["manage-views"].edit === item.slug}
-        <!-- TODO: View edit form (https://warthogs.atlassian.net/browse/LP-4570) -->
-        <div
-          style="display: grid; place-content: center; min-block-size: 10rem; border: 1px solid #ccc;"
-        >
-          Edit form will be here
-        </div>
+        <TableViewEditForm
+          view={item}
+          settings={item.stagedSettings ?? {
+            name: item.name,
+            filters: DEFAULT_PACKAGES_FILTERS,
+          }}
+          cancelHref={cancelViewEditHref}
+          onstage={(settings) => stageViewSettings(item.slug, settings)}
+        />
       {:else}
         <ReorderableList.Item {item} {index}>
           <span style="margin-inline-end: auto;">{item.name}</span>
@@ -110,9 +138,7 @@
               importance="tertiary"
               aria-label="Edit {item.name}"
               href={queryParams["manage-views"].set("edit", item.slug)}
-              // TODO: View edit form (https://warthogs.atlassian.net/browse/LP-4570)
-              disabled={// eslint-disable-next-line no-constant-binary-expression
-              true || isItemEdited}
+              disabled={isItemEdited}
             >
               {#snippet iconLeft()}
                 <EditIcon />
@@ -164,7 +190,12 @@
       onclick={async () => {
         saving = true;
         try {
-          await updateTableViews(modifiedItems.map((item) => item.slug));
+          await updateTableViews(
+            modifiedItems.map(({ slug, stagedSettings }) => ({
+              slug,
+              settings: stagedSettings,
+            })),
+          );
           goto(
             // eslint-disable-next-line svelte/no-navigation-without-resolve
             queryParams.patch({

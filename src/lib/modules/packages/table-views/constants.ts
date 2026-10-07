@@ -1,5 +1,7 @@
 import { slugify } from "$lib/utils/slugify.js";
 
+export const MAX_TABLE_VIEW_NAME_LENGTH = 100;
+
 export const DEFAULT_TABLE_VIEWS = [
   { name: "All packages", editable: false },
   { name: "Signed by me", editable: true },

@@ -58,6 +58,12 @@
       font: inherit;
       text-align: end;
 
+      .ds.button-content {
+        flex-grow: 1;
+        display: flex;
+        justify-content: space-between;
+      }
+
       &:has(+ :popover-open) {
         background-color: var(--color-foreground-ghost-active);
 
