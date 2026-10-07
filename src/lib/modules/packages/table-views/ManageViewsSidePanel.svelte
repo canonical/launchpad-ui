@@ -9,10 +9,12 @@
     PANEL_QUERY_PARAM,
     QueryParams,
   } from "$lib/modules/packages/superhref.js";
+  import { preserveQueryParams } from "$lib/utils/index.js";
   import { getPackagesContext } from "../context.js";
   import type { TableView } from "./constants.js";
   import { deleteTableView, updateTableViews } from "./table-views.remote.js";
   import { goto } from "$app/navigation";
+  import { page } from "$app/state";
 
   let {
     open,
@@ -121,12 +123,19 @@
               renderedInOverlay ? null : deleteTableView.for(item.slug),
             )}
             <form
-              {...deleteForm?.enhance(() => {
-                // If JS, don't delete immediately, and instead stage for deletion in modifiedItems
-                modifiedItems = modifiedItems.filter(
-                  ({ slug }) => slug !== item.slug,
-                );
-              })}
+              {...deleteForm &&
+                preserveQueryParams(
+                  deleteForm.enhance(() => {
+                    // If JS, don't delete immediately, and instead stage for deletion in modifiedItems
+                    modifiedItems = modifiedItems.filter(
+                      ({ slug }) => slug !== item.slug,
+                    );
+                  }),
+                  // Like Save, deleting the current view falls back to the default one
+                  item.slug === queryParams.view
+                    ? new URL(queryParams.patch({ view: null }), page.url)
+                    : page.url,
+                )}
             >
               <Button
                 density="dense"
