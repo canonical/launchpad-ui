@@ -10,6 +10,7 @@
   let {
     onkeydown: onkeydownProp,
     onblur: onblurProp,
+    onkeydownUnhandled,
     value = $bindable(),
     class: className,
     ...rest
@@ -21,7 +22,12 @@
 
   const onkeydown: typeof onkeydownProp = (event) => {
     onkeydownProp?.(event);
-    if (!comboboxContext || !comboboxContext.listBoxElement) return;
+    if (event.defaultPrevented) return;
+
+    if (!comboboxContext?.listBoxElement) {
+      onkeydownUnhandled?.(event);
+      return;
+    }
 
     if (event.key === "ArrowDown" || event.key === "ArrowUp") {
       const nextId = getSiblingOptionId(
@@ -29,12 +35,24 @@
         comboboxContext.activeDescendant,
         event.key === "ArrowDown" ? "next" : "previous",
       );
-      event.preventDefault();
       comboboxContext.activeDescendant = nextId;
-    } else if (event.key === "Enter" && comboboxContext.activeDescendant) {
+      event.preventDefault();
+      return;
+    }
+
+    if (event.key === "Enter" && comboboxContext.activeDescendant) {
       comboboxContext.selectOption(comboboxContext.activeDescendant);
       event.preventDefault();
+      return;
     }
+
+    if (event.key === "Escape" && comboboxContext.activeDescendant) {
+      comboboxContext.activeDescendant = null;
+      event.preventDefault();
+      return;
+    }
+
+    onkeydownUnhandled?.(event);
   };
 
   const onblur: typeof onblurProp = (event) => {

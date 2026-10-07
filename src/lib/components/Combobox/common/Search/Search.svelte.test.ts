@@ -14,16 +14,21 @@ const {
   setActiveDescendant,
   selectOption,
   getSiblingOptionId,
+  contextState,
 } = vi.hoisted(() => {
   const listBoxElement = document.createElement("div");
   const setActiveDescendant = vi.fn();
   const selectOption = vi.fn();
   const getSiblingOptionId = vi.fn(() => "sibling-option-id");
+  const contextState = {
+    activeDescendant: "active-descendant-id" as string | null,
+  };
   return {
     listBoxElement,
     setActiveDescendant,
     selectOption,
     getSiblingOptionId,
+    contextState,
   };
 });
 
@@ -31,7 +36,7 @@ vi.mock("../../context.js", () => {
   return {
     getComboboxContext: (): Partial<ComboboxContext> => ({
       get activeDescendant() {
-        return "active-descendant-id";
+        return contextState.activeDescendant;
       },
       set activeDescendant(id: string | null) {
         setActiveDescendant(id);
@@ -94,6 +99,7 @@ describe("Search component", () => {
   describe("Keyboard interaction", () => {
     beforeEach(() => {
       vi.clearAllMocks();
+      contextState.activeDescendant = "active-descendant-id";
     });
 
     it("calls getSiblingOptionId on arrow up and down", async () => {
@@ -141,6 +147,123 @@ describe("Search component", () => {
       expect(selectOption).toHaveBeenCalledExactlyOnceWith(
         "active-descendant-id",
       );
+    });
+
+    it("clears the active option on Escape, keeping the search", async () => {
+      const onkeydown = vi.fn();
+      const page = await render(Component, { ...baseProps, onkeydown });
+      const input = componentLocator(page);
+      await input.fill("abc");
+
+      await userEvent.keyboard("{Escape}");
+
+      expect(setActiveDescendant).toHaveBeenCalledExactlyOnceWith(null);
+      expect(onkeydown).toHaveBeenCalledWith(
+        expect.objectContaining({ key: "Escape" }),
+      );
+      await expect.element(input).toHaveValue("abc");
+    });
+
+    it("calls onkeydown before handling keys", async () => {
+      const onkeydown = vi.fn();
+      const page = await render(Component, { ...baseProps, onkeydown });
+      await userEvent.click(componentLocator(page));
+
+      await userEvent.keyboard("{ArrowDown}{ArrowUp}{Enter}");
+      expect(onkeydown.mock.calls.map(([event]) => event.key)).toEqual([
+        "ArrowDown",
+        "ArrowUp",
+        "Enter",
+      ]);
+      expect(onkeydown.mock.invocationCallOrder[0]).toBeLessThan(
+        getSiblingOptionId.mock.invocationCallOrder[0],
+      );
+      expect(onkeydown.mock.invocationCallOrder[2]).toBeLessThan(
+        selectOption.mock.invocationCallOrder[0],
+      );
+
+      onkeydown.mockClear();
+      await userEvent.keyboard("a");
+      expect(onkeydown).toHaveBeenCalledExactlyOnceWith(
+        expect.objectContaining({ key: "a" }),
+      );
+    });
+
+    it.each(["ArrowDown", "ArrowUp", "Enter", "Escape"])(
+      "allows onkeydown to cancel %s",
+      async (key) => {
+        const onkeydownUnhandled = vi.fn();
+        const onkeydown = vi.fn((event: KeyboardEvent) =>
+          event.preventDefault(),
+        );
+        const page = await render(Component, {
+          ...baseProps,
+          onkeydown,
+          onkeydownUnhandled,
+        });
+        await userEvent.click(componentLocator(page));
+        setActiveDescendant.mockClear();
+        await userEvent.keyboard(`{${key}}`);
+
+        expect(onkeydown).toHaveBeenCalled();
+        expect(getSiblingOptionId).not.toHaveBeenCalled();
+        expect(setActiveDescendant).not.toHaveBeenCalled();
+        expect(selectOption).not.toHaveBeenCalled();
+        expect(onkeydownUnhandled).not.toHaveBeenCalled();
+      },
+    );
+
+    it.each(["ArrowDown", "ArrowUp", "Enter", "Escape"])(
+      "does not call onkeydownUnhandled for handled %s",
+      async (key) => {
+        const onkeydownUnhandled = vi.fn();
+        const page = await render(Component, {
+          ...baseProps,
+          onkeydownUnhandled,
+        });
+        await userEvent.click(componentLocator(page));
+        await userEvent.keyboard(`{${key}}`);
+
+        expect(onkeydownUnhandled).not.toHaveBeenCalled();
+      },
+    );
+
+    it.each(["a", "Enter", "Escape"])(
+      "calls onkeydownUnhandled after onkeydown for unhandled %s",
+      async (key) => {
+        contextState.activeDescendant = null;
+        const onkeydown = vi.fn();
+        const onkeydownUnhandled = vi.fn();
+        const page = await render(Component, {
+          ...baseProps,
+          onkeydown,
+          onkeydownUnhandled,
+        });
+        await userEvent.click(componentLocator(page));
+        await userEvent.keyboard(`{${key}}`);
+
+        expect(selectOption).not.toHaveBeenCalled();
+        expect(onkeydownUnhandled).toHaveBeenCalledExactlyOnceWith(
+          expect.objectContaining({ key, defaultPrevented: false }),
+        );
+        expect(onkeydown.mock.invocationCallOrder[0]).toBeLessThan(
+          onkeydownUnhandled.mock.invocationCallOrder[0],
+        );
+      },
+    );
+
+    it("allows onkeydown to cancel an unhandled key", async () => {
+      contextState.activeDescendant = null;
+      const onkeydownUnhandled = vi.fn();
+      const page = await render(Component, {
+        ...baseProps,
+        onkeydown: (event) => event.preventDefault(),
+        onkeydownUnhandled,
+      });
+      await userEvent.click(componentLocator(page));
+      await userEvent.keyboard("{Enter}");
+
+      expect(onkeydownUnhandled).not.toHaveBeenCalled();
     });
   });
 
