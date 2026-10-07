@@ -18,6 +18,7 @@ const TableViewNameSchema = v.pipe(
   ),
 );
 
+/** A table view's name and package filters in form-input shape. */
 export const TableViewSettingsSchema = v.object({
   name: TableViewNameSchema,
   filters: v.optional(PackagesFiltersSchema, {}),
@@ -25,7 +26,6 @@ export const TableViewSettingsSchema = v.object({
 
 export type TableViewSettings = v.InferOutput<typeof TableViewSettingsSchema>;
 
-/** Already-parsed settings, e.g. staged on the client */
 export const ParsedTableViewSettingsSchema = v.object({
   name: TableViewNameSchema,
   filters: ParsedPackagesFiltersSchema,
@@ -34,31 +34,36 @@ export const ParsedTableViewSettingsSchema = v.object({
 const TableViewEditFormCommonEntries = {
   id: TableViewSlugSchema,
   filters: v.optional(PackagesFiltersSchema, {}),
-  // Have to be optional in every variant, as kit only types field keys common to all of them
-  maintainerSearch: v.optional(v.string()),
-  signerSearch: v.optional(v.string()),
 };
 
-// A search doesn't save, so an unfinished name mustn't block it
-const TableViewSearchCommonEntries = {
-  ...TableViewEditFormCommonEntries,
-  name: v.optional(v.string()),
-};
-
+/** A table-view edit submission: confirmation, maintainer search, or signer search. */
 export const TableViewEditFormSchema = v.variant("intent", [
   v.object({
     ...TableViewEditFormCommonEntries,
     intent: v.optional(v.literal("confirm")),
+
     name: TableViewNameSchema,
+
+    // Optionals have to be included in every variant to satisfy the form's type requirements.
+    maintainerSearch: v.optional(v.string()),
+    signerSearch: v.optional(v.string()),
   }),
   v.object({
-    ...TableViewSearchCommonEntries,
+    ...TableViewEditFormCommonEntries,
     intent: v.literal("search-maintainer"),
+
     maintainerSearch: PersonSearchSchema,
+
+    signerSearch: v.optional(v.string()),
+    name: v.optional(v.string()),
   }),
   v.object({
-    ...TableViewSearchCommonEntries,
+    ...TableViewEditFormCommonEntries,
     intent: v.literal("search-signer"),
+
     signerSearch: PersonSearchSchema,
+
+    name: v.optional(v.string()),
+    maintainerSearch: v.optional(v.string()),
   }),
 ]);
