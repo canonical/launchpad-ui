@@ -23,7 +23,6 @@
   } from "@canonical/svelte-ds-app-launchpad";
   import type { TextInputProps } from "@canonical/svelte-ds-app-launchpad";
   import type { RemoteFormField } from "@sveltejs/kit";
-  import { untrack } from "svelte";
   import * as v from "valibot";
   import { preserveQueryParams, subId } from "$lib/utils/index.js";
   import PersonFilterCombobox from "../filters/PersonFilterCombobox.svelte";
@@ -59,7 +58,6 @@
   } = $props();
 
   const id = $props.id();
-  const formId = subId(id, "form");
   const searchModeLabelId = subId(id, "search-mode-label");
   const keywordId = subId(id, "keyword");
   const maintainerLabelId = subId(id, "maintainer-label");
@@ -73,8 +71,8 @@
   const fields = $derived(editForm.fields);
 
   // Seeded once; values kept from a no-JS submission (e.g. a person search) take precedence
-  untrack(() => {
-    if (Object.keys(fields.value()).length > 0) return;
+  // svelte-ignore state_referenced_locally
+  if (Object.keys(fields.value()).length === 0)
     fields.set({
       name: settings.name,
       // Form fields can't hold `null`, so "All" becomes `""`
@@ -89,7 +87,6 @@
         allStatuses: settings.filters.allStatuses,
       },
     });
-  });
 
   const isUnchanged = $derived.by(() => {
     const result = v.safeParse(TableViewSettingsSchema, fields.value());
@@ -103,7 +100,6 @@
 </script>
 
 <form
-  id={formId}
   {...preserveQueryParams(
     editForm.preflight(TableViewEditFormSchema).enhance(({ fields }) => {
       onstage(v.parse(TableViewSettingsSchema, fields.value()));

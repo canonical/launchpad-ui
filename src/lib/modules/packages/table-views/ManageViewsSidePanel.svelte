@@ -29,6 +29,9 @@
 
   const context = getPackagesContext();
   const queryParams = $derived(context.queryParams);
+  const cancelViewEditHref = $derived(
+    queryParams["manage-views"].set("edit", null),
+  );
 
   // Snapshot of the items for local modifications, with edits staged until Save
   // svelte-ignore state_referenced_locally
@@ -48,8 +51,11 @@
   });
 
   const haveItemsChanged = $derived(
+    // deleted
     items.length !== modifiedItems.length ||
+      // reordered
       items.some(({ slug }, index) => slug !== modifiedItems[index].slug) ||
+      // edited
       modifiedItems.some(({ stagedSettings }) => stagedSettings),
   );
 
@@ -64,6 +70,20 @@
       ({ slug, editable }) => slug === editedItemSlug && editable,
     );
   });
+
+  function stageViewSettings(slug: string, settings: TableViewSettings) {
+    modifiedItems = modifiedItems.map((modifiedItem) =>
+      modifiedItem.slug === slug
+        ? {
+            ...modifiedItem,
+            name: settings.name,
+            stagedSettings: settings,
+          }
+        : modifiedItem,
+    );
+    // eslint-disable-next-line svelte/no-navigation-without-resolve
+    goto(cancelViewEditHref, { keepFocus: true, noScroll: true });
+  }
 
   let saving = $state(false);
 </script>
@@ -100,29 +120,14 @@
   >
     {#snippet item({ item, index }, renderedInOverlay)}
       {#if item.editable && queryParams["manage-views"].edit === item.slug}
-        {const cancelHref = $derived(
-          queryParams["manage-views"].set("edit", null),
-        )}
         <TableViewEditForm
           view={item}
           settings={item.stagedSettings ?? {
             name: item.name,
             filters: DEFAULT_PACKAGES_FILTERS,
           }}
-          {cancelHref}
-          onstage={(settings) => {
-            modifiedItems = modifiedItems.map((modifiedItem) =>
-              modifiedItem.slug === item.slug
-                ? {
-                    ...modifiedItem,
-                    name: settings.name,
-                    stagedSettings: settings,
-                  }
-                : modifiedItem,
-            );
-            // eslint-disable-next-line svelte/no-navigation-without-resolve
-            goto(cancelHref, { keepFocus: true, noScroll: true });
-          }}
+          cancelHref={cancelViewEditHref}
+          onstage={(settings) => stageViewSettings(item.slug, settings)}
         />
       {:else}
         <ReorderableList.Item {item} {index}>

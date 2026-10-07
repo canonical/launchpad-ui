@@ -65,10 +65,9 @@ export const editTableView = form(TableViewEditFormSchema, (data) => {
 });
 
 /**
- * Reorders `tableViews` to match `views`, and deletes any view whose slug is missing from it.
+ * Reorders `tableViews` to match `views`, and deletes any view whose slug is missing from it. Views with `settings` are considered edited.
  *
  * `views` must be a subset of the current views - it cannot introduce new table views.
- * Views with `settings` have been edited.
  */
 export const updateTableViews = command(
   v.array(
