@@ -92,6 +92,7 @@
     const result = v.safeParse(TableViewSettingsSchema, fields.value());
     return result.success && areTableViewSettingsEqual(result.output, settings);
   });
+  const submitDisabled = $derived(browser && isUnchanged);
 
   // Kit types a variant's discriminator as a union of fields, whose `.as()` TypeScript can't call; widen it to one field
   const intent: RemoteFormField<
@@ -108,7 +109,12 @@
   )}
 >
   <!-- Without JS, Enter in a text field submits with the first submit button, so it must confirm rather than search -->
-  <button type="submit" class="visually-hidden" tabindex="-1" aria-hidden="true"
+  <button
+    type="submit"
+    class="visually-hidden"
+    tabindex="-1"
+    aria-hidden="true"
+    disabled={submitDisabled}
   ></button>
   <h4>Editing – {view.name}</h4>
 
@@ -203,11 +209,7 @@
 
   <div class="actions">
     <Button href={cancelHref} importance="tertiary">Cancel</Button>
-    <Button
-      type="submit"
-      importance="secondary"
-      disabled={browser && isUnchanged}
-    >
+    <Button type="submit" importance="secondary" disabled={submitDisabled}>
       Confirm
     </Button>
   </div>

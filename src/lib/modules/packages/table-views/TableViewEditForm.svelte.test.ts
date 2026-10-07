@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
+import { userEvent } from "vitest/browser";
 import { render } from "vitest-browser-svelte";
 import { DEFAULT_PACKAGES_FILTERS } from "../filters/constants.js";
 import TableViewEditForm from "./TableViewEditForm.svelte";
@@ -64,6 +65,16 @@ describe("TableViewEditForm", () => {
     await expect.element(confirm).toBeDisabled();
     await screen.getByRole("textbox", { name: "Keyword" }).fill("linux");
     await expect.element(confirm).toBeEnabled();
+  });
+
+  it("does not submit unchanged settings on Enter", async () => {
+    const { screen, onstage } = await renderForm();
+    const name = screen.getByRole("textbox", { name: "* View name" });
+
+    await name.click();
+    await userEvent.keyboard("{Enter}");
+
+    expect(onstage).not.toHaveBeenCalled();
   });
 
   it("stages the edited settings instead of submitting them", async () => {
