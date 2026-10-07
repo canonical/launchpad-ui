@@ -14,9 +14,10 @@ describe("preserveQueryParams", () => {
       "http://localhost/ubuntu/+source?panel=manage-views&view=mine",
     );
 
-    expect(preserveQueryParams(form, url).action).toBe(
-      "?panel=manage-views&view=mine&/remote=abc%2FdeleteTableView",
-    );
+    expect(preserveQueryParams(form, url)).toEqual({
+      ...form,
+      action: "?panel=manage-views&view=mine&/remote=abc%2FdeleteTableView",
+    });
   });
 
   it("returns the form unchanged when the page has no query params", () => {
@@ -38,18 +39,9 @@ describe("preserveQueryParams", () => {
       "http://localhost/ubuntu/+source?panel=manage-views&/remote=abc%2FeditTableView",
     );
 
-    expect(preserveQueryParams(form, url).action).toBe(
-      "?panel=manage-views&/remote=abc%2FdeleteTableView",
-    );
-  });
-
-  it("keeps the method and the enhance attachment", () => {
-    const preserved = preserveQueryParams(
-      form,
-      new URL("http://localhost/?a=1"),
-    );
-
-    expect(preserved.method).toBe("POST");
-    expect(preserved[attachment]).toBe(form[attachment]);
+    expect(preserveQueryParams(form, url)).toEqual({
+      ...form,
+      action: "?panel=manage-views&/remote=abc%2FdeleteTableView",
+    });
   });
 });
