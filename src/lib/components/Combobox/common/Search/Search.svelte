@@ -24,28 +24,34 @@
     onkeydownProp?.(event);
     if (event.defaultPrevented) return;
 
-    if (comboboxContext?.listBoxElement) {
-      if (event.key === "ArrowDown" || event.key === "ArrowUp") {
-        const nextId = getSiblingOptionId(
-          comboboxContext.listBoxElement,
-          comboboxContext.activeDescendant,
-          event.key === "ArrowDown" ? "next" : "previous",
-        );
-        event.preventDefault();
-        comboboxContext.activeDescendant = nextId;
-        return;
-      }
-      if (event.key === "Enter" && comboboxContext.activeDescendant) {
-        event.preventDefault();
-        comboboxContext.selectOption(comboboxContext.activeDescendant);
-        return;
-      }
-      if (event.key === "Escape" && comboboxContext.activeDescendant) {
-        comboboxContext.activeDescendant = null;
-        event.preventDefault();
-        return;
-      }
+    if (!comboboxContext?.listBoxElement) {
+      onkeydownUnhandled?.(event);
+      return;
     }
+
+    if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+      const nextId = getSiblingOptionId(
+        comboboxContext.listBoxElement,
+        comboboxContext.activeDescendant,
+        event.key === "ArrowDown" ? "next" : "previous",
+      );
+      comboboxContext.activeDescendant = nextId;
+      event.preventDefault();
+      return;
+    }
+
+    if (event.key === "Enter" && comboboxContext.activeDescendant) {
+      comboboxContext.selectOption(comboboxContext.activeDescendant);
+      event.preventDefault();
+      return;
+    }
+
+    if (event.key === "Escape" && comboboxContext.activeDescendant) {
+      comboboxContext.activeDescendant = null;
+      event.preventDefault();
+      return;
+    }
+
     onkeydownUnhandled?.(event);
   };
 
