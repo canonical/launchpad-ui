@@ -5,10 +5,13 @@
   import type { SearchProps } from "./types.js";
   import { getSiblingOptionId } from "./utils/getSiblingOptionId.js";
 
+  const componentCssClassName = "ds combobox-search";
+
   let {
     onkeydown: onkeydownProp,
     onblur: onblurProp,
     value = $bindable(),
+    class: className,
     ...rest
   }: SearchProps = $props();
 
@@ -46,6 +49,7 @@
   bind:value
   {onkeydown}
   {onblur}
+  class={[componentCssClassName, className]}
   {...isMounted.value
     ? {
         role: "combobox",
@@ -80,3 +84,17 @@ It provides keyboard navigation support to move through the combobox's options u
 <Combobox.Search label="Search options" placeholder="Type to filter..." bind:value />
 ```
 -->
+
+<style>
+  :global {
+    .ds.combobox-search {
+      position: sticky;
+      inset-block-start: 0;
+      z-index: 1;
+
+      > input {
+        min-width: 0;
+      }
+    }
+  }
+</style>

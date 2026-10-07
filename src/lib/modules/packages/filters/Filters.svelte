@@ -192,9 +192,6 @@
     :global {
       .options-panel {
         margin-block-start: var(--dimension-050);
-        width: 300px;
-        max-height: 350px;
-        overflow: auto;
       }
     }
   }

@@ -178,59 +178,57 @@
           bind:value={queryStory1}
         />
       {/snippet}
-      <div style="max-height: 350px; overflow: auto;">
-        <Combobox.Group groupTitle="Most Recent">
-          {#each users1Story1.filter((user) => user.userName
-              .toLowerCase()
-              .includes(queryStory1.toLowerCase())) as user (user.id)}
-            <Combobox.CheckboxOption
-              text={user.userName}
-              value={user.id}
-              secondaryText={user.admin ? "administrator" : undefined}
-              checked={user.selected}
-              onchange={(e) =>
-                (users1Story1.find((u) => u.id === user.id)!.selected = (
-                  e.target as HTMLInputElement
-                ).checked)}
-              >{#snippet icon()}
-                <UserAvatar
-                  userName={user.userName}
-                  userAvatarUrl={user.userAvatarUrl}
-                  aria-hidden="true"
-                />
-              {/snippet}
-            </Combobox.CheckboxOption>
-          {:else}
-            <Combobox.NoResults />
-          {/each}
-        </Combobox.Group>
-        <Combobox.Group groupTitle="Contributors">
-          {#each users2Story1.filter((user) => user.userName
-              .toLowerCase()
-              .includes(queryStory1.toLowerCase())) as user (user.id)}
-            <Combobox.CheckboxOption
-              text={user.userName}
-              value={user.id}
-              secondaryText={user.admin ? "administrator" : undefined}
-              checked={user.selected}
-              onchange={(e) =>
-                (users2Story1.find((u) => u.id === user.id)!.selected = (
-                  e.target as HTMLInputElement
-                ).checked)}
-            >
-              {#snippet icon()}
-                <UserAvatar
-                  userName={user.userName}
-                  userAvatarUrl={user.userAvatarUrl}
-                  aria-hidden="true"
-                />
-              {/snippet}
-            </Combobox.CheckboxOption>
-          {:else}
-            <Combobox.NoResults />
-          {/each}
-        </Combobox.Group>
-      </div>
+      <Combobox.Group groupTitle="Most Recent">
+        {#each users1Story1.filter((user) => user.userName
+            .toLowerCase()
+            .includes(queryStory1.toLowerCase())) as user (user.id)}
+          <Combobox.CheckboxOption
+            text={user.userName}
+            value={user.id}
+            secondaryText={user.admin ? "administrator" : undefined}
+            checked={user.selected}
+            onchange={(e) =>
+              (users1Story1.find((u) => u.id === user.id)!.selected = (
+                e.target as HTMLInputElement
+              ).checked)}
+            >{#snippet icon()}
+              <UserAvatar
+                userName={user.userName}
+                userAvatarUrl={user.userAvatarUrl}
+                aria-hidden="true"
+              />
+            {/snippet}
+          </Combobox.CheckboxOption>
+        {:else}
+          <Combobox.NoResults />
+        {/each}
+      </Combobox.Group>
+      <Combobox.Group groupTitle="Contributors">
+        {#each users2Story1.filter((user) => user.userName
+            .toLowerCase()
+            .includes(queryStory1.toLowerCase())) as user (user.id)}
+          <Combobox.CheckboxOption
+            text={user.userName}
+            value={user.id}
+            secondaryText={user.admin ? "administrator" : undefined}
+            checked={user.selected}
+            onchange={(e) =>
+              (users2Story1.find((u) => u.id === user.id)!.selected = (
+                e.target as HTMLInputElement
+              ).checked)}
+          >
+            {#snippet icon()}
+              <UserAvatar
+                userName={user.userName}
+                userAvatarUrl={user.userAvatarUrl}
+                aria-hidden="true"
+              />
+            {/snippet}
+          </Combobox.CheckboxOption>
+        {:else}
+          <Combobox.NoResults />
+        {/each}
+      </Combobox.Group>
       {#snippet helper(id)}
         <Combobox.Helper {id}>
           {#snippet icon()}
@@ -265,61 +263,59 @@
           bind:value={queryStory2}
         />
       {/snippet}
-      <div style="max-height: 350px; overflow: auto;">
-        <Combobox.Group groupTitle="Most Recent">
-          {#each users1Story2.filter((user) => user.userName
-              .toLowerCase()
-              .includes(queryStory2.toLowerCase())) as user (user.id)}
-            <Combobox.RadioOption
-              text={user.userName}
-              value={user.id}
-              secondaryText={user.admin ? "administrator" : undefined}
-              checked={user.selected}
-              onchange={() => {
-                [...users1Story2, ...users2Story2].forEach((u) => {
-                  u.selected = u.id === user.id;
-                });
-              }}
-              >{#snippet icon()}
-                <UserAvatar
-                  userName={user.userName}
-                  userAvatarUrl={user.userAvatarUrl}
-                  aria-hidden="true"
-                />
-              {/snippet}
-            </Combobox.RadioOption>
-          {:else}
-            <Combobox.NoResults />
-          {/each}
-        </Combobox.Group>
-        <Combobox.Group groupTitle="Contributors">
-          {#each users2Story2.filter((user) => user.userName
-              .toLowerCase()
-              .includes(queryStory2.toLowerCase())) as user (user.id)}
-            <Combobox.RadioOption
-              text={user.userName}
-              value={user.id}
-              secondaryText={user.admin ? "administrator" : undefined}
-              checked={user.selected}
-              onchange={() => {
-                [...users1Story2, ...users2Story2].forEach((u) => {
-                  u.selected = u.id === user.id;
-                });
-              }}
-            >
-              {#snippet icon()}
-                <UserAvatar
-                  userName={user.userName}
-                  userAvatarUrl={user.userAvatarUrl}
-                  aria-hidden="true"
-                />
-              {/snippet}
-            </Combobox.RadioOption>
-          {:else}
-            <Combobox.NoResults />
-          {/each}
-        </Combobox.Group>
-      </div>
+      <Combobox.Group groupTitle="Most Recent">
+        {#each users1Story2.filter((user) => user.userName
+            .toLowerCase()
+            .includes(queryStory2.toLowerCase())) as user (user.id)}
+          <Combobox.RadioOption
+            text={user.userName}
+            value={user.id}
+            secondaryText={user.admin ? "administrator" : undefined}
+            checked={user.selected}
+            onchange={() => {
+              [...users1Story2, ...users2Story2].forEach((u) => {
+                u.selected = u.id === user.id;
+              });
+            }}
+            >{#snippet icon()}
+              <UserAvatar
+                userName={user.userName}
+                userAvatarUrl={user.userAvatarUrl}
+                aria-hidden="true"
+              />
+            {/snippet}
+          </Combobox.RadioOption>
+        {:else}
+          <Combobox.NoResults />
+        {/each}
+      </Combobox.Group>
+      <Combobox.Group groupTitle="Contributors">
+        {#each users2Story2.filter((user) => user.userName
+            .toLowerCase()
+            .includes(queryStory2.toLowerCase())) as user (user.id)}
+          <Combobox.RadioOption
+            text={user.userName}
+            value={user.id}
+            secondaryText={user.admin ? "administrator" : undefined}
+            checked={user.selected}
+            onchange={() => {
+              [...users1Story2, ...users2Story2].forEach((u) => {
+                u.selected = u.id === user.id;
+              });
+            }}
+          >
+            {#snippet icon()}
+              <UserAvatar
+                userName={user.userName}
+                userAvatarUrl={user.userAvatarUrl}
+                aria-hidden="true"
+              />
+            {/snippet}
+          </Combobox.RadioOption>
+        {:else}
+          <Combobox.NoResults />
+        {/each}
+      </Combobox.Group>
       {#snippet helper(id)}
         <Combobox.Helper {id}>
           {#snippet icon()}
@@ -347,14 +343,12 @@
     ...args
   })}
     <div style="min-height: 500px;">
-      <Popover style="width: 320px;" position="block-end span-inline-end">
-        {#snippet trigger(triggerProps, open)}
-          <Button {...triggerProps} style={open ? "border-bottom: none;" : ""}>
-            Open Combobox
-          </Button>
+      <Popover position="block-end span-inline-end">
+        {#snippet trigger(triggerProps)}
+          <Button {...triggerProps}>Open Combobox</Button>
         {/snippet}
         {#snippet children(popovertarget)}
-          <Combobox {...args}>
+          <Combobox style="margin-block-start: var(--dimension-050);" {...args}>
             {#snippet search()}
               <Combobox.Search
                 autofocus
@@ -363,59 +357,57 @@
                 bind:value={queryStory3}
               />
             {/snippet}
-            <div style="max-height: 350px; overflow: auto;">
-              <Combobox.Group groupTitle="Most Recent">
-                {#each users1Story3.filter((user) => user.userName
-                    .toLowerCase()
-                    .includes(queryStory3.toLowerCase())) as user (user.id)}
-                  <Combobox.CheckboxOption
-                    text={user.userName}
-                    value={user.id}
-                    secondaryText={user.admin ? "administrator" : undefined}
-                    checked={user.selected}
-                    onchange={(e) =>
-                      (users1Story3.find((u) => u.id === user.id)!.selected = (
-                        e.target as HTMLInputElement
-                      ).checked)}
-                    >{#snippet icon()}
-                      <UserAvatar
-                        userName={user.userName}
-                        userAvatarUrl={user.userAvatarUrl}
-                        aria-hidden="true"
-                      />
-                    {/snippet}
-                  </Combobox.CheckboxOption>
-                {:else}
-                  <Combobox.NoResults />
-                {/each}
-              </Combobox.Group>
-              <Combobox.Group groupTitle="Contributors">
-                {#each users2Story3.filter((user) => user.userName
-                    .toLowerCase()
-                    .includes(queryStory3.toLowerCase())) as user (user.id)}
-                  <Combobox.CheckboxOption
-                    text={user.userName}
-                    value={user.id}
-                    secondaryText={user.admin ? "administrator" : undefined}
-                    checked={user.selected}
-                    onchange={(e) =>
-                      (users2Story3.find((u) => u.id === user.id)!.selected = (
-                        e.target as HTMLInputElement
-                      ).checked)}
-                  >
-                    {#snippet icon()}
-                      <UserAvatar
-                        userName={user.userName}
-                        userAvatarUrl={user.userAvatarUrl}
-                        aria-hidden="true"
-                      />
-                    {/snippet}
-                  </Combobox.CheckboxOption>
-                {:else}
-                  <Combobox.NoResults />
-                {/each}
-              </Combobox.Group>
-            </div>
+            <Combobox.Group groupTitle="Most Recent">
+              {#each users1Story3.filter((user) => user.userName
+                  .toLowerCase()
+                  .includes(queryStory3.toLowerCase())) as user (user.id)}
+                <Combobox.CheckboxOption
+                  text={user.userName}
+                  value={user.id}
+                  secondaryText={user.admin ? "administrator" : undefined}
+                  checked={user.selected}
+                  onchange={(e) =>
+                    (users1Story3.find((u) => u.id === user.id)!.selected = (
+                      e.target as HTMLInputElement
+                    ).checked)}
+                  >{#snippet icon()}
+                    <UserAvatar
+                      userName={user.userName}
+                      userAvatarUrl={user.userAvatarUrl}
+                      aria-hidden="true"
+                    />
+                  {/snippet}
+                </Combobox.CheckboxOption>
+              {:else}
+                <Combobox.NoResults />
+              {/each}
+            </Combobox.Group>
+            <Combobox.Group groupTitle="Contributors">
+              {#each users2Story3.filter((user) => user.userName
+                  .toLowerCase()
+                  .includes(queryStory3.toLowerCase())) as user (user.id)}
+                <Combobox.CheckboxOption
+                  text={user.userName}
+                  value={user.id}
+                  secondaryText={user.admin ? "administrator" : undefined}
+                  checked={user.selected}
+                  onchange={(e) =>
+                    (users2Story3.find((u) => u.id === user.id)!.selected = (
+                      e.target as HTMLInputElement
+                    ).checked)}
+                >
+                  {#snippet icon()}
+                    <UserAvatar
+                      userName={user.userName}
+                      userAvatarUrl={user.userAvatarUrl}
+                      aria-hidden="true"
+                    />
+                  {/snippet}
+                </Combobox.CheckboxOption>
+              {:else}
+                <Combobox.NoResults />
+              {/each}
+            </Combobox.Group>
             {#snippet helper(id)}
               <Combobox.Helper {id}>
                 {#snippet icon()}

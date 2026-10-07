@@ -22,7 +22,11 @@
   data-testid="options-panel"
   {...rest}
 >
-  {@render children?.()}
+  {#if children}
+    <div class="content">
+      {@render children()}
+    </div>
+  {/if}
   {#if footer || helper}
     <div class="footer">
       {@render helper?.(helperId)}
@@ -33,19 +37,21 @@
 
 <style>
   .ds.options-panel {
-    --color-background-options-panel: var(--lp-color-background-default);
-    --border-options-panel: var(--lp-dimension-stroke-thickness-default) solid
-      var(--lp-color-border-high-contrast);
-    --border-top-options-panel-footer: var(
-        --lp-dimension-stroke-thickness-default
-      )
-      solid var(--lp-color-border-high-contrast);
+    isolation: isolate;
+    width: 278px;
 
-    border: var(--border-options-panel);
-    background-color: var(--color-background-options-panel);
+    border: var(--dimension-stroke-thickness-medium) solid var(--color-border);
+    background-color: var(--color-background);
+
+    > .content {
+      max-height: 300px;
+      overflow: auto;
+    }
 
     > .footer {
-      border-top: var(--border-top-options-panel-footer);
+      border-top: var(--dimension-stroke-thickness-medium) solid
+        var(--color-border);
+      background-color: var(--color-background);
     }
   }
 </style>
