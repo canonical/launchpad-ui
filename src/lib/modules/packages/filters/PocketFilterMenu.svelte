@@ -2,24 +2,23 @@
   import { Popover } from "@canonical/svelte-ds-app-launchpad";
   import { ContextualMenuContent } from "$lib/components/index.js";
   import { PopoverTrigger } from "$lib/launchpad-components/index.js";
-  import { POCKETS } from "../superhref.js";
+  import { POCKETS } from "./constants.js";
+  import type { ChoiceFilterProps } from "./types.js";
+
+  type Pocket = (typeof POCKETS)[number];
 
   const {
-    form,
-    inputName,
+    name,
     value,
+    onchange,
+    position,
     "aria-labelledby": ariaLabelledBy,
-  }: {
-    form: string;
-    inputName: string;
-    value: (typeof POCKETS)[number] | null;
-    "aria-labelledby": string;
-  } = $props();
+  }: ChoiceFilterProps<Pocket | null> = $props();
 
-  const selectedLabel = $derived(value ?? "All");
+  const selectedLabel = $derived(value || "All");
 </script>
 
-<Popover>
+<Popover {position}>
   {#snippet trigger(triggerProps)}
     <PopoverTrigger aria-labelledby={ariaLabelledBy} {...triggerProps}>
       {selectedLabel}
@@ -28,21 +27,19 @@
   <ContextualMenuContent>
     <ContextualMenuContent.Group groupTitle="Pocket">
       <ContextualMenuContent.RadioItem
-        name={inputName}
+        {name}
         value=""
         text="All"
         checked={!value}
-        {form}
-        onchange={(e) => e.currentTarget.form?.requestSubmit()}
+        onchange={(e) => onchange?.(e, null)}
       />
       {#each POCKETS as pocket (pocket)}
         <ContextualMenuContent.RadioItem
-          name={inputName}
+          {name}
           value={pocket}
           text={pocket}
           checked={value === pocket}
-          {form}
-          onchange={(e) => e.currentTarget.form?.requestSubmit()}
+          onchange={(e) => onchange?.(e, pocket)}
         />
       {/each}
     </ContextualMenuContent.Group>

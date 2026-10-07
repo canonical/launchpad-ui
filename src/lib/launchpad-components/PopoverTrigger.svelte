@@ -34,9 +34,9 @@
 </script>
 
 <Button
+  type="button"
   aria-labelledby={ariaLabelledBy}
   class="popover-trigger"
-  density="dense"
   importance="tertiary"
   {...rest}
 >
@@ -55,7 +55,7 @@
 <style>
   :global {
     .ds.button.popover-trigger {
-      font: var(--ds-typography-text-secondary);
+      font: inherit;
       text-align: end;
 
       &:has(+ :popover-open) {

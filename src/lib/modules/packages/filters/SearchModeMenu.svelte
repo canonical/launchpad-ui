@@ -1,10 +1,17 @@
 <script lang="ts" module>
-  import type { SEARCH_MATCHES } from "../superhref.js";
+  import { SEARCH_MATCHES } from "./constants.js";
+
+  type SearchMatch = (typeof SEARCH_MATCHES)[number];
 
   const searchModeLabels = {
     contains: "Contain",
     exact: "Exact Match",
-  } as const satisfies Record<(typeof SEARCH_MATCHES)[number], string>;
+  } as const satisfies Record<SearchMatch, string>;
+
+  const searchModes = Object.entries(searchModeLabels) as [
+    SearchMatch,
+    string,
+  ][];
 </script>
 
 <script lang="ts">
@@ -12,36 +19,36 @@
   import { InformationIcon } from "@canonical/svelte-icons";
   import { ContextualMenuContent } from "$lib/components/index.js";
   import { PopoverTrigger } from "$lib/launchpad-components/index.js";
+  import type { ChoiceFilterProps } from "./types.js";
 
   let {
-    form,
-    inputName,
+    name,
     value,
+    onchange,
+    position,
     "aria-labelledby": ariaLabelledBy,
-  }: {
-    form: string;
-    inputName: string;
-    value: (typeof SEARCH_MATCHES)[number];
-    "aria-labelledby": string;
-  } = $props();
+  }: ChoiceFilterProps<SearchMatch> = $props();
+
+  const selected = $derived(
+    SEARCH_MATCHES.find((match) => match === value) ?? "contains",
+  );
 </script>
 
-<Popover>
+<Popover {position}>
   {#snippet trigger(triggerProps)}
     <PopoverTrigger aria-labelledby={ariaLabelledBy} {...triggerProps}>
-      {searchModeLabels[value]}
+      {searchModeLabels[selected]}
     </PopoverTrigger>
   {/snippet}
   <ContextualMenuContent>
     <ContextualMenuContent.Group groupTitle="Keyword search mode">
-      {#each Object.entries(searchModeLabels) as [key, label] (key)}
+      {#each searchModes as [key, label] (key)}
         <ContextualMenuContent.RadioItem
-          name={inputName}
+          {name}
           value={key}
-          checked={value === key}
+          checked={selected === key}
           text={label}
-          {form}
-          onchange={(e) => e.currentTarget.form?.requestSubmit()}
+          onchange={(e) => onchange?.(e, key)}
         />
       {/each}
     </ContextualMenuContent.Group>

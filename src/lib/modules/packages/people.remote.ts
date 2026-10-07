@@ -5,21 +5,12 @@ import {
 } from "$lib/server/launchpad/client.js";
 import type { PersonEntry } from "$lib/server/launchpad/types.js";
 import { toLaunchpadName } from "$lib/utils/launchpad/launchpadName.js";
-import {
-  MAX_PEOPLE_SEARCH_LENGTH,
-  MIN_PEOPLE_SEARCH_LENGTH,
-} from "./constants.js";
+import { MAX_PEOPLE_SEARCH_LENGTH } from "./constants.js";
+import { PersonSearchSchema } from "./schema.js";
 import { query } from "$app/server";
 
 export const findPeople = query(
-  v.object({
-    text: v.pipe(
-      v.string(),
-      v.trim(),
-      v.minLength(MIN_PEOPLE_SEARCH_LENGTH),
-      v.maxLength(MAX_PEOPLE_SEARCH_LENGTH),
-    ),
-  }),
+  v.object({ text: PersonSearchSchema }),
   async ({ text }): Promise<PersonEntry[]> => {
     const searchedName = toLaunchpadName(text);
 

@@ -1,6 +1,13 @@
 <script lang="ts">
-  import { Popover, UserAvatar } from "@canonical/svelte-ds-app-launchpad";
-  import { onMount } from "svelte";
+  import {
+    Popover,
+    SearchBox,
+    UserAvatar,
+  } from "@canonical/svelte-ds-app-launchpad";
+  import type {
+    SearchBoxProps,
+    SearchBoxSearchButtonProps,
+  } from "@canonical/svelte-ds-app-launchpad";
   import { Combobox } from "$lib/components/index.js";
   import { PopoverTrigger } from "$lib/launchpad-components/index.js";
   import {
@@ -13,116 +20,134 @@
   } from "$lib/modules/packages/people.remote.js";
   import type { PersonEntry } from "$lib/server/launchpad/types.js";
   import { minTrimmedLength, subId } from "$lib/utils/index.js";
+  import type { ChoiceFilterProps } from "./types.js";
   import { browser } from "$app/env";
-  import { goto } from "$app/navigation";
-  import { page } from "$app/state";
 
   const {
-    form,
-    inputName,
-    selectedPersonName,
+    value,
+    onchange,
     groupName,
     "aria-labelledby": ariaLabelledBy,
-  }: {
-    form: string;
-    inputName: string;
-    selectedPersonName: string | null;
+    name,
+    searchInputProps,
+    searchButtonProps,
+    position,
+  }: ChoiceFilterProps<string | null> & {
+    /** Plural label used in the search prompt, e.g. "maintainers". */
     groupName: string;
-    "aria-labelledby": string;
+    /**
+     * Search input attributes.
+     *
+     * `value` seeds only the search on creation and is ignored for subsequent changes.
+     */
+    searchInputProps: Omit<SearchBoxProps, "value" | "aria-label"> & {
+      // TODO(DAL): Loosen the value type inputs on text-input based components to interop with Kit's remote form types.
+      value?: string | number | null;
+    };
+    /** Search button attributes */
+    searchButtonProps?: SearchBoxSearchButtonProps;
   } = $props();
 
   const id = $props.id();
 
-  // This is only used for the no-JS SSR path, where the intermediary combobox search parameter is submitted to populate the combobox on the server side.
-  const comboboxSearchParam = $derived(`${inputName}-combobox-search`);
-  let searchInputValue = $state(
-    // svelte-check and eslint have different perceptions of whether this state is referenced locally or not
-    // eslint-disable-next-line svelte/no-unused-svelte-ignore
-    // svelte-ignore state_referenced_locally
-    page.url.searchParams.get(comboboxSearchParam) ?? "",
+  const { value: searchInputValueProp, ...restSearchInputProps } = $derived.by(
+    () => {
+      const { value, ...rest } = searchInputProps;
+      return { value: String(value ?? ""), ...rest };
+    },
   );
   // svelte-ignore state_referenced_locally
-  let searchValue = $state(searchInputValue);
+  let searchInputValue = $state(searchInputValueProp);
 
-  onMount(() => {
-    if (!page.url.searchParams.has(comboboxSearchParam)) return;
-    const url = new URL(page.url);
-    url.searchParams.delete(comboboxSearchParam);
-    // eslint-disable-next-line svelte/no-navigation-without-resolve
-    goto(url, { replaceState: true, keepFocus: true, noScroll: true });
-  });
+  // Kit reports schema validation errors for an input via aria-invalid and running an invalid search would only fail to load the results
+  // svelte-ignore state_referenced_locally
+  let searchValue = $state(
+    searchInputProps["aria-invalid"] === true ||
+      searchInputProps["aria-invalid"] === "true"
+      ? ""
+      : searchInputValueProp,
+  );
+  let searchInput = $state<HTMLInputElement>();
 
   let resetError: (() => void) | null = null;
+
+  function runSearch() {
+    if (!searchInput?.reportValidity()) return;
+    searchValue = searchInputValue;
+    resetError?.();
+    resetError = null;
+  }
   // Keeps the seeded query cache entry alive until the next selection.
   let selectedPersonQuery: ReturnType<typeof getPersonByName> | null = null;
 
-  function submitPersonChange(
-    event: Event & { currentTarget: HTMLInputElement },
+  function changePerson(
+    event: Event & { currentTarget: EventTarget & HTMLInputElement },
     person: PersonEntry | null,
   ) {
     if (person) {
       selectedPersonQuery = getPersonByName(person.name);
       selectedPersonQuery.set(person);
     }
-    event.currentTarget.form?.requestSubmit();
+    onchange?.(event, person?.name ?? null);
   }
 
   const selectedPerson = $derived(
-    selectedPersonName === null
+    !value
       ? null
       : // TODO: Currently this path returns null instead of 404-ing, which should IMO should not be the case. A bogus hand-typed person in the URL should probably throw the page as it's gonna end up in the filters.
-        await getPersonByName(selectedPersonName),
+        await getPersonByName(value),
   );
 </script>
 
-<Popover>
+<Popover {position}>
   {#snippet trigger(triggerProps)}
     <PopoverTrigger aria-labelledby={ariaLabelledBy} {...triggerProps}>
       {selectedPerson ? selectedPerson.display_name : "All"}
     </PopoverTrigger>
   {/snippet}
-  <Combobox inputsName={inputName} type="single-select">
+  <Combobox inputsName={name} type="single-select">
     {#snippet search()}
-      <form
-        method="GET"
-        onsubmit={(e) => {
-          e.preventDefault();
-          searchValue = searchInputValue;
-          resetError?.();
-          resetError = null;
-        }}
-      >
-        <!-- eslint-disable-next-line svelte/require-each-key -->
-        {#each Array.from(page.url.searchParams).filter(([key]) => key !== comboboxSearchParam) as [key, value]}
-          <input type="hidden" name={key} {value} />
-        {/each}
-        <Combobox.Search
-          aria-label="Search {groupName}"
-          placeholder="Search {groupName}..."
-          shouldRenderInvalidStyles
-          bind:value={
-            () => searchInputValue,
-            (value) => {
-              searchInputValue = value;
-              if (value === "") {
-                searchValue = "";
-              }
+      <Combobox.Search
+        {...restSearchInputProps}
+        aria-label="Search {groupName}"
+        placeholder="Search {groupName}..."
+        shouldRenderInvalidStyles
+        bind:value={
+          () => searchInputValue,
+          (value) => {
+            searchInputValue = value;
+            if (value === "") {
+              searchValue = "";
             }
           }
-          name={comboboxSearchParam}
-          required
-          maxlength={MAX_PEOPLE_SEARCH_LENGTH}
-          {...minTrimmedLength(MIN_PEOPLE_SEARCH_LENGTH)}
+        }
+        maxlength={MAX_PEOPLE_SEARCH_LENGTH}
+        {...minTrimmedLength(MIN_PEOPLE_SEARCH_LENGTH)}
+        onkeydownUnhandled={(event) => {
+          if (event.key !== "Enter") return;
+          event.preventDefault();
+          runSearch();
+        }}
+        {@attach (input: HTMLInputElement) => {
+          searchInput = input;
+          return () => (searchInput = undefined);
+        }}
+        // Detach the search from the surrounding form, when running the search with JavaScript
+        form={browser ? "" : undefined}
+      >
+        <SearchBox.SearchButton
+          {...searchButtonProps}
+          onclick={runSearch}
+          form={browser ? "" : undefined}
         />
-      </form>
+      </Combobox.Search>
     {/snippet}
     <Combobox.Group>
       <Combobox.RadioOption
         text="All"
         value=""
-        checked={!selectedPersonName}
-        onchange={(e) => submitPersonChange(e, null)}
-        {form}
+        checked={!value}
+        onchange={(e) => changePerson(e, null)}
       />
       {#if selectedPerson}
         <!-- Without this remount, svelte reuses the component, and updates the props. The `checked` value however doesn't change (true -> true), so Svelte doesn't update the internal radio state. -->
@@ -132,8 +157,7 @@
             secondaryText={selectedPerson.name}
             value={selectedPerson.name}
             checked={true}
-            onchange={(e) => submitPersonChange(e, selectedPerson)}
-            {form}
+            onchange={(e) => changePerson(e, selectedPerson)}
             id={subId(id, selectedPerson.name)}
           >
             {#snippet icon()}
@@ -164,8 +188,7 @@
                 text={person.display_name}
                 secondaryText={person.name}
                 value={person.name}
-                onchange={(e) => submitPersonChange(e, person)}
-                {form}
+                onchange={(e) => changePerson(e, person)}
                 id={subId(id, person.name)}
               >
                 {#snippet icon()}
