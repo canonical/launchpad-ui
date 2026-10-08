@@ -178,42 +178,44 @@
     {/snippet}
   </ReorderableList>
   {#snippet footer(closeButtonProps)}
-    <Button {...closeButtonProps} importance="tertiary">Cancel</Button>
-    <Button
-      disabled={!haveItemsChanged}
-      loading={saving}
-      importance="primary"
-      anticipation="constructive"
-      onclick={async () => {
-        saving = true;
-        try {
-          await updateTableViews(
-            modifiedItems.map(({ slug, stagedSettings }) => ({
-              slug,
-              settings: stagedSettings,
-            })),
-          );
-          goto(
-            // eslint-disable-next-line svelte/no-navigation-without-resolve
-            queryParams.patch({
-              panel: null,
-              "manage-views": null,
-              ...(willCurrentViewBeDeleted ? { view: null } : {}),
-            }),
-            {
-              keepFocus: true,
-              noScroll: true,
-            },
-          );
-        } catch (error) {
-          console.error(error);
-        }
+    <div class="footer">
+      <Button {...closeButtonProps} importance="tertiary">Cancel</Button>
+      <Button
+        disabled={!haveItemsChanged}
+        loading={saving}
+        importance="primary"
+        anticipation="constructive"
+        onclick={async () => {
+          saving = true;
+          try {
+            await updateTableViews(
+              modifiedItems.map(({ slug, stagedSettings }) => ({
+                slug,
+                settings: stagedSettings,
+              })),
+            );
+            goto(
+              // eslint-disable-next-line svelte/no-navigation-without-resolve
+              queryParams.patch({
+                panel: null,
+                "manage-views": null,
+                ...(willCurrentViewBeDeleted ? { view: null } : {}),
+              }),
+              {
+                keepFocus: true,
+                noScroll: true,
+              },
+            );
+          } catch (error) {
+            console.error(error);
+          }
 
-        saving = false;
-      }}
-    >
-      Save
-    </Button>
+          saving = false;
+        }}
+      >
+        Save
+      </Button>
+    </div>
   {/snippet}
 </SidePanel>
 
@@ -221,5 +223,13 @@
   h3 {
     font: var(--ds-typography-text-primary-bold);
     margin-block-end: var(--dimension-200);
+  }
+
+  .footer {
+    display: contents;
+
+    @media (scripting: none) {
+      display: none;
+    }
   }
 </style>
