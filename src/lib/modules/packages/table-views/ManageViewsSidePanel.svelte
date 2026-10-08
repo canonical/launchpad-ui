@@ -29,9 +29,6 @@
 
   const context = getPackagesContext();
   const queryParams = $derived(context.queryParams);
-  const cancelViewEditHref = $derived(
-    queryParams["manage-views"].set("edit", null),
-  );
 
   // Snapshot of the items for local modifications, with edits staged until Save
   // svelte-ignore state_referenced_locally
@@ -51,11 +48,8 @@
   });
 
   const haveItemsChanged = $derived(
-    // deleted
     items.length !== modifiedItems.length ||
-      // reordered
       items.some(({ slug }, index) => slug !== modifiedItems[index].slug) ||
-      // edited
       modifiedItems.some(({ stagedSettings }) => stagedSettings),
   );
 
@@ -82,7 +76,10 @@
         : modifiedItem,
     );
     // eslint-disable-next-line svelte/no-navigation-without-resolve
-    goto(cancelViewEditHref, { keepFocus: true, noScroll: true });
+    goto(queryParams["manage-views"].set("edit", null), {
+      keepFocus: true,
+      noScroll: true,
+    });
   }
 
   let saving = $state(false);
@@ -126,7 +123,7 @@
             name: item.name,
             filters: DEFAULT_PACKAGES_FILTERS,
           }}
-          cancelHref={cancelViewEditHref}
+          cancelHref={queryParams["manage-views"].set("edit", null)}
           onstage={(settings) => stageViewSettings(item.slug, settings)}
         />
       {:else}
