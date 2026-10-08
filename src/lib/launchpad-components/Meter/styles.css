@@ -1,7 +1,7 @@
 meter {
   --meter-width: 100%;
   --meter-height: var(--dimension-150);
-  --background-color: var(--color-background);
+  --background-color: var(--surface-color-background);
   --gauge-color: var(--modifier-color-icon, var(--color-icon-disabled));
 
   width: var(--meter-width);
