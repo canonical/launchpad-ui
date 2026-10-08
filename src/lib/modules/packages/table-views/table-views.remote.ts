@@ -1,6 +1,11 @@
-import { error } from "@sveltejs/kit";
+import { error, invalid } from "@sveltejs/kit";
 import * as v from "valibot";
 import { DEFAULT_TABLE_VIEWS } from "./constants.js";
+import {
+  ParsedTableViewSettingsSchema,
+  TableViewEditFormSchema,
+  TableViewSlugSchema,
+} from "./schema.js";
 import { command, form, query } from "$app/server";
 
 // TODO: Replace with persistent per-user storage
@@ -13,7 +18,7 @@ export const getTableViews = query(() => {
 
 export const deleteTableView = form(
   v.object({
-    slug: v.pipe(v.string(), v.nonEmpty()),
+    slug: TableViewSlugSchema,
   }),
   ({ slug }) => {
     const index = tableViews.findIndex((view) => view.slug === slug);
@@ -34,13 +39,45 @@ export const deleteTableView = form(
 );
 
 /**
- * Reorders `tableViews` to match `slugs`, and deletes any view whose slug is missing from it.
+ * Saves a single view's settings. Used by the no-JS path only; with JS the edit is staged
+ * and sent with {@link updateTableViews} instead.
  *
- * `slugs` must be a subset of the current slugs - it cannot introduce new table views.
+ * A no-JS person search is submitted here too, so that the other fields' values survive it.
+ */
+export const editTableView = form(TableViewEditFormSchema, (data) => {
+  const view = tableViews.find((view) => view.slug === data.id);
+
+  if (!view) {
+    error(404, "This table view no longer exists");
+  }
+
+  if (!view.editable) {
+    error(400, "This table view cannot be edited");
+  }
+
+  if (data.intent !== undefined && data.intent !== "confirm") {
+    // Re-renders the form with the submitted values, which kit only keeps for an invalid submission.
+    invalid("The view hasn't been saved yet");
+  }
+
+  // TODO: Persist the view settings
+  console.log("editTableView", data);
+});
+
+/**
+ * Reorders `tableViews` to match `views`, and deletes any view whose slug is missing from it. Views with `settings` are considered edited.
+ *
+ * `views` must be a subset of the current views - it cannot introduce new table views.
  */
 export const updateTableViews = command(
-  v.array(v.pipe(v.string(), v.nonEmpty())),
-  (slugs) => {
+  v.array(
+    v.object({
+      slug: TableViewSlugSchema,
+      settings: v.optional(ParsedTableViewSettingsSchema),
+    }),
+  ),
+  (views) => {
+    const slugs = views.map(({ slug }) => slug);
     const viewsBySlug = new Map(tableViews.map((view) => [view.slug, view]));
 
     if (new Set(slugs).size !== slugs.length) {
@@ -58,6 +95,16 @@ export const updateTableViews = command(
       error(400, "Cannot remove a table view that is not editable");
     }
 
+    if (
+      views.some(
+        ({ slug, settings }) => settings && !viewsBySlug.get(slug)!.editable,
+      )
+    ) {
+      error(400, "Cannot edit a table view that is not editable");
+    }
+
+    // TODO: Persist the edited views' settings
+    console.log("updateTableViews", views);
     tableViews = slugs.map((slug) => viewsBySlug.get(slug)!);
     getTableViews().set(tableViews);
   },
