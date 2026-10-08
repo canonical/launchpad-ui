@@ -29,7 +29,12 @@
   {#snippet template(args)}
     {#each [undefined, ...MODIFIER_FAMILIES.criticality] as criticality, index (criticality)}
       <div class="row">
-        <Meter {...args} value={(index + 1) * 20} {criticality} />
+        <Meter
+          style="width: 186px"
+          {...args}
+          value={(index + 1) * 20}
+          {criticality}
+        />
         {criticality ?? "default"}
       </div>
     {/each}

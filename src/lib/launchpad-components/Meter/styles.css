@@ -1,24 +1,26 @@
 meter {
-  --meter-width: 186px;
-  --meter-height: 12px;
+  --meter-width: 100%;
+  --meter-height: var(--dimension-150);
+  --background-color: var(--color-background);
+  --gauge-color: var(--modifier-color-icon, var(--color-icon-disabled));
 
   width: var(--meter-width);
   height: var(--meter-height);
-  background: transparent;
+  background: var(--background-color);
 
   &::-webkit-meter-bar {
     width: var(--meter-width);
     height: var(--meter-height);
-    background: transparent;
+    background: var(--background-color);
   }
 
   &::-webkit-meter-optimum-value,
   &::-webkit-meter-suboptimum-value,
   &::-webkit-meter-even-less-good-value {
-    background: var(--modifier-color-icon, #00000080);
+    background: var(--gauge-color);
   }
 
   &::-moz-meter-bar {
-    background: var(--modifier-color-icon, #00000080);
+    background: var(--gauge-color);
   }
 }
