@@ -7,4 +7,38 @@
       var(--typography-heading-3-line-height)
       var(--typography-heading-3-font-family);
   }
+
+  @media (max-width: 767px) {
+    grid-column: span 4;
+    display: grid;
+    grid-template-columns: subgrid;
+    padding-top: var(--dimension-100);
+    border-top: 1px solid var(--color-border-muted);
+
+    .stat-item {
+      grid-column: span 2;
+    }
+  }
+
+  @media (min-width: 768px) and (max-width: 1279px) {
+    grid-column: span 6;
+    display: grid;
+    grid-template-columns: subgrid;
+    padding-top: var(--dimension-100);
+    border-top: 1px solid var(--color-border-muted);
+
+    .stat-item {
+      grid-column: span 2;
+    }
+  }
+
+  @media (min-width: 1280px) {
+    grid-column: span 2;
+
+    .stat-item:first-child {
+      margin-bottom: var(--dimension-150);
+    }
+
+    margin-bottom: var(--dimension-300);
+  }
 }

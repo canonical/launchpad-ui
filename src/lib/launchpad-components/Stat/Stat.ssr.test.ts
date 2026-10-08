@@ -43,6 +43,14 @@ describe("Stat SSR", () => {
       const page = render(Component, { props: {} });
       expect(listLocator(page).children.length).toBe(0);
     });
+
+    it("renders an aria-hidden dot for a marked item", () => {
+      const page = render(Component, { props: { ...baseProps } });
+      const dot = listLocator(page).querySelector(".stat-dot");
+
+      expect(dot).not.toBeNull();
+      expect(dot?.getAttribute("aria-hidden")).toBe("true");
+    });
   });
 
   describe("attributes", () => {
@@ -82,7 +90,7 @@ describe("Stat SSR", () => {
         props: { children: childrenWithItemAttributes },
       });
 
-      const item = listLocator(page)?.querySelector(".stat-item");
+      const item = listLocator(page).querySelector(".stat-item");
       expect(item).toBeTruthy();
       expect(item?.classList.contains("custom-item")).toBe(true);
       expect(item?.getAttribute("id")).toBe("bug-count");
@@ -100,5 +108,5 @@ describe("Stat SSR", () => {
 });
 
 function listLocator(page: RenderResult): HTMLElement {
-  return page.document.querySelector("dl")!;
+  return page.document.querySelector("dl");
 }

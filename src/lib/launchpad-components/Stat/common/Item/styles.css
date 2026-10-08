@@ -1,3 +1,16 @@
 .stat-term {
   color: var(--color-text-muted);
 }
+
+.stat-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--color-icon-error, #9e9c2e);
+  margin-right: var(--dimension-050);
+}
+
+.stat-description {
+  display: flex;
+  align-items: center;
+}

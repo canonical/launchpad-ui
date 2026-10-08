@@ -8,3 +8,4 @@ const Stat = StatRoot as typeof StatRoot & {
 Stat.Item = Item;
 
 export { Stat };
+export type { ItemProps as StatItemProps } from "./common/Item/index.js";

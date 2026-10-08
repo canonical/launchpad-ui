@@ -1,5 +1,7 @@
-import type { HTMLAttributes } from "svelte/elements";
+import type { SvelteHTMLElements } from "svelte/elements";
 
-export type ItemProps = HTMLAttributes<HTMLElement> & {
-  key: string;
+export type ItemProps = Omit<SvelteHTMLElements["div"], "children"> & {
+  term: string;
+  description: string;
+  marked?: boolean;
 };

@@ -45,6 +45,14 @@ describe("Stat component", () => {
       const page = await render(Component, { "data-testid": "stat" });
       await expect.element(listLocator(page)).toBeEmptyDOMElement();
     });
+
+    it("renders an aria-hidden dot for a marked item", async () => {
+      const page = await render(Component, { ...baseProps });
+      const dot = listLocator(page).element().querySelector(".stat-dot");
+
+      expect(dot).not.toBeNull();
+      expect(dot?.getAttribute("aria-hidden")).toBe("true");
+    });
   });
 
   describe("attributes", () => {

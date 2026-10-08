@@ -17,17 +17,16 @@
 </script>
 
 {#snippet children()}
-  <Stat.Item key={firstTerm}>{firstDescription}</Stat.Item>
-  <Stat.Item key={secondTerm}>{secondDescription}</Stat.Item>
+  <Stat.Item term={firstTerm} description={firstDescription} />
+  <Stat.Item term={secondTerm} description={secondDescription} marked />
 {/snippet}
 
 {#snippet childrenWithItemAttributes()}
   <Stat.Item
-    key={firstTerm}
+    term={firstTerm}
+    description={firstDescription}
     class="custom-item"
     id="bug-count"
     aria-label="Bug count"
-  >
-    {firstDescription}
-  </Stat.Item>
+  />
 {/snippet}
