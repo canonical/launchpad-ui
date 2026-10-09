@@ -76,7 +76,7 @@ describe("series overview query", () => {
     respondWith(
       {
         version: "98",
-        title: 'Debian "unstable"',
+        displayname: "Sid",
         status: "Active Development",
         summary: "The current development snapshot is named sid.",
         web_link: "https://launchpad.net/debian/sid",
@@ -88,7 +88,7 @@ describe("series overview query", () => {
     await expect(
       getSeriesOverview({ pillar: "debian", series: "sid" }),
     ).resolves.toEqual({
-      displayName: '98 (Debian "unstable")',
+      displayName: "98 Sid",
       distribution: { displayName: "Debian", url: "/debian" },
       status: "Active Development",
       description: "The current development snapshot is named sid.",
@@ -124,24 +124,19 @@ describe("series overview query", () => {
 
     const result = await getSeriesOverview({ pillar, series: "release" });
 
-    expect(result.displayName).toBe(`${heading} (Resolute Raccoon)`);
+    expect(result.displayName).toBe(`${heading} Resolute`);
   });
 
-  it.each(["The Release", "Release", "Theatre", "Release of The Series"])(
-    "removes only a leading 'The ' from %s",
-    async (title) => {
-      respondWith({ ...distroSeries, title });
+  it("uses the series display name verbatim", async () => {
+    respondWith({ ...distroSeries, displayname: "The Resolute Raccoon" });
 
-      const result = await getSeriesOverview({
-        pillar: "ubuntu",
-        series: "resolute",
-      });
+    const result = await getSeriesOverview({
+      pillar: "ubuntu",
+      series: "resolute",
+    });
 
-      expect(result.displayName).toBe(
-        `26.04 LTS (${title === "The Release" ? "Release" : title})`,
-      );
-    },
-  );
+    expect(result.displayName).toBe("26.04 LTS The Resolute Raccoon");
+  });
 
   it("uses the returned summary, status and canonical series web path", async () => {
     respondWith({

@@ -111,7 +111,7 @@ describe("getDistroSeries", () => {
   ])("reads the series for %s/%s", async (distro, series, path) => {
     const body = {
       version: "26.04",
-      title: "The Resolute Raccoon",
+      displayname: "Resolute",
       status: "Current Stable Release",
       summary: "Release summary",
       web_link: "https://launchpad.net/ubuntu/resolute",

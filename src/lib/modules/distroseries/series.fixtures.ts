@@ -7,7 +7,7 @@ import type { getSeriesOverview } from "./series.remote.js";
 
 export const distroSeries = {
   version: "26.04",
-  title: "The Resolute Raccoon",
+  displayname: "Resolute",
   status: "Current Stable Release",
   summary:
     "The Ubuntu release that will be delivered in April 2026, designated 26.04.",
@@ -37,7 +37,7 @@ export const activeSeriesMilestones = {
 } satisfies Collection<MilestoneEntry>;
 
 export const seriesOverview = {
-  displayName: "26.04 LTS (Resolute Raccoon)",
+  displayName: "26.04 LTS Resolute",
   distribution: {
     displayName: "Ubuntu",
     url: "/ubuntu",

@@ -23,11 +23,10 @@ export const getSeriesOverview = query(
         getActiveSeriesMilestones(pillar, series),
       ]);
 
-      const title = entry.title.replace(/^The /, "");
       const seriesPath = new URL(entry.web_link).pathname;
 
       return {
-        displayName: `${entry.version}${isLts(entry, pillar) ? " LTS" : ""} (${title})`,
+        displayName: `${entry.version}${isLts(entry, pillar) ? " LTS" : ""} ${entry.displayname}`,
         distribution: {
           displayName: pillar.charAt(0).toUpperCase() + pillar.slice(1),
           url: `/${pillar}`,
@@ -63,6 +62,7 @@ export const getSeriesOverview = query(
   },
 );
 
+// TODO: Bring it up during the sprint in Mexico. Update with the decision. This code shouldn't be here in 2027
 // A very bad way to determine if a series is LTS
 // but there is no flag returned from launchpad
 // Any ideas welcome

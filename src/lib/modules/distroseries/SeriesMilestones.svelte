@@ -1,6 +1,10 @@
 <script lang="ts">
-  import { Link } from "@canonical/svelte-ds-app-launchpad";
+  import { DateTime, Link } from "@canonical/svelte-ds-app-launchpad";
   import type { ClassValue } from "svelte/elements";
+
+  const dateFormatter = {
+    format: (date: Date) => date.toISOString().slice(0, 10),
+  };
 
   let {
     milestones,
@@ -30,7 +34,7 @@
           </td>
           <td>
             {#if milestone.date}
-              <time datetime={milestone.date}>{milestone.date}</time>
+              <DateTime date={milestone.date} formatter={dateFormatter} />
             {/if}
           </td>
         </tr>
