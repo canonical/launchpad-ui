@@ -1,6 +1,8 @@
 import { launchpadFetch } from "./launchpadFetch.js";
 import type {
   Collection,
+  DistroSeriesEntry,
+  MilestoneEntry,
   PersonEntry,
   PublishedSourcesFilter,
   PublishedSourcesQuery,
@@ -22,6 +24,27 @@ type QueryParamValue = string | number | null | undefined;
 type QueryParams = Record<string, QueryParamValue | QueryParamValue[]>;
 
 const MAX_REDIRECTS = 5;
+
+export function getDistroSeries(
+  distro: string,
+  series: string,
+): Promise<DistroSeriesEntry> {
+  return getJson(seriesUrl(distro, series));
+}
+
+export function getActiveSeriesMilestones(
+  distro: string,
+  series: string,
+): Promise<Collection<MilestoneEntry>> {
+  return getJson(
+    `${seriesUrl(distro, series)}?${searchParams({
+      "ws.op": "searchMilestones",
+      is_active: "true",
+      order_by: "date_targeted",
+      "ws.size": 3,
+    })}`,
+  );
+}
 
 export function getPublishedSources(
   distro: string,
@@ -158,6 +181,10 @@ function searchParams(params: QueryParams): URLSearchParams {
 
 function personLink(name: string): string {
   return `${apiBase()}/~${encodeURIComponent(name)}`;
+}
+
+function seriesUrl(distro: string, series: string): string {
+  return `${apiBase()}/${encodeURIComponent(distro)}/${encodeURIComponent(series)}`;
 }
 
 function apiBase(): string {

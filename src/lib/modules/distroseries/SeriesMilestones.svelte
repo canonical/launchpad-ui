@@ -1,13 +1,17 @@
 <script lang="ts">
-  import { Link } from "@canonical/svelte-ds-app-launchpad";
+  import { DateTime, Link } from "@canonical/svelte-ds-app-launchpad";
   import type { ClassValue } from "svelte/elements";
+
+  const dateFormatter = {
+    format: (date: Date) => date.toISOString().slice(0, 10),
+  };
 
   let {
     milestones,
     allMilestonesHref,
     class: className,
   }: {
-    milestones: { name: string; date: string; url: string }[];
+    milestones: { name: string; date: string | null; url: string }[];
     allMilestonesHref: string;
     class?: ClassValue;
   } = $props();
@@ -29,7 +33,9 @@
             <Link href={milestone.url} soft>{milestone.name}</Link>
           </td>
           <td>
-            <time datetime={milestone.date}>{milestone.date}</time>
+            {#if milestone.date}
+              <DateTime date={milestone.date} formatter={dateFormatter} />
+            {/if}
           </td>
         </tr>
       {/each}

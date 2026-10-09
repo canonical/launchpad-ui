@@ -17,7 +17,7 @@
     links: {
       reportBug: string;
       askQuestion: string;
-      translate: string;
+      translate?: string;
       subscribeToBugs: string;
     };
     class?: ClassValue;

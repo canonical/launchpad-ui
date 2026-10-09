@@ -1,6 +1,6 @@
 // AI-written types for the Launchpad webservice (lazr.restful over JSON).
-// Subset covering `Archive.getPublishedSources`, which backs the packages
-// listing page. Replace with generated types if an OpenAPI client lands.
+// Subset covering package listings, people, and distribution series.
+// Replace with generated types if an OpenAPI client lands.
 
 /** Wraps every collection response (`ws.op=get*`). */
 export type Collection<T> = {
@@ -75,6 +75,21 @@ export type PersonEntry = {
   display_name: string;
   is_team: boolean;
   mugshot_link: string;
+};
+
+export type DistroSeriesEntry = {
+  version: string;
+  displayname: string;
+  status: string;
+  summary: string;
+  web_link: string;
+  translations_usage: string;
+};
+
+export type MilestoneEntry = {
+  name: string;
+  date_targeted: string | null;
+  web_link: string;
 };
 
 export type PublishedSourcesQuery = PublishedSourcesFilter & {
