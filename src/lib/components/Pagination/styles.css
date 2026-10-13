@@ -3,10 +3,9 @@
   flex-wrap: wrap;
   align-items: stretch;
   justify-content: flex-end;
-  font: var(--lp-typography-paragraph-s);
-  border-top: var(--lp-dimension-stroke-thickness-default) solid
-    var(--lp-color-border-default);
-  background-color: var(--lp-color-background-default);
+  font: var(--ds-typography-text-secondary);
+  border-top: var(--dimension-stroke-thickness-medium) solid var(--color-border);
+  background-color: var(--color-background);
 
   --dimension-pagination-group-gap: var(--lp-dimension-spacing-inline-m);
   --dimension-pagination-divider-width: var(

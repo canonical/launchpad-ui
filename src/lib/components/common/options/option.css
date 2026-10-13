@@ -1,5 +1,5 @@
 .ds.option {
-  --color-background-option: var(--lp-color-background-default);
+  --color-background-option: var(--color-background);
   --color-background-option-hover: var(--lp-color-background-hover);
   --color-background-option-active: var(--lp-color-background-active);
   --dimension-padding-inline-option: var(--lp-dimension-spacing-inline-m);

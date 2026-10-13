@@ -9,7 +9,7 @@
   > input {
     --color-background-input: transparent;
     border: none;
-    font: var(--lp-typography-paragraph-s);
+    font: var(--ds-typography-text-secondary);
     padding-inline: var(--lp-dimension-spacing-inline-s);
   }
 }

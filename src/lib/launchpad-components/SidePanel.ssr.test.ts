@@ -40,6 +40,7 @@ describe("SidePanel SSR", () => {
     const closeButton = screen.getByRole("button", { name: "Close" });
 
     expect(form.method).toBe("get");
+    expect(screen.getByRole("dialog").getAttribute("closedby")).toBe("none");
     expect(closeButton.getAttribute("type")).toBe("submit");
     expect(closeButton.getAttribute("form")).toBe(form.id);
     expect(Array.from(new screen.window.FormData(form))).toEqual([

@@ -34,7 +34,7 @@
     {id}
     bind:value
     class="select"
-    severity="base"
+    importance="tertiary"
     aria-controls={paginationContext.tableId}
     {...rest}
   >
