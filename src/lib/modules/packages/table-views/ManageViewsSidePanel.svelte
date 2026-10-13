@@ -52,10 +52,6 @@
       modifiedItems.some(({ stagedSettings }) => stagedSettings),
   );
 
-  const willCurrentViewBeDeleted = $derived(
-    !modifiedItems.some(({ slug }) => slug === queryParams.view),
-  );
-
   const isItemEdited = $derived.by(() => {
     const editedItemId = queryParams["manage-views"].edit;
     if (!editedItemId) return false;
@@ -187,18 +183,24 @@
         onclick={async () => {
           saving = true;
           try {
-            await updateTableViews(
+            const currentViewId = items.find(
+              ({ slug }) => slug === queryParams.view,
+            )?.id;
+            const savedViews = await updateTableViews(
               modifiedItems.map(({ id, stagedSettings }) => ({
                 id,
                 settings: stagedSettings,
               })),
             );
+            const currentViewSlug = savedViews.find(
+              ({ id }) => id === currentViewId,
+            )?.slug;
             goto(
               // eslint-disable-next-line svelte/no-navigation-without-resolve
               queryParams.patch({
                 panel: null,
                 "manage-views": null,
-                ...(willCurrentViewBeDeleted ? { view: null } : {}),
+                view: currentViewSlug ?? null,
               }),
               {
                 keepFocus: true,

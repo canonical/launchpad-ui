@@ -1,12 +1,14 @@
-import { error, invalid } from "@sveltejs/kit";
+import { error, invalid, redirect } from "@sveltejs/kit";
 import * as v from "valibot";
+import { slugify } from "$lib/utils/slugify.js";
+import { QueryParams } from "../superhref.js";
 import { DEFAULT_TABLE_VIEWS } from "./constants.js";
 import {
   ParsedTableViewSettingsSchema,
   TableViewEditFormSchema,
   TableViewIdSchema,
 } from "./schema.js";
-import { command, form, query } from "$app/server";
+import { command, form, getRequestEvent, query } from "$app/server";
 
 // TODO: Replace with persistent per-user storage
 /** Temporary, in-memory, shared-by-all table-views state */
@@ -60,9 +62,25 @@ export const editTableView = form(TableViewEditFormSchema, (data) => {
     invalid("The view hasn't been saved yet");
   }
 
+  const oldSlug = view.slug;
+  if (view.name !== data.name) {
+    view.slug = uniqueSlug(
+      data.name,
+      new Set(
+        tableViews
+          .filter((otherView) => otherView.id !== view.id)
+          .map((otherView) => otherView.slug),
+      ),
+    );
+  }
   view.name = data.name;
   view.filters = data.filters;
   getTableViews().set(tableViews);
+
+  const queryParams = QueryParams.bind(getRequestEvent().url);
+  if (queryParams.view === oldSlug && view.slug !== oldSlug) {
+    redirect(303, queryParams.set("view", view.slug));
+  }
 });
 
 /**
@@ -100,10 +118,41 @@ export const updateTableViews = command(
       error(400, "Cannot edit a table view that is not editable");
     }
 
+    const takenSlugs = new Set<string>(
+      // Initialized with the slugs of views that are not being renamed, so that the renames + reorders cannot steal slugs.
+      views.flatMap(({ id, settings }) => {
+        const view = viewsById.get(id)!;
+        return settings && settings.name !== view.name ? [] : [view.slug];
+      }),
+    );
+
     tableViews = views.map(({ id, settings }) => {
       const view = viewsById.get(id)!;
-      return settings ? { ...view, ...settings } : view;
+      if (!settings) return view;
+
+      const renamed = settings.name !== view.name;
+      const slug = renamed ? uniqueSlug(settings.name, takenSlugs) : view.slug;
+      takenSlugs.add(slug);
+      const updatedView = {
+        ...view,
+        ...settings,
+        slug,
+      };
+      return updatedView;
     });
     getTableViews().set(tableViews);
+    return tableViews;
   },
 );
+
+function uniqueSlug(name: string, takenSlugs: Set<string>): string {
+  const baseSlug = slugify(name) || "view";
+  let slug = baseSlug;
+  let suffix = 2;
+
+  while (takenSlugs.has(slug)) {
+    slug = `${baseSlug}-${suffix++}`;
+  }
+
+  return slug;
+}
