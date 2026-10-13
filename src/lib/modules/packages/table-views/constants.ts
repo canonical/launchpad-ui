@@ -20,16 +20,10 @@ export const DEFAULT_TABLE_VIEWS: TableView[] = [
     filters: DEFAULT_PACKAGES_FILTERS,
   },
   {
-    id: "signed-by-me",
-    name: "Signed by me",
+    id: "resolute-packages",
+    name: "Resolute packages",
     editable: true,
-    filters: DEFAULT_PACKAGES_FILTERS,
-  },
-  {
-    id: "maintained-by-me",
-    name: "Maintained by me",
-    editable: true,
-    filters: DEFAULT_PACKAGES_FILTERS,
+    filters: { ...DEFAULT_PACKAGES_FILTERS, series: "resolute" },
   },
 ].map(({ id, name, editable, filters }) => ({
   id,
