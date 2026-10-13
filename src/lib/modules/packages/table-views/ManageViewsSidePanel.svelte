@@ -11,7 +11,6 @@
   } from "$lib/modules/packages/superhref.js";
   import { preserveQueryParams } from "$lib/utils/index.js";
   import { getPackagesContext } from "../context.js";
-  import { DEFAULT_PACKAGES_FILTERS } from "../filters/constants.js";
   import TableViewEditForm from "./TableViewEditForm.svelte";
   import type { TableView } from "./constants.js";
   import type { TableViewSettings } from "./schema.js";
@@ -121,7 +120,7 @@
           view={item}
           settings={item.stagedSettings ?? {
             name: item.name,
-            filters: DEFAULT_PACKAGES_FILTERS,
+            filters: item.filters,
           }}
           cancelHref={queryParams["manage-views"].set("edit", null)}
           onstage={(settings) => stageViewSettings(item.id, settings)}
@@ -151,7 +150,7 @@
                   deleteForm.enhance(() => {
                     // If JS, don't delete immediately, and instead stage for deletion in modifiedItems
                     modifiedItems = modifiedItems.filter(
-                      ({ slug }) => slug !== item.slug,
+                      ({ id }) => id !== item.id,
                     );
                   }),
                   // Like Save, deleting the current view falls back to the default one

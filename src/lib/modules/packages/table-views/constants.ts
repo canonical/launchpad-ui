@@ -1,18 +1,42 @@
 import { slugify } from "$lib/utils/slugify.js";
+import { DEFAULT_PACKAGES_FILTERS } from "../filters/constants.js";
+import type { PackagesFilters } from "../filters/schema.js";
 
 export const MAX_TABLE_VIEW_NAME_LENGTH = 100;
 
-export const DEFAULT_TABLE_VIEWS = [
-  { id: "all-packages", name: "All packages", editable: false },
-  { id: "signed-by-me", name: "Signed by me", editable: true },
-  { id: "maintained-by-me", name: "Maintained by me", editable: true },
-].map(({ id, name, editable }) => ({
+export type TableView = {
+  id: string;
+  name: string;
+  slug: string;
+  editable: boolean;
+  filters: PackagesFilters;
+};
+
+export const DEFAULT_TABLE_VIEWS: TableView[] = [
+  {
+    id: "all-packages",
+    name: "All packages",
+    editable: false,
+    filters: DEFAULT_PACKAGES_FILTERS,
+  },
+  {
+    id: "signed-by-me",
+    name: "Signed by me",
+    editable: true,
+    filters: DEFAULT_PACKAGES_FILTERS,
+  },
+  {
+    id: "maintained-by-me",
+    name: "Maintained by me",
+    editable: true,
+    filters: DEFAULT_PACKAGES_FILTERS,
+  },
+].map(({ id, name, editable, filters }) => ({
   id,
   name,
   slug: slugify(name),
   editable,
+  filters,
 }));
 
 export const DEFAULT_TABLE_VIEW_SLUG = DEFAULT_TABLE_VIEWS[0].slug;
-
-export type TableView = (typeof DEFAULT_TABLE_VIEWS)[number];

@@ -37,6 +37,7 @@ async function renderForm() {
       name: "Mine",
       slug: "mine",
       editable: true,
+      filters: DEFAULT_PACKAGES_FILTERS,
     },
     settings,
     cancelHref: "?panel=manage-views",

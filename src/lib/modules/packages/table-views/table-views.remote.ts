@@ -60,8 +60,9 @@ export const editTableView = form(TableViewEditFormSchema, (data) => {
     invalid("The view hasn't been saved yet");
   }
 
-  // TODO: Persist the view settings
-  console.log("editTableView", data);
+  view.name = data.name;
+  view.filters = data.filters;
+  getTableViews().set(tableViews);
 });
 
 /**
@@ -99,9 +100,10 @@ export const updateTableViews = command(
       error(400, "Cannot edit a table view that is not editable");
     }
 
-    // TODO: Persist the edited views' settings
-    console.log("updateTableViews", views);
-    tableViews = ids.map((id) => viewsById.get(id)!);
+    tableViews = views.map(({ id, settings }) => {
+      const view = viewsById.get(id)!;
+      return settings ? { ...view, ...settings } : view;
+    });
     getTableViews().set(tableViews);
   },
 );
