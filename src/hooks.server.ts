@@ -1,5 +1,6 @@
 import type { Handle } from "@sveltejs/kit";
 import { server } from "$lib/api/packages/mocks/server.js";
+import { resolveUser } from "$lib/server/user.js";
 
 // MSW only intercepts under `pnpm dev:mock` (mode=mock). Regular `pnpm dev`
 // leaves it off. The browser-side counterpart starts in `hooks.client.ts`.
@@ -15,8 +16,11 @@ const SERIALIZABLE_RESPONSE_HEADERS = new Set([
   "content-length",
 ]);
 
-export const handle: Handle = ({ event, resolve }) =>
-  resolve(event, {
+export const handle: Handle = ({ event, resolve }) => {
+  event.locals.user = resolveUser(event);
+
+  return resolve(event, {
     filterSerializedResponseHeaders: (name) =>
       SERIALIZABLE_RESPONSE_HEADERS.has(name.toLowerCase()),
   });
+};
