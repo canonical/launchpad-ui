@@ -4,7 +4,7 @@ import { DEFAULT_TABLE_VIEWS } from "./constants.js";
 import {
   ParsedTableViewSettingsSchema,
   TableViewEditFormSchema,
-  TableViewSlugSchema,
+  TableViewIdSchema,
 } from "./schema.js";
 import { command, form, query } from "$app/server";
 
@@ -18,10 +18,10 @@ export const getTableViews = query(() => {
 
 export const deleteTableView = form(
   v.object({
-    slug: TableViewSlugSchema,
+    id: TableViewIdSchema,
   }),
-  ({ slug }) => {
-    const index = tableViews.findIndex((view) => view.slug === slug);
+  ({ id }) => {
+    const index = tableViews.findIndex((view) => view.id === id);
 
     if (index === -1) {
       // Already gone
@@ -45,7 +45,7 @@ export const deleteTableView = form(
  * A no-JS person search is submitted here too, so that the other fields' values survive it.
  */
 export const editTableView = form(TableViewEditFormSchema, (data) => {
-  const view = tableViews.find((view) => view.slug === data.id);
+  const view = tableViews.find((view) => view.id === data.id);
 
   if (!view) {
     error(404, "This table view no longer exists");
@@ -65,47 +65,43 @@ export const editTableView = form(TableViewEditFormSchema, (data) => {
 });
 
 /**
- * Reorders `tableViews` to match `views`, and deletes any view whose slug is missing from it. Views with `settings` are considered edited.
+ * Reorders `tableViews` to match `views`, and deletes any view whose id is missing from it. Views with `settings` are considered edited.
  *
  * `views` must be a subset of the current views - it cannot introduce new table views.
  */
 export const updateTableViews = command(
   v.array(
     v.object({
-      slug: TableViewSlugSchema,
+      id: TableViewIdSchema,
       settings: v.optional(ParsedTableViewSettingsSchema),
     }),
   ),
   (views) => {
-    const slugs = views.map(({ slug }) => slug);
-    const viewsBySlug = new Map(tableViews.map((view) => [view.slug, view]));
+    const ids = views.map(({ id }) => id);
+    const viewsById = new Map(tableViews.map((view) => [view.id, view]));
 
-    if (new Set(slugs).size !== slugs.length) {
+    if (new Set(ids).size !== ids.length) {
       error(400, "Duplicate views are not allowed");
     }
 
-    if (slugs.some((slug) => !viewsBySlug.has(slug))) {
+    if (ids.some((id) => !viewsById.has(id))) {
       error(400, "Cannot add new table views");
     }
 
-    const removedViews = tableViews.filter(
-      (view) => !slugs.includes(view.slug),
-    );
+    const removedViews = tableViews.filter((view) => !ids.includes(view.id));
     if (removedViews.some((view) => !view.editable)) {
       error(400, "Cannot remove a table view that is not editable");
     }
 
     if (
-      views.some(
-        ({ slug, settings }) => settings && !viewsBySlug.get(slug)!.editable,
-      )
+      views.some(({ id, settings }) => settings && !viewsById.get(id)!.editable)
     ) {
       error(400, "Cannot edit a table view that is not editable");
     }
 
     // TODO: Persist the edited views' settings
     console.log("updateTableViews", views);
-    tableViews = slugs.map((slug) => viewsBySlug.get(slug)!);
+    tableViews = ids.map((id) => viewsById.get(id)!);
     getTableViews().set(tableViews);
   },
 );

@@ -6,7 +6,7 @@ import {
 import { PersonSearchSchema } from "../schema.js";
 import { MAX_TABLE_VIEW_NAME_LENGTH } from "./constants.js";
 
-export const TableViewSlugSchema = v.pipe(v.string(), v.nonEmpty());
+export const TableViewIdSchema = v.pipe(v.string(), v.nonEmpty());
 
 const TableViewNameSchema = v.pipe(
   v.optional(v.string(), ""),
@@ -32,7 +32,7 @@ export const ParsedTableViewSettingsSchema = v.object({
 });
 
 const TableViewEditFormCommonEntries = {
-  id: TableViewSlugSchema,
+  id: TableViewIdSchema,
   filters: v.optional(PackagesFiltersSchema, {}),
 };
 

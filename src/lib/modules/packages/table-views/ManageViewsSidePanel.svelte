@@ -49,7 +49,7 @@
 
   const haveItemsChanged = $derived(
     items.length !== modifiedItems.length ||
-      items.some(({ slug }, index) => slug !== modifiedItems[index].slug) ||
+      items.some(({ id }, index) => id !== modifiedItems[index].id) ||
       modifiedItems.some(({ stagedSettings }) => stagedSettings),
   );
 
@@ -58,16 +58,16 @@
   );
 
   const isItemEdited = $derived.by(() => {
-    const editedItemSlug = queryParams["manage-views"].edit;
-    if (!editedItemSlug) return false;
+    const editedItemId = queryParams["manage-views"].edit;
+    if (!editedItemId) return false;
     return modifiedItems.some(
-      ({ slug, editable }) => slug === editedItemSlug && editable,
+      ({ id, editable }) => id === editedItemId && editable,
     );
   });
 
-  function stageViewSettings(slug: string, settings: TableViewSettings) {
+  function stageViewSettings(id: string, settings: TableViewSettings) {
     modifiedItems = modifiedItems.map((modifiedItem) =>
-      modifiedItem.slug === slug
+      modifiedItem.id === id
         ? {
             ...modifiedItem,
             name: settings.name,
@@ -109,14 +109,14 @@
   <h3>Active views</h3>
   <ReorderableList
     bind:items={modifiedItems}
-    key={(item) => item.slug}
+    key={(item) => item.id}
     itemLabel={(item) => item.name}
     disabled={isItemEdited}
     animationDuration={suspendReorderAnimations ? 0 : undefined}
     dragMode="drop-indicator"
   >
     {#snippet item({ item, index }, renderedInOverlay)}
-      {#if item.editable && queryParams["manage-views"].edit === item.slug}
+      {#if item.editable && queryParams["manage-views"].edit === item.id}
         <TableViewEditForm
           view={item}
           settings={item.stagedSettings ?? {
@@ -124,7 +124,7 @@
             filters: DEFAULT_PACKAGES_FILTERS,
           }}
           cancelHref={queryParams["manage-views"].set("edit", null)}
-          onstage={(settings) => stageViewSettings(item.slug, settings)}
+          onstage={(settings) => stageViewSettings(item.id, settings)}
         />
       {:else}
         <ReorderableList.Item {item} {index}>
@@ -134,7 +134,7 @@
               density="dense"
               importance="tertiary"
               aria-label="Edit {item.name}"
-              href={queryParams["manage-views"].set("edit", item.slug)}
+              href={queryParams["manage-views"].set("edit", item.id)}
               disabled={isItemEdited}
             >
               {#snippet iconLeft()}
@@ -143,7 +143,7 @@
             </Button>
             {const deleteForm = $derived(
               // Only attach the form function to the real, non-overlay items
-              renderedInOverlay ? null : deleteTableView.for(item.slug),
+              renderedInOverlay ? null : deleteTableView.for(item.id),
             )}
             <form
               {...deleteForm &&
@@ -165,7 +165,7 @@
                 importance="tertiary"
                 aria-label="Delete {item.name}"
                 disabled={isItemEdited}
-                {...deleteForm?.fields.slug.as("submit", item.slug)}
+                {...deleteForm?.fields.id.as("submit", item.id)}
               >
                 {#snippet iconLeft()}
                   <DeleteIcon />
@@ -189,8 +189,8 @@
           saving = true;
           try {
             await updateTableViews(
-              modifiedItems.map(({ slug, stagedSettings }) => ({
-                slug,
+              modifiedItems.map(({ id, stagedSettings }) => ({
+                id,
                 settings: stagedSettings,
               })),
             );
