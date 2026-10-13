@@ -1,8 +1,9 @@
 import { error, invalid, redirect } from "@sveltejs/kit";
 import * as v from "valibot";
+import { tableViewsStore } from "$lib/server/table-views/index.js";
+import { getCurrentUserId } from "$lib/server/user.js";
 import { slugify } from "$lib/utils/slugify.js";
 import { QueryParams } from "../superhref.js";
-import { DEFAULT_TABLE_VIEWS } from "./constants.js";
 import {
   ParsedTableViewSettingsSchema,
   TableViewEditFormSchema,
@@ -10,19 +11,17 @@ import {
 } from "./schema.js";
 import { command, form, getRequestEvent, query } from "$app/server";
 
-// TODO: Replace with persistent per-user storage
-/** Temporary, in-memory, shared-by-all table-views state */
-let tableViews = [...DEFAULT_TABLE_VIEWS];
-
 export const getTableViews = query(() => {
-  return tableViews;
+  return tableViewsStore.get(getCurrentUserId());
 });
 
 export const deleteTableView = form(
   v.object({
     id: TableViewIdSchema,
   }),
-  ({ id }) => {
+  async ({ id }) => {
+    const userId = getCurrentUserId();
+    const tableViews = await tableViewsStore.get(userId);
     const index = tableViews.findIndex((view) => view.id === id);
 
     if (index === -1) {
@@ -36,6 +35,7 @@ export const deleteTableView = form(
     }
 
     tableViews.splice(index, 1);
+    await tableViewsStore.set(userId, tableViews);
     getTableViews().set(tableViews);
   },
 );
@@ -46,7 +46,9 @@ export const deleteTableView = form(
  *
  * A no-JS person search is submitted here too, so that the other fields' values survive it.
  */
-export const editTableView = form(TableViewEditFormSchema, (data) => {
+export const editTableView = form(TableViewEditFormSchema, async (data) => {
+  const userId = getCurrentUserId();
+  const tableViews = await tableViewsStore.get(userId);
   const view = tableViews.find((view) => view.id === data.id);
 
   if (!view) {
@@ -75,6 +77,7 @@ export const editTableView = form(TableViewEditFormSchema, (data) => {
   }
   view.name = data.name;
   view.filters = data.filters;
+  await tableViewsStore.set(userId, tableViews);
   getTableViews().set(tableViews);
 
   const queryParams = QueryParams.bind(getRequestEvent().url);
@@ -95,9 +98,11 @@ export const updateTableViews = command(
       settings: v.optional(ParsedTableViewSettingsSchema),
     }),
   ),
-  (views) => {
+  async (views) => {
+    const userId = getCurrentUserId();
+    const currentViews = await tableViewsStore.get(userId);
     const ids = views.map(({ id }) => id);
-    const viewsById = new Map(tableViews.map((view) => [view.id, view]));
+    const viewsById = new Map(currentViews.map((view) => [view.id, view]));
 
     if (new Set(ids).size !== ids.length) {
       error(400, "Duplicate views are not allowed");
@@ -107,7 +112,7 @@ export const updateTableViews = command(
       error(400, "Cannot add new table views");
     }
 
-    const removedViews = tableViews.filter((view) => !ids.includes(view.id));
+    const removedViews = currentViews.filter((view) => !ids.includes(view.id));
     if (removedViews.some((view) => !view.editable)) {
       error(400, "Cannot remove a table view that is not editable");
     }
@@ -126,7 +131,7 @@ export const updateTableViews = command(
       }),
     );
 
-    tableViews = views.map(({ id, settings }) => {
+    const updatedViews = views.map(({ id, settings }) => {
       const view = viewsById.get(id)!;
       if (!settings) return view;
 
@@ -140,8 +145,9 @@ export const updateTableViews = command(
       };
       return updatedView;
     });
-    getTableViews().set(tableViews);
-    return tableViews;
+    await tableViewsStore.set(userId, updatedViews);
+    getTableViews().set(updatedViews);
+    return updatedViews;
   },
 );
 
