@@ -5,6 +5,6 @@
   padding-inline-start: var(--lp-dimension-spacing-inline-xs);
 
   > .select {
-    font: var(--lp-typography-paragraph-s);
+    font: var(--ds-typography-text-secondary);
   }
 }

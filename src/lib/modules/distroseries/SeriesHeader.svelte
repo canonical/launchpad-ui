@@ -39,12 +39,5 @@
     flex-direction: column;
     align-items: start;
     gap: var(--space-100);
-
-    h1 {
-      font: var(--typography-heading-1-font-weight)
-        var(--typography-heading-1-font-size) /
-        var(--typography-heading-1-line-height)
-        var(--typography-heading-1-font-family);
-    }
   }
 </style>
