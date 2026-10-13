@@ -224,6 +224,16 @@
     align-items: center;
     border-bottom: var(--dimension-stroke-thickness-medium) solid
       var(--color-border-muted);
+
+    :global {
+      .search-box {
+        flex-grow: 1;
+
+        > input {
+          min-width: 160px;
+        }
+      }
+    }
   }
 
   .filters {
@@ -266,14 +276,12 @@
 
     .search {
       border-bottom: none;
+      flex: none;
 
       :global {
         .search-box {
-          flex-basis: 160px;
-
-          > input {
-            min-width: 160px;
-          }
+          flex: none;
+          inline-size: 160px;
         }
       }
     }
