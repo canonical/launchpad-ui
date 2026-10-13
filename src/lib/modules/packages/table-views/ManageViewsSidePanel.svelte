@@ -149,10 +149,7 @@
                       ({ id }) => id !== item.id,
                     );
                   }),
-                  // Like Save, deleting the current view falls back to the default one
-                  item.slug === queryParams.view
-                    ? new URL(queryParams.patch({ view: null }), page.url)
-                    : page.url,
+                  page.url,
                 )}
             >
               <Button
@@ -183,24 +180,25 @@
         onclick={async () => {
           saving = true;
           try {
-            const currentViewId = items.find(
+            const currentView = items.find(
               ({ slug }) => slug === queryParams.view,
-            )?.id;
+            );
             const savedViews = await updateTableViews(
               modifiedItems.map(({ id, stagedSettings }) => ({
                 id,
                 settings: stagedSettings,
               })),
             );
-            const currentViewSlug = savedViews.find(
-              ({ id }) => id === currentViewId,
-            )?.slug;
+            const updatedView = savedViews.find(
+              ({ id }) => id === currentView?.id,
+            );
             goto(
               // eslint-disable-next-line svelte/no-navigation-without-resolve
               queryParams.patch({
                 panel: null,
                 "manage-views": null,
-                view: currentViewSlug ?? null,
+                view: updatedView?.slug ?? null,
+                ...(updatedView === undefined && { page: 1 }),
               }),
               {
                 keepFocus: true,

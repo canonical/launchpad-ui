@@ -34,9 +34,14 @@ export const deleteTableView = form(
       error(400, "This table view cannot be deleted");
     }
 
-    tableViews.splice(index, 1);
+    const [deletedView] = tableViews.splice(index, 1);
     await tableViewsStore.set(userId, tableViews);
     getTableViews().set(tableViews);
+
+    const queryParams = QueryParams.bind(getRequestEvent().url);
+    if (queryParams.view === deletedView.slug) {
+      redirect(303, queryParams.setView(null));
+    }
   },
 );
 
