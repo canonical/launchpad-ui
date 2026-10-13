@@ -87,8 +87,10 @@ export const editTableView = form(TableViewEditFormSchema, async (data) => {
 
   const queryParams = QueryParams.bind(getRequestEvent().url);
   if (queryParams.view === oldSlug && view.slug !== oldSlug) {
-    redirect(303, queryParams.set("view", view.slug));
+    redirect(303, queryParams.patch({ view: view.slug, "manage-views": null }));
   }
+
+  redirect(303, queryParams.patch({ "manage-views": null }));
 });
 
 /**
