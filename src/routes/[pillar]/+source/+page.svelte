@@ -14,6 +14,7 @@
   import BinaryPackageSidePanel from "$lib/modules/packages/binary-package/BinaryPackageSidePanel.svelte";
   import { setPackagesContext } from "$lib/modules/packages/context.js";
   import Filters from "$lib/modules/packages/filters/Filters.svelte";
+  import type { PackagesFilters } from "$lib/modules/packages/filters/schema.js";
   import {
     getSourcePackages,
     getSourcePackagesTotal,
@@ -24,6 +25,7 @@
     QueryParams,
   } from "$lib/modules/packages/superhref.js";
   import ManageViewsSidePanel from "$lib/modules/packages/table-views/ManageViewsSidePanel.svelte";
+  import { resolveTableView } from "$lib/modules/packages/table-views/resolveTableView.js";
   import { getTableViews } from "$lib/modules/packages/table-views/table-views.remote.js";
   import type { PageProps } from "./$types.js";
   import { resolve } from "$app/paths";
@@ -39,9 +41,7 @@
     },
   });
 
-  const tableViewsPromise = $derived(getTableViews());
-
-  const filters = $derived({
+  const urlFilters = $derived({
     search: queryParams.search,
     match: queryParams.match,
     series: queryParams.series,
@@ -50,7 +50,14 @@
     signer: queryParams.signer,
     ubuntuChange: queryParams["ubuntu-change"],
     allStatuses: queryParams["all-statuses"],
-  });
+  } satisfies PackagesFilters);
+
+  const tableViews = $derived(await getTableViews());
+  const {
+    view: currentTableView,
+    filters,
+    isDefaultView,
+  } = $derived(resolveTableView(queryParams.view, tableViews, urlFilters));
 
   const sourcePackagesPromise = $derived(
     getSourcePackages({
@@ -72,7 +79,6 @@
   // loading is to actually run promises in parallel https://github.com/sveltejs/svelte/issues/16483#issuecomment-4803286374
   // untrack is to avoid registering dependencies and a state_referenced_locally warning
   untrack(() => {
-    void tableViewsPromise.loading;
     void sourcePackagesPromise.loading;
     void sourcePackagesTotalPromise.loading;
   });
@@ -86,7 +92,6 @@
       ? undefined
       : Math.max(1, Math.ceil(total / queryParams["page-size"])),
   );
-  const tableViews = $derived(await tableViewsPromise);
 </script>
 
 <svelte:head>
@@ -100,7 +105,7 @@
   <div class="packages">
     <h1>Packages</h1>
     <TableViewBar
-      current={queryParams.view}
+      current={currentTableView.slug}
       items={tableViews.map(({ name, slug }) => ({
         text: name,
         href: queryParams.setView(slug),
@@ -119,7 +124,9 @@
         </Button>
       {/snippet}
     </TableViewBar>
-    <Filters />
+    {#if isDefaultView}
+      <Filters />
+    {/if}
     <Table class="packages-table">
       <thead>
         <tr>
