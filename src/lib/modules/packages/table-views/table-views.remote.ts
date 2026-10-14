@@ -1,27 +1,28 @@
-import { error, invalid } from "@sveltejs/kit";
+import { error, invalid, redirect } from "@sveltejs/kit";
 import * as v from "valibot";
-import { DEFAULT_TABLE_VIEWS } from "./constants.js";
+import { tableViewsStore } from "$lib/server/table-views/index.js";
+import { getCurrentUserId } from "$lib/server/user.js";
+import { slugify } from "$lib/utils/slugify.js";
+import { QueryParams } from "../superhref.js";
 import {
   ParsedTableViewSettingsSchema,
   TableViewEditFormSchema,
-  TableViewSlugSchema,
+  TableViewIdSchema,
 } from "./schema.js";
-import { command, form, query } from "$app/server";
-
-// TODO: Replace with persistent per-user storage
-/** Temporary, in-memory, shared-by-all table-views state */
-let tableViews = [...DEFAULT_TABLE_VIEWS];
+import { command, form, getRequestEvent, query } from "$app/server";
 
 export const getTableViews = query(() => {
-  return tableViews;
+  return tableViewsStore.get(getCurrentUserId());
 });
 
 export const deleteTableView = form(
   v.object({
-    slug: TableViewSlugSchema,
+    id: TableViewIdSchema,
   }),
-  ({ slug }) => {
-    const index = tableViews.findIndex((view) => view.slug === slug);
+  async ({ id }) => {
+    const userId = getCurrentUserId();
+    const tableViews = await tableViewsStore.get(userId);
+    const index = tableViews.findIndex((view) => view.id === id);
 
     if (index === -1) {
       // Already gone
@@ -33,8 +34,14 @@ export const deleteTableView = form(
       error(400, "This table view cannot be deleted");
     }
 
-    tableViews.splice(index, 1);
+    const [deletedView] = tableViews.splice(index, 1);
+    await tableViewsStore.set(userId, tableViews);
     getTableViews().set(tableViews);
+
+    const queryParams = QueryParams.bind(getRequestEvent().url);
+    if (queryParams.view === deletedView.slug) {
+      redirect(303, queryParams.setView(null));
+    }
   },
 );
 
@@ -44,8 +51,10 @@ export const deleteTableView = form(
  *
  * A no-JS person search is submitted here too, so that the other fields' values survive it.
  */
-export const editTableView = form(TableViewEditFormSchema, (data) => {
-  const view = tableViews.find((view) => view.slug === data.id);
+export const editTableView = form(TableViewEditFormSchema, async (data) => {
+  const userId = getCurrentUserId();
+  const tableViews = await tableViewsStore.get(userId);
+  const view = tableViews.find((view) => view.id === data.id);
 
   if (!view) {
     error(404, "This table view no longer exists");
@@ -60,52 +69,103 @@ export const editTableView = form(TableViewEditFormSchema, (data) => {
     invalid("The view hasn't been saved yet");
   }
 
-  // TODO: Persist the view settings
-  console.log("editTableView", data);
+  const oldSlug = view.slug;
+  if (view.name !== data.name) {
+    view.slug = uniqueSlug(
+      data.name,
+      new Set(
+        tableViews
+          .filter((otherView) => otherView.id !== view.id)
+          .map((otherView) => otherView.slug),
+      ),
+    );
+  }
+  view.name = data.name;
+  view.filters = data.filters;
+  await tableViewsStore.set(userId, tableViews);
+  getTableViews().set(tableViews);
+
+  const queryParams = QueryParams.bind(getRequestEvent().url);
+  if (queryParams.view === oldSlug && view.slug !== oldSlug) {
+    redirect(303, queryParams.patch({ view: view.slug, "manage-views": null }));
+  }
+
+  redirect(303, queryParams.patch({ "manage-views": null }));
 });
 
 /**
- * Reorders `tableViews` to match `views`, and deletes any view whose slug is missing from it. Views with `settings` are considered edited.
+ * Reorders `tableViews` to match `views`, and deletes any view whose id is missing from it. Views with `settings` are considered edited.
  *
  * `views` must be a subset of the current views - it cannot introduce new table views.
  */
 export const updateTableViews = command(
   v.array(
     v.object({
-      slug: TableViewSlugSchema,
+      id: TableViewIdSchema,
       settings: v.optional(ParsedTableViewSettingsSchema),
     }),
   ),
-  (views) => {
-    const slugs = views.map(({ slug }) => slug);
-    const viewsBySlug = new Map(tableViews.map((view) => [view.slug, view]));
+  async (views) => {
+    const userId = getCurrentUserId();
+    const currentViews = await tableViewsStore.get(userId);
+    const ids = views.map(({ id }) => id);
+    const viewsById = new Map(currentViews.map((view) => [view.id, view]));
 
-    if (new Set(slugs).size !== slugs.length) {
+    if (new Set(ids).size !== ids.length) {
       error(400, "Duplicate views are not allowed");
     }
 
-    if (slugs.some((slug) => !viewsBySlug.has(slug))) {
+    if (ids.some((id) => !viewsById.has(id))) {
       error(400, "Cannot add new table views");
     }
 
-    const removedViews = tableViews.filter(
-      (view) => !slugs.includes(view.slug),
-    );
+    const removedViews = currentViews.filter((view) => !ids.includes(view.id));
     if (removedViews.some((view) => !view.editable)) {
       error(400, "Cannot remove a table view that is not editable");
     }
 
     if (
-      views.some(
-        ({ slug, settings }) => settings && !viewsBySlug.get(slug)!.editable,
-      )
+      views.some(({ id, settings }) => settings && !viewsById.get(id)!.editable)
     ) {
       error(400, "Cannot edit a table view that is not editable");
     }
 
-    // TODO: Persist the edited views' settings
-    console.log("updateTableViews", views);
-    tableViews = slugs.map((slug) => viewsBySlug.get(slug)!);
-    getTableViews().set(tableViews);
+    const takenSlugs = new Set<string>(
+      // Initialized with the slugs of views that are not being renamed, so that the renames + reorders cannot steal slugs.
+      views.flatMap(({ id, settings }) => {
+        const view = viewsById.get(id)!;
+        return settings && settings.name !== view.name ? [] : [view.slug];
+      }),
+    );
+
+    const updatedViews = views.map(({ id, settings }) => {
+      const view = viewsById.get(id)!;
+      if (!settings) return view;
+
+      const renamed = settings.name !== view.name;
+      const slug = renamed ? uniqueSlug(settings.name, takenSlugs) : view.slug;
+      takenSlugs.add(slug);
+      const updatedView = {
+        ...view,
+        ...settings,
+        slug,
+      };
+      return updatedView;
+    });
+    await tableViewsStore.set(userId, updatedViews);
+    getTableViews().set(updatedViews);
+    return updatedViews;
   },
 );
+
+function uniqueSlug(name: string, takenSlugs: Set<string>): string {
+  const baseSlug = slugify(name) || "view";
+  let slug = baseSlug;
+  let suffix = 2;
+
+  while (takenSlugs.has(slug)) {
+    slug = `${baseSlug}-${suffix++}`;
+  }
+
+  return slug;
+}

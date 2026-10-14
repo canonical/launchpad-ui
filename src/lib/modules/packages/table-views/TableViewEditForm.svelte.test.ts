@@ -26,13 +26,19 @@ const settings: TableViewSettings = {
   filters: { ...DEFAULT_PACKAGES_FILTERS, series: "noble", ubuntuChange: true },
 };
 
-// Kit shares a `.for(slug)` form instance while it's in use, so each test gets its own view
+// Kit shares a `.for(id)` form instance while it's in use, so each test gets its own view
 let viewCount = 0;
 
 async function renderForm() {
   const onstage = vi.fn();
   const screen = await render(TableViewEditForm, {
-    view: { name: "Mine", slug: `mine-${viewCount++}`, editable: true },
+    view: {
+      id: `mine-${viewCount++}`,
+      name: "Mine",
+      slug: "mine",
+      editable: true,
+      filters: DEFAULT_PACKAGES_FILTERS,
+    },
     settings,
     cancelHref: "?panel=manage-views",
     onstage,

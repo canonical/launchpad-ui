@@ -67,7 +67,7 @@
   const nameId = subId(id, "name");
   const moreFiltersLabelId = subId(id, "more-filters-label");
 
-  const editForm = $derived(editTableView.for(view.slug));
+  const editForm = $derived(editTableView.for(view.id));
   const fields = $derived(editForm.fields);
 
   // Seeded once; values kept from a no-JS submission (e.g. a person search) take precedence

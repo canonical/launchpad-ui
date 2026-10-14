@@ -57,6 +57,7 @@
     .ds.button.popover-trigger {
       font: inherit;
       text-align: end;
+      flex-shrink: 0;
 
       .ds.button-content {
         flex-grow: 1;

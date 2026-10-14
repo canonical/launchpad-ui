@@ -11,7 +11,6 @@
   } from "$lib/modules/packages/superhref.js";
   import { preserveQueryParams } from "$lib/utils/index.js";
   import { getPackagesContext } from "../context.js";
-  import { DEFAULT_PACKAGES_FILTERS } from "../filters/constants.js";
   import TableViewEditForm from "./TableViewEditForm.svelte";
   import type { TableView } from "./constants.js";
   import type { TableViewSettings } from "./schema.js";
@@ -49,25 +48,21 @@
 
   const haveItemsChanged = $derived(
     items.length !== modifiedItems.length ||
-      items.some(({ slug }, index) => slug !== modifiedItems[index].slug) ||
+      items.some(({ id }, index) => id !== modifiedItems[index].id) ||
       modifiedItems.some(({ stagedSettings }) => stagedSettings),
   );
 
-  const willCurrentViewBeDeleted = $derived(
-    !modifiedItems.some(({ slug }) => slug === queryParams.view),
-  );
-
   const isItemEdited = $derived.by(() => {
-    const editedItemSlug = queryParams["manage-views"].edit;
-    if (!editedItemSlug) return false;
+    const editedItemId = queryParams["manage-views"].edit;
+    if (!editedItemId) return false;
     return modifiedItems.some(
-      ({ slug, editable }) => slug === editedItemSlug && editable,
+      ({ id, editable }) => id === editedItemId && editable,
     );
   });
 
-  function stageViewSettings(slug: string, settings: TableViewSettings) {
+  function stageViewSettings(id: string, settings: TableViewSettings) {
     modifiedItems = modifiedItems.map((modifiedItem) =>
-      modifiedItem.slug === slug
+      modifiedItem.id === id
         ? {
             ...modifiedItem,
             name: settings.name,
@@ -109,22 +104,22 @@
   <h3>Active views</h3>
   <ReorderableList
     bind:items={modifiedItems}
-    key={(item) => item.slug}
+    key={(item) => item.id}
     itemLabel={(item) => item.name}
     disabled={isItemEdited}
     animationDuration={suspendReorderAnimations ? 0 : undefined}
     dragMode="drop-indicator"
   >
     {#snippet item({ item, index }, renderedInOverlay)}
-      {#if item.editable && queryParams["manage-views"].edit === item.slug}
+      {#if item.editable && queryParams["manage-views"].edit === item.id}
         <TableViewEditForm
           view={item}
           settings={item.stagedSettings ?? {
             name: item.name,
-            filters: DEFAULT_PACKAGES_FILTERS,
+            filters: item.filters,
           }}
           cancelHref={queryParams["manage-views"].set("edit", null)}
-          onstage={(settings) => stageViewSettings(item.slug, settings)}
+          onstage={(settings) => stageViewSettings(item.id, settings)}
         />
       {:else}
         <ReorderableList.Item {item} {index}>
@@ -134,7 +129,7 @@
               density="dense"
               importance="tertiary"
               aria-label="Edit {item.name}"
-              href={queryParams["manage-views"].set("edit", item.slug)}
+              href={queryParams["manage-views"].set("edit", item.id)}
               disabled={isItemEdited}
             >
               {#snippet iconLeft()}
@@ -143,7 +138,7 @@
             </Button>
             {const deleteForm = $derived(
               // Only attach the form function to the real, non-overlay items
-              renderedInOverlay ? null : deleteTableView.for(item.slug),
+              renderedInOverlay ? null : deleteTableView.for(item.id),
             )}
             <form
               {...deleteForm &&
@@ -151,13 +146,10 @@
                   deleteForm.enhance(() => {
                     // If JS, don't delete immediately, and instead stage for deletion in modifiedItems
                     modifiedItems = modifiedItems.filter(
-                      ({ slug }) => slug !== item.slug,
+                      ({ id }) => id !== item.id,
                     );
                   }),
-                  // Like Save, deleting the current view falls back to the default one
-                  item.slug === queryParams.view
-                    ? new URL(queryParams.patch({ view: null }), page.url)
-                    : page.url,
+                  page.url,
                 )}
             >
               <Button
@@ -165,7 +157,7 @@
                 importance="tertiary"
                 aria-label="Delete {item.name}"
                 disabled={isItemEdited}
-                {...deleteForm?.fields.slug.as("submit", item.slug)}
+                {...deleteForm?.fields.id.as("submit", item.id)}
               >
                 {#snippet iconLeft()}
                   <DeleteIcon />
@@ -188,18 +180,25 @@
         onclick={async () => {
           saving = true;
           try {
-            await updateTableViews(
-              modifiedItems.map(({ slug, stagedSettings }) => ({
-                slug,
+            const currentView = items.find(
+              ({ slug }) => slug === queryParams.view,
+            );
+            const savedViews = await updateTableViews(
+              modifiedItems.map(({ id, stagedSettings }) => ({
+                id,
                 settings: stagedSettings,
               })),
+            );
+            const updatedView = savedViews.find(
+              ({ id }) => id === currentView?.id,
             );
             goto(
               // eslint-disable-next-line svelte/no-navigation-without-resolve
               queryParams.patch({
                 panel: null,
                 "manage-views": null,
-                ...(willCurrentViewBeDeleted ? { view: null } : {}),
+                view: updatedView?.slug ?? null,
+                ...(updatedView === undefined && { page: 1 }),
               }),
               {
                 keepFocus: true,
