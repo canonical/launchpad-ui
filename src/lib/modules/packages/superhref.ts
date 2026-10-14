@@ -74,9 +74,8 @@ const packagesQuerySchema = {
 export const QueryParams = superhref(packagesQuerySchema, {
   actions: {
     setView: (patch, _, view) => {
-      const isDefaultView = view === null || view === DEFAULT_TABLE_VIEW_SLUG;
       return patch({
-        view: isDefaultView ? null : view,
+        view: view === DEFAULT_TABLE_VIEW_SLUG ? null : view,
         page: 1,
       });
     },
