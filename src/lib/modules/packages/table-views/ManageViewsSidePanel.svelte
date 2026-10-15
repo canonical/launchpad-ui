@@ -24,6 +24,14 @@
   function isEditable(draft: ViewDraft) {
     return draft.saved?.editable ?? true;
   }
+
+  class DraftsSession {
+    drafts = $state<ViewDraft[]>([]);
+
+    constructor(items: TableView[]) {
+      this.drafts = items.map(toDraft);
+    }
+  }
 </script>
 
 <script lang="ts">
@@ -64,15 +72,19 @@
   const context = getPackagesContext();
   const queryParams = $derived(context.queryParams);
 
-  // Snapshot of the items for local modifications, with edits staged until Save
-  // svelte-ignore state_referenced_locally
-  let drafts = $state<ViewDraft[]>(items.map(toDraft));
+  // The session outlives the closing, so the content doesn't change while the panel slides out.
+  // Each opening starts a new one, fresh for local modifications.
+  let lastSession: DraftsSession | undefined;
+  const session = $derived.by(() => {
+    if (open || !lastSession)
+      lastSession = new DraftsSession(untrack(() => items));
+    return lastSession;
+  });
+
   let suspendReorderAnimations = $state(false);
-  // Refresh the snapshot each time the panel is opened. Suspend the reorder animation to not see it while panel opens.
+  // Suspend the reorder animation to not see it while panel opens.
   $effect.pre(() => {
     if (open) {
-      drafts = untrack(() => items).map(toDraft);
-
       suspendReorderAnimations = true;
       void tick().then(() => {
         suspendReorderAnimations = false;
@@ -81,15 +93,17 @@
   });
 
   const haveItemsChanged = $derived(
-    items.length !== drafts.length ||
-      items.some(({ id }, index) => id !== drafts[index].saved?.id) ||
-      drafts.some(({ changed }) => changed),
+    items.length !== session.drafts.length ||
+      items.some(({ id }, index) => id !== session.drafts[index].saved?.id) ||
+      session.drafts.some(({ changed }) => changed),
   );
 
   const isItemEdited = $derived.by(() => {
     const editedKey = queryParams["manage-views"].edit;
     if (!editedKey) return false;
-    return drafts.some((draft) => draft.key === editedKey && isEditable(draft));
+    return session.drafts.some(
+      (draft) => draft.key === editedKey && isEditable(draft),
+    );
   });
 
   const addMode = $derived(
@@ -100,7 +114,7 @@
   const isAnyFormOpen = $derived(isItemEdited || addMode !== null);
 
   function stageViewSettings(key: string, settings: TableViewSettings) {
-    const draft = drafts.find((draft) => draft.key === key);
+    const draft = session.drafts.find((draft) => draft.key === key);
     if (draft) {
       draft.settings = settings;
       draft.changed = true;
@@ -110,7 +124,7 @@
   }
 
   function stageNewView(settings: TableViewSettings) {
-    drafts.push({
+    session.drafts.push({
       key: `new-${crypto.randomUUID()}`,
       saved: null,
       settings,
@@ -137,7 +151,7 @@
     try {
       const currentView = items.find(({ slug }) => slug === queryParams.view);
       const savedViews = await updateTableViews(
-        drafts.map(({ saved, settings, changed }) =>
+        session.drafts.map(({ saved, settings, changed }) =>
           saved
             ? { id: saved.id, settings: changed ? settings : undefined }
             : { settings },
@@ -203,7 +217,7 @@
 >
   <h3>Active views</h3>
   <ReorderableList
-    bind:items={drafts}
+    bind:items={session.drafts}
     key={(draft) => draft.key}
     itemLabel={(draft) => draft.settings.name}
     disabled={isAnyFormOpen}
@@ -243,7 +257,9 @@
                 preserveQueryParams(
                   deleteForm.enhance(() => {
                     // If JS, don't delete immediately, and instead stage for deletion in drafts
-                    drafts = drafts.filter(({ key }) => key !== draft.key);
+                    session.drafts = session.drafts.filter(
+                      ({ key }) => key !== draft.key,
+                    );
                   }),
                   page.url,
                 )}
