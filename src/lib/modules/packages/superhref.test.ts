@@ -73,3 +73,34 @@ describe("package filter query parameters", () => {
     });
   });
 });
+
+describe("manage views actions", () => {
+  function bind(search: string) {
+    return QueryParams.bind(
+      new URL(`https://example.test/ubuntu/+source${search}`),
+    );
+  }
+
+  it("opens a view's edit form in place of the add form", () => {
+    expect(
+      bind("?view=mine&page=3&manage-views.add=new").editView("mine-id"),
+    ).toBe("?view=mine&page=3&panel=manage-views&manage-views.edit=mine-id");
+  });
+
+  it("opens the add form in place of an edit form", () => {
+    expect(bind("?view=mine&manage-views.edit=mine-id").addView("new")).toBe(
+      "?view=mine&panel=manage-views&manage-views.add=new",
+    );
+  });
+
+  it.each(["manage-views.edit=mine-id", "manage-views.add=new"])(
+    "closes the form opened with %s, keeping the panel open",
+    (formParam) => {
+      expect(
+        bind(`?view=mine&panel=manage-views&${formParam}`)[
+          "manage-views"
+        ].closeForm(),
+      ).toBe("?view=mine&panel=manage-views");
+    },
+  );
+});
