@@ -211,6 +211,8 @@
     display: flex;
     flex-direction: column;
     gap: var(--dimension-050);
+    border-block-end: var(--dimension-stroke-thickness-medium) solid
+      var(--color-border-muted);
 
     :global {
       .options-panel {
@@ -222,7 +224,7 @@
   .search {
     display: flex;
     align-items: center;
-    border-bottom: var(--dimension-stroke-thickness-medium) solid
+    border-block-end: var(--dimension-stroke-thickness-medium) solid
       var(--color-border-muted);
 
     :global {
@@ -275,7 +277,7 @@
     }
 
     .search {
-      border-bottom: none;
+      border-block-end: none;
       flex: none;
 
       :global {
