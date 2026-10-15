@@ -276,7 +276,8 @@ describe("updateTableViews", () => {
 
     expect(savedViews).toEqual([mine, allPackages]);
     expect(await storedViews()).toEqual(savedViews);
-    expect(mocks.setTableViews).toHaveBeenCalledWith(savedViews);
+    // The caller applies the views together with its navigation
+    expect(mocks.setTableViews).not.toHaveBeenCalled();
   });
 
   it("edits views, keeping the slug unless renamed", async () => {

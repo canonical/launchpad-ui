@@ -30,7 +30,7 @@
   import { Button } from "@canonical/svelte-ds-app-launchpad";
   import { ButtonPrimitive } from "@canonical/svelte-ds-app-launchpad/internal";
   import { DeleteIcon, EditIcon, PlusIcon } from "@canonical/svelte-icons";
-  import { tick, untrack } from "svelte";
+  import { settled, tick, untrack } from "svelte";
   import { ReorderableList } from "$lib/components/ReorderableList/index.js";
   import { SidePanel } from "$lib/launchpad-components/index.js";
   import {
@@ -47,9 +47,10 @@
     createTableView,
     deleteTableView,
     editTableView,
+    getTableViews,
     updateTableViews,
   } from "./table-views.remote.js";
-  import { goto } from "$app/navigation";
+  import { goto, replaceState } from "$app/navigation";
   import { page } from "$app/state";
 
   let {
@@ -149,7 +150,7 @@
         (updatedView === undefined ||
           packagesFiltersDiffer(updatedView.filters, currentView.filters));
 
-      goto(
+      await goto(
         // eslint-disable-next-line svelte/no-navigation-without-resolve
         queryParams.patch({
           panel: null,
@@ -160,8 +161,16 @@
         {
           keepFocus: true,
           noScroll: true,
+          // The views travel in the navigation state, so they're applied in the same update as the new URL.
+          // Otherwise the URL can briefly point at a renamed view's old slug, or vice versa.
+          state: { tableViews: savedViews },
         },
       );
+
+      getTableViews().set(savedViews);
+      // After awaited queries pick up the new state it is safe to clear the page state
+      await settled();
+      if (page.state.tableViews === savedViews) replaceState("", {});
     } catch (error) {
       console.error(error);
     }

@@ -179,7 +179,8 @@ export const updateTableViews = command(
       }),
     );
     await tableViewsStore.set(userId, updatedViews);
-    getTableViews().set(updatedViews);
+    // `getTableViews` isn't updated here: a single-flight update would apply before the caller
+    // navigates to the (possibly renamed) view's URL, so the caller updates it instead.
     return updatedViews;
   },
 );

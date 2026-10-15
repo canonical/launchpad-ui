@@ -53,7 +53,9 @@
     allStatuses: queryParams["all-statuses"],
   } satisfies PackagesFilters);
 
-  const tableViews = $derived(await getTableViews());
+  const storedTableViews = $derived(await getTableViews());
+  // Views saved by a navigation take precedence, so they're applied together with its URL
+  const tableViews = $derived(page.state.tableViews ?? storedTableViews);
   const {
     view: currentTableView,
     filters,
