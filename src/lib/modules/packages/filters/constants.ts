@@ -4,6 +4,13 @@ import type { PackagesFilters } from "./schema.js";
 export const MAX_PACKAGES_SEARCH_LENGTH = 200;
 
 export const SEARCH_MATCHES = ["contains", "exact"] as const;
+export type SearchMatch = (typeof SEARCH_MATCHES)[number];
+
+export const SEARCH_MODE_LABELS = {
+  contains: "Contain",
+  exact: "Exact Match",
+} as const satisfies Record<SearchMatch, string>;
+
 export const POCKETS = [
   "Release",
   "Security",

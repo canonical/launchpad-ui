@@ -14,6 +14,7 @@
   import BinaryPackageSidePanel from "$lib/modules/packages/binary-package/BinaryPackageSidePanel.svelte";
   import { setPackagesContext } from "$lib/modules/packages/context.js";
   import Filters from "$lib/modules/packages/filters/Filters.svelte";
+  import FiltersSummary from "$lib/modules/packages/filters/FiltersSummary.svelte";
   import type { PackagesFilters } from "$lib/modules/packages/filters/schema.js";
   import {
     getSourcePackages,
@@ -126,6 +127,8 @@
     </TableViewBar>
     {#if isDefaultView}
       <Filters />
+    {:else}
+      <FiltersSummary tableView={currentTableView} />
     {/if}
     <Table class="packages-table">
       <thead>
