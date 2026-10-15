@@ -321,6 +321,7 @@
   {/if}
   {#snippet footer(closeButtonProps)}
     <div class="footer">
+      <!-- TODO(@Enzo): Confirm the design of error reporting -->
       {#if session.saveError}
         <p class="save-error" role="alert">
           Couldn't save the views: {session.saveError}.
