@@ -11,6 +11,7 @@
     PageLayout,
     distroSegment,
   } from "$lib/launchpad-components/index.js";
+  import { getSeriesGroups } from "$lib/modules/distroseries/series.remote.js";
   import BinaryPackageSidePanel from "$lib/modules/packages/binary-package/BinaryPackageSidePanel.svelte";
   import { setPackagesContext } from "$lib/modules/packages/context.js";
   import Filters from "$lib/modules/packages/filters/Filters.svelte";
@@ -40,6 +41,9 @@
   });
 
   const tableViewsPromise = $derived(getTableViews());
+  const seriesGroupsPromise = $derived(
+    getSeriesGroups({ pillar: params.pillar }),
+  );
 
   const filters = $derived({
     search: queryParams.search,
@@ -73,6 +77,7 @@
   // untrack is to avoid registering dependencies and a state_referenced_locally warning
   untrack(() => {
     void tableViewsPromise.loading;
+    void seriesGroupsPromise.loading;
     void sourcePackagesPromise.loading;
     void sourcePackagesTotalPromise.loading;
   });
@@ -119,7 +124,7 @@
         </Button>
       {/snippet}
     </TableViewBar>
-    <Filters />
+    <Filters seriesGroups={await seriesGroupsPromise} />
     <Table class="packages-table">
       <thead>
         <tr>
@@ -256,6 +261,7 @@
 <ManageViewsSidePanel
   open={queryParams.panel === "manage-views"}
   items={tableViews}
+  seriesGroups={await seriesGroupsPromise}
 />
 
 <style>

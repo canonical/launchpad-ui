@@ -33,6 +33,7 @@
     MAX_PACKAGES_SEARCH_LENGTH,
     PACKAGES_FILTER_LABELS as labels,
   } from "../filters/constants.js";
+  import type { SeriesGroups } from "../filters/types.js";
   import { MAX_TABLE_VIEW_NAME_LENGTH } from "./constants.js";
   import type { TableView } from "./constants.js";
   import {
@@ -48,6 +49,7 @@
     settings,
     cancelHref,
     onstage,
+    seriesGroups,
   }: {
     view: TableView;
     /** The settings to start editing from. */
@@ -55,6 +57,7 @@
     cancelHref: string;
     /** Called with JS instead of submitting, so the edit is saved with the rest of the panel. */
     onstage: (settings: TableViewSettings) => void;
+    seriesGroups: SeriesGroups;
   } = $props();
 
   const id = $props.id();
@@ -167,6 +170,7 @@
       {...fields.filters.series.as("select")}
       aria-labelledby={seriesLabelId}
       position="block-end span-inline-start"
+      {seriesGroups}
     />
 
     <span id={pocketLabelId}>{labels.pocket}</span>

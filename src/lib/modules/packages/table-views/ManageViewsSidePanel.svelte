@@ -11,6 +11,7 @@
   } from "$lib/modules/packages/superhref.js";
   import { preserveQueryParams } from "$lib/utils/index.js";
   import { getPackagesContext } from "../context.js";
+  import type { SeriesGroups } from "../filters/types.js";
   import TableViewEditForm from "./TableViewEditForm.svelte";
   import type { TableView } from "./constants.js";
   import type { TableViewSettings } from "./schema.js";
@@ -21,9 +22,11 @@
   let {
     open,
     items,
+    seriesGroups,
   }: {
     open: boolean;
     items: TableView[];
+    seriesGroups: SeriesGroups;
   } = $props();
 
   const context = getPackagesContext();
@@ -120,6 +123,7 @@
           }}
           cancelHref={queryParams["manage-views"].set("edit", null)}
           onstage={(settings) => stageViewSettings(item.id, settings)}
+          {seriesGroups}
         />
       {:else}
         <ReorderableList.Item {item} {index}>

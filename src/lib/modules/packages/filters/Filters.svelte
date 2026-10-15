@@ -37,9 +37,11 @@
   import SearchModeMenu from "./SearchModeMenu.svelte";
   import SeriesFilterMenu from "./SeriesFilterMenu.svelte";
   import { PACKAGES_FILTER_LABELS as labels } from "./constants.js";
-  import type { FilterChangeHandler } from "./types.js";
+  import type { FilterChangeHandler, SeriesGroups } from "./types.js";
   import { goto } from "$app/navigation";
   import { page } from "$app/state";
+
+  const { seriesGroups }: { seriesGroups: SeriesGroups } = $props();
 
   const id = $props.id();
   const searchModeLabelId = subId(id, "search-mode-label");
@@ -141,6 +143,7 @@
           value={queryParams.series}
           onchange={submitFilters}
           aria-labelledby={seriesLabelId}
+          {seriesGroups}
         />
       </div>
       <div class="filter">

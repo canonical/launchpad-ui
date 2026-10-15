@@ -78,6 +78,7 @@ export type PersonEntry = {
 };
 
 export type DistroSeriesEntry = {
+  name: string;
   version: string;
   displayname: string;
   status: string;

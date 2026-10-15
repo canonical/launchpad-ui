@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { userEvent } from "vitest/browser";
 import { render } from "vitest-browser-svelte";
+import { seriesGroups } from "$lib/modules/distroseries/series.fixtures.js";
 import { DEFAULT_PACKAGES_FILTERS } from "../filters/constants.js";
 import TableViewEditForm from "./TableViewEditForm.svelte";
 import type { TableViewSettings } from "./schema.js";
@@ -42,6 +43,7 @@ async function renderForm() {
     settings,
     cancelHref: "?panel=manage-views",
     onstage,
+    seriesGroups,
   });
   return { screen, onstage };
 }
@@ -55,7 +57,7 @@ describe("TableViewEditForm", () => {
       .toHaveValue("Mine");
     await expect
       .element(screen.getByRole("button", { name: /^Series/ }))
-      .toHaveTextContent("24.04 LTS (Noble Numbat)");
+      .toHaveTextContent("24.04 LTS Noble");
     await expect
       .element(screen.getByRole("checkbox", { name: /changed by Ubuntu/ }))
       .toBeChecked();

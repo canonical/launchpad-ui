@@ -3,9 +3,10 @@ import type {
   DistroSeriesEntry,
   MilestoneEntry,
 } from "$lib/server/launchpad/types.js";
-import type { getSeriesOverview } from "./series.remote.js";
+import type { getSeriesGroups, getSeriesOverview } from "./series.remote.js";
 
 export const distroSeries = {
+  name: "resolute",
   version: "26.04",
   displayname: "Resolute",
   status: "Current Stable Release",
@@ -14,6 +15,46 @@ export const distroSeries = {
   web_link: "https://launchpad.net/ubuntu/resolute",
   translations_usage: "Launchpad",
 } satisfies DistroSeriesEntry;
+
+export const distroSeriesCollection = {
+  start: 0,
+  total_size: 5,
+  entries: [
+    {
+      ...distroSeries,
+      name: "stonking",
+      version: "26.10",
+      displayname: "Stonking",
+      status: "Pre-release Freeze",
+      web_link: "https://launchpad.net/ubuntu/stonking",
+    },
+    distroSeries,
+    {
+      ...distroSeries,
+      name: "questing",
+      version: "25.10",
+      displayname: "Questing",
+      status: "Obsolete",
+      web_link: "https://launchpad.net/ubuntu/questing",
+    },
+    {
+      ...distroSeries,
+      name: "noble",
+      version: "24.04",
+      displayname: "Noble",
+      status: "Supported",
+      web_link: "https://launchpad.net/ubuntu/noble",
+    },
+    {
+      ...distroSeries,
+      name: "jammy",
+      version: "22.04",
+      displayname: "Jammy",
+      status: "Supported",
+      web_link: "https://launchpad.net/ubuntu/jammy",
+    },
+  ],
+} satisfies Collection<DistroSeriesEntry>;
 
 export const activeSeriesMilestones = {
   start: 0,
@@ -70,3 +111,21 @@ export const seriesOverview = {
     },
   ],
 } satisfies Awaited<ReturnType<typeof getSeriesOverview>>;
+
+export const seriesGroups = [
+  {
+    status: "Pre-release Freeze",
+    series: [{ name: "stonking", displayName: "26.10 Stonking" }],
+  },
+  {
+    status: "Current Stable Release",
+    series: [{ name: "resolute", displayName: "26.04 LTS Resolute" }],
+  },
+  {
+    status: "Supported",
+    series: [
+      { name: "noble", displayName: "24.04 LTS Noble" },
+      { name: "jammy", displayName: "22.04 LTS Jammy" },
+    ],
+  },
+] satisfies Awaited<ReturnType<typeof getSeriesGroups>>;
