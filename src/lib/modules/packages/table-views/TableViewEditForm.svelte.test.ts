@@ -1,10 +1,11 @@
+import type { ComponentProps } from "svelte";
 import { describe, expect, it, vi } from "vitest";
 import { userEvent } from "vitest/browser";
 import { render } from "vitest-browser-svelte";
 import { DEFAULT_PACKAGES_FILTERS } from "../filters/constants.js";
 import TableViewEditForm from "./TableViewEditForm.svelte";
 import type { TableViewSettings } from "./schema.js";
-import { editTableView } from "./table-views.remote.js";
+import { createTableView, editTableView } from "./table-views.remote.js";
 
 vi.mock("$app/state", async () => {
   const { SvelteURL } = await import("svelte/reactivity");
@@ -26,21 +27,6 @@ const settings: TableViewSettings = {
   name: "Mine",
   filters: { ...DEFAULT_PACKAGES_FILTERS, series: "noble", ubuntuChange: true },
 };
-
-// Kit shares a `.for(id)` form instance while it's in use, so each test gets its own view
-let viewCount = 0;
-
-async function renderForm() {
-  const onstage = vi.fn();
-  const screen = await render(TableViewEditForm, {
-    form: editTableView.for(`mine-${viewCount++}`),
-    settings,
-    heading: "Editing – Mine",
-    cancelHref: "?panel=manage-views",
-    onstage,
-  });
-  return { screen, onstage };
-}
 
 describe("TableViewEditForm", () => {
   it("starts from the given settings", async () => {
@@ -124,4 +110,42 @@ describe("TableViewEditForm", () => {
       .element(screen.getByRole("link", { name: "Cancel" }))
       .toHaveAttribute("href", "?panel=manage-views");
   });
+
+  it("starts the create form blank after it was closed", async () => {
+    const props = {
+      form: createTableView,
+      settings: { name: "", filters: DEFAULT_PACKAGES_FILTERS },
+    };
+    const { screen: first } = await renderForm(props);
+    await first.getByRole("textbox", { name: "* View name" }).fill("Unsaved");
+    await first.getByRole("textbox", { name: "Keyword" }).fill("linux");
+    await first.unmount();
+
+    const { screen: second } = await renderForm(props);
+
+    await expect
+      .element(second.getByRole("textbox", { name: "* View name" }))
+      .toHaveValue("");
+    await expect
+      .element(second.getByRole("textbox", { name: "Keyword" }))
+      .toHaveValue("");
+  });
 });
+
+// Kit shares a `.for(id)` form instance while it's in use, so each test gets its own view
+let viewCount = 0;
+
+async function renderForm(
+  props: Partial<ComponentProps<typeof TableViewEditForm>> = {},
+) {
+  const onstage = vi.fn();
+  const screen = await render(TableViewEditForm, {
+    form: editTableView.for(`mine-${viewCount++}`),
+    settings,
+    heading: "Editing – Mine",
+    cancelHref: "?panel=manage-views",
+    onstage,
+    ...props,
+  });
+  return { screen, onstage };
+}
