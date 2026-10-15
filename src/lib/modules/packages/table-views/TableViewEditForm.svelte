@@ -1,20 +1,3 @@
-<script lang="ts" module>
-  import type { PackagesFilters } from "../filters/schema.js";
-  import type { TableViewSettings } from "./schema.js";
-
-  function areTableViewSettingsEqual(
-    a: TableViewSettings,
-    b: TableViewSettings,
-  ): boolean {
-    return (
-      a.name === b.name &&
-      (Object.keys(a.filters) as (keyof PackagesFilters)[]).every(
-        (key) => a.filters[key] === b.filters[key],
-      )
-    );
-  }
-</script>
-
 <script lang="ts">
   import {
     Button,
@@ -33,11 +16,13 @@
     MAX_PACKAGES_SEARCH_LENGTH,
     PACKAGES_FILTER_LABELS as labels,
   } from "../filters/constants.js";
+  import { packagesFiltersDiffer } from "../filters/utils.js";
   import { MAX_TABLE_VIEW_NAME_LENGTH } from "./constants.js";
   import {
     TableViewEditFormSchema,
     TableViewSettingsSchema,
   } from "./schema.js";
+  import type { TableViewSettings } from "./schema.js";
   import type { createTableView, editTableView } from "./table-views.remote.js";
   import { browser } from "$app/env";
   import { page } from "$app/state";
@@ -90,11 +75,15 @@
 
   const isUnchanged = $derived.by(() => {
     const result = v.safeParse(TableViewSettingsSchema, fields.value());
-    return result.success && areTableViewSettingsEqual(result.output, settings);
+    return (
+      result.success &&
+      result.output.name === settings.name &&
+      !packagesFiltersDiffer(result.output.filters, settings.filters)
+    );
   });
   const submitDisabled = $derived(browser && isUnchanged);
 
-  // Add form keeps its values, so clear on when closed
+  // Add form keeps its values, so clear it when closed
   $effect(() => () => {
     form.fields.set({});
   });
