@@ -34,24 +34,25 @@
     PACKAGES_FILTER_LABELS as labels,
   } from "../filters/constants.js";
   import { MAX_TABLE_VIEW_NAME_LENGTH } from "./constants.js";
-  import type { TableView } from "./constants.js";
   import {
     TableViewEditFormSchema,
     TableViewSettingsSchema,
   } from "./schema.js";
-  import { editTableView } from "./table-views.remote.js";
+  import type { createTableView, editTableView } from "./table-views.remote.js";
   import { browser } from "$app/env";
   import { page } from "$app/state";
 
   const {
-    view,
+    form,
     settings,
+    heading,
     cancelHref,
     onstage,
   }: {
-    view: TableView;
+    form: ReturnType<typeof editTableView.for> | typeof createTableView;
     /** The settings to start editing from. */
     settings: TableViewSettings;
+    heading: string;
     cancelHref: string;
     /** Called with JS instead of submitting, so the edit is saved with the rest of the panel. */
     onstage: (settings: TableViewSettings) => void;
@@ -67,8 +68,7 @@
   const nameId = subId(id, "name");
   const moreFiltersLabelId = subId(id, "more-filters-label");
 
-  const editForm = $derived(editTableView.for(view.id));
-  const fields = $derived(editForm.fields);
+  const fields = $derived(form.fields);
 
   // Seeded once; values kept from a no-JS submission (e.g. a person search) take precedence
   // svelte-ignore state_referenced_locally
@@ -94,6 +94,11 @@
   });
   const submitDisabled = $derived(browser && isUnchanged);
 
+  // Add form keeps its values, so clear on when closed
+  $effect(() => () => {
+    form.fields.set({});
+  });
+
   // Kit types a variant's discriminator as a union of fields, whose `.as()` TypeScript can't call; widen it to one field
   const intent: RemoteFormField<
     NonNullable<v.InferInput<typeof TableViewEditFormSchema>["intent"]>
@@ -102,7 +107,7 @@
 
 <form
   {...preserveQueryParams(
-    editForm.preflight(TableViewEditFormSchema).enhance(({ fields }) => {
+    form.preflight(TableViewEditFormSchema).enhance(({ fields }) => {
       onstage(v.parse(TableViewSettingsSchema, fields.value()));
     }),
     page.url,
@@ -116,7 +121,7 @@
     aria-hidden="true"
     disabled={submitDisabled}
   ></button>
-  <h4>Editing – {view.name}</h4>
+  <h4>{heading}</h4>
 
   <!-- 
     A fieldset would be more appropriate here, but there is a bug in Chrome, where it doesn't properly propagate subgrid column definitions: https://issues.chromium.org/issues/40278914

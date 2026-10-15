@@ -68,12 +68,7 @@
   {#if tableView.editable}
     <div class="actions">
       <Button
-        href={queryParams.patch({
-          panel: "manage-views",
-          "manage-views": {
-            edit: tableView.id,
-          },
-        })}
+        href={queryParams.editView(tableView.id)}
         aria-label={`Edit ${tableView.name} view`}
         importance="tertiary"
       >

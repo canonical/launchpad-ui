@@ -32,11 +32,12 @@ export const ParsedTableViewSettingsSchema = v.object({
 });
 
 const TableViewEditFormCommonEntries = {
-  id: TableViewIdSchema,
+  // Absent when creating a new view
+  id: v.optional(TableViewIdSchema),
   filters: v.optional(PackagesFiltersSchema, {}),
 };
 
-/** A table-view edit submission: confirmation, maintainer search, or signer search. */
+/** A table-view edit or creation submission: confirmation, maintainer search, or signer search. */
 export const TableViewEditFormSchema = v.variant("intent", [
   v.object({
     ...TableViewEditFormCommonEntries,

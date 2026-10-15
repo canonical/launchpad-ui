@@ -17,7 +17,7 @@ describe("package filter query parameters", () => {
       sort: { key: null, direction: "none", cycle: expect.any(Function) },
       view: DEFAULT_TABLE_VIEW_SLUG,
       panel: null,
-      "manage-views": { edit: null },
+      "manage-views": { edit: null, add: null },
       search: "superhref",
       match: "exact",
       series: "stonking",
