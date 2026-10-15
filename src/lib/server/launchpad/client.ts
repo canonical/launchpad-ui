@@ -39,6 +39,12 @@ export function getDistroSeries(
   return getJson(seriesUrl(distro, series));
 }
 
+export function getDistroSeriesCollection(
+  distro: string,
+): Promise<Collection<DistroSeriesEntry>> {
+  return getJson(`${apiBase()}/${encodeURIComponent(distro)}/series`);
+}
+
 export function getActiveSeriesMilestones(
   distro: string,
   series: string,

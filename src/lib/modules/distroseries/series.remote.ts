@@ -4,6 +4,7 @@ import {
   LaunchpadApiError,
   getActiveSeriesMilestones,
   getDistroSeries,
+  getDistroSeriesCollection,
 } from "$lib/server/launchpad/client.js";
 import type { DistroSeriesEntry } from "$lib/server/launchpad/types.js";
 import { LAUNCHPAD_NAME_PATTERN } from "$lib/utils/launchpad/launchpadName.js";
@@ -26,7 +27,7 @@ export const getSeriesOverview = query(
       const seriesPath = new URL(entry.web_link).pathname;
 
       return {
-        displayName: `${entry.version}${isLts(entry, pillar) ? " LTS" : ""} ${entry.displayname}`,
+        displayName: seriesDisplayName(entry, pillar),
         distribution: {
           displayName: pillar.charAt(0).toUpperCase() + pillar.slice(1),
           url: `/${pillar}`,
@@ -61,6 +62,34 @@ export const getSeriesOverview = query(
     }
   },
 );
+
+export const getSeriesGroups = query(
+  v.object({ pillar: nameSchema }),
+  async ({ pillar }) => {
+    try {
+      const { entries } = await getDistroSeriesCollection(pillar);
+      const entriesByStatus = Map.groupBy(
+        entries.filter((entry) => entry.status !== "Obsolete"),
+        (entry) => entry.status,
+      );
+
+      return Array.from(entriesByStatus, ([status, statusEntries]) => ({
+        status,
+        series: statusEntries.map((entry) => ({
+          name: entry.name,
+          displayName: seriesDisplayName(entry, pillar),
+        })),
+      }));
+    } catch (requestError) {
+      console.error("Failed to load distro series", requestError);
+      return [];
+    }
+  },
+);
+
+function seriesDisplayName(entry: DistroSeriesEntry, pillar: string) {
+  return `${entry.version}${isLts(entry, pillar) ? " LTS" : ""} ${entry.displayname}`;
+}
 
 // TODO: Bring it up during the sprint in Mexico. Update with the decision. This code shouldn't be here in 2027
 // A very bad way to determine if a series is LTS

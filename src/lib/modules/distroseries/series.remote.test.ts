@@ -3,9 +3,11 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   activeSeriesMilestones,
   distroSeries,
+  distroSeriesCollection,
+  seriesGroups,
   seriesOverview,
 } from "./series.fixtures.js";
-import { getSeriesOverview } from "./series.remote.js";
+import { getSeriesGroups, getSeriesOverview } from "./series.remote.js";
 
 vi.mock("$app/server", () => ({
   query: (schema: v.GenericSchema, handler: (args: unknown) => unknown) =>
@@ -277,6 +279,123 @@ describe("series overview query", () => {
     { pillar: "ubuntu", series: "../resolute" },
   ])("rejects invalid query arguments: %j", async (args) => {
     await expect(getSeriesOverview(args)).rejects.toBeInstanceOf(v.ValiError);
+    expect(launchpadFetch).not.toHaveBeenCalled();
+  });
+});
+
+describe("series groups query", () => {
+  beforeEach(() => {
+    launchpadFetch.mockImplementation(async () =>
+      jsonResponse(distroSeriesCollection),
+    );
+  });
+
+  it("groups the non-obsolete series by status in Launchpad's order with one request", async () => {
+    await expect(getSeriesGroups({ pillar: "ubuntu" })).resolves.toEqual(
+      seriesGroups,
+    );
+    expect(launchpadFetch.mock.calls.map(([url]) => url)).toEqual([
+      "https://lp.example/api/devel/ubuntu/series",
+    ]);
+  });
+
+  it("keeps Debian's experimental series and labels no LTS outside Ubuntu", async () => {
+    launchpadFetch.mockImplementation(async () =>
+      jsonResponse({
+        start: 0,
+        entries: [
+          {
+            name: "experimental",
+            version: "99",
+            displayname: "Experimental",
+            status: "Experimental",
+          },
+          {
+            name: "sid",
+            version: "98",
+            displayname: "Sid",
+            status: "Active Development",
+          },
+          {
+            name: "forky",
+            version: "14",
+            displayname: "Forky",
+            status: "Active Development",
+          },
+          {
+            name: "trixie",
+            version: "13",
+            displayname: "Trixie",
+            status: "Current Stable Release",
+          },
+          {
+            name: "bookworm",
+            version: "12",
+            displayname: "Bookworm",
+            status: "Supported",
+          },
+          {
+            name: "bullseye",
+            version: "11",
+            displayname: "Bullseye",
+            status: "Obsolete",
+          },
+        ],
+      }),
+    );
+
+    await expect(getSeriesGroups({ pillar: "debian" })).resolves.toEqual([
+      {
+        status: "Experimental",
+        series: [{ name: "experimental", displayName: "99 Experimental" }],
+      },
+      {
+        status: "Active Development",
+        series: [
+          { name: "sid", displayName: "98 Sid" },
+          { name: "forky", displayName: "14 Forky" },
+        ],
+      },
+      {
+        status: "Current Stable Release",
+        series: [{ name: "trixie", displayName: "13 Trixie" }],
+      },
+      {
+        status: "Supported",
+        series: [{ name: "bookworm", displayName: "12 Bookworm" }],
+      },
+    ]);
+    expect(
+      launchpadFetch.mock.calls.map(([url]) => new URL(url).pathname),
+    ).toEqual(["/api/devel/debian/series"]);
+  });
+
+  it("logs and falls back to no groups when Launchpad fails", async () => {
+    const log = vi.spyOn(console, "error").mockImplementation(() => {});
+    launchpadFetch.mockImplementation(async () => jsonResponse({}, 503));
+
+    await expect(getSeriesGroups({ pillar: "ubuntu" })).resolves.toEqual([]);
+    expect(log).toHaveBeenCalledWith(
+      "Failed to load distro series",
+      expect.objectContaining({ name: "LaunchpadApiError", status: 503 }),
+    );
+  });
+
+  it("logs network failures and falls back to no groups", async () => {
+    const failure = new TypeError("Connection failed");
+    const log = vi.spyOn(console, "error").mockImplementation(() => {});
+    launchpadFetch.mockRejectedValue(failure);
+
+    await expect(getSeriesGroups({ pillar: "ubuntu" })).resolves.toEqual([]);
+    expect(log).toHaveBeenCalledWith("Failed to load distro series", failure);
+  });
+
+  it.each([
+    { pillar: "" },
+    { pillar: "Invalid Name" },
+    { pillar: "../ubuntu" },
+  ])("rejects invalid query arguments: %j", async (args) => {
+    await expect(getSeriesGroups(args)).rejects.toBeInstanceOf(v.ValiError);
     expect(launchpadFetch).not.toHaveBeenCalled();
   });
 });

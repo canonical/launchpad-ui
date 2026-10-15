@@ -10,6 +10,7 @@
     PageLayout,
     distroSegment,
   } from "$lib/launchpad-components/index.js";
+  import { getSeriesGroups } from "$lib/modules/distroseries/series.remote.js";
   import BinaryPackagesList from "$lib/modules/packages/BinaryPackagesList.svelte";
   import BinaryPackageSidePanel from "$lib/modules/packages/binary-package/BinaryPackageSidePanel.svelte";
   import { setPackagesContext } from "$lib/modules/packages/context.js";
@@ -40,8 +41,10 @@
     },
   });
 
+  const seriesGroupsPromise = $derived(
+    getSeriesGroups({ pillar: params.pillar }),
+  );
   const urlFilters = $derived(toPackagesFilters(queryParams));
-
   const storedTableViews = $derived(await getTableViews());
   // Views saved by a navigation take precedence, so they're applied together with its URL
   const tableViews = $derived(page.state.tableViews ?? storedTableViews);
@@ -94,7 +97,7 @@
       {/snippet}
     </TableViewBar>
     {#if isDefaultView}
-      <Filters />
+      <Filters seriesGroups={await seriesGroupsPromise} />
     {:else}
       <FiltersSummary tableView={currentTableView} />
     {/if}
@@ -238,7 +241,10 @@
 </PageLayout>
 
 <BinaryPackageSidePanel {distro} binaryId={queryParams["binary-package"]} />
-<ManageViewsSidePanel open={queryParams.panel === "manage-views"} />
+<ManageViewsSidePanel
+  open={queryParams.panel === "manage-views"}
+  seriesGroups={await seriesGroupsPromise}
+/>
 
 <style>
   .packages {

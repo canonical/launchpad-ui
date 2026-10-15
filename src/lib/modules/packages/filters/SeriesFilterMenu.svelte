@@ -1,40 +1,8 @@
-<script lang="ts" module>
-  // TODO: Fetch series from Launchpad
-  const seriesGroups = [
-    {
-      label: "Active development",
-      options: [{ value: "stonking", label: "26.10 (Stonking Stingray)" }],
-    },
-    {
-      label: "Latest LTS",
-      options: [{ value: "resolute", label: "26.04 LTS (Resolute Raccoon)" }],
-    },
-    {
-      label: "Supported",
-      options: [
-        { value: "questing", label: "25.10 (Questing Quokka)" },
-        { value: "noble", label: "24.04 LTS (Noble Numbat)" },
-        { value: "jammy", label: "22.04 LTS (Jammy Jellyfish)" },
-        { value: "focal", label: "20.04 LTS (Focal Fossa)" },
-        { value: "bionic", label: "18.04 LTS (Bionic Beaver)" },
-        { value: "xenial", label: "16.04 LTS (Xenial Xerus)" },
-        { value: "trusty", label: "14.04 LTS (Trusty Tahr)" },
-      ],
-    },
-  ] as const;
-
-  const seriesLabels = Object.fromEntries(
-    seriesGroups.flatMap((group) =>
-      group.options.map((option) => [option.value, option.label] as const),
-    ),
-  ) as Record<string, string>;
-</script>
-
 <script lang="ts">
   import { Popover } from "@canonical/svelte-ds-app-launchpad";
   import { ContextualMenuContent } from "$lib/components/index.js";
   import { PopoverTrigger } from "$lib/launchpad-components/index.js";
-  import type { ChoiceFilterProps } from "./types.js";
+  import type { ChoiceFilterProps, SeriesGroups } from "./types.js";
 
   const {
     name,
@@ -42,13 +10,22 @@
     onchange,
     position,
     "aria-labelledby": ariaLabelledBy,
-  }: ChoiceFilterProps<string | null> = $props();
+    seriesGroups,
+  }: ChoiceFilterProps<string | null> & {
+    seriesGroups: SeriesGroups;
+  } = $props();
+
+  const selectedSeries = $derived(
+    seriesGroups
+      .flatMap((group) => group.series)
+      .find((series) => series.name === value),
+  );
 </script>
 
 <Popover {position}>
   {#snippet trigger(triggerProps)}
     <PopoverTrigger aria-labelledby={ariaLabelledBy} {...triggerProps}>
-      {value && seriesLabels[value] ? seriesLabels[value] : "All"}
+      {selectedSeries?.displayName ?? (value || "All")}
     </PopoverTrigger>
   {/snippet}
   <ContextualMenuContent>
@@ -60,16 +37,25 @@
         checked={!value}
         onchange={(e) => onchange?.(e, null)}
       />
+      {#if value && !selectedSeries}
+        <ContextualMenuContent.RadioItem
+          {name}
+          {value}
+          text={value}
+          checked
+          onchange={(e) => onchange?.(e, value)}
+        />
+      {/if}
     </ContextualMenuContent.Group>
-    {#each seriesGroups as group (group.label)}
-      <ContextualMenuContent.Group groupTitle={group.label}>
-        {#each group.options as option (option.value)}
+    {#each seriesGroups as group (group.status)}
+      <ContextualMenuContent.Group groupTitle={group.status}>
+        {#each group.series as series (series.name)}
           <ContextualMenuContent.RadioItem
             {name}
-            value={option.value}
-            text={option.label}
-            checked={value === option.value}
-            onchange={(e) => onchange?.(e, option.value)}
+            value={series.name}
+            text={series.displayName}
+            checked={value === series.name}
+            onchange={(e) => onchange?.(e, series.name)}
           />
         {/each}
       </ContextualMenuContent.Group>

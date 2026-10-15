@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { userEvent } from "vitest/browser";
 import { render } from "vitest-browser-svelte";
+import { seriesGroups } from "$lib/modules/distroseries/series.fixtures.js";
 import Filters from "./Filters.svelte";
 import { goto } from "$app/navigation";
 import { page } from "$app/state";
@@ -56,7 +57,7 @@ describe("Filters", () => {
     page.url.search =
       "?search=linux&match=exact&maintainer=alice&signer=bob&series=noble" +
       "&pocket=Proposed&all-statuses=1";
-    const screen = await render(Filters);
+    const screen = await render(Filters, { seriesGroups });
 
     await expect
       .element(screen.getByRole("searchbox", { name: "Search packages" }))
@@ -65,7 +66,7 @@ describe("Filters", () => {
       "Search mode: Exact Match",
       "Maintained by: Display alice",
       "Signed by: Display bob",
-      "Series: 24.04 LTS (Noble Numbat)",
+      "Series: 24.04 LTS Noble",
       "Pocket: Proposed",
       "More filters: 1 active",
     ]) {
@@ -74,7 +75,7 @@ describe("Filters", () => {
   });
 
   it.each([
-    ["Series", "radio", "24.04 LTS (Noble Numbat)", { series: "noble" }],
+    ["Series", "radio", "24.04 LTS Noble", { series: "noble" }],
     ["Pocket", "radio", "Updates", { pocket: "Updates" }],
     ["Search mode", "radio", "Exact Match", { match: "exact" }],
     [
@@ -93,7 +94,7 @@ describe("Filters", () => {
     "applies the %s filter on the first page, keeping other params",
     async (trigger, role, name, applied) => {
       page.url.search = "?sort=series&pocket=Release&page=3&page-size=50";
-      const screen = await render(Filters);
+      const screen = await render(Filters, { seriesGroups });
       const submitted = submittedParams(screen.container);
 
       await screen
@@ -113,7 +114,7 @@ describe("Filters", () => {
 
   it("applies the search on Enter", async () => {
     page.url.search = "?page=3";
-    const screen = await render(Filters);
+    const screen = await render(Filters, { seriesGroups });
     const submitted = submittedParams(screen.container);
 
     await screen
@@ -127,7 +128,7 @@ describe("Filters", () => {
   it("restores person searches submitted without JS and drops them from the URL", async () => {
     vi.mocked(goto).mockClear();
     page.url.search = "?maintainer-search=alice&signer-search=bob&page=2";
-    const screen = await render(Filters);
+    const screen = await render(Filters, { seriesGroups });
 
     await screen.getByRole("button", { name: /^Maintained by:/ }).click();
     await expect
@@ -144,7 +145,7 @@ describe("Filters", () => {
     page.url.search =
       "?sort=series&search=linux&match=exact&maintainer=alice&signer=bob" +
       "&series=noble&pocket=Proposed&ubuntu-change=1&all-statuses=1&page=3";
-    const screen = await render(Filters);
+    const screen = await render(Filters, { seriesGroups });
 
     await expect
       .element(screen.getByRole("link", { name: "Clear all filters" }))
@@ -153,7 +154,7 @@ describe("Filters", () => {
 
   it("offers to bookmark the active filters as a new view", async () => {
     page.url.search = "?search=linux&series=noble&page=3";
-    const screen = await render(Filters);
+    const screen = await render(Filters, { seriesGroups });
 
     const link = screen.getByRole("link", { name: "Save current filters" });
     await expect.element(link).toBeVisible();
@@ -171,7 +172,7 @@ describe("Filters", () => {
     ["only a search mode", "?match=exact"],
   ])("does not offer to clear or bookmark %s", async (_, search) => {
     page.url.search = search;
-    const screen = await render(Filters);
+    const screen = await render(Filters, { seriesGroups });
 
     await expect
       .element(screen.getByRole("button", { name: /^Series:/ }))
