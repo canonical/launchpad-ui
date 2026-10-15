@@ -27,9 +27,15 @@
 
   class DraftsSession {
     drafts = $state<ViewDraft[]>([]);
+    saveError = $state<string | null>(null);
 
     constructor(items: TableView[]) {
+      this.restart(items);
+    }
+
+    restart(items: TableView[]) {
       this.drafts = items.map(toDraft);
+      this.saveError = null;
     }
   }
 </script>
@@ -38,6 +44,7 @@
   import { Button } from "@canonical/svelte-ds-app-launchpad";
   import { ButtonPrimitive } from "@canonical/svelte-ds-app-launchpad/internal";
   import { DeleteIcon, EditIcon, PlusIcon } from "@canonical/svelte-icons";
+  import { isHttpError } from "@sveltejs/kit";
   import { settled, tick, untrack } from "svelte";
   import { ReorderableList } from "$lib/components/ReorderableList/index.js";
   import { SidePanel } from "$lib/launchpad-components/index.js";
@@ -61,13 +68,9 @@
   import { goto, replaceState } from "$app/navigation";
   import { page } from "$app/state";
 
-  let {
-    open,
-    items,
-  }: {
-    open: boolean;
-    items: TableView[];
-  } = $props();
+  let { open }: { open: boolean } = $props();
+
+  const items = $derived(await getTableViews());
 
   const context = getPackagesContext();
   const queryParams = $derived(context.queryParams);
@@ -142,21 +145,36 @@
     });
   }
 
-  let saving = $state(false);
+  /** Starts over from the latest views, which may have changed elsewhere (e.g. in another tab). */
+  async function restartSession() {
+    const tableViews = getTableViews();
+    await tableViews.refresh();
+    session.restart(tableViews.current!);
+  }
 
+  let saving = $state(false);
   async function saveViews() {
     saving = true;
+    session.saveError = null;
     await tick();
 
     try {
       const currentView = items.find(({ slug }) => slug === queryParams.view);
-      const savedViews = await updateTableViews(
-        session.drafts.map(({ saved, settings, changed }) =>
-          saved
-            ? { id: saved.id, settings: changed ? settings : undefined }
-            : { settings },
-        ),
-      );
+      let savedViews: TableView[];
+      try {
+        savedViews = await updateTableViews(
+          session.drafts.map(({ saved, settings, changed }) =>
+            saved
+              ? { id: saved.id, settings: changed ? settings : undefined }
+              : { settings },
+          ),
+        );
+      } catch (error) {
+        session.saveError = isHttpError(error)
+          ? error.body.message
+          : "Something went wrong";
+        return;
+      }
       const updatedView = savedViews.find(({ id }) => id === currentView?.id);
 
       const shouldResetPage =
@@ -187,9 +205,9 @@
       if (page.state.tableViews === savedViews) replaceState("", {});
     } catch (error) {
       console.error(error);
+    } finally {
+      saving = false;
     }
-
-    saving = false;
   }
 </script>
 
@@ -303,16 +321,31 @@
   {/if}
   {#snippet footer(closeButtonProps)}
     <div class="footer">
+      {#if session.saveError}
+        <p class="save-error" role="alert">
+          Couldn't save the views: {session.saveError}.
+        </p>
+      {/if}
       <Button {...closeButtonProps} importance="tertiary">Cancel</Button>
-      <Button
-        disabled={!haveItemsChanged}
-        loading={saving}
-        importance="primary"
-        anticipation="constructive"
-        onclick={() => saveViews()}
-      >
-        Save
-      </Button>
+      {#if session.saveError}
+        <Button
+          importance="secondary"
+          loading={getTableViews().loading}
+          onclick={() => restartSession()}
+        >
+          Reload views
+        </Button>
+      {:else}
+        <Button
+          disabled={!haveItemsChanged}
+          loading={saving}
+          importance="primary"
+          anticipation="constructive"
+          onclick={() => saveViews()}
+        >
+          Save
+        </Button>
+      {/if}
     </div>
   {/snippet}
 </SidePanel>
@@ -334,6 +367,11 @@
         padding-inline-start: var(--dimension-050);
       }
     }
+  }
+
+  .save-error {
+    flex-basis: 100%;
+    color: var(--color-text-error);
   }
 
   .footer {

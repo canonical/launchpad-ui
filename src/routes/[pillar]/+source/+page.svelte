@@ -265,10 +265,7 @@
 </PageLayout>
 
 <BinaryPackageSidePanel name={queryParams["binary-package"]} />
-<ManageViewsSidePanel
-  open={queryParams.panel === "manage-views"}
-  items={tableViews}
-/>
+<ManageViewsSidePanel open={queryParams.panel === "manage-views"} />
 
 <style>
   .packages {
