@@ -3,6 +3,7 @@ import * as v from "valibot";
 import { tableViewsStore } from "$lib/server/table-views/index.js";
 import { getCurrentUserId } from "$lib/server/user.js";
 import { slugify } from "$lib/utils/slugify.js";
+import { packagesFiltersDiffer } from "../filters/utils.js";
 import { QueryParams } from "../superhref.js";
 import type { TableView } from "./constants.js";
 import {
@@ -71,7 +72,11 @@ export const editTableView = form(TableViewEditFormSchema, async (data) => {
     invalid("The view hasn't been saved yet");
   }
 
+  const queryParams = QueryParams.bind(getRequestEvent().url);
+  const isEditingCurrentView = queryParams.view === view.slug;
+  const hasFiltersChanged = packagesFiltersDiffer(view.filters, data.filters);
   const oldSlug = view.slug;
+
   if (view.name !== data.name) {
     view.slug = uniqueSlug(
       data.name,
@@ -87,9 +92,15 @@ export const editTableView = form(TableViewEditFormSchema, async (data) => {
   await tableViewsStore.set(userId, tableViews);
   getTableViews().set(tableViews);
 
-  const queryParams = QueryParams.bind(getRequestEvent().url);
-  if (queryParams.view === oldSlug && view.slug !== oldSlug) {
-    redirect(303, queryParams.patch({ view: view.slug, "manage-views": null }));
+  if (isEditingCurrentView) {
+    redirect(
+      303,
+      queryParams.patch({
+        "manage-views": null,
+        ...(oldSlug !== view.slug && { view: view.slug }),
+        ...(hasFiltersChanged && { page: 1 }),
+      }),
+    );
   }
 
   redirect(303, queryParams.patch({ "manage-views": null }));

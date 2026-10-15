@@ -165,6 +165,44 @@ describe("editTableView", () => {
     ).rejects.toSatisfy(expectRedirect("?view=ours"));
   });
 
+  it("resets the page when the current view's filters change", async () => {
+    mocks.url = new URL(
+      "https://launchpad.test/ubuntu/+source?view=mine&page=3&manage-views.edit=mine",
+    );
+
+    await expect(
+      submit(editTableView, {
+        id: mine.id,
+        name: "Mine",
+        filters: { series: "noble" },
+      }),
+    ).rejects.toSatisfy(expectRedirect("?view=mine"));
+  });
+
+  it("keeps the page when the current view's filters are unchanged", async () => {
+    mocks.url = new URL(
+      "https://launchpad.test/ubuntu/+source?view=mine&page=3&manage-views.edit=mine",
+    );
+
+    await expect(
+      submit(editTableView, { id: mine.id, name: "Mine" }),
+    ).rejects.toSatisfy(expectRedirect("?view=mine&page=3"));
+  });
+
+  it("keeps the page when editing a view other than the current one", async () => {
+    mocks.url = new URL(
+      "https://launchpad.test/ubuntu/+source?view=resolute&page=3&manage-views.edit=mine",
+    );
+
+    await expect(
+      submit(editTableView, {
+        id: mine.id,
+        name: "Mine",
+        filters: { series: "noble" },
+      }),
+    ).rejects.toSatisfy(expectRedirect("?view=resolute&page=3"));
+  });
+
   it("keeps the submitted values without saving for a person search", async () => {
     await expect(
       submit(editTableView, {

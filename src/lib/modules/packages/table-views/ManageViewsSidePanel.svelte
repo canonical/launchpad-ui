@@ -41,6 +41,7 @@
   import { preserveQueryParams } from "$lib/utils/index.js";
   import { getPackagesContext } from "../context.js";
   import { DEFAULT_PACKAGES_FILTERS } from "../filters/constants.js";
+  import { packagesFiltersDiffer } from "../filters/utils.js";
   import TableViewEditForm from "./TableViewEditForm.svelte";
   import {
     createTableView,
@@ -127,6 +128,46 @@
   }
 
   let saving = $state(false);
+
+  async function saveViews() {
+    saving = true;
+    await tick();
+
+    try {
+      const currentView = items.find(({ slug }) => slug === queryParams.view);
+      const savedViews = await updateTableViews(
+        drafts.map(({ saved, settings, changed }) =>
+          saved
+            ? { id: saved.id, settings: changed ? settings : undefined }
+            : { settings },
+        ),
+      );
+      const updatedView = savedViews.find(({ id }) => id === currentView?.id);
+
+      const shouldResetPage =
+        currentView &&
+        (updatedView === undefined ||
+          packagesFiltersDiffer(updatedView.filters, currentView.filters));
+
+      goto(
+        // eslint-disable-next-line svelte/no-navigation-without-resolve
+        queryParams.patch({
+          panel: null,
+          "manage-views": null,
+          view: updatedView?.slug ?? null,
+          ...(shouldResetPage && { page: 1 }),
+        }),
+        {
+          keepFocus: true,
+          noScroll: true,
+        },
+      );
+    } catch (error) {
+      console.error(error);
+    }
+
+    saving = false;
+  }
 </script>
 
 <SidePanel
@@ -243,41 +284,7 @@
         loading={saving}
         importance="primary"
         anticipation="constructive"
-        onclick={async () => {
-          saving = true;
-          try {
-            const currentView = items.find(
-              ({ slug }) => slug === queryParams.view,
-            );
-            const savedViews = await updateTableViews(
-              drafts.map(({ saved, settings, changed }) =>
-                saved
-                  ? { id: saved.id, settings: changed ? settings : undefined }
-                  : { settings },
-              ),
-            );
-            const updatedView = savedViews.find(
-              ({ id }) => id === currentView?.id,
-            );
-            goto(
-              // eslint-disable-next-line svelte/no-navigation-without-resolve
-              queryParams.patch({
-                panel: null,
-                "manage-views": null,
-                view: updatedView?.slug ?? null,
-                ...(updatedView === undefined && { page: 1 }),
-              }),
-              {
-                keepFocus: true,
-                noScroll: true,
-              },
-            );
-          } catch (error) {
-            console.error(error);
-          }
-
-          saving = false;
-        }}
+        onclick={() => saveViews()}
       >
         Save
       </Button>
