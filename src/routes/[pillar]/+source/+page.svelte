@@ -1,7 +1,6 @@
 <script lang="ts">
   import { Button, Link, Table } from "@canonical/svelte-ds-app-launchpad";
   import { SettingsIcon } from "@canonical/svelte-icons";
-  import { untrack } from "svelte";
   import {
     Pagination,
     QueryParamsForm,
@@ -11,15 +10,13 @@
     PageLayout,
     distroSegment,
   } from "$lib/launchpad-components/index.js";
+  import BinaryPackagesList from "$lib/modules/packages/BinaryPackagesList.svelte";
   import BinaryPackageSidePanel from "$lib/modules/packages/binary-package/BinaryPackageSidePanel.svelte";
   import { setPackagesContext } from "$lib/modules/packages/context.js";
   import Filters from "$lib/modules/packages/filters/Filters.svelte";
   import FiltersSummary from "$lib/modules/packages/filters/FiltersSummary.svelte";
   import type { PackagesFilters } from "$lib/modules/packages/filters/schema.js";
-  import {
-    getSourcePackages,
-    getSourcePackagesTotal,
-  } from "$lib/modules/packages/packages.remote.js";
+  import { getSourcePackages } from "$lib/modules/packages/packages.remote.js";
   import {
     PACKAGES_TABLE_COLUMNS,
     PAGE_SIZE_OPTIONS,
@@ -34,6 +31,7 @@
 
   const { params }: PageProps = $props();
 
+  const distro = $derived(params.pillar);
   const queryParams = $derived(QueryParams.bind(page.url));
 
   setPackagesContext({
@@ -62,9 +60,9 @@
     isDefaultView,
   } = $derived(resolveTableView(queryParams.view, tableViews, urlFilters));
 
-  const sourcePackagesPromise = $derived(
-    getSourcePackages({
-      distro: params.pillar,
+  const sourcePackages = $derived(
+    await getSourcePackages({
+      distro,
       ...filters,
       sortKey: queryParams.sort.key,
       sortOrder: queryParams.sort.direction,
@@ -72,38 +70,15 @@
       size: queryParams["page-size"],
     }),
   );
-  const sourcePackagesTotalPromise = $derived(
-    getSourcePackagesTotal({
-      distro: params.pillar,
-      ...filters,
-    }),
-  );
-
-  // loading is to actually run promises in parallel https://github.com/sveltejs/svelte/issues/16483#issuecomment-4803286374
-  // untrack is to avoid registering dependencies and a state_referenced_locally warning
-  untrack(() => {
-    void sourcePackagesPromise.loading;
-    void sourcePackagesTotalPromise.loading;
-  });
-
-  const { data, hasNext } = $derived(await sourcePackagesPromise);
-
-  const total = $derived((await sourcePackagesTotalPromise) ?? undefined);
-
-  const totalPages = $derived(
-    total === undefined
-      ? undefined
-      : Math.max(1, Math.ceil(total / queryParams["page-size"])),
-  );
 </script>
 
 <svelte:head>
-  <title>{params.pillar} packages — Launchpad</title>
+  <title>{distro} packages — Launchpad</title>
 </svelte:head>
 
 <!-- TODO(@Enzo): Mobile layout -->
 <PageLayout
-  breadcrumbsSegments={[distroSegment(params.pillar), { label: "Packages" }]}
+  breadcrumbsSegments={[distroSegment(distro), { label: "Packages" }]}
 >
   <div class="packages">
     <h1>Packages</h1>
@@ -164,12 +139,12 @@
         </tr>
       </thead>
       <tbody>
-        {#each data as item (item.self_link)}
+        {#each sourcePackages.sources as item (item.id)}
           <tr>
             <th scope="row">
               <Link
                 href={resolve("/[pillar]/+source/[name]", {
-                  pillar: params.pillar,
+                  pillar: distro,
                   name: item.source_package_name,
                 })}
                 soft
@@ -178,9 +153,15 @@
               </Link>
               - {item.source_package_version}
             </th>
-            <td>{item.distro_series_link.split("/").pop() ?? ""}</td>
+            <td>{item.series}</td>
             <td>{item.pocket}</td>
-            <td></td>
+            <td>
+              <BinaryPackagesList
+                binaries={item.binaries}
+                total={item.binaries_total}
+                href={(id) => queryParams.set("binary-package", String(id))}
+              />
+            </td>
             <td>{item.status}</td>
           </tr>
         {/each}
@@ -214,7 +195,10 @@
             <Button type="submit" importance="tertiary">Apply</Button>
           </noscript>
         </QueryParamsForm>
-        <Pagination.ItemsCount showing={data.length} {total} />
+        <Pagination.ItemsCount
+          showing={sourcePackages.sources.length}
+          total={sourcePackages.total}
+        />
       {/snippet}
       {#snippet rightGroup()}
         <QueryParamsForm
@@ -227,7 +211,7 @@
           <Pagination.PageInput
             name="page"
             value={queryParams.page}
-            {totalPages}
+            totalPages={Math.max(1, sourcePackages.total_pages)}
           />
           <noscript>
             <Button type="submit" importance="tertiary">Go</Button>
@@ -249,22 +233,20 @@
       <Pagination.PageNavigation
         direction="next"
         href={queryParams.set("page", queryParams.page + 1)}
-        disabled={!hasNext}
+        disabled={sourcePackages.page >= sourcePackages.total_pages}
         data-sveltekit-keepfocus
       />
-      {#if totalPages !== undefined}
-        <Pagination.PageNavigation
-          direction="last"
-          href={queryParams.set("page", totalPages)}
-          disabled={queryParams.page >= totalPages}
-          data-sveltekit-keepfocus
-        />
-      {/if}
+      <Pagination.PageNavigation
+        direction="last"
+        href={queryParams.set("page", Math.max(1, sourcePackages.total_pages))}
+        disabled={queryParams.page >= sourcePackages.total_pages}
+        data-sveltekit-keepfocus
+      />
     </Pagination>
   </div>
 </PageLayout>
 
-<BinaryPackageSidePanel name={queryParams["binary-package"]} />
+<BinaryPackageSidePanel {distro} binaryId={queryParams["binary-package"]} />
 <ManageViewsSidePanel open={queryParams.panel === "manage-views"} />
 
 <style>

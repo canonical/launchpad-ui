@@ -1,5 +1,7 @@
 <script lang="ts">
   import { Spinner } from "@canonical/svelte-ds-app-launchpad";
+  import { isHttpError } from "@sveltejs/kit";
+  import { untrack } from "svelte";
   import { PartialTextDisclosure } from "$lib/components/index.js";
   import { SidePanel } from "$lib/launchpad-components/index.js";
   import { getPackagesContext } from "../context.js";
@@ -10,20 +12,28 @@
   import { goto } from "$app/navigation";
 
   let {
-    name,
+    distro,
+    binaryId,
   }: {
-    name: string | null;
+    distro: string;
+    binaryId: string | null;
   } = $props();
 
   const context = getPackagesContext();
   const queryParams = $derived(context.queryParams);
 
-  const open = $derived(Boolean(name));
-  const binaryPackage = $derived(name ? getBinaryPackage(name) : undefined);
+  const open = $derived(binaryId !== null);
+  const binaryPackage = $derived(
+    binaryId !== null ? getBinaryPackage({ distro, binaryId }) : undefined,
+  );
+  const serverDetails = browser
+    ? undefined
+    : await untrack(() => binaryPackage);
 </script>
 
 <SidePanel
-  title={name ?? undefined}
+  title={(browser ? binaryPackage?.current : serverDetails)
+    ?.binary_package_name ?? "Binary package"}
   {open}
   closeForm={{
     schema: QueryParams,
@@ -37,22 +47,27 @@
     })}
 >
   {#if binaryPackage}
-    <svelte:boundary pending={browser ? pending : undefined}>
-      {@const details = await binaryPackage}
-      <p class="summary">{details.summary}</p>
-      {#key name}
+    {#key binaryPackage}
+      <svelte:boundary pending={browser ? pending : undefined}>
+        {const details = $derived(await binaryPackage)}
+        {#if details.summary}
+          <p class="summary">{details.summary}</p>
+        {/if}
         <PartialTextDisclosure text={details.description} />
-      {/key}
-      {#if details.artifacts.length > 0}
-        <ArtifactsSection
-          artifacts={details.artifacts}
-          downloadUrl={details.downloadUrl}
-        />
-      {/if}
-      {#snippet failed(error)}
-        <p class="package-details-error">{String(error)}</p>
-      {/snippet}
-    </svelte:boundary>
+        {#if details.files.length}
+          <ArtifactsSection artifacts={details.files} />
+        {/if}
+        {#snippet failed(error)}
+          <p class="package-details-error" role="alert">
+            {isHttpError(error)
+              ? error.body.message
+              : error instanceof Error
+                ? error.message
+                : "Couldn't load binary package details."}
+          </p>
+        {/snippet}
+      </svelte:boundary>
+    {/key}
   {/if}
 </SidePanel>
 
@@ -69,6 +84,6 @@
   }
 
   .summary {
-    font: var(--lp-typography-h4);
+    font: var(--ds-typography-heading-4);
   }
 </style>

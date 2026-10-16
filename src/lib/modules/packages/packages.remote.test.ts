@@ -3,13 +3,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { DEFAULT_PACKAGES_FILTERS } from "$lib/modules/packages/filters/constants.js";
 import {
   LaunchpadApiError,
-  getPublishedSources,
-  getPublishedSourcesTotal,
+  getSourcePackageList,
 } from "$lib/server/launchpad/client.js";
-import {
-  getSourcePackages,
-  getSourcePackagesTotal,
-} from "./packages.remote.js";
+import { getSourcePackages } from "./packages.remote.js";
+import { packageListing } from "./test.fixtures.js";
 
 vi.mock("$app/server", () => ({
   query: (
@@ -20,11 +17,9 @@ vi.mock("$app/server", () => ({
       __: { type: "query" },
     }),
 }));
-
 vi.mock("$lib/server/launchpad/client.js", async (importOriginal) => ({
   ...(await importOriginal<typeof import("$lib/server/launchpad/client.js")>()),
-  getPublishedSources: vi.fn(),
-  getPublishedSourcesTotal: vi.fn(),
+  getSourcePackageList: vi.fn(),
 }));
 
 const listArgs = {
@@ -36,59 +31,47 @@ const listArgs = {
   ...DEFAULT_PACKAGES_FILTERS,
 } as const;
 
-const totalArgs = { distro: "ubuntu", ...DEFAULT_PACKAGES_FILTERS } as const;
-
 beforeEach(() => {
-  vi.mocked(getPublishedSources).mockReset().mockResolvedValue({
-    start: 0,
-    entries: [],
-  });
-  vi.mocked(getPublishedSourcesTotal).mockReset().mockResolvedValue(12);
+  vi.mocked(getSourcePackageList)
+    .mockReset()
+    .mockResolvedValue(packageListing());
 });
+afterEach(() => vi.restoreAllMocks());
 
-afterEach(() => {
-  vi.restoreAllMocks();
-});
-
-describe("package filter queries", () => {
-  it("uses the same filters for rows and totals and applies pagination only to rows", async () => {
-    const filters = {
-      search: " superhref ",
+describe("package listing query", () => {
+  it("gets rows, totals and binary IDs from one call with every filter", async () => {
+    const result = await getSourcePackages({
+      ...listArgs,
+      search: " firefox ",
       match: "exact",
-      series: "stonking",
+      series: "noble",
       pocket: "Updates",
       maintainer: "ubuntu-mozillateam",
       signer: "userl",
       ubuntuChange: true,
       allStatuses: true,
-    } as const;
-    await getSourcePackages({ ...listArgs, ...filters, page: 3, size: 50 });
-    await getSourcePackagesTotal({ ...totalArgs, ...filters });
-
-    const expected = {
-      sourceName: "superhref",
+      page: 3,
+      size: 50,
+    });
+    expect(result).toEqual(packageListing());
+    expect(getSourcePackageList).toHaveBeenCalledExactlyOnceWith("ubuntu", {
+      sourceName: "firefox",
       exactMatch: true,
-      series: "stonking",
+      series: "noble",
       pocket: "Updates",
       maintainedBy: "ubuntu-mozillateam",
       signedBy: "userl",
       ubuntuChange: true,
-      status: undefined,
-    };
-    expect(getPublishedSources).toHaveBeenCalledWith("ubuntu", {
-      ...expected,
+      statuses: ["Pending", "Published", "Superseded", "Deleted", "Obsolete"],
       size: 50,
-      start: 100,
+      page: 3,
       orderBy: ["-date_created"],
     });
-    expect(getPublishedSourcesTotal).toHaveBeenCalledWith("ubuntu", expected);
   });
 
-  it("passes the default filters through as null, with default statuses and ordering", async () => {
+  it("passes default filters as null with active-only statuses and newest-first ordering", async () => {
     await getSourcePackages(listArgs);
-    await getSourcePackagesTotal(totalArgs);
-
-    const expected = {
+    expect(getSourcePackageList).toHaveBeenCalledExactlyOnceWith("ubuntu", {
       sourceName: null,
       exactMatch: false,
       series: null,
@@ -96,15 +79,11 @@ describe("package filter queries", () => {
       maintainedBy: null,
       signedBy: null,
       ubuntuChange: false,
-      status: ["Pending", "Published", "Obsolete"],
-    };
-    expect(getPublishedSources).toHaveBeenCalledWith("ubuntu", {
-      ...expected,
+      statuses: ["Pending", "Published"],
       size: 25,
-      start: 0,
+      page: 1,
       orderBy: ["-date_created"],
     });
-    expect(getPublishedSourcesTotal).toHaveBeenCalledWith("ubuntu", expected);
   });
 
   it.each([
@@ -116,9 +95,7 @@ describe("package filter queries", () => {
     await expect(
       getSourcePackages({ ...listArgs, ...filters } as never),
     ).rejects.toBeInstanceOf(v.ValiError);
-    await expect(
-      getSourcePackagesTotal({ ...totalArgs, ...filters } as never),
-    ).rejects.toBeInstanceOf(v.ValiError);
+    expect(getSourcePackageList).not.toHaveBeenCalled();
   });
 
   it.each([
@@ -134,144 +111,148 @@ describe("package filter queries", () => {
     { signer: "" },
     { signer: "x" },
     { signer: "-invalid" },
-  ])("still rejects invalid non-null filters: %j", async (filters) => {
+    { page: 0 },
+    { page: 1.5 },
+    { size: 0 },
+    { size: 101 },
+  ])("rejects invalid arguments before fetching: %j", async (args) => {
     await expect(
-      getSourcePackages({ ...listArgs, ...filters }),
+      getSourcePackages({ ...listArgs, ...args }),
     ).rejects.toBeInstanceOf(v.ValiError);
-    await expect(
-      getSourcePackagesTotal({ ...totalArgs, ...filters }),
-    ).rejects.toBeInstanceOf(v.ValiError);
-    expect(getPublishedSources).not.toHaveBeenCalled();
-    expect(getPublishedSourcesTotal).not.toHaveBeenCalled();
+    expect(getSourcePackageList).not.toHaveBeenCalled();
   });
 
-  it("accepts two-character names for both rows and totals", async () => {
-    const filters = { series: "xx", maintainer: "xx", signer: "xx" };
-    await getSourcePackages({ ...listArgs, ...filters });
-    await getSourcePackagesTotal({ ...totalArgs, ...filters });
-
-    const expected = expect.objectContaining({
+  it("accepts two-character reference names", async () => {
+    await getSourcePackages({
+      ...listArgs,
       series: "xx",
-      maintainedBy: "xx",
-      signedBy: "xx",
+      maintainer: "xx",
+      signer: "xx",
     });
-    expect(getPublishedSources).toHaveBeenCalledWith("ubuntu", expected);
-    expect(getPublishedSourcesTotal).toHaveBeenCalledWith("ubuntu", expected);
-  });
-
-  it("matches partial names with the contains mode", async () => {
-    const filters = { search: "super", match: "contains" } as const;
-    await getSourcePackages({ ...listArgs, ...filters });
-    await getSourcePackagesTotal({ ...totalArgs, ...filters });
-
-    const expected = expect.objectContaining({
-      sourceName: "super",
-      exactMatch: false,
-    });
-    expect(getPublishedSources).toHaveBeenCalledWith("ubuntu", expected);
-    expect(getPublishedSourcesTotal).toHaveBeenCalledWith("ubuntu", expected);
-  });
-
-  it.each([
-    [{ maintainer: "userl" }, { maintainedBy: "userl", signedBy: null }],
-    [{ signer: "userl" }, { maintainedBy: null, signedBy: "userl" }],
-    [
-      { maintainer: "userl", signer: null },
-      { maintainedBy: "userl", signedBy: null },
-    ],
-    [
-      { maintainer: null, signer: "userl" },
-      { maintainedBy: null, signedBy: "userl" },
-    ],
-    [
-      { maintainer: "userl", signer: "userl" },
-      { maintainedBy: "userl", signedBy: "userl" },
-    ],
-    [
-      { maintainer: "userl", signer: "userl-other" },
-      { maintainedBy: "userl", signedBy: "userl-other" },
-    ],
-    [
-      { maintainer: "ubuntu-mozillateam", signer: "userl" },
-      { maintainedBy: "ubuntu-mozillateam", signedBy: "userl" },
-    ],
-  ])(
-    "passes person and team names directly to both queries with %j",
-    async (filters, expected) => {
-      await getSourcePackages({ ...listArgs, ...filters });
-      await getSourcePackagesTotal({ ...totalArgs, ...filters });
-
-      expect(getPublishedSources).toHaveBeenCalledWith(
-        "ubuntu",
-        expect.objectContaining(expected),
-      );
-      expect(getPublishedSourcesTotal).toHaveBeenCalledWith(
-        "ubuntu",
-        expect.objectContaining(expected),
-      );
-    },
-  );
-
-  it("logs filters rejected by Launchpad and returns an empty listing and total", async () => {
-    const failure = new LaunchpadApiError(400, "https://lp.example");
-    const log = vi.spyOn(console, "error").mockImplementation(() => {});
-    vi.mocked(getPublishedSources).mockRejectedValue(failure);
-    vi.mocked(getPublishedSourcesTotal).mockRejectedValue(failure);
-
-    await expect(
-      getSourcePackages({ ...listArgs, series: "unknown-series" }),
-    ).resolves.toEqual({ data: [], hasNext: false });
-    await expect(
-      getSourcePackagesTotal({ ...totalArgs, series: "unknown-series" }),
-    ).resolves.toBe(0);
-    expect(log).toHaveBeenCalledWith("Failed to load source packages", failure);
-    expect(log).toHaveBeenCalledWith(
-      "Failed to count source packages",
-      failure,
+    expect(getSourcePackageList).toHaveBeenCalledWith(
+      "ubuntu",
+      expect.objectContaining({
+        series: "xx",
+        maintainedBy: "xx",
+        signedBy: "xx",
+      }),
     );
   });
 
-  it("keeps service failures distinct from an empty result", async () => {
-    const failure = new LaunchpadApiError(503, "https://lp.example");
-    const log = vi.spyOn(console, "error").mockImplementation(() => {});
-    vi.mocked(getPublishedSources).mockRejectedValue(failure);
-    vi.mocked(getPublishedSourcesTotal).mockRejectedValue(failure);
+  it("uses partial search with the contains mode", async () => {
+    await getSourcePackages({
+      ...listArgs,
+      search: "fire",
+      match: "contains",
+    });
+    expect(getSourcePackageList).toHaveBeenCalledWith(
+      "ubuntu",
+      expect.objectContaining({
+        sourceName: "fire",
+        exactMatch: false,
+      }),
+    );
+  });
 
+  it.each([
+    { maintainer: "userl" },
+    { signer: "userl" },
+    { maintainer: "userl", signer: null },
+    { maintainer: null, signer: "userl" },
+    { maintainer: "userl", signer: "userl" },
+    { maintainer: "userl", signer: "userl-other" },
+    { maintainer: "ubuntu-mozillateam", signer: "userl" },
+  ])("keeps person/team filters independent: %j", async (filters) => {
+    await getSourcePackages({ ...listArgs, ...filters });
+    expect(getSourcePackageList).toHaveBeenCalledWith(
+      "ubuntu",
+      expect.objectContaining({
+        maintainedBy: filters.maintainer ?? null,
+        signedBy: filters.signer ?? null,
+      }),
+    );
+  });
+
+  it("preserves a successful empty response", async () => {
+    const empty = packageListing({ sources: [], total: 0, total_pages: 0 });
+    vi.mocked(getSourcePackageList).mockResolvedValue(empty);
+    await expect(getSourcePackages(listArgs)).resolves.toEqual(empty);
+  });
+
+  it("logs rejected filters and returns an empty listing", async () => {
+    const failure = new LaunchpadApiError(400, "https://lp.example");
+    vi.mocked(getSourcePackageList).mockRejectedValue(failure);
+    const log = vi.spyOn(console, "error").mockImplementation(() => {});
+    await expect(
+      getSourcePackages({
+        ...listArgs,
+        series: "unknown-series",
+        page: 3,
+        size: 50,
+      }),
+    ).resolves.toEqual({
+      sources: [],
+      total: 0,
+      total_pages: 0,
+      page: 3,
+      page_size: 50,
+    });
+    expect(log).toHaveBeenCalledWith("Failed to load source packages", failure);
+    expect(getSourcePackageList).toHaveBeenCalledTimes(1);
+  });
+
+  it.each([404, 500, 503])(
+    "logs HTTP %i and throws a service error without an empty result or retry",
+    async (status) => {
+      const failure = new LaunchpadApiError(status, "https://lp.example");
+      vi.mocked(getSourcePackageList).mockRejectedValue(failure);
+      const log = vi.spyOn(console, "error").mockImplementation(() => {});
+      await expect(getSourcePackages(listArgs)).rejects.toMatchObject({
+        status: 503,
+        body: {
+          message: "Couldn't load packages from Launchpad. Try again shortly.",
+        },
+      });
+      expect(log).toHaveBeenCalledWith(
+        "Failed to load source packages",
+        failure,
+      );
+      expect(getSourcePackageList).toHaveBeenCalledTimes(1);
+    },
+  );
+
+  it("surfaces malformed responses and connection failures", async () => {
+    const failure = new Error("Invalid response");
+    vi.mocked(getSourcePackageList).mockRejectedValue(failure);
+    const log = vi.spyOn(console, "error").mockImplementation(() => {});
     await expect(getSourcePackages(listArgs)).rejects.toMatchObject({
       status: 503,
     });
-    await expect(getSourcePackagesTotal(totalArgs)).resolves.toBeNull();
-    expect(log).toHaveBeenCalledTimes(2);
+    expect(log).toHaveBeenCalledWith("Failed to load source packages", failure);
+    expect(getSourcePackageList).toHaveBeenCalledTimes(1);
   });
 });
 
 describe("package sorting", () => {
   describe.each([
     ["without a search", {}],
-    ["with a partial-name search", { search: "super", match: "contains" }],
-    ["with an exact-name search", { search: "superhref", match: "exact" }],
-  ] as const)("%s", (_description, filters) => {
+    ["with partial search", { search: "fire", match: "contains" }],
+    ["with exact search", { search: "firefox", match: "exact" }],
+  ] as const)("%s", (_, filters) => {
     it.each([
       [null, "none"],
       [null, "ascending"],
       [null, "descending"],
       ["series", "none"],
-    ] as const)(
-      "uses newest-first order for sort key %s and direction %s",
-      async (sortKey, sortOrder) => {
-        await getSourcePackages({
-          ...listArgs,
-          ...filters,
-          sortKey,
-          sortOrder,
-        });
-
-        expect(getPublishedSources).toHaveBeenCalledWith(
-          "ubuntu",
-          expect.objectContaining({ orderBy: ["-date_created"] }),
-        );
-      },
-    );
+    ] as const)("uses newest-first for %s %s", async (sortKey, sortOrder) => {
+      await getSourcePackages({ ...listArgs, ...filters, sortKey, sortOrder });
+      expect(getSourcePackageList).toHaveBeenCalledWith(
+        "ubuntu",
+        expect.objectContaining({
+          orderBy: ["-date_created"],
+        }),
+      );
+    });
 
     it.each([
       ["source-package", "ascending", "source_package_name"],
@@ -283,16 +264,12 @@ describe("package sorting", () => {
       ["status", "ascending", "status"],
       ["status", "descending", "-status"],
     ] as const)("sorts by %s %s", async (sortKey, sortOrder, expectedOrder) => {
-      await getSourcePackages({
-        ...listArgs,
-        ...filters,
-        sortKey,
-        sortOrder,
-      });
-
-      expect(getPublishedSources).toHaveBeenCalledWith(
+      await getSourcePackages({ ...listArgs, ...filters, sortKey, sortOrder });
+      expect(getSourcePackageList).toHaveBeenCalledWith(
         "ubuntu",
-        expect.objectContaining({ orderBy: [expectedOrder] }),
+        expect.objectContaining({
+          orderBy: [expectedOrder],
+        }),
       );
     });
   });

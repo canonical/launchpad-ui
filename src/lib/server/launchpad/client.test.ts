@@ -1,54 +1,37 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { MAX_BINARY_NAMES } from "$lib/modules/packages/constants.js";
+import {
+  binaryDetails,
+  packageListing,
+} from "$lib/modules/packages/test.fixtures.js";
 import {
   LaunchpadApiError,
   findPeople,
   getActiveSeriesMilestones,
+  getBinaryPackageDetails,
   getDistroSeries,
   getPerson,
-  getPublishedSources,
-  getPublishedSourcesTotal,
+  getSourcePackageList,
 } from "./client.js";
 import type {
   DistroSeriesEntry,
   MilestoneEntry,
   PersonEntry,
-  SourcePackagePublishingEntry,
+  PublishingStatus,
 } from "./types.js";
 
-// Hoisted above the imports by vitest; stubs the private env for client.ts.
 vi.mock("$env/dynamic/private", () => ({
-  env: {
-    MAIN_LAUNCHPAD_BASE_HOST: "https://lp.example",
-  },
+  env: { MAIN_LAUNCHPAD_BASE_HOST: "https://lp.example" },
 }));
 
 const launchpadFetch = vi.hoisted(() => vi.fn());
 vi.mock("./launchpadFetch.js", () => ({ launchpadFetch }));
 
-function entry(
-  overrides: Partial<SourcePackagePublishingEntry> = {},
-): SourcePackagePublishingEntry {
-  return {
-    self_link:
-      "https://lp.example/api/devel/ubuntu/+archive/primary/+sourcepub/1",
-    resource_type_link:
-      "https://lp.example/api/devel/#source_package_publishing_history",
-    display_name: "0ad 0.28.0-3 in resolute",
-    source_package_name: "0ad",
-    source_package_version: "0.28.0-3",
-    status: "Published",
-    pocket: "Release",
-    component_name: "universe",
-    section_name: "games",
-    distro_series_link: "https://lp.example/api/devel/ubuntu/resolute",
-    archive_link: "https://lp.example/api/devel/ubuntu/+archive/primary",
-    date_published: "2026-02-25T15:38:34.905768+00:00",
-    date_created: "2026-02-25T13:52:22.996244+00:00",
-    date_superseded: null,
-    date_made_pending: null,
-    date_removed: null,
-    ...overrides,
-  };
+function jsonResponse(body: unknown, status = 200): Response {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { "content-type": "application/json" },
+  });
 }
 
 function respondWith(body: unknown, status = 200) {
@@ -65,22 +48,8 @@ function respondOnceWithRedirect(location: string, status = 303) {
   );
 }
 
-function jsonResponse(body: unknown, status: number): Response {
-  return new Response(JSON.stringify(body), {
-    status,
-    headers: { "content-type": "application/json" },
-  });
-}
-
 function requestedUrl(call = 0): URL {
   return new URL(launchpadFetch.mock.calls[call][0] as string);
-}
-
-function requestedHeaders(call = 0): Record<string, string> {
-  return (launchpadFetch.mock.calls[call][1] as RequestInit).headers as Record<
-    string,
-    string
-  >;
 }
 
 function person(overrides: Partial<PersonEntry> = {}): PersonEntry {
@@ -90,7 +59,7 @@ function person(overrides: Partial<PersonEntry> = {}): PersonEntry {
     name: "userl",
     display_name: "User Launchpadio",
     is_team: false,
-    mugshot_link: "https://lp.example/media/userl.jpg",
+    mugshot_link: "",
     ...overrides,
   };
 }
@@ -98,10 +67,7 @@ function person(overrides: Partial<PersonEntry> = {}): PersonEntry {
 beforeEach(() => {
   launchpadFetch.mockReset();
 });
-
-afterEach(() => {
-  vi.restoreAllMocks();
-});
+afterEach(() => vi.restoreAllMocks());
 
 describe("getDistroSeries", () => {
   it.each([
@@ -123,7 +89,9 @@ describe("getDistroSeries", () => {
     expect(requestedUrl().origin).toBe("https://lp.example");
     expect(requestedUrl().pathname).toBe(path);
     expect(requestedUrl().search).toBe("");
-    expect(requestedHeaders()).toEqual({ accept: "application/json" });
+    expect(launchpadFetch.mock.calls[0][1]).toEqual({
+      headers: { accept: "application/json" },
+    });
     expect(launchpadFetch).toHaveBeenCalledTimes(1);
   });
 });
@@ -155,7 +123,9 @@ describe("getActiveSeriesMilestones", () => {
       order_by: "date_targeted",
       "ws.size": "3",
     });
-    expect(requestedHeaders()).toEqual({ accept: "application/json" });
+    expect(launchpadFetch.mock.calls[0][1]).toEqual({
+      headers: { accept: "application/json" },
+    });
     expect(launchpadFetch).toHaveBeenCalledTimes(1);
   });
 
@@ -193,293 +163,246 @@ describe.each([getDistroSeries, getActiveSeriesMilestones])(
   },
 );
 
-describe("getPublishedSources", () => {
-  it("builds the primary-archive URL with ws.op and paging params", async () => {
-    respondWith({ start: 0, entries: [] });
-    await getPublishedSources("ubuntu", { size: 25, start: 50 });
+describe("getSourcePackageList", () => {
+  it("gets rows, binaries and totals in one request without architecture enrichment", async () => {
+    const response = packageListing();
+    respondWith(response);
 
-    const url = new URL(launchpadFetch.mock.calls[0][0] as string);
-    expect(url.origin).toBe("https://lp.example");
-    expect(url.pathname).toBe("/api/devel/ubuntu/+archive/primary");
-    expect(url.searchParams.get("ws.op")).toBe("getPublishedSources");
-    expect(url.searchParams.get("ws.size")).toBe("25");
-    expect(url.searchParams.get("ws.start")).toBe("50");
-  });
+    await expect(
+      getSourcePackageList("ubuntu", { page: 3, size: 50 }),
+    ).resolves.toEqual(response);
 
-  it("repeats order_by and status params", async () => {
-    respondWith({ start: 0, entries: [] });
-    await getPublishedSources("ubuntu", {
-      orderBy: ["-status", "source_package_name"],
-      status: ["Published", "Pending"],
+    expect(launchpadFetch).toHaveBeenCalledTimes(1);
+    expect(requestedUrl().origin).toBe("https://lp.example");
+    expect(requestedUrl().pathname).toBe("/api/devel/ubuntu/+archive/primary");
+    expect(Object.fromEntries(requestedUrl().searchParams)).toEqual({
+      "ws.op": "getSourcePackageList",
+      page: "3",
+      page_size: "50",
+      include_binaries: "true",
+      binary_names_limit: String(MAX_BINARY_NAMES),
     });
-
-    const url = new URL(launchpadFetch.mock.calls[0][0] as string);
-    expect(url.searchParams.getAll("order_by")).toEqual([
-      "-status",
-      "source_package_name",
-    ]);
-    expect(url.searchParams.getAll("status")).toEqual(["Published", "Pending"]);
   });
 
-  it("filters by series through the distro series link", async () => {
-    respondWith({ start: 0, entries: [] });
-    await getPublishedSources("ubuntu", { series: "stonking" });
+  it("encodes sort keys as one JSON list, not repeated parameters", async () => {
+    respondWith(packageListing());
+    await getSourcePackageList("ubuntu", {
+      orderBy: ["-status", "source_package_name"],
+    });
+    expect(requestedUrl().searchParams.getAll("order_by")).toEqual([
+      '["-status","source_package_name"]',
+    ]);
+  });
 
-    const url = new URL(launchpadFetch.mock.calls[0][0] as string);
-    expect(url.searchParams.get("distro_series")).toBe(
-      "https://lp.example/api/devel/ubuntu/stonking",
-    );
+  it("uses the new filter names and API references", async () => {
+    respondWith(packageListing());
+    await getSourcePackageList("ubuntu", {
+      series: "noble",
+      sourceName: "firefox",
+      exactMatch: true,
+      maintainedBy: "ubuntu-mozillateam",
+      signedBy: "userl",
+      pocket: "Updates",
+      ubuntuChange: true,
+      statuses: ["Pending", "Published", "Superseded", "Deleted"],
+    });
+    expect(Object.fromEntries(requestedUrl().searchParams)).toEqual({
+      "ws.op": "getSourcePackageList",
+      include_binaries: "true",
+      binary_names_limit: String(MAX_BINARY_NAMES),
+      distroseries: "https://lp.example/api/devel/ubuntu/noble",
+      name: "firefox",
+      exact_match: "true",
+      maintained_by: "https://lp.example/api/devel/~ubuntu-mozillateam",
+      signed_by: "https://lp.example/api/devel/~userl",
+      pocket: "Updates",
+      ubuntu_change: "true",
+      statuses: '["Pending","Published","Superseded","Deleted"]',
+    });
   });
 
   it.each([undefined, null, false])(
-    "filters by a source name substring when exactMatch is %s",
-    async (exactMatch) => {
-      respondWith({ start: 0, entries: [] });
-      await getPublishedSources("ubuntu", { sourceName: "super", exactMatch });
-
-      expect(requestedUrl().searchParams.get("source_name")).toBe("super");
+    "omits unset flags and uses containment when exactMatch is %s",
+    async (flag) => {
+      respondWith(packageListing());
+      await getSourcePackageList("ubuntu", {
+        sourceName: "fire",
+        exactMatch: flag,
+        ubuntuChange: flag,
+      });
       expect(requestedUrl().searchParams.get("exact_match")).toBe("false");
+      expect(requestedUrl().searchParams.has("ubuntu_change")).toBe(false);
     },
   );
 
-  it("filters by an exact source name", async () => {
-    respondWith({ start: 0, entries: [] });
-    await getPublishedSources("ubuntu", {
-      sourceName: "superhref",
-      exactMatch: true,
-    });
+  it.each<{ statuses: PublishingStatus[] }>([
+    { statuses: ["Published"] },
+    { statuses: ["Superseded", "Deleted"] },
+    { statuses: ["Obsolete"] },
+    { statuses: [] },
+  ])("sends exactly $statuses as one JSON list", async ({ statuses }) => {
+    respondWith(packageListing());
+    await getSourcePackageList("ubuntu", { statuses });
+    expect(requestedUrl().searchParams.getAll("statuses")).toEqual([
+      JSON.stringify(statuses),
+    ]);
+    expect(requestedUrl().searchParams.has("include_inactive")).toBe(false);
+    expect(launchpadFetch).toHaveBeenCalledTimes(1);
+  });
 
-    expect(requestedUrl().searchParams.get("exact_match")).toBe("true");
+  it.each([undefined, null])("omits unset statuses %s", async (statuses) => {
+    respondWith(packageListing());
+    await getSourcePackageList("ubuntu", { statuses });
+    expect(requestedUrl().searchParams.has("statuses")).toBe(false);
   });
 
   it.each([undefined, null, ""])(
-    "omits exact_match when sourceName is %s",
-    async (sourceName) => {
-      respondWith({ start: 0, entries: [] });
-      await getPublishedSources("ubuntu", { sourceName, exactMatch: true });
-
-      expect(requestedUrl().searchParams.has("source_name")).toBe(false);
-      expect(requestedUrl().searchParams.has("exact_match")).toBe(false);
+    "omits unset references/search and exact_match for %s",
+    async (unset) => {
+      respondWith(packageListing());
+      await getSourcePackageList("ubuntu", {
+        sourceName: unset,
+        series: unset,
+        maintainedBy: unset,
+        signedBy: unset,
+        exactMatch: true,
+      });
+      expect(Object.fromEntries(requestedUrl().searchParams)).toEqual({
+        "ws.op": "getSourcePackageList",
+        include_binaries: "true",
+        binary_names_limit: String(MAX_BINARY_NAMES),
+      });
     },
   );
 
-  it("filters by pocket", async () => {
-    respondWith({ start: 0, entries: [] });
-    await getPublishedSources("ubuntu", { pocket: "Proposed" });
-
-    expect(requestedUrl().searchParams.get("pocket")).toBe("Proposed");
+  it("accepts a real empty first page with zero total pages", async () => {
+    const empty = packageListing({ sources: [], total: 0, total_pages: 0 });
+    respondWith(empty);
+    await expect(getSourcePackageList("ubuntu", {})).resolves.toEqual(empty);
   });
 
-  it("filters by maintainer and signer through person links", async () => {
-    respondWith({ start: 0, entries: [] });
-    await getPublishedSources("ubuntu", {
-      maintainedBy: "ubuntu-mozillateam",
-      signedBy: "userl",
-    });
-
-    const { searchParams } = requestedUrl();
-    expect(searchParams.get("maintained_by")).toBe(
-      "https://lp.example/api/devel/~ubuntu-mozillateam",
-    );
-    expect(searchParams.get("signed_by")).toBe(
-      "https://lp.example/api/devel/~userl",
-    );
-  });
-
-  it("asks for Ubuntu changes only when the filter is set", async () => {
-    respondWith({ start: 0, entries: [] });
-    await getPublishedSources("ubuntu", { ubuntuChange: true });
-    expect(requestedUrl().searchParams.get("ubuntu_change")).toBe("true");
-
-    launchpadFetch.mockClear();
-    respondWith({ start: 0, entries: [] });
-    await getPublishedSources("ubuntu", { ubuntuChange: false });
-    expect(requestedUrl().searchParams.has("ubuntu_change")).toBe(false);
-  });
-
-  it("omits status when no statuses are given", async () => {
-    respondWith({ start: 0, entries: [] });
-    await getPublishedSources("ubuntu", {});
-
-    expect(requestedUrl().searchParams.has("status")).toBe(false);
-  });
-
-  it("returns the parsed collection", async () => {
-    respondWith({ start: 0, entries: [entry()] });
-    const result = await getPublishedSources("ubuntu", {});
-    expect(result.entries).toHaveLength(1);
-    expect(result.entries[0].source_package_name).toBe("0ad");
-  });
-
-  it("throws LaunchpadApiError when the response is unsuccessful", async () => {
-    respondWith({}, 503);
-    await expect(getPublishedSources("ubuntu", {})).rejects.toBeInstanceOf(
-      LaunchpadApiError,
-    );
-  });
-});
-
-describe("getPublishedSourcesTotal", () => {
-  it("asks for the bare total of the filtered collection without paging", async () => {
-    respondWith(461194);
-    const total = await getPublishedSourcesTotal("ubuntu", {
-      series: "stonking",
-      status: ["Published"],
-    });
-
-    expect(total).toBe(461194);
-    const url = new URL(launchpadFetch.mock.calls[0][0] as string);
-    expect(url.pathname).toBe("/api/devel/ubuntu/+archive/primary");
-    expect(url.searchParams.get("ws.op")).toBe("getPublishedSources");
-    expect(url.searchParams.get("ws.show")).toBe("total_size");
-    expect(url.searchParams.get("distro_series")).toBe(
-      "https://lp.example/api/devel/ubuntu/stonking",
-    );
-    expect(url.searchParams.getAll("status")).toEqual(["Published"]);
-    expect(url.searchParams.has("ws.size")).toBe(false);
-    expect(url.searchParams.has("ws.start")).toBe(false);
-  });
-
-  it("throws LaunchpadApiError when Launchpad times out", async () => {
-    respondWith("Error: Timeout", 503);
-    await expect(getPublishedSourcesTotal("ubuntu", {})).rejects.toBeInstanceOf(
-      LaunchpadApiError,
-    );
-  });
-
-  it("rejects a response that is not a number", async () => {
-    respondWith({ total_size: 3 });
-    await expect(getPublishedSourcesTotal("ubuntu", {})).rejects.toThrow(
-      "did not return a total",
-    );
-  });
-
-  it("applies the same filters as the listing", async () => {
-    respondWith(12);
-    await getPublishedSourcesTotal("ubuntu", {
-      sourceName: "superhref",
-      exactMatch: true,
-      pocket: "Updates",
-      signedBy: "userl",
-      ubuntuChange: true,
-    });
-
-    const { searchParams } = requestedUrl();
-    expect(searchParams.get("ws.show")).toBe("total_size");
-    expect(searchParams.get("source_name")).toBe("superhref");
-    expect(searchParams.get("exact_match")).toBe("true");
-    expect(searchParams.get("pocket")).toBe("Updates");
-    expect(searchParams.get("signed_by")).toBe(
-      "https://lp.example/api/devel/~userl",
-    );
-    expect(searchParams.get("ubuntu_change")).toBe("true");
-  });
-});
-
-describe("empty and unset published source filters", () => {
-  it.each([undefined, null])(
-    "omits %s filters from listing and total URLs while preserving pagination and sorting",
-    async (unset) => {
-      const filters = {
-        series: unset,
-        status: unset,
-        sourceName: unset,
-        exactMatch: unset,
-        pocket: unset,
-        maintainedBy: unset,
-        signedBy: unset,
-        ubuntuChange: unset,
-      };
-      respondOnceWith({ start: 0, entries: [] });
-      respondOnceWith(12);
-
-      await getPublishedSources("ubuntu", {
-        ...filters,
-        size: 25,
-        start: 0,
-        orderBy: ["-date_created"],
+  it.each([
+    { shown: 0, total: 0 },
+    { shown: 5, total: 5 },
+    { shown: 5, total: 1239 },
+    { shown: 100, total: 100 },
+    { shown: 100, total: 101 },
+  ])(
+    "preserves all $shown returned names and their total of $total",
+    async ({ shown, total }) => {
+      const response = packageListing({
+        sources: [
+          {
+            ...packageListing().sources[0],
+            binaries: Array.from({ length: shown }, (_, index) => ({
+              id: index + 1,
+              name: `binary-${index + 1}`,
+            })),
+            binaries_total: total,
+          },
+        ],
       });
-      await getPublishedSourcesTotal("ubuntu", filters);
-
-      expect(Object.fromEntries(requestedUrl(0).searchParams)).toEqual({
-        "ws.op": "getPublishedSources",
-        "ws.size": "25",
-        "ws.start": "0",
-        order_by: "-date_created",
-      });
-      expect(Object.fromEntries(requestedUrl(1).searchParams)).toEqual({
-        "ws.op": "getPublishedSources",
-        "ws.show": "total_size",
-      });
+      respondWith(response);
+      await expect(getSourcePackageList("ubuntu", {})).resolves.toStrictEqual(
+        response,
+      );
+      expect(launchpadFetch).toHaveBeenCalledTimes(1);
     },
   );
 
   it.each([
-    [{ series: "" }, {}],
-    [{ sourceName: "" }, {}],
-    [{ sourceName: "", exactMatch: true }, {}],
-    [{ maintainedBy: "" }, {}],
-    [{ signedBy: "" }, {}],
-    [
-      {
-        series: "",
-        sourceName: "",
-        maintainedBy: "",
-        signedBy: "",
-        exactMatch: true,
-      },
-      {},
-    ],
-    [
-      {
-        series: "",
-        sourceName: "superhref",
-        maintainedBy: "",
-        signedBy: "userl",
-        exactMatch: false,
-        pocket: "Updates",
-        ubuntuChange: true,
-      },
-      {
-        source_name: "superhref",
-        exact_match: "false",
-        signed_by: "https://lp.example/api/devel/~userl",
-        pocket: "Updates",
-        ubuntu_change: "true",
-      },
-    ],
-  ] as const)(
-    "omits empty filters in %j from listing and total URLs",
-    async (filters, expectedParams) => {
-      respondOnceWith({ start: 0, entries: [] });
-      respondOnceWith(12);
+    { total: "1" },
+    { total: -1 },
+    { total_pages: undefined },
+    { page_size: 101 },
+    { sources: [{ ...packageListing().sources[0], binaries: undefined }] },
+    { sources: [{ ...packageListing().sources[0], id: 1.5 }] },
+    { sources: [{ ...packageListing().sources[0], status: "Unknown" }] },
+    {
+      sources: [{ ...packageListing().sources[0], binaries_total: undefined }],
+    },
+    { sources: [{ ...packageListing().sources[0], binaries_total: "2" }] },
+    { sources: [{ ...packageListing().sources[0], binaries_total: -1 }] },
+    { sources: [{ ...packageListing().sources[0], binaries_total: 2.5 }] },
+    { sources: [{ ...packageListing().sources[0], binaries_total: null }] },
+    {
+      sources: [
+        {
+          ...packageListing().sources[0],
+          binaries_total: Number.MAX_SAFE_INTEGER + 1,
+        },
+      ],
+    },
+  ])("rejects malformed successful responses: %j", async (overrides) => {
+    respondWith({ ...packageListing(), ...overrides });
+    await expect(getSourcePackageList("ubuntu", {})).rejects.toThrow();
+    expect(launchpadFetch).toHaveBeenCalledTimes(1);
+  });
 
-      await getPublishedSources("ubuntu", { ...filters, size: 25, start: 0 });
-      await getPublishedSourcesTotal("ubuntu", filters);
-
-      expect(Object.fromEntries(requestedUrl(0).searchParams)).toEqual({
-        "ws.op": "getPublishedSources",
-        "ws.size": "25",
-        "ws.start": "0",
-        ...expectedParams,
+  it.each([400, 404, 503])(
+    "preserves upstream status %i without retrying",
+    async (status) => {
+      respondWith("API error", status);
+      await expect(getSourcePackageList("ubuntu", {})).rejects.toMatchObject({
+        name: "LaunchpadApiError",
+        status,
       });
-      expect(Object.fromEntries(requestedUrl(1).searchParams)).toEqual({
-        "ws.op": "getPublishedSources",
-        "ws.show": "total_size",
-        ...expectedParams,
-      });
+      expect(launchpadFetch).toHaveBeenCalledTimes(1);
     },
   );
+});
+
+describe("getBinaryPackageDetails", () => {
+  it("loads one publication from the selected distribution in one request", async () => {
+    const details = binaryDetails();
+    respondWith(details);
+    await expect(getBinaryPackageDetails("debian", 101)).resolves.toEqual(
+      details,
+    );
+    expect(launchpadFetch).toHaveBeenCalledTimes(1);
+    expect(requestedUrl().pathname).toBe("/api/devel/debian/+archive/primary");
+    expect(Object.fromEntries(requestedUrl().searchParams)).toEqual({
+      "ws.op": "getBinaryPackageDetails",
+      binary_id: "101",
+    });
+  });
+
+  it("accepts an empty file list and description", async () => {
+    respondWith(binaryDetails({ files: [], description: "" }));
+    await expect(getBinaryPackageDetails("ubuntu", 101)).resolves.toMatchObject(
+      {
+        files: [],
+        description: "",
+      },
+    );
+  });
+
+  it.each([
+    { files: undefined },
+    { id: 0 },
+    { description: null },
+    { files: [{ filename: "file.deb", size: -1, url: "not-a-url" }] },
+  ])("rejects malformed details: %j", async (overrides) => {
+    respondWith({ ...binaryDetails(), ...overrides });
+    await expect(getBinaryPackageDetails("ubuntu", 101)).rejects.toThrow();
+  });
+
+  it.each([400, 404, 503])("preserves upstream status %i", async (status) => {
+    respondWith("API error", status);
+    await expect(getBinaryPackageDetails("ubuntu", 101)).rejects.toMatchObject({
+      name: "LaunchpadApiError",
+      status,
+    });
+    expect(launchpadFetch).toHaveBeenCalledTimes(1);
+  });
 });
 
 describe("findPeople", () => {
   it("searches people and teams by text without pagination parameters", async () => {
     respondWith({ start: 0, entries: [person()] });
     const collection = await findPeople("user");
-
-    const url = requestedUrl();
-    expect(url.pathname).toBe("/api/devel/people");
-    expect(Object.fromEntries(url.searchParams)).toEqual({
+    expect(requestedUrl().pathname).toBe("/api/devel/people");
+    expect(Object.fromEntries(requestedUrl().searchParams)).toEqual({
       "ws.op": "find",
       text: "user",
     });
@@ -491,7 +414,6 @@ describe("getPerson", () => {
   it("looks a person up by name", async () => {
     respondWith(person());
     const found = await getPerson("userl");
-
     expect(requestedUrl().pathname).toBe("/api/devel/~userl");
     expect(found?.display_name).toBe("User Launchpadio");
   });
@@ -513,9 +435,10 @@ describe("getPerson", () => {
     respondOnceWithRedirect("/api/devel/~userl");
     respondOnceWith(person());
     const found = await getPerson("userl-old");
-
     expect(requestedUrl(1).pathname).toBe("/api/devel/~userl");
-    expect(requestedHeaders(1)).toEqual({ accept: "application/json" });
+    expect(launchpadFetch.mock.calls[1][1]).toEqual({
+      headers: { accept: "application/json" },
+    });
     expect(found?.name).toBe("userl");
   });
 
@@ -530,9 +453,7 @@ describe("getPerson", () => {
       respondOnceWithRedirect(location);
     }
     respondOnceWith(person());
-
     const found = await getPerson("userl-older");
-
     expect(launchpadFetch).toHaveBeenCalledTimes(6);
     expect(requestedUrl(5).pathname).toBe("/api/devel/~userl");
     expect(found?.name).toBe("userl");
@@ -545,7 +466,6 @@ describe("getPerson", () => {
         headers: { location: "/api/devel/~userl" },
       }),
     );
-
     await expect(getPerson("userl-old")).rejects.toMatchObject({
       name: "LaunchpadApiError",
       status: 303,
@@ -555,7 +475,6 @@ describe("getPerson", () => {
 
   it("stops when a redirect has no location", async () => {
     respondWith({}, 303);
-
     await expect(getPerson("userl-old")).rejects.toMatchObject({
       name: "LaunchpadApiError",
       status: 303,

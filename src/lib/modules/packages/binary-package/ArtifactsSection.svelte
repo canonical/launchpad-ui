@@ -1,48 +1,25 @@
 <script lang="ts">
-  import { Button, Link } from "@canonical/svelte-ds-app-launchpad";
-  import { DownloadIcon } from "@canonical/svelte-icons";
-  import type { BinaryPackageDetails } from "$lib/api/packages/types.js";
+  import { Link } from "@canonical/svelte-ds-app-launchpad";
+  import type { BinaryPackageDetails } from "$lib/server/launchpad/types.js";
   import { bytesToHumanReadable } from "$lib/utils/bytesToHumanReadable.js";
 
-  const {
-    artifacts,
-    downloadUrl,
-  }: { artifacts: BinaryPackageDetails["artifacts"]; downloadUrl: string } =
-    $props();
+  const { artifacts }: { artifacts: BinaryPackageDetails["files"] } = $props();
 </script>
 
 <section>
   <header>
     <h3>Artifacts</h3>
-    {#if artifacts.length > 1}
-      <Button
-        importance="tertiary"
-        class="download-all"
-        density="dense"
-        href={downloadUrl}
-        download
-        rel="external noopener noreferrer"
-      >
-        {#snippet iconLeft()}
-          <DownloadIcon />
-        {/snippet}
-        Download all ({bytesToHumanReadable(
-          artifacts.reduce((acc, artifact) => acc + artifact.size, 0),
-        )})
-      </Button>
-    {/if}
   </header>
   <ul>
-    {#each artifacts as artifact (artifact.id)}
+    {#each artifacts as artifact (artifact.url)}
       <li>
         <Link
           href={artifact.url}
-          download={artifact.fileName}
+          download={artifact.filename}
           soft
-          target="_blank"
-          rel="external noopener noreferrer"
+          rel="external"
         >
-          {artifact.fileName}
+          {artifact.filename}
         </Link>
         <span class="size">
           {bytesToHumanReadable(artifact.size)}

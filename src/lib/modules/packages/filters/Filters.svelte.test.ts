@@ -83,6 +83,12 @@ describe("Filters", () => {
       "Only show packages changed by Ubuntu",
       { "ubuntu-change": "1" },
     ],
+    [
+      "More filters",
+      "switch",
+      "Include Superseded and Deleted",
+      { "all-statuses": "1" },
+    ],
   ] as const)(
     "applies the %s filter on the first page, keeping other params",
     async (trigger, role, name, applied) => {
