@@ -55,6 +55,14 @@ describe("TableViewEditForm", () => {
     await expect.element(confirm).toBeEnabled();
   });
 
+  it("allows confirming unchanged settings when no change is required", async () => {
+    const { screen, onstage } = await renderForm({ requireChange: false });
+
+    await screen.getByRole("button", { name: "Confirm" }).click();
+
+    await expect.poll(() => onstage.mock.calls).toEqual([[settings]]);
+  });
+
   it("does not submit unchanged settings on Enter", async () => {
     const { screen, onstage } = await renderForm();
     const name = screen.getByRole("textbox", { name: "* View name" });
