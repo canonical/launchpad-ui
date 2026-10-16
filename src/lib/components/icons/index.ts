@@ -1,4 +1,5 @@
 export { default as BoldIcon } from "./BoldIcon.svelte";
+export { default as BookmarkIcon } from "./BookmarkIcon.svelte";
 export { default as BotIcon } from "./BotIcon.svelte";
 export { default as BranchMergedIcon } from "./BranchMergedIcon.svelte";
 export { default as BranchMergeIcon } from "./BranchMergeIcon.svelte";
