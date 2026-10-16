@@ -70,7 +70,7 @@ const osToProductMapper = (os: string): Product | null => {
 /**
  * Here you can switch the image provider between "testObserver" and "fixture" for fetching images.
  */
-const IMAGE_PROVIDER: keyof typeof imageFetcher = "testObserver";
+const IMAGE_PROVIDER: keyof typeof imageFetcher = "fixture";
 
 export async function getImages(
   series: string,

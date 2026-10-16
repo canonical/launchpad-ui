@@ -46,6 +46,11 @@ pnpm dev
 
 Launchpad UI will be available at [http://localhost:5173](http://localhost:5173).
 
+Ubuntu series images are fetched directly from the
+[Test Observer API](https://tests-api.ubuntu.com/v1/artefacts?family=image).
+The series remote queries shape the response for the UI, paginate images, and
+calculate status counts; fixture data is only used in tests.
+
 ## Storybook
 
 Use Storybook to develop and test UI components in isolation.
