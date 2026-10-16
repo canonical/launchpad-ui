@@ -1,12 +1,19 @@
+import * as v from "valibot";
+import { MAX_BINARY_NAMES } from "$lib/modules/packages/constants.js";
 import { launchpadFetch } from "./launchpadFetch.js";
+import {
+  binaryPackageDetailsSchema,
+  sourcePackageListSchema,
+} from "./types.js";
 import type {
+  BinaryPackageDetails,
   Collection,
   DistroSeriesEntry,
   MilestoneEntry,
   PersonEntry,
-  PublishedSourcesFilter,
-  PublishedSourcesQuery,
-  SourcePackagePublishingEntry,
+  SourcePackageList,
+  SourcePackageListFilter,
+  SourcePackageListQuery,
 } from "./types.js";
 import { env } from "$env/dynamic/private";
 
@@ -46,33 +53,31 @@ export function getActiveSeriesMilestones(
   );
 }
 
-export function getPublishedSources(
+export async function getSourcePackageList(
   distro: string,
-  query: PublishedSourcesQuery,
-): Promise<Collection<SourcePackagePublishingEntry>> {
-  return getJson(
-    archiveUrl(distro, "getPublishedSources", {
-      "ws.size": query.size,
-      "ws.start": query.start,
-      order_by: query.orderBy,
+  query: SourcePackageListQuery,
+): Promise<SourcePackageList> {
+  const result = await getJson(
+    archiveUrl(distro, "getSourcePackageList", {
+      page_size: query.size,
+      page: query.page,
+      order_by: query.orderBy ? JSON.stringify(query.orderBy) : undefined,
+      include_binaries: "true",
+      binary_names_limit: MAX_BINARY_NAMES,
       ...sourcePackagesFilterParams(distro, query),
     }),
   );
+  return v.parse(sourcePackageListSchema, result);
 }
 
-export async function getPublishedSourcesTotal(
+export async function getBinaryPackageDetails(
   distro: string,
-  filter: PublishedSourcesFilter,
-): Promise<number> {
-  const url = archiveUrl(distro, "getPublishedSources", {
-    "ws.show": "total_size",
-    ...sourcePackagesFilterParams(distro, filter),
-  });
-  const total: unknown = await getJson(url);
-  if (typeof total !== "number") {
-    throw new Error(`Launchpad request to ${url} did not return a total`);
-  }
-  return total;
+  binaryId: number,
+): Promise<BinaryPackageDetails> {
+  const result = await getJson(
+    archiveUrl(distro, "getBinaryPackageDetails", { binary_id: binaryId }),
+  );
+  return v.parse(binaryPackageDetailsSchema, result);
 }
 
 export function findPeople(text: string): Promise<Collection<PersonEntry>> {
@@ -128,14 +133,14 @@ async function fetchFollowingRedirects(
 
 function sourcePackagesFilterParams(
   distro: string,
-  filter: PublishedSourcesFilter,
+  filter: SourcePackageListFilter,
 ): QueryParams {
   return {
-    status: filter.status,
-    distro_series: filter.series
+    statuses: filter.statuses ? JSON.stringify(filter.statuses) : undefined,
+    distroseries: filter.series
       ? `${apiBase()}/${encodeURIComponent(distro)}/${encodeURIComponent(filter.series)}`
       : undefined,
-    source_name: filter.sourceName || undefined,
+    name: filter.sourceName || undefined,
     exact_match: filter.sourceName
       ? String(filter.exactMatch ?? false)
       : undefined,

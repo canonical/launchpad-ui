@@ -1,5 +1,10 @@
 # `packages` API client (mocked via MSW)
 
+The distribution packages table and binary-details panel use
+`$lib/server/launchpad/client.ts`, not this client or MSW. They require
+`getSourcePackageList` and `getBinaryPackageDetails` on the Launchpad backend
+configured by `MAIN_LAUNCHPAD_BASE_HOST`, including in `dev:mock` mode.
+
 Thin `openapi-fetch` wrapper for the `packages` API. In dev (`pnpm dev:mock`)
 and tests, requests are intercepted by MSW (Mock Service Worker) — in-process on
 the server (and in tests) and via a Service Worker in the browser. `client.ts`
@@ -127,8 +132,8 @@ built (e.g. `http://localhost/api/packages/...`) and fails.
 
 ## Migration path
 
-The whole `mocks/` tree exists to be replaced — endpoint by endpoint. The
-same `passthrough()` pattern gates every transition.
+The remaining mock endpoints can be migrated using the `passthrough()`
+pattern below.
 
 ### Step 1. Replace a single endpoint with the real version
 

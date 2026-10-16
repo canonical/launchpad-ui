@@ -1,8 +1,5 @@
-// AI-written types for the Launchpad webservice (lazr.restful over JSON).
-// Subset covering package listings, people, and distribution series.
-// Replace with generated types if an OpenAPI client lands.
+import * as v from "valibot";
 
-/** Wraps every collection response (`ws.op=get*`). */
 export type Collection<T> = {
   start: number;
   entries: T[];
@@ -13,42 +10,67 @@ export type Collection<T> = {
   previous_collection_link?: string;
 };
 
-export type PublishingStatus =
-  | "Published"
-  | "Pending"
-  | "Superseded"
-  | "Deleted"
-  | "Obsolete";
+const publishingStatusSchema = v.picklist([
+  "Published",
+  "Pending",
+  "Superseded",
+  "Deleted",
+  "Obsolete",
+]);
+const pocketSchema = v.picklist([
+  "Release",
+  "Security",
+  "Updates",
+  "Proposed",
+  "Backports",
+]);
+const countSchema = v.pipe(v.number(), v.safeInteger(), v.minValue(0));
+const idSchema = v.pipe(v.number(), v.safeInteger(), v.minValue(1));
 
-export type Pocket =
-  | "Release"
-  | "Security"
-  | "Updates"
-  | "Proposed"
-  | "Backports";
+export type PublishingStatus = v.InferOutput<typeof publishingStatusSchema>;
+export type Pocket = v.InferOutput<typeof pocketSchema>;
 
-/** `source_package_publishing_history` entry, as returned in collections. */
-export type SourcePackagePublishingEntry = {
-  self_link: string;
-  resource_type_link: string;
-  display_name: string;
-  source_package_name: string;
-  source_package_version: string;
-  status: PublishingStatus;
-  pocket: Pocket;
-  component_name: string;
-  section_name: string | null;
-  distro_series_link: string;
-  archive_link: string;
-  date_published: string | null;
-  date_created: string;
-  date_superseded: string | null;
-  date_made_pending: string | null;
-  date_removed: string | null;
-};
+export const sourcePackageListSchema = v.object({
+  total: countSchema,
+  total_pages: countSchema,
+  page: idSchema,
+  page_size: v.pipe(idSchema, v.maxValue(100)),
+  sources: v.array(
+    v.object({
+      id: idSchema,
+      source_package_name: v.string(),
+      source_package_version: v.string(),
+      series: v.string(),
+      pocket: pocketSchema,
+      status: publishingStatusSchema,
+      binaries: v.array(v.object({ name: v.string(), id: idSchema })),
+      binaries_total: countSchema,
+    }),
+  ),
+});
 
-/** Sort keys accepted by `getPublishedSources`' `order_by`. */
-export type PublishedSourcesSortKey =
+export const binaryPackageDetailsSchema = v.object({
+  id: idSchema,
+  binary_package_name: v.string(),
+  binary_package_version: v.string(),
+  summary: v.optional(v.string()),
+  description: v.string(),
+  files: v.array(
+    v.object({
+      filename: v.string(),
+      size: countSchema,
+      url: v.pipe(v.string(), v.url()),
+    }),
+  ),
+});
+
+export type SourcePackageList = v.InferOutput<typeof sourcePackageListSchema>;
+export type SourcePackageListEntry = SourcePackageList["sources"][number];
+export type BinaryPackageDetails = v.InferOutput<
+  typeof binaryPackageDetailsSchema
+>;
+
+export type SourcePackageSortKey =
   | "date_published"
   | "date_created"
   | "source_package_name"
@@ -57,9 +79,9 @@ export type PublishedSourcesSortKey =
   | "status";
 
 /** Null and undefined represent unset filters; empty name strings are also omitted. */
-export type PublishedSourcesFilter = {
+export type SourcePackageListFilter = {
   series?: string | null;
-  status?: PublishingStatus[] | null;
+  statuses?: PublishingStatus[] | null;
   sourceName?: string | null;
   exactMatch?: boolean | null;
   pocket?: Pocket | null;
@@ -92,11 +114,8 @@ export type MilestoneEntry = {
   web_link: string;
 };
 
-export type PublishedSourcesQuery = PublishedSourcesFilter & {
-  /** Page size (`ws.size`). */
+export type SourcePackageListQuery = SourcePackageListFilter & {
   size?: number;
-  /** Zero-based offset of the first entry (`ws.start`). */
-  start?: number;
-  /** Repeated `order_by` params; prefix with `-` for descending. */
-  orderBy?: string[];
+  page?: number;
+  orderBy?: (SourcePackageSortKey | `-${SourcePackageSortKey}`)[];
 };
