@@ -209,9 +209,9 @@
   {#if hasActiveFilters}
     <div class="actions">
       <Button
-        type="button"
         importance="tertiary"
         aria-label="Save current filters"
+        href={queryParams.addView("bookmark")}
       >
         {#snippet iconLeft()}
           <BookmarkIcon />

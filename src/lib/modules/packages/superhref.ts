@@ -1,5 +1,4 @@
 // This could/should be moved somewhere when we notice that config or its parts need to be shared between different routes.
-
 import {
   enumCodec,
   strCodec,
@@ -18,6 +17,7 @@ import {
   POCKETS,
   SEARCH_MATCHES,
 } from "$lib/modules/packages/filters/constants.js";
+import type { PackagesFilters } from "$lib/modules/packages/filters/schema.js";
 import {
   ADD_TABLE_VIEW_MODES,
   DEFAULT_TABLE_VIEW_SLUG,
@@ -112,3 +112,18 @@ export const QueryParams = superhref(packagesQuerySchema, {
 export type BoundPackagesQueryParams = ReturnType<typeof QueryParams.bind>;
 
 export type PackageOwnedQueryKey = OwnedKey<typeof packagesQuerySchema>;
+
+export function toPackagesFilters(
+  queryParams: BoundPackagesQueryParams,
+): PackagesFilters {
+  return {
+    search: queryParams.search,
+    match: queryParams.match,
+    series: queryParams.series,
+    pocket: queryParams.pocket,
+    maintainer: queryParams.maintainer,
+    signer: queryParams.signer,
+    ubuntuChange: queryParams["ubuntu-change"],
+    allStatuses: queryParams["all-statuses"],
+  };
+}

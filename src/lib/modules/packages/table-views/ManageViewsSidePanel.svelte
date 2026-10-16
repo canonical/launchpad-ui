@@ -52,6 +52,7 @@
     MANAGE_VIEWS_PANEL,
     PANEL_QUERY_PARAM,
     QueryParams,
+    toPackagesFilters,
   } from "$lib/modules/packages/superhref.js";
   import { preserveQueryParams } from "$lib/utils/index.js";
   import { getPackagesContext } from "../context.js";
@@ -65,6 +66,7 @@
     getTableViews,
     updateTableViews,
   } from "./table-views.remote.js";
+  import { getRecommendedViewName } from "./utils.js";
   import { goto, replaceState } from "$app/navigation";
   import { page } from "$app/state";
 
@@ -308,7 +310,17 @@
       onstage={stageNewView}
     />
   {:else if addMode === "bookmark"}
-    <!-- TODO: Handle bookmark case -->
+    {const urlFilters = $derived(toPackagesFilters(queryParams))}
+    <TableViewEditForm
+      form={createTableView}
+      settings={{
+        name: getRecommendedViewName(urlFilters),
+        filters: urlFilters,
+      }}
+      heading="Adding a new view"
+      cancelHref={queryParams["manage-views"].closeForm()}
+      onstage={stageNewView}
+    />
   {:else}
     <ButtonPrimitive
       class="add-new-view"

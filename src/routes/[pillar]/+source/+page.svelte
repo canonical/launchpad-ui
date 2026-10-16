@@ -15,12 +15,12 @@
   import { setPackagesContext } from "$lib/modules/packages/context.js";
   import Filters from "$lib/modules/packages/filters/Filters.svelte";
   import FiltersSummary from "$lib/modules/packages/filters/FiltersSummary.svelte";
-  import type { PackagesFilters } from "$lib/modules/packages/filters/schema.js";
   import { getSourcePackages } from "$lib/modules/packages/packages.remote.js";
   import {
     PACKAGES_TABLE_COLUMNS,
     PAGE_SIZE_OPTIONS,
     QueryParams,
+    toPackagesFilters,
   } from "$lib/modules/packages/superhref.js";
   import ManageViewsSidePanel from "$lib/modules/packages/table-views/ManageViewsSidePanel.svelte";
   import { resolveTableView } from "$lib/modules/packages/table-views/resolveTableView.js";
@@ -40,16 +40,7 @@
     },
   });
 
-  const urlFilters = $derived({
-    search: queryParams.search,
-    match: queryParams.match,
-    series: queryParams.series,
-    pocket: queryParams.pocket,
-    maintainer: queryParams.maintainer,
-    signer: queryParams.signer,
-    ubuntuChange: queryParams["ubuntu-change"],
-    allStatuses: queryParams["all-statuses"],
-  } satisfies PackagesFilters);
+  const urlFilters = $derived(toPackagesFilters(queryParams));
 
   const storedTableViews = $derived(await getTableViews());
   // Views saved by a navigation take precedence, so they're applied together with its URL
