@@ -31,6 +31,15 @@ export const PACKAGES_FILTER_LABELS = {
   allStatuses: "Include Superseded and Deleted",
 } as const;
 
+type BooleanFilterKey = {
+  [K in keyof PackagesFilters]: PackagesFilters[K] extends boolean ? K : never;
+}[keyof PackagesFilters];
+
+export const PACKAGES_FILTER_SUMMARY_LABELS = {
+  ubuntuChange: "Changed by Ubuntu",
+  allStatuses: "All statuses",
+} as const satisfies Record<BooleanFilterKey, string>;
+
 export const DEFAULT_PACKAGES_FILTERS = {
   search: null,
   match: "contains",

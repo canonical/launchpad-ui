@@ -3,7 +3,11 @@
   import { EditIcon } from "@canonical/svelte-icons";
   import { getPackagesContext } from "../context.js";
   import type { TableView } from "../table-views/constants.js";
-  import { PACKAGES_FILTER_LABELS, SEARCH_MODE_LABELS } from "./constants.js";
+  import {
+    PACKAGES_FILTER_LABELS,
+    PACKAGES_FILTER_SUMMARY_LABELS,
+    SEARCH_MODE_LABELS,
+  } from "./constants.js";
   import type { PackagesFilters } from "./schema.js";
 
   const { tableView }: { tableView: TableView } = $props();
@@ -36,10 +40,14 @@
       value: filters.pocket,
     },
     ubuntuChange: {
-      value: filters.ubuntuChange ? "Changed by Ubuntu" : null,
+      value: filters.ubuntuChange
+        ? PACKAGES_FILTER_SUMMARY_LABELS.ubuntuChange
+        : null,
     },
     allStatuses: {
-      value: filters.allStatuses ? "All statuses" : null,
+      value: filters.allStatuses
+        ? PACKAGES_FILTER_SUMMARY_LABELS.allStatuses
+        : null,
     },
   });
 

@@ -151,10 +151,25 @@ describe("Filters", () => {
       .toHaveAttribute("href", "?sort=series&match=exact");
   });
 
+  it("offers to bookmark the active filters as a new view", async () => {
+    page.url.search = "?search=linux&series=noble&page=3";
+    const screen = await render(Filters);
+
+    const link = screen.getByRole("link", { name: "Save current filters" });
+    await expect.element(link).toBeVisible();
+
+    const href = link.element().getAttribute("href")!;
+    const params = new URL(href, page.url).searchParams;
+    expect(params.get("search")).toBe("linux");
+    expect(params.get("series")).toBe("noble");
+    expect(params.get("panel")).toBe("manage-views");
+    expect(params.get("manage-views.add")).toBe("bookmark");
+  });
+
   it.each([
     ["no filters", ""],
     ["only a search mode", "?match=exact"],
-  ])("does not offer to clear %s", async (_, search) => {
+  ])("does not offer to clear or bookmark %s", async (_, search) => {
     page.url.search = search;
     const screen = await render(Filters);
 
@@ -163,6 +178,9 @@ describe("Filters", () => {
       .toBeVisible();
     await expect
       .element(screen.getByRole("link", { name: "Clear all filters" }))
+      .not.toBeInTheDocument();
+    await expect
+      .element(screen.getByRole("link", { name: "Save current filters" }))
       .not.toBeInTheDocument();
   });
 });

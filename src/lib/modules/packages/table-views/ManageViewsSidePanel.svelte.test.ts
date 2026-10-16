@@ -110,6 +110,47 @@ describe("ManageViewsSidePanel", () => {
       ]);
   });
 
+  it("bookmarks the URL filters as a new view", async () => {
+    vi.mocked(updateTableViews).mockResolvedValue([allPackages]);
+    const screen = await renderPanel(
+      "?search=linux&series=noble&ubuntu-change=1" +
+        "&panel=manage-views&manage-views.add=bookmark",
+    );
+    const name = '"linux" + Noble + Changed by Ubuntu';
+
+    await expect
+      .element(screen.getByRole("textbox", { name: "* View name" }))
+      .toHaveValue(name);
+    await screen.getByRole("button", { name: "Confirm" }).click();
+    await expect
+      .poll(() => viewNames(screen))
+      .toEqual(["All packages", "Noble", "Resolute", name]);
+    await screen.getByRole("button", { name: "Save" }).click();
+
+    await expect
+      .poll(() => vi.mocked(updateTableViews).mock.calls)
+      .toEqual([
+        [
+          [
+            { id: "all-packages", settings: undefined },
+            { id: "noble", settings: undefined },
+            { id: "resolute", settings: undefined },
+            {
+              settings: {
+                name,
+                filters: {
+                  ...DEFAULT_PACKAGES_FILTERS,
+                  search: "linux",
+                  series: "noble",
+                  ubuntuChange: true,
+                },
+              },
+            },
+          ],
+        ],
+      ]);
+  });
+
   it("goes to the renamed current view with the saved views", async () => {
     const saved = [allPackages, { ...noble, name: "Noble 2", slug: "noble-2" }];
     vi.mocked(updateTableViews).mockResolvedValue(saved);
