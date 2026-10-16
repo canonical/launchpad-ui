@@ -176,10 +176,10 @@
         <noscript>
           <Button
             type="submit"
-            importance="tertiary"
+            importance="secondary"
             class="filter-control-button"
           >
-            Apply Filters
+            Apply filters
           </Button>
         </noscript>
         {#if hasActiveFilters}
@@ -191,7 +191,7 @@
               page: null,
             })}
             aria-label="Clear all filters"
-            importance="tertiary"
+            importance="secondary"
             class="filter-control-button"
           >
             {#snippet iconLeft()}
@@ -261,7 +261,6 @@
       grid-column: 1 / -1;
       display: flex;
       align-items: center;
-      justify-content: end;
       column-gap: var(--dimension-150);
     }
 
