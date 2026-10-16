@@ -4,6 +4,7 @@ import { render } from "vitest-browser-svelte";
 import { DEFAULT_PACKAGES_FILTERS } from "../filters/constants.js";
 import TableViewEditForm from "./TableViewEditForm.svelte";
 import type { TableViewSettings } from "./schema.js";
+import { editTableView } from "./table-views.remote.js";
 
 vi.mock("$app/state", async () => {
   const { SvelteURL } = await import("svelte/reactivity");
@@ -32,14 +33,9 @@ let viewCount = 0;
 async function renderForm() {
   const onstage = vi.fn();
   const screen = await render(TableViewEditForm, {
-    view: {
-      id: `mine-${viewCount++}`,
-      name: "Mine",
-      slug: "mine",
-      editable: true,
-      filters: DEFAULT_PACKAGES_FILTERS,
-    },
+    form: editTableView.for(`mine-${viewCount++}`),
     settings,
+    heading: "Editing – Mine",
     cancelHref: "?panel=manage-views",
     onstage,
   });

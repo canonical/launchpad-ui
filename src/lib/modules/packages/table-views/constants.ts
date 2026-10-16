@@ -3,6 +3,10 @@ import { DEFAULT_PACKAGES_FILTERS } from "../filters/constants.js";
 import type { PackagesFilters } from "../filters/schema.js";
 
 export const MAX_TABLE_VIEW_NAME_LENGTH = 100;
+export const DEFAULT_TABLE_VIEW_ID = "all-packages";
+
+export const ADD_TABLE_VIEW_MODES = ["new", "bookmark"] as const;
+export type AddTableViewMode = (typeof ADD_TABLE_VIEW_MODES)[number];
 
 export type TableView = {
   id: string;
@@ -14,7 +18,7 @@ export type TableView = {
 
 export const DEFAULT_TABLE_VIEWS: TableView[] = [
   {
-    id: "all-packages",
+    id: DEFAULT_TABLE_VIEW_ID,
     name: "All packages",
     editable: false,
     filters: DEFAULT_PACKAGES_FILTERS,
@@ -33,4 +37,6 @@ export const DEFAULT_TABLE_VIEWS: TableView[] = [
   filters,
 }));
 
-export const DEFAULT_TABLE_VIEW_SLUG = DEFAULT_TABLE_VIEWS[0].slug;
+export const DEFAULT_TABLE_VIEW_SLUG = DEFAULT_TABLE_VIEWS.find(
+  ({ id }) => id === DEFAULT_TABLE_VIEW_ID,
+)!.slug;

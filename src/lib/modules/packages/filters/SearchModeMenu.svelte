@@ -1,14 +1,8 @@
 <script lang="ts" module>
-  import { SEARCH_MATCHES } from "./constants.js";
+  import { SEARCH_MATCHES, SEARCH_MODE_LABELS } from "./constants.js";
+  import type { SearchMatch } from "./constants.js";
 
-  type SearchMatch = (typeof SEARCH_MATCHES)[number];
-
-  const searchModeLabels = {
-    contains: "Contain",
-    exact: "Exact Match",
-  } as const satisfies Record<SearchMatch, string>;
-
-  const searchModes = Object.entries(searchModeLabels) as [
+  const searchModes = Object.entries(SEARCH_MODE_LABELS) as [
     SearchMatch,
     string,
   ][];
@@ -37,7 +31,7 @@
 <Popover {position}>
   {#snippet trigger(triggerProps)}
     <PopoverTrigger aria-labelledby={ariaLabelledBy} {...triggerProps}>
-      {searchModeLabels[selected]}
+      {SEARCH_MODE_LABELS[selected]}
     </PopoverTrigger>
   {/snippet}
   <ContextualMenuContent>

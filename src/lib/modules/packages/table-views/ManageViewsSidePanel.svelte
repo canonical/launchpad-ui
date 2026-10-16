@@ -1,6 +1,35 @@
+<script lang="ts" module>
+  import type { TableView } from "./constants.js";
+  import type { TableViewSettings } from "./schema.js";
+
+  type ViewDraft = {
+    /** The saved view's id, or a placeholder until a new view is saved. */
+    key: string;
+    /** `null` for a view created in the panel. */
+    saved: TableView | null;
+    settings: TableViewSettings;
+    /** Whether `settings` should be sent on Save. */
+    changed: boolean;
+  };
+
+  function toDraft(view: TableView): ViewDraft {
+    return {
+      key: view.id,
+      saved: view,
+      settings: { name: view.name, filters: view.filters },
+      changed: false,
+    };
+  }
+
+  function isEditable(draft: ViewDraft) {
+    return draft.saved?.editable ?? true;
+  }
+</script>
+
 <script lang="ts">
   import { Button } from "@canonical/svelte-ds-app-launchpad";
-  import { DeleteIcon, EditIcon } from "@canonical/svelte-icons";
+  import { ButtonPrimitive } from "@canonical/svelte-ds-app-launchpad/internal";
+  import { DeleteIcon, EditIcon, PlusIcon } from "@canonical/svelte-icons";
   import { tick, untrack } from "svelte";
   import { ReorderableList } from "$lib/components/ReorderableList/index.js";
   import { SidePanel } from "$lib/launchpad-components/index.js";
@@ -11,10 +40,15 @@
   } from "$lib/modules/packages/superhref.js";
   import { preserveQueryParams } from "$lib/utils/index.js";
   import { getPackagesContext } from "../context.js";
+  import { DEFAULT_PACKAGES_FILTERS } from "../filters/constants.js";
+  import { packagesFiltersDiffer } from "../filters/utils.js";
   import TableViewEditForm from "./TableViewEditForm.svelte";
-  import type { TableView } from "./constants.js";
-  import type { TableViewSettings } from "./schema.js";
-  import { deleteTableView, updateTableViews } from "./table-views.remote.js";
+  import {
+    createTableView,
+    deleteTableView,
+    editTableView,
+    updateTableViews,
+  } from "./table-views.remote.js";
   import { goto } from "$app/navigation";
   import { page } from "$app/state";
 
@@ -31,13 +65,12 @@
 
   // Snapshot of the items for local modifications, with edits staged until Save
   // svelte-ignore state_referenced_locally
-  let modifiedItems =
-    $state<(TableView & { stagedSettings?: TableViewSettings })[]>(items);
+  let drafts = $state<ViewDraft[]>(items.map(toDraft));
   let suspendReorderAnimations = $state(false);
   // Refresh the snapshot each time the panel is opened. Suspend the reorder animation to not see it while panel opens.
   $effect.pre(() => {
     if (open) {
-      modifiedItems = untrack(() => items);
+      drafts = untrack(() => items).map(toDraft);
 
       suspendReorderAnimations = true;
       void tick().then(() => {
@@ -47,40 +80,98 @@
   });
 
   const haveItemsChanged = $derived(
-    items.length !== modifiedItems.length ||
-      items.some(({ id }, index) => id !== modifiedItems[index].id) ||
-      modifiedItems.some(({ stagedSettings }) => stagedSettings),
+    items.length !== drafts.length ||
+      items.some(({ id }, index) => id !== drafts[index].saved?.id) ||
+      drafts.some(({ changed }) => changed),
   );
 
   const isItemEdited = $derived.by(() => {
-    const editedItemId = queryParams["manage-views"].edit;
-    if (!editedItemId) return false;
-    return modifiedItems.some(
-      ({ id, editable }) => id === editedItemId && editable,
-    );
+    const editedKey = queryParams["manage-views"].edit;
+    if (!editedKey) return false;
+    return drafts.some((draft) => draft.key === editedKey && isEditable(draft));
   });
 
-  function stageViewSettings(id: string, settings: TableViewSettings) {
-    modifiedItems = modifiedItems.map((modifiedItem) =>
-      modifiedItem.id === id
-        ? {
-            ...modifiedItem,
-            name: settings.name,
-            stagedSettings: settings,
-          }
-        : modifiedItem,
-    );
+  const addMode = $derived(
+    // Editing takes precedence
+    isItemEdited ? null : queryParams["manage-views"].add,
+  );
+
+  const isAnyFormOpen = $derived(isItemEdited || addMode !== null);
+
+  function stageViewSettings(key: string, settings: TableViewSettings) {
+    const draft = drafts.find((draft) => draft.key === key);
+    if (draft) {
+      draft.settings = settings;
+      draft.changed = true;
+    }
+
+    closeViewForm();
+  }
+
+  function stageNewView(settings: TableViewSettings) {
+    drafts.push({
+      key: `new-${crypto.randomUUID()}`,
+      saved: null,
+      settings,
+      changed: true,
+    });
+
+    closeViewForm();
+  }
+
+  function closeViewForm() {
     // eslint-disable-next-line svelte/no-navigation-without-resolve
-    goto(queryParams["manage-views"].set("edit", null), {
+    goto(queryParams["manage-views"].closeForm(), {
       keepFocus: true,
       noScroll: true,
     });
   }
 
   let saving = $state(false);
+
+  async function saveViews() {
+    saving = true;
+    await tick();
+
+    try {
+      const currentView = items.find(({ slug }) => slug === queryParams.view);
+      const savedViews = await updateTableViews(
+        drafts.map(({ saved, settings, changed }) =>
+          saved
+            ? { id: saved.id, settings: changed ? settings : undefined }
+            : { settings },
+        ),
+      );
+      const updatedView = savedViews.find(({ id }) => id === currentView?.id);
+
+      const shouldResetPage =
+        currentView &&
+        (updatedView === undefined ||
+          packagesFiltersDiffer(updatedView.filters, currentView.filters));
+
+      goto(
+        // eslint-disable-next-line svelte/no-navigation-without-resolve
+        queryParams.patch({
+          panel: null,
+          "manage-views": null,
+          view: updatedView?.slug ?? null,
+          ...(shouldResetPage && { page: 1 }),
+        }),
+        {
+          keepFocus: true,
+          noScroll: true,
+        },
+      );
+    } catch (error) {
+      console.error(error);
+    }
+
+    saving = false;
+  }
 </script>
 
 <SidePanel
+  class="manage-views-side-panel"
   title="Packages table views"
   {open}
   closeForm={{
@@ -103,34 +194,32 @@
 >
   <h3>Active views</h3>
   <ReorderableList
-    bind:items={modifiedItems}
-    key={(item) => item.id}
-    itemLabel={(item) => item.name}
-    disabled={isItemEdited}
+    bind:items={drafts}
+    key={(draft) => draft.key}
+    itemLabel={(draft) => draft.settings.name}
+    disabled={isAnyFormOpen}
     animationDuration={suspendReorderAnimations ? 0 : undefined}
     dragMode="drop-indicator"
   >
-    {#snippet item({ item, index }, renderedInOverlay)}
-      {#if item.editable && queryParams["manage-views"].edit === item.id}
+    {#snippet item({ item: draft, index }, renderedInOverlay)}
+      {#if isEditable(draft) && queryParams["manage-views"].edit === draft.key}
         <TableViewEditForm
-          view={item}
-          settings={item.stagedSettings ?? {
-            name: item.name,
-            filters: item.filters,
-          }}
-          cancelHref={queryParams["manage-views"].set("edit", null)}
-          onstage={(settings) => stageViewSettings(item.id, settings)}
+          form={editTableView.for(draft.key)}
+          settings={draft.settings}
+          heading="Editing – {draft.settings.name}"
+          cancelHref={queryParams["manage-views"].closeForm()}
+          onstage={(settings) => stageViewSettings(draft.key, settings)}
         />
       {:else}
-        <ReorderableList.Item {item} {index}>
-          <span style="margin-inline-end: auto;">{item.name}</span>
-          {#if item.editable}
+        <ReorderableList.Item item={draft} {index}>
+          <span style="margin-inline-end: auto;">{draft.settings.name}</span>
+          {#if isEditable(draft)}
             <Button
               density="dense"
               importance="tertiary"
-              aria-label="Edit {item.name}"
-              href={queryParams["manage-views"].set("edit", item.id)}
-              disabled={isItemEdited}
+              aria-label="Edit {draft.settings.name}"
+              href={queryParams.editView(draft.key)}
+              disabled={isAnyFormOpen}
             >
               {#snippet iconLeft()}
                 <EditIcon />
@@ -138,16 +227,14 @@
             </Button>
             {const deleteForm = $derived(
               // Only attach the form function to the real, non-overlay items
-              renderedInOverlay ? null : deleteTableView.for(item.id),
+              renderedInOverlay ? null : deleteTableView.for(draft.key),
             )}
             <form
               {...deleteForm &&
                 preserveQueryParams(
                   deleteForm.enhance(() => {
-                    // If JS, don't delete immediately, and instead stage for deletion in modifiedItems
-                    modifiedItems = modifiedItems.filter(
-                      ({ id }) => id !== item.id,
-                    );
+                    // If JS, don't delete immediately, and instead stage for deletion in drafts
+                    drafts = drafts.filter(({ key }) => key !== draft.key);
                   }),
                   page.url,
                 )}
@@ -155,9 +242,9 @@
               <Button
                 density="dense"
                 importance="tertiary"
-                aria-label="Delete {item.name}"
-                disabled={isItemEdited}
-                {...deleteForm?.fields.id.as("submit", item.id)}
+                aria-label="Delete {draft.settings.name}"
+                disabled={isAnyFormOpen}
+                {...deleteForm?.fields.id.as("submit", draft.key)}
               >
                 {#snippet iconLeft()}
                   <DeleteIcon />
@@ -169,6 +256,26 @@
       {/if}
     {/snippet}
   </ReorderableList>
+  {#if addMode === "new"}
+    <TableViewEditForm
+      form={createTableView}
+      settings={{ name: "", filters: DEFAULT_PACKAGES_FILTERS }}
+      heading="Adding a new view"
+      cancelHref={queryParams["manage-views"].closeForm()}
+      onstage={stageNewView}
+    />
+  {:else if addMode === "bookmark"}
+    <!-- TODO: Handle bookmark case -->
+  {:else}
+    <ButtonPrimitive
+      class="add-new-view"
+      disabled={isAnyFormOpen}
+      href={queryParams.addView("new")}
+    >
+      <PlusIcon />
+      Add new view
+    </ButtonPrimitive>
+  {/if}
   {#snippet footer(closeButtonProps)}
     <div class="footer">
       <Button {...closeButtonProps} importance="tertiary">Cancel</Button>
@@ -177,40 +284,7 @@
         loading={saving}
         importance="primary"
         anticipation="constructive"
-        onclick={async () => {
-          saving = true;
-          try {
-            const currentView = items.find(
-              ({ slug }) => slug === queryParams.view,
-            );
-            const savedViews = await updateTableViews(
-              modifiedItems.map(({ id, stagedSettings }) => ({
-                id,
-                settings: stagedSettings,
-              })),
-            );
-            const updatedView = savedViews.find(
-              ({ id }) => id === currentView?.id,
-            );
-            goto(
-              // eslint-disable-next-line svelte/no-navigation-without-resolve
-              queryParams.patch({
-                panel: null,
-                "manage-views": null,
-                view: updatedView?.slug ?? null,
-                ...(updatedView === undefined && { page: 1 }),
-              }),
-              {
-                keepFocus: true,
-                noScroll: true,
-              },
-            );
-          } catch (error) {
-            console.error(error);
-          }
-
-          saving = false;
-        }}
+        onclick={() => saveViews()}
       >
         Save
       </Button>
@@ -222,6 +296,19 @@
   h3 {
     font: var(--ds-typography-text-primary-bold);
     margin-block-end: var(--dimension-200);
+  }
+
+  :global {
+    .manage-views-side-panel {
+      .add-new-view {
+        color: var(--color-text-muted);
+        display: flex;
+        align-items: center;
+        width: 100%;
+        gap: var(--dimension-150);
+        padding-inline-start: var(--dimension-050);
+      }
+    }
   }
 
   .footer {

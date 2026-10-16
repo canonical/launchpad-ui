@@ -1,6 +1,11 @@
 // This could/should be moved somewhere when we notice that config or its parts need to be shared between different routes.
 
-import { enumCodec, strCodec, superhref } from "@canonical/superhref";
+import {
+  enumCodec,
+  strCodec,
+  superhref,
+  withActions,
+} from "@canonical/superhref";
 import type { OwnedKey } from "@canonical/superhref";
 import {
   flagCodec,
@@ -13,7 +18,11 @@ import {
   POCKETS,
   SEARCH_MATCHES,
 } from "$lib/modules/packages/filters/constants.js";
-import { DEFAULT_TABLE_VIEW_SLUG } from "$lib/modules/packages/table-views/constants.js";
+import {
+  ADD_TABLE_VIEW_MODES,
+  DEFAULT_TABLE_VIEW_SLUG,
+} from "$lib/modules/packages/table-views/constants.js";
+import type { AddTableViewMode } from "$lib/modules/packages/table-views/constants.js";
 
 /** The packages table columns, in display order.*/
 export const PACKAGES_TABLE_COLUMNS = [
@@ -50,11 +59,17 @@ const packagesQuerySchema = {
   sort: sortCodec(SORTABLE_PACKAGES_COLUMNS),
   view: strCodec({ default: DEFAULT_TABLE_VIEW_SLUG }),
   [PANEL_QUERY_PARAM]: enumCodec([MANAGE_VIEWS_PANEL]),
-  [MANAGE_VIEWS_PANEL]: {
-    // There is no array codec yet, so only one item can be edited at a time.
-    // TODO(superhref): Add array codec and replace this afterwards.
-    edit: strCodec(),
-  },
+  [MANAGE_VIEWS_PANEL]: withActions(
+    {
+      edit: strCodec(),
+      add: enumCodec(ADD_TABLE_VIEW_MODES),
+    },
+    {
+      closeForm: (patch) => {
+        return patch({ edit: null, add: null });
+      },
+    },
+  ),
   search: textCodec(),
   match: enumCodec(SEARCH_MATCHES, { default: "contains" }),
   series: launchpadNameCodec(),
@@ -77,6 +92,18 @@ export const QueryParams = superhref(packagesQuerySchema, {
       return patch({
         view: view === DEFAULT_TABLE_VIEW_SLUG ? null : view,
         page: 1,
+      });
+    },
+    editView: (patch, _, viewId: string) => {
+      return patch({
+        [PANEL_QUERY_PARAM]: MANAGE_VIEWS_PANEL,
+        [MANAGE_VIEWS_PANEL]: { edit: viewId, add: null },
+      });
+    },
+    addView: (patch, _, addMode: AddTableViewMode) => {
+      return patch({
+        [PANEL_QUERY_PARAM]: MANAGE_VIEWS_PANEL,
+        [MANAGE_VIEWS_PANEL]: { add: addMode, edit: null },
       });
     },
   },

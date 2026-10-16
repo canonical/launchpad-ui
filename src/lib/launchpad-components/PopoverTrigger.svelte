@@ -65,6 +65,15 @@
         justify-content: space-between;
       }
 
+      .svelte-icon {
+        /*
+          Currently "more filters" button (containing only an icon) is misaligned with other triggers, due to being smaller than expected.
+
+          FIXME(DAL): Fix in DAL and remove this override
+        */
+        min-block-size: 1lh;
+      }
+
       &:has(+ :popover-open) {
         background-color: var(--color-foreground-ghost-active);
 
