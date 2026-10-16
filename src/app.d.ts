@@ -1,5 +1,7 @@
 // See https://svelte.dev/docs/kit/types#app.d.ts
 // for information about these interfaces
+import type { TableView } from "$lib/modules/packages/table-views/constants.js";
+
 declare global {
   namespace App {
     // interface Error {}
@@ -7,7 +9,9 @@ declare global {
       user: { id: string };
     }
     // interface PageData {}
-    // interface PageState {}
+    interface PageState {
+      tableViews?: TableView[];
+    }
     // interface Platform {}
   }
 }

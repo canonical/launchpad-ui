@@ -16,6 +16,8 @@
     children: childrenSnippet,
     footer,
     closeForm,
+    open,
+    onclose,
     ...rest
   }: Omit<SidePanelProps, "children" | "closedby"> & {
     title?: string;
@@ -46,7 +48,16 @@
 
 <!-- TODO(DAL): Update SidePanel spacing to match the design. -->
 <!-- Without JS, dismissal must use the close form to clear the query param. -->
-<SidePanel closedby={browser ? "any" : "none"} {...rest}>
+<SidePanel
+  closedby={browser ? "any" : "none"}
+  onclose={(e) => {
+    // Only report user dismissals
+    if (!open) return;
+    onclose?.(e);
+  }}
+  {open}
+  {...rest}
+>
   {#snippet children(commandfor)}
     <SidePanel.Content>
       <SidePanel.Content.Header>

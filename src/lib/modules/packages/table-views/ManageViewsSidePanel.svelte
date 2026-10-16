@@ -24,13 +24,28 @@
   function isEditable(draft: ViewDraft) {
     return draft.saved?.editable ?? true;
   }
+
+  class DraftsSession {
+    drafts = $state<ViewDraft[]>([]);
+    saveError = $state<string | null>(null);
+
+    constructor(items: TableView[]) {
+      this.restart(items);
+    }
+
+    restart(items: TableView[]) {
+      this.drafts = items.map(toDraft);
+      this.saveError = null;
+    }
+  }
 </script>
 
 <script lang="ts">
   import { Button } from "@canonical/svelte-ds-app-launchpad";
   import { ButtonPrimitive } from "@canonical/svelte-ds-app-launchpad/internal";
   import { DeleteIcon, EditIcon, PlusIcon } from "@canonical/svelte-icons";
-  import { tick, untrack } from "svelte";
+  import { isHttpError } from "@sveltejs/kit";
+  import { settled, tick, untrack } from "svelte";
   import { ReorderableList } from "$lib/components/ReorderableList/index.js";
   import { SidePanel } from "$lib/launchpad-components/index.js";
   import {
@@ -47,31 +62,32 @@
     createTableView,
     deleteTableView,
     editTableView,
+    getTableViews,
     updateTableViews,
   } from "./table-views.remote.js";
-  import { goto } from "$app/navigation";
+  import { goto, replaceState } from "$app/navigation";
   import { page } from "$app/state";
 
-  let {
-    open,
-    items,
-  }: {
-    open: boolean;
-    items: TableView[];
-  } = $props();
+  let { open }: { open: boolean } = $props();
+
+  const items = $derived(await getTableViews());
 
   const context = getPackagesContext();
   const queryParams = $derived(context.queryParams);
 
-  // Snapshot of the items for local modifications, with edits staged until Save
-  // svelte-ignore state_referenced_locally
-  let drafts = $state<ViewDraft[]>(items.map(toDraft));
+  // The session outlives the closing, so the content doesn't change while the panel slides out.
+  // Each opening starts a new one, fresh for local modifications.
+  let lastSession: DraftsSession | undefined;
+  const session = $derived.by(() => {
+    if (open || !lastSession)
+      lastSession = new DraftsSession(untrack(() => items));
+    return lastSession;
+  });
+
   let suspendReorderAnimations = $state(false);
-  // Refresh the snapshot each time the panel is opened. Suspend the reorder animation to not see it while panel opens.
+  // Suspend the reorder animation to not see it while panel opens.
   $effect.pre(() => {
     if (open) {
-      drafts = untrack(() => items).map(toDraft);
-
       suspendReorderAnimations = true;
       void tick().then(() => {
         suspendReorderAnimations = false;
@@ -80,15 +96,17 @@
   });
 
   const haveItemsChanged = $derived(
-    items.length !== drafts.length ||
-      items.some(({ id }, index) => id !== drafts[index].saved?.id) ||
-      drafts.some(({ changed }) => changed),
+    items.length !== session.drafts.length ||
+      items.some(({ id }, index) => id !== session.drafts[index].saved?.id) ||
+      session.drafts.some(({ changed }) => changed),
   );
 
   const isItemEdited = $derived.by(() => {
     const editedKey = queryParams["manage-views"].edit;
     if (!editedKey) return false;
-    return drafts.some((draft) => draft.key === editedKey && isEditable(draft));
+    return session.drafts.some(
+      (draft) => draft.key === editedKey && isEditable(draft),
+    );
   });
 
   const addMode = $derived(
@@ -99,7 +117,7 @@
   const isAnyFormOpen = $derived(isItemEdited || addMode !== null);
 
   function stageViewSettings(key: string, settings: TableViewSettings) {
-    const draft = drafts.find((draft) => draft.key === key);
+    const draft = session.drafts.find((draft) => draft.key === key);
     if (draft) {
       draft.settings = settings;
       draft.changed = true;
@@ -109,7 +127,7 @@
   }
 
   function stageNewView(settings: TableViewSettings) {
-    drafts.push({
+    session.drafts.push({
       key: `new-${crypto.randomUUID()}`,
       saved: null,
       settings,
@@ -127,21 +145,36 @@
     });
   }
 
-  let saving = $state(false);
+  /** Starts over from the latest views, which may have changed elsewhere (e.g. in another tab). */
+  async function restartSession() {
+    const tableViews = getTableViews();
+    await tableViews.refresh();
+    session.restart(tableViews.current!);
+  }
 
+  let saving = $state(false);
   async function saveViews() {
     saving = true;
+    session.saveError = null;
     await tick();
 
     try {
       const currentView = items.find(({ slug }) => slug === queryParams.view);
-      const savedViews = await updateTableViews(
-        drafts.map(({ saved, settings, changed }) =>
-          saved
-            ? { id: saved.id, settings: changed ? settings : undefined }
-            : { settings },
-        ),
-      );
+      let savedViews: TableView[];
+      try {
+        savedViews = await updateTableViews(
+          session.drafts.map(({ saved, settings, changed }) =>
+            saved
+              ? { id: saved.id, settings: changed ? settings : undefined }
+              : { settings },
+          ),
+        );
+      } catch (error) {
+        session.saveError = isHttpError(error)
+          ? error.body.message
+          : "Something went wrong";
+        return;
+      }
       const updatedView = savedViews.find(({ id }) => id === currentView?.id);
 
       const shouldResetPage =
@@ -149,7 +182,7 @@
         (updatedView === undefined ||
           packagesFiltersDiffer(updatedView.filters, currentView.filters));
 
-      goto(
+      await goto(
         // eslint-disable-next-line svelte/no-navigation-without-resolve
         queryParams.patch({
           panel: null,
@@ -160,13 +193,21 @@
         {
           keepFocus: true,
           noScroll: true,
+          // The views travel in the navigation state, so they're applied in the same update as the new URL.
+          // Otherwise the URL can briefly point at a renamed view's old slug, or vice versa.
+          state: { tableViews: savedViews },
         },
       );
+
+      getTableViews().set(savedViews);
+      // After awaited queries pick up the new state it is safe to clear the page state
+      await settled();
+      if (page.state.tableViews === savedViews) replaceState("", {});
     } catch (error) {
       console.error(error);
+    } finally {
+      saving = false;
     }
-
-    saving = false;
   }
 </script>
 
@@ -194,7 +235,7 @@
 >
   <h3>Active views</h3>
   <ReorderableList
-    bind:items={drafts}
+    bind:items={session.drafts}
     key={(draft) => draft.key}
     itemLabel={(draft) => draft.settings.name}
     disabled={isAnyFormOpen}
@@ -234,7 +275,9 @@
                 preserveQueryParams(
                   deleteForm.enhance(() => {
                     // If JS, don't delete immediately, and instead stage for deletion in drafts
-                    drafts = drafts.filter(({ key }) => key !== draft.key);
+                    session.drafts = session.drafts.filter(
+                      ({ key }) => key !== draft.key,
+                    );
                   }),
                   page.url,
                 )}
@@ -278,16 +321,32 @@
   {/if}
   {#snippet footer(closeButtonProps)}
     <div class="footer">
+      <!-- TODO(@Enzo): Confirm the design of error reporting -->
+      {#if session.saveError}
+        <p class="save-error" role="alert">
+          Couldn't save the views: {session.saveError}.
+        </p>
+      {/if}
       <Button {...closeButtonProps} importance="tertiary">Cancel</Button>
-      <Button
-        disabled={!haveItemsChanged}
-        loading={saving}
-        importance="primary"
-        anticipation="constructive"
-        onclick={() => saveViews()}
-      >
-        Save
-      </Button>
+      {#if session.saveError}
+        <Button
+          importance="secondary"
+          loading={getTableViews().loading}
+          onclick={() => restartSession()}
+        >
+          Reload views
+        </Button>
+      {:else}
+        <Button
+          disabled={!haveItemsChanged}
+          loading={saving}
+          importance="primary"
+          anticipation="constructive"
+          onclick={() => saveViews()}
+        >
+          Save
+        </Button>
+      {/if}
     </div>
   {/snippet}
 </SidePanel>
@@ -309,6 +368,11 @@
         padding-inline-start: var(--dimension-050);
       }
     }
+  }
+
+  .save-error {
+    flex-basis: 100%;
+    color: var(--color-text-error);
   }
 
   .footer {
