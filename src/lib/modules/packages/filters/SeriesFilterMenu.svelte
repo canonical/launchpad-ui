@@ -34,7 +34,7 @@
   import { Popover } from "@canonical/svelte-ds-app-launchpad";
   import { ContextualMenuContent } from "$lib/components/index.js";
   import { PopoverTrigger } from "$lib/launchpad-components/index.js";
-  import type { ChoiceFilterProps } from "./types.js";
+  import type { ChoiceFilterProps } from "$lib/modules/filtering/types";
 
   const {
     name,

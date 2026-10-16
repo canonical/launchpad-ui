@@ -28,6 +28,7 @@
   import { CloseIcon } from "@canonical/svelte-icons";
   import { onMount } from "svelte";
   import { QueryParamsForm } from "$lib/components/index.js";
+  import type { FilterChangeHandler } from "$lib/modules/filtering/types.js";
   import { subId } from "$lib/utils/index.js";
   import { getPackagesContext } from "../context.js";
   import { QueryParams } from "../superhref.js";
@@ -37,7 +38,6 @@
   import SearchModeMenu from "./SearchModeMenu.svelte";
   import SeriesFilterMenu from "./SeriesFilterMenu.svelte";
   import { PACKAGES_FILTER_LABELS as labels } from "./constants.js";
-  import type { FilterChangeHandler } from "./types.js";
   import { goto } from "$app/navigation";
   import { page } from "$app/state";
 
