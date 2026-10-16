@@ -87,7 +87,6 @@
     replaceParams={[...filterNames, "page"]}
     data-sveltekit-keepfocus
     data-sveltekit-noscroll
-    style="display: contents;"
     class="dense"
   >
     <div class="search">
@@ -236,6 +235,10 @@
     :global {
       .options-panel {
         margin-block-start: var(--dimension-050);
+      }
+
+      > form {
+        display: contents;
       }
     }
   }
