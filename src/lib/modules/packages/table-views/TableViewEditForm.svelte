@@ -33,6 +33,7 @@
     heading,
     cancelHref,
     onstage,
+    requireChange = true,
   }: {
     form: ReturnType<typeof editTableView.for> | typeof createTableView;
     /** The settings to start editing from. */
@@ -41,6 +42,8 @@
     cancelHref: string;
     /** Called with JS instead of submitting, so the edit is saved with the rest of the panel. */
     onstage: (settings: TableViewSettings) => void;
+    /** Whether confirming is disabled until `settings` are changed. */
+    requireChange?: boolean;
   } = $props();
 
   const id = $props.id();
@@ -81,7 +84,7 @@
       !packagesFiltersDiffer(result.output.filters, settings.filters)
     );
   });
-  const submitDisabled = $derived(browser && isUnchanged);
+  const submitDisabled = $derived(browser && requireChange && isUnchanged);
 
   // Add form keeps its values, so clear it when closed
   $effect(() => () => {

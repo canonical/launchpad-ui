@@ -320,6 +320,7 @@
       heading="Adding a new view"
       cancelHref={queryParams["manage-views"].closeForm()}
       onstage={stageNewView}
+      requireChange={false}
     />
   {:else}
     <ButtonPrimitive
