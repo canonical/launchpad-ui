@@ -57,6 +57,7 @@
   import { preserveQueryParams } from "$lib/utils/index.js";
   import { getPackagesContext } from "../context.js";
   import { DEFAULT_PACKAGES_FILTERS } from "../filters/constants.js";
+  import type { SeriesGroups } from "../filters/types.js";
   import { packagesFiltersDiffer } from "../filters/utils.js";
   import TableViewEditForm from "./TableViewEditForm.svelte";
   import {
@@ -70,7 +71,8 @@
   import { goto, replaceState } from "$app/navigation";
   import { page } from "$app/state";
 
-  let { open }: { open: boolean } = $props();
+  let { open, seriesGroups }: { open: boolean; seriesGroups: SeriesGroups } =
+    $props();
 
   const items = $derived(await getTableViews());
 
@@ -252,6 +254,7 @@
           heading="Editing – {draft.settings.name}"
           cancelHref={queryParams["manage-views"].closeForm()}
           onstage={(settings) => stageViewSettings(draft.key, settings)}
+          {seriesGroups}
         />
       {:else}
         <ReorderableList.Item item={draft} {index}>
@@ -308,6 +311,7 @@
       heading="Adding a new view"
       cancelHref={queryParams["manage-views"].closeForm()}
       onstage={stageNewView}
+      {seriesGroups}
     />
   {:else if addMode === "bookmark"}
     {const urlFilters = $derived(toPackagesFilters(queryParams))}
@@ -321,6 +325,7 @@
       cancelHref={queryParams["manage-views"].closeForm()}
       onstage={stageNewView}
       requireChange={false}
+      {seriesGroups}
     />
   {:else}
     <ButtonPrimitive

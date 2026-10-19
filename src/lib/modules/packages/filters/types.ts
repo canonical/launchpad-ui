@@ -1,5 +1,6 @@
 import type { PopoverProps } from "@canonical/svelte-ds-app-launchpad";
 import type { AriaAttributes } from "svelte/elements";
+import type { getSeriesGroups } from "$lib/modules/distroseries/series.remote.js";
 
 /** Called when a filter control picks a new value. */
 export type FilterChangeHandler<T> = (
@@ -20,3 +21,5 @@ export type ChoiceFilterProps<T> = {
   /** Unused, as the trigger is a button, which can't be invalid; accepted so `field.as("select")` can be spread. */
   "aria-invalid"?: AriaAttributes["aria-invalid"];
 };
+
+export type SeriesGroups = Awaited<ReturnType<typeof getSeriesGroups>>;

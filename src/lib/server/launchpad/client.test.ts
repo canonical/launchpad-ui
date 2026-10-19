@@ -10,10 +10,12 @@ import {
   getActiveSeriesMilestones,
   getBinaryPackageDetails,
   getDistroSeries,
+  getDistroSeriesCollection,
   getPerson,
   getSourcePackageList,
 } from "./client.js";
 import type {
+  Collection,
   DistroSeriesEntry,
   MilestoneEntry,
   PersonEntry,
@@ -76,6 +78,7 @@ describe("getDistroSeries", () => {
     ["my+distro", "release+1", "/api/devel/my%2Bdistro/release%2B1"],
   ])("reads the series for %s/%s", async (distro, series, path) => {
     const body = {
+      name: "resolute",
       version: "26.04",
       displayname: "Resolute",
       status: "Current Stable Release",
@@ -91,6 +94,47 @@ describe("getDistroSeries", () => {
     expect(requestedUrl().search).toBe("");
     expect(launchpadFetch.mock.calls[0][1]).toEqual({
       headers: { accept: "application/json" },
+    });
+    expect(launchpadFetch).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("getDistroSeriesCollection", () => {
+  it.each([
+    ["ubuntu", "/api/devel/ubuntu/series"],
+    ["debian", "/api/devel/debian/series"],
+    ["my+distro", "/api/devel/my%2Bdistro/series"],
+  ])("reads every series of %s", async (distro, path) => {
+    const body = {
+      start: 0,
+      total_size: 1,
+      entries: [
+        {
+          name: "resolute",
+          version: "26.04",
+          displayname: "Resolute",
+          status: "Current Stable Release",
+          summary: "Release summary",
+          web_link: "https://launchpad.net/ubuntu/resolute",
+          translations_usage: "Launchpad",
+        },
+      ],
+    } satisfies Collection<DistroSeriesEntry>;
+    respondWith(body);
+
+    await expect(getDistroSeriesCollection(distro)).resolves.toEqual(body);
+    expect(requestedUrl().origin).toBe("https://lp.example");
+    expect(requestedUrl().pathname).toBe(path);
+    expect(requestedUrl().search).toBe("");
+    expect(launchpadFetch).toHaveBeenCalledTimes(1);
+  });
+
+  it.each([404, 503])("preserves upstream status %i", async (status) => {
+    respondWith({}, status);
+
+    await expect(getDistroSeriesCollection("ubuntu")).rejects.toMatchObject({
+      name: "LaunchpadApiError",
+      status,
     });
     expect(launchpadFetch).toHaveBeenCalledTimes(1);
   });

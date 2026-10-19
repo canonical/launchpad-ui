@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { render } from "vitest-browser-svelte";
 import type { SetupOptions } from "vitest-browser-svelte";
+import { seriesGroups } from "$lib/modules/distroseries/series.fixtures.js";
 import MoreFiltersMenu from "./MoreFiltersMenu.svelte";
 import PocketFilterMenu from "./PocketFilterMenu.svelte";
 import SearchModeMenu from "./SearchModeMenu.svelte";
@@ -29,19 +30,17 @@ const labelledProps = {
 const controlProps = { ...labelledProps, onchange };
 
 describe("SeriesFilterMenu", () => {
+  const seriesProps = { ...controlProps, name: "series", seriesGroups };
+
   it.each([
     [null, "Filter: All", "All"],
-    ["noble", "Filter: 24.04 LTS (Noble Numbat)", "24.04 LTS (Noble Numbat)"],
+    ["noble", "Filter: 24.04 LTS Noble", "24.04 LTS Noble"],
   ])(
     "names the trigger after the selected series (%s) and checks it",
     async (value, triggerName, checkedOption) => {
       const screen = await render(
         SeriesFilterMenu,
-        {
-          ...controlProps,
-          name: "series",
-          value,
-        },
+        { ...seriesProps, value },
         formOptions,
       );
 
@@ -53,19 +52,63 @@ describe("SeriesFilterMenu", () => {
     },
   );
 
+  it("lists each series under its Launchpad status", async () => {
+    const screen = await render(
+      SeriesFilterMenu,
+      { ...seriesProps, value: null },
+      formOptions,
+    );
+
+    await screen.getByRole("button", { name: "Filter: All" }).click();
+
+    await expect
+      .element(
+        screen
+          .getByRole("group", { name: "Pre-release Freeze" })
+          .getByRole("radio", { name: "26.10 Stonking" }),
+      )
+      .toBeInTheDocument();
+    await expect
+      .element(
+        screen
+          .getByRole("group", { name: "Supported" })
+          .getByRole("radio", { name: "22.04 LTS Jammy" }),
+      )
+      .toBeInTheDocument();
+  });
+
   it.each([
-    [null, "26.04 LTS (Resolute Raccoon)", "resolute", "resolute"],
+    ["precise", seriesGroups],
+    ["noble", []],
+  ])(
+    "keeps the unlisted selected series %s checked under its name",
+    async (value, groups) => {
+      const screen = await render(
+        SeriesFilterMenu,
+        { ...seriesProps, value, seriesGroups: groups },
+        formOptions,
+      );
+
+      await screen.getByRole("button", { name: `Filter: ${value}` }).click();
+
+      await expect
+        .element(screen.getByRole("radio", { name: value }))
+        .toBeChecked();
+      await expect
+        .element(screen.getByRole("radio", { name: "All" }))
+        .not.toBeChecked();
+    },
+  );
+
+  it.each([
+    [null, "26.04 LTS Resolute", "resolute", "resolute"],
     ["noble", "All", "", null],
   ])(
     "submits the picked series from %s",
     async (value, option, submitted, changedTo) => {
       const screen = await render(
         SeriesFilterMenu,
-        {
-          ...controlProps,
-          name: "series",
-          value,
-        },
+        { ...seriesProps, value },
         formOptions,
       );
 
