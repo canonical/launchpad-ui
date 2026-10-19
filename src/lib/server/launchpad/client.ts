@@ -143,7 +143,7 @@ function sourcePackagesFilterParams(
 ): QueryParams {
   return {
     statuses: filter.statuses ? JSON.stringify(filter.statuses) : undefined,
-    distroseries: filter.series
+    distro_series: filter.series
       ? `${apiBase()}/${encodeURIComponent(distro)}/${encodeURIComponent(filter.series)}`
       : undefined,
     name: filter.sourceName || undefined,
