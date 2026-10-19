@@ -1,12 +1,8 @@
+import { LaunchpadApiError } from "@canonical/launchpad-client";
+import type { DistroSeriesFull } from "@canonical/launchpad-client/schemas/models/distro_series";
 import { error } from "@sveltejs/kit";
 import * as v from "valibot";
-import {
-  LaunchpadApiError,
-  getActiveSeriesMilestones,
-  getDistroSeries,
-  getDistroSeriesCollection,
-} from "$lib/server/launchpad/client.js";
-import type { DistroSeriesEntry } from "$lib/server/launchpad/types.js";
+import { launchpadClient } from "$lib/server/launchpad/config.js";
 import { LAUNCHPAD_NAME_PATTERN } from "$lib/utils/launchpad/launchpadName.js";
 import { query } from "$app/server";
 
@@ -19,9 +15,18 @@ export const getSeriesOverview = query(
   }),
   async ({ pillar, series }) => {
     try {
-      const [entry, milestones] = await Promise.all([
-        getDistroSeries(pillar, series),
-        getActiveSeriesMilestones(pillar, series),
+      const [{ data: entry }, { data: milestones }] = await Promise.all([
+        launchpadClient.distroSeries.series.get({
+          path: { distribution: pillar, series },
+        }),
+        launchpadClient.distroSeries.series.searchMilestones({
+          path: { distribution: pillar, series },
+          query: {
+            is_active: "true",
+            order_by: "date_targeted",
+            "ws.size": 3,
+          },
+        }),
       ]);
 
       const seriesPath = new URL(entry.web_link).pathname;
@@ -67,7 +72,11 @@ export const getSeriesGroups = query(
   v.object({ pillar: nameSchema }),
   async ({ pillar }) => {
     try {
-      const { entries } = await getDistroSeriesCollection(pillar);
+      const {
+        data: { entries },
+      } = await launchpadClient.distribution.series.get({
+        path: { distribution: pillar },
+      });
       const entriesByStatus = Map.groupBy(
         entries.filter((entry) => entry.status !== "Obsolete"),
         (entry) => entry.status,
@@ -87,7 +96,10 @@ export const getSeriesGroups = query(
   },
 );
 
-function seriesDisplayName(entry: DistroSeriesEntry, pillar: string) {
+function seriesDisplayName(
+  entry: Pick<DistroSeriesFull, "version" | "displayname">,
+  pillar: string,
+) {
   return `${entry.version}${isLts(entry, pillar) ? " LTS" : ""} ${entry.displayname}`;
 }
 
@@ -101,6 +113,6 @@ function seriesDisplayName(entry: DistroSeriesEntry, pillar: string) {
 // Flavours are, probably, LTS if based on Ubuntu LTS
 // Elementary OS has no LTS marker
 // For linux mint every version is marked as LTS
-function isLts(entry: DistroSeriesEntry, pillar: string) {
+function isLts(entry: Pick<DistroSeriesFull, "version">, pillar: string) {
   return pillar === "ubuntu" && /^\d[02468]\.04$/.test(entry.version);
 }

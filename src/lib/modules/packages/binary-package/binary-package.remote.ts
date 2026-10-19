@@ -1,9 +1,8 @@
+import { LaunchpadApiError } from "@canonical/launchpad-client";
 import { error } from "@sveltejs/kit";
 import * as v from "valibot";
-import {
-  LaunchpadApiError,
-  getBinaryPackageDetails,
-} from "$lib/server/launchpad/client.js";
+import { launchpadClient } from "$lib/server/launchpad/config.js";
+import { binaryPackageDetailsSchema } from "../api.schema.js";
 import { query } from "$app/server";
 
 const binaryIdSchema = v.pipe(
@@ -24,7 +23,16 @@ export const getBinaryPackage = query(
   }),
   async ({ distro, binaryId }) => {
     try {
-      return await getBinaryPackageDetails(distro, binaryId);
+      const { data } =
+        await launchpadClient.archive.distribution.getBinaryPackageDetails(
+          {
+            path: { distribution: distro, archive: "primary" },
+            query: { binary_id: String(binaryId) },
+          },
+          // This qastaging-only operation has no documented response contract yet.
+          { decode: (value) => v.parse(binaryPackageDetailsSchema, value) },
+        );
+      return data;
     } catch (requestError) {
       console.error("Failed to load binary package details", requestError);
       const status =

@@ -1,8 +1,6 @@
-import type {
-  Collection,
-  DistroSeriesEntry,
-  MilestoneEntry,
-} from "$lib/server/launchpad/types.js";
+import type { LaunchpadCollection } from "@canonical/launchpad-client";
+import type { DistroSeriesFull } from "@canonical/launchpad-client/schemas/models/distro_series";
+import type { MilestoneFull } from "@canonical/launchpad-client/schemas/models/milestone";
 import type { SeriesGroups } from "../packages/filters/types.js";
 import type { getSeriesOverview } from "./series.remote.js";
 
@@ -15,7 +13,7 @@ export const distroSeries = {
     "The Ubuntu release that will be delivered in April 2026, designated 26.04.",
   web_link: "https://launchpad.net/ubuntu/resolute",
   translations_usage: "Launchpad",
-} satisfies DistroSeriesEntry;
+} satisfies Partial<DistroSeriesFull>;
 
 export const distroSeriesCollection = {
   start: 0,
@@ -55,7 +53,7 @@ export const distroSeriesCollection = {
       web_link: "https://launchpad.net/ubuntu/jammy",
     },
   ],
-} satisfies Collection<DistroSeriesEntry>;
+} satisfies LaunchpadCollection<Partial<DistroSeriesFull>>;
 
 export const activeSeriesMilestones = {
   start: 0,
@@ -76,7 +74,7 @@ export const activeSeriesMilestones = {
       web_link: "https://launchpad.net/ubuntu/+milestone/resolute-updates",
     },
   ],
-} satisfies Collection<MilestoneEntry>;
+} satisfies LaunchpadCollection<Partial<MilestoneFull>>;
 
 export const seriesOverview = {
   displayName: "26.04 LTS Resolute",
