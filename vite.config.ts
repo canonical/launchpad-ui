@@ -14,6 +14,10 @@ export default defineConfig({
         extends: true,
         test: {
           name: "client",
+          // SvelteKit evaluates remote modules in Vite's SSR runner, outside Vitest's CJS loader.
+          deps: {
+            optimizer: { ssr: { enabled: true, include: ["undici"] } },
+          },
           browser: {
             enabled: true,
             headless: true,

@@ -16,6 +16,9 @@ importers:
 
   .:
     dependencies:
+      '@canonical/launchpad-client':
+        specifier: ^0.0.1
+        version: 0.0.1
       '@canonical/styles':
         specifier: ^0.44.0
         version: 0.44.0(@canonical/ds-assets@0.44.0)
@@ -203,6 +206,10 @@ packages:
 
   '@canonical/ds-utils@0.44.0':
     resolution: {integrity: sha512-dPUCO9hG4nwiy4kq4cx5x6RXSNYfRtHoYUniExMZscFCpfq88juzYL7uMoWhS0mUwDtAlPK0safoEeH7c2cddw==}
+
+  '@canonical/launchpad-client@0.0.1':
+    resolution: {integrity: sha512-GoZWpEp5nin0yrB/zHM9rsYMlD8CewjwITveu3KriGEquxfxgPfRjooFo0kCkmAZ2Oi03oa8zXZ+3D0RHAs1PQ==}
+    engines: {node: '>=24'}
 
   '@canonical/launchpad-design-tokens@1.1.1':
     resolution: {integrity: sha512-rOrV4TxC9bOyA4DlgxNAwssFfsA/h5XHPqM0plmYbaODodd7EakntM3ZOSHnoNqViskxieVSc7TEbZY+JyFHoA==}
@@ -3377,6 +3384,9 @@ packages:
   zimmerframe@1.1.4:
     resolution: {integrity: sha512-B58NGBEoc8Y9MWWCQGl/gq9xBCe4IiKM0a2x7GZdQKOW5Exr8S1W24J6OgM1njK8xCRGvAJIL/MxXHf6SkmQKQ==}
 
+  zod@4.4.3:
+    resolution: {integrity: sha512-ytENFjIJFl2UwYglde2jchW2Hwm4GJFLDiSXWdTrJQBIN9Fcyp7n4DhxJEiWNAJMV1/BqWfW/kkg71UDcHJyTQ==}
+
 snapshots:
 
   '@acemir/cssom@0.9.31': {}
@@ -3428,6 +3438,10 @@ snapshots:
   '@canonical/ds-utils@0.44.0':
     dependencies:
       '@canonical/ds-types': 0.44.0
+
+  '@canonical/launchpad-client@0.0.1':
+    dependencies:
+      zod: 4.4.3
 
   '@canonical/launchpad-design-tokens@1.1.1': {}
 
@@ -6606,3 +6620,5 @@ snapshots:
   zimmerframe@1.1.2: {}
 
   zimmerframe@1.1.4: {}
+
+  zod@4.4.3: {}

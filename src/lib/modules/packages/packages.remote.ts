@@ -1,16 +1,14 @@
+import { LaunchpadApiError } from "@canonical/launchpad-client";
 import { error } from "@sveltejs/kit";
 import * as v from "valibot";
 import { SORT_DIRECTIONS } from "$lib/codecs/sortCodec.js";
 import { ParsedPackagesFiltersSchema } from "$lib/modules/packages/filters/schema.js";
 import {
-  LaunchpadApiError,
-  getSourcePackageList,
-} from "$lib/server/launchpad/client.js";
-import type {
-  SourcePackageList,
-  SourcePackageListFilter,
-  SourcePackageSortKey,
-} from "$lib/server/launchpad/types.js";
+  launchpadApiBaseUrl,
+  launchpadClient,
+} from "$lib/server/launchpad/config.js";
+import { sourcePackageListSchema } from "./api.schema.js";
+import { MAX_BINARY_NAMES } from "./constants.js";
 import { MAX_PAGE_SIZE, SORTABLE_PACKAGES_COLUMNS } from "./superhref.js";
 import { query } from "$app/server";
 
@@ -19,34 +17,11 @@ const SORT_KEYS = {
   series: "series",
   pocket: "pocket",
   status: "status",
-} as const satisfies Record<
-  (typeof SORTABLE_PACKAGES_COLUMNS)[number],
-  SourcePackageSortKey
->;
-
-const distroSchema = v.pipe(v.string(), v.trim(), v.minLength(1));
-
-const filterArgsSchema = v.pipe(
-  ParsedPackagesFiltersSchema,
-  v.transform(
-    (filters): SourcePackageListFilter => ({
-      series: filters.series,
-      statuses: filters.allStatuses
-        ? ["Pending", "Published", "Superseded", "Deleted", "Obsolete"]
-        : ["Pending", "Published"],
-      sourceName: filters.search,
-      exactMatch: filters.match === "exact",
-      pocket: filters.pocket,
-      maintainedBy: filters.maintainer,
-      signedBy: filters.signer,
-      ubuntuChange: filters.ubuntuChange,
-    }),
-  ),
-);
+} as const satisfies Record<(typeof SORTABLE_PACKAGES_COLUMNS)[number], string>;
 
 const listArgsSchema = v.intersect([
   v.object({
-    distro: distroSchema,
+    distro: v.pipe(v.string(), v.trim(), v.minLength(1)),
     sortKey: v.nullable(v.picklist(SORTABLE_PACKAGES_COLUMNS)),
     sortOrder: v.picklist(SORT_DIRECTIONS),
     page: v.pipe(v.number(), v.integer(), v.minValue(1)),
@@ -57,29 +32,68 @@ const listArgsSchema = v.intersect([
       v.maxValue(MAX_PAGE_SIZE),
     ),
   }),
-  filterArgsSchema,
+  ParsedPackagesFiltersSchema,
 ]);
 
 export const getSourcePackages = query(
   listArgsSchema,
-  async ({
-    distro,
-    sortKey,
-    sortOrder,
-    page,
-    size,
-    ...filters
-  }): Promise<SourcePackageList> => {
+  async ({ distro, sortKey, sortOrder, page, size, ...filters }) => {
     try {
-      return await getSourcePackageList(distro, {
-        ...filters,
-        size,
-        page,
-        orderBy:
-          sortKey === null || sortOrder === "none"
-            ? ["-date_created"]
-            : [`${sortOrder === "descending" ? "-" : ""}${SORT_KEYS[sortKey]}`],
-      });
+      const { data } =
+        await launchpadClient.archive.distribution.getSourcePackageList(
+          {
+            path: { distribution: distro, archive: "primary" },
+            query: {
+              page: String(page),
+              page_size: String(size),
+              order_by: JSON.stringify([
+                sortKey === null || sortOrder === "none"
+                  ? "-date_created"
+                  : `${sortOrder === "descending" ? "-" : ""}${SORT_KEYS[sortKey]}`,
+              ]),
+              include_binaries: "true",
+              binary_names_limit: String(MAX_BINARY_NAMES),
+              status: JSON.stringify(
+                filters.allStatuses
+                  ? [
+                      "Pending",
+                      "Published",
+                      "Superseded",
+                      "Deleted",
+                      "Obsolete",
+                    ]
+                  : ["Pending", "Published"],
+              ),
+              distro_series: filters.series
+                ? new URL(
+                    `${encodeURIComponent(distro)}/${encodeURIComponent(filters.series)}`,
+                    launchpadApiBaseUrl,
+                  ).href
+                : undefined,
+              name: filters.search ?? undefined,
+              exact_match: filters.search
+                ? String(filters.match === "exact")
+                : undefined,
+              pocket: filters.pocket ?? undefined,
+              maintained_by: filters.maintainer
+                ? new URL(
+                    `~${encodeURIComponent(filters.maintainer)}`,
+                    launchpadApiBaseUrl,
+                  ).href
+                : undefined,
+              signed_by: filters.signer
+                ? new URL(
+                    `~${encodeURIComponent(filters.signer)}`,
+                    launchpadApiBaseUrl,
+                  ).href
+                : undefined,
+              ubuntu_change: filters.ubuntuChange ? "true" : undefined,
+            },
+          },
+          // This qastaging-only operation has no documented response contract yet.
+          { decode: (value) => v.parse(sourcePackageListSchema, value) },
+        );
+      return data;
     } catch (requestError) {
       console.error("Failed to load source packages", requestError);
       if (

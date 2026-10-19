@@ -1,7 +1,8 @@
 # `packages` API client (mocked via MSW)
 
 The distribution packages table and binary-details panel use
-`$lib/server/launchpad/client.ts`, not this client or MSW. They require
+the shared Launchpad client in `$lib/server/launchpad/config.ts`, not this client
+or MSW. They require
 `getSourcePackageList` and `getBinaryPackageDetails` on the Launchpad backend
 configured by `MAIN_LAUNCHPAD_BASE_HOST`, including in `dev:mock` mode.
 

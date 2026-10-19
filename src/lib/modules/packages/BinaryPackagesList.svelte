@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Chip, Link } from "@canonical/svelte-ds-app-launchpad";
-  import type { SourcePackageListEntry } from "$lib/server/launchpad/types.js";
+  import type { SourcePackageListEntry } from "$lib/modules/packages/api.schema.js";
 
   const MAX_ROWS = 3;
   const ROW_LENGTH_IN_CHARS = 90;

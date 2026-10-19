@@ -20,8 +20,11 @@ vi.mock("$env/dynamic/private", () => ({
   env: { MAIN_LAUNCHPAD_BASE_HOST: "https://lp.example" },
 }));
 
-const launchpadFetch = vi.hoisted(() => vi.fn());
-vi.mock("$lib/server/launchpad/launchpadFetch.js", () => ({ launchpadFetch }));
+const fetchMock = vi.hoisted(() => {
+  const fetchMock = vi.fn<(request: Request) => Promise<Response>>();
+  vi.stubGlobal("fetch", fetchMock);
+  return fetchMock;
+});
 
 function jsonResponse(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), {
@@ -34,17 +37,21 @@ function respondWith(
   series: unknown = distroSeries,
   milestones: unknown = activeSeriesMilestones,
 ) {
-  launchpadFetch.mockImplementation(async (url: string) =>
-    jsonResponse(new URL(url).searchParams.has("ws.op") ? milestones : series),
+  fetchMock.mockImplementation(async (request: Request) =>
+    jsonResponse(
+      new URL(request.url).searchParams.has("ws.op") ? milestones : series,
+    ),
   );
 }
 
 beforeEach(() => {
-  launchpadFetch.mockReset();
+  fetchMock.mockReset();
+  vi.stubGlobal("fetch", fetchMock);
   respondWith();
 });
 
 afterEach(() => {
+  vi.unstubAllGlobals();
   vi.restoreAllMocks();
 });
 
@@ -53,22 +60,32 @@ describe("series overview query", () => {
     await expect(
       getSeriesOverview({ pillar: "ubuntu", series: "resolute" }),
     ).resolves.toEqual(seriesOverview);
-    expect(launchpadFetch.mock.calls.map(([url]) => url)).toEqual([
+    const urls = fetchMock.mock.calls.map(
+      ([request]: [Request]) => new URL(request.url),
+    );
+    expect(urls.map((url) => url.origin + url.pathname)).toEqual([
       "https://lp.example/api/devel/ubuntu/resolute",
-      "https://lp.example/api/devel/ubuntu/resolute?ws.op=searchMilestones&is_active=true&order_by=date_targeted&ws.size=3",
+      "https://lp.example/api/devel/ubuntu/resolute",
     ]);
+    expect(urls[0].search).toBe("");
+    expect(Object.fromEntries(urls[1].searchParams)).toEqual({
+      "ws.op": "searchMilestones",
+      is_active: "true",
+      order_by: "date_targeted",
+      "ws.size": "3",
+    });
   });
 
   it("starts both requests before either response arrives", async () => {
     const series = Promise.withResolvers<Response>();
     const milestones = Promise.withResolvers<Response>();
-    launchpadFetch
+    fetchMock
       .mockImplementationOnce(() => series.promise)
       .mockImplementationOnce(() => milestones.promise);
 
     const result = getSeriesOverview({ pillar: "ubuntu", series: "resolute" });
 
-    expect(launchpadFetch).toHaveBeenCalledTimes(2);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
     series.resolve(jsonResponse(distroSeries));
     milestones.resolve(jsonResponse(activeSeriesMilestones));
     await expect(result).resolves.toEqual(seriesOverview);
@@ -104,7 +121,9 @@ describe("series overview query", () => {
       milestones: [],
     });
     expect(
-      launchpadFetch.mock.calls.map(([url]) => new URL(url).pathname),
+      fetchMock.mock.calls.map(
+        ([request]: [Request]) => new URL(request.url).pathname,
+      ),
     ).toEqual(["/api/devel/debian/sid", "/api/devel/debian/sid"]);
   });
 
@@ -217,11 +236,11 @@ describe("series overview query", () => {
       },
       ...seriesOverview.milestones.slice(0, 2),
     ]);
-    expect(launchpadFetch).toHaveBeenCalledTimes(2);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 
   it("uses a SvelteKit 404 when the series resource does not exist", async () => {
-    launchpadFetch.mockImplementation(async () => jsonResponse({}, 404));
+    fetchMock.mockImplementation(async () => jsonResponse({}, 404));
 
     await expect(
       getSeriesOverview({ pillar: "ubuntu", series: "unknown" }),
@@ -235,8 +254,8 @@ describe("series overview query", () => {
     "logs and raises a SvelteKit 503 when %s cannot be loaded",
     async (failedRequest) => {
       const log = vi.spyOn(console, "error").mockImplementation(() => {});
-      launchpadFetch.mockImplementation(async (url: string) => {
-        const isMilestones = new URL(url).searchParams.has("ws.op");
+      fetchMock.mockImplementation(async (request: Request) => {
+        const isMilestones = new URL(request.url).searchParams.has("ws.op");
         return jsonResponse(
           isMilestones ? activeSeriesMilestones : distroSeries,
           isMilestones === (failedRequest === "milestones") ? 500 : 200,
@@ -261,13 +280,13 @@ describe("series overview query", () => {
   it("logs network failures instead of returning fixture data", async () => {
     const failure = new TypeError("Connection failed");
     const log = vi.spyOn(console, "error").mockImplementation(() => {});
-    launchpadFetch.mockRejectedValue(failure);
+    fetchMock.mockRejectedValue(failure);
 
     await expect(
       getSeriesOverview({ pillar: "ubuntu", series: "resolute" }),
     ).rejects.toMatchObject({ status: 503 });
     expect(log).toHaveBeenCalledWith("Failed to load series overview", failure);
-    expect(launchpadFetch).toHaveBeenCalledTimes(2);
+    expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 
   it.each([
@@ -279,13 +298,13 @@ describe("series overview query", () => {
     { pillar: "ubuntu", series: "../resolute" },
   ])("rejects invalid query arguments: %j", async (args) => {
     await expect(getSeriesOverview(args)).rejects.toBeInstanceOf(v.ValiError);
-    expect(launchpadFetch).not.toHaveBeenCalled();
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 });
 
 describe("series groups query", () => {
   beforeEach(() => {
-    launchpadFetch.mockImplementation(async () =>
+    fetchMock.mockImplementation(async () =>
       jsonResponse(distroSeriesCollection),
     );
   });
@@ -294,13 +313,13 @@ describe("series groups query", () => {
     await expect(getSeriesGroups({ pillar: "ubuntu" })).resolves.toEqual(
       seriesGroups,
     );
-    expect(launchpadFetch.mock.calls.map(([url]) => url)).toEqual([
+    expect(fetchMock.mock.calls.map(([request]) => request.url)).toEqual([
       "https://lp.example/api/devel/ubuntu/series",
     ]);
   });
 
   it("keeps Debian's experimental series and labels no LTS outside Ubuntu", async () => {
-    launchpadFetch.mockImplementation(async () =>
+    fetchMock.mockImplementation(async () =>
       jsonResponse({
         start: 0,
         entries: [
@@ -366,13 +385,13 @@ describe("series groups query", () => {
       },
     ]);
     expect(
-      launchpadFetch.mock.calls.map(([url]) => new URL(url).pathname),
+      fetchMock.mock.calls.map(([request]) => new URL(request.url).pathname),
     ).toEqual(["/api/devel/debian/series"]);
   });
 
   it("logs and falls back to no groups when Launchpad fails", async () => {
     const log = vi.spyOn(console, "error").mockImplementation(() => {});
-    launchpadFetch.mockImplementation(async () => jsonResponse({}, 503));
+    fetchMock.mockImplementation(async () => jsonResponse({}, 503));
 
     await expect(getSeriesGroups({ pillar: "ubuntu" })).resolves.toEqual([]);
     expect(log).toHaveBeenCalledWith(
@@ -384,7 +403,7 @@ describe("series groups query", () => {
   it("logs network failures and falls back to no groups", async () => {
     const failure = new TypeError("Connection failed");
     const log = vi.spyOn(console, "error").mockImplementation(() => {});
-    launchpadFetch.mockRejectedValue(failure);
+    fetchMock.mockRejectedValue(failure);
 
     await expect(getSeriesGroups({ pillar: "ubuntu" })).resolves.toEqual([]);
     expect(log).toHaveBeenCalledWith("Failed to load distro series", failure);
@@ -396,6 +415,6 @@ describe("series groups query", () => {
     { pillar: "../ubuntu" },
   ])("rejects invalid query arguments: %j", async (args) => {
     await expect(getSeriesGroups(args)).rejects.toBeInstanceOf(v.ValiError);
-    expect(launchpadFetch).not.toHaveBeenCalled();
+    expect(fetchMock).not.toHaveBeenCalled();
   });
 });

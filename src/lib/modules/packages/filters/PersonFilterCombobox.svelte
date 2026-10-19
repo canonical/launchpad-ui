@@ -18,7 +18,6 @@
     findPeople,
     getPersonByName,
   } from "$lib/modules/packages/people.remote.js";
-  import type { PersonEntry } from "$lib/server/launchpad/types.js";
   import { minTrimmedLength, subId } from "$lib/utils/index.js";
   import type { ChoiceFilterProps } from "./types.js";
   import { browser } from "$app/env";
@@ -82,7 +81,7 @@
 
   function changePerson(
     event: Event & { currentTarget: EventTarget & HTMLInputElement },
-    person: PersonEntry | null,
+    person: Awaited<ReturnType<typeof getPersonByName>>,
   ) {
     if (person) {
       selectedPersonQuery = getPersonByName(person.name);
@@ -162,7 +161,7 @@
           >
             {#snippet icon()}
               <UserAvatar
-                userAvatarUrl={selectedPerson.mugshot_link}
+                userAvatarUrl={selectedPerson.mugshot_link ?? undefined}
                 userName={selectedPerson.display_name}
                 size="small"
               />
@@ -193,7 +192,7 @@
               >
                 {#snippet icon()}
                   <UserAvatar
-                    userAvatarUrl={person.mugshot_link}
+                    userAvatarUrl={person.mugshot_link ?? undefined}
                     userName={person.display_name}
                     size="small"
                   />

@@ -1,18 +1,34 @@
+import { LaunchpadApiError } from "@canonical/launchpad-client";
+import type { LaunchpadResponse } from "@canonical/launchpad-client";
 import { error } from "@sveltejs/kit";
 import * as v from "valibot";
-import { launchpadFetch } from "$lib/server/launchpad/launchpadFetch.js";
+import { launchpadClient } from "$lib/server/launchpad/config.js";
 import { form, getRequestEvent, query } from "$app/server";
 import { env } from "$env/dynamic/private";
 
 const lpCookieName = env.MAIN_LAUNCHPAD_COOKIE_NAME || "lp";
 
-export const getUbuntu = query(() => client("/api/devel/ubuntu"));
+export const getUbuntu = query(() =>
+  inspectConnection(() =>
+    launchpadClient.distribution.get({
+      path: { distribution: "ubuntu" },
+    }),
+  ),
+);
 
 export const getMe = query(async () => {
   const { cookies } = getRequestEvent();
   const lpCookie = cookies.get(lpCookieName);
-
-  return await client("/api/devel/people/+me", lpCookie);
+  return inspectConnection(() =>
+    launchpadClient.person.me.get(
+      {},
+      {
+        headers: lpCookie
+          ? { cookie: `${lpCookieName}=${lpCookie}` }
+          : undefined,
+      },
+    ),
+  );
 });
 
 export const setLpCookie = form(
@@ -22,7 +38,6 @@ export const setLpCookie = form(
   }),
   async ({ _lp: lp, action }) => {
     const { cookies } = getRequestEvent();
-
     if (action === "clear") {
       cookies.delete(lpCookieName, { path: "/" });
     } else {
@@ -32,85 +47,37 @@ export const setLpCookie = form(
         sameSite: "strict",
       });
     }
-
     void getMe().refresh();
   },
 );
 
-async function client(
-  path: string,
-  lpCookie?: string,
+async function inspectConnection(
+  send: () => Promise<LaunchpadResponse<unknown>>,
 ): Promise<ConnectionResponse> {
-  const baseHost = env.MAIN_LAUNCHPAD_BASE_HOST;
-  if (!baseHost) {
-    error(500, "MAIN_LAUNCHPAD_BASE_HOST is not set");
-  }
-
-  const url = new URL(path, baseHost);
-
-  const headers: Record<string, string> = {};
-  if (lpCookie) {
-    headers["cookie"] = `${lpCookieName}=${lpCookie}`;
-  }
-
-  const loggableHeaders = { ...headers };
-  if (loggableHeaders.cookie) {
-    loggableHeaders.cookie = `<${lpCookieName}>`;
-  }
-
-  const logContext = { url: url.toString(), headers: loggableHeaders };
-
-  let status: number;
-  let text: string;
   try {
-    console.log("Launchpad request started", logContext);
-
-    const MAX_REDIRECTS = 5;
-    let currentUrl: URL = url;
-
-    for (let redirects = 0; ; redirects++) {
-      const response = await launchpadFetch(currentUrl, { headers });
-
-      const isRedirect = response.status >= 300 && response.status < 400;
-      const location = response.headers.get("location");
-      if (isRedirect && location && redirects < MAX_REDIRECTS) {
-        currentUrl = new URL(location, currentUrl);
-        continue;
-      }
-
-      status = response.status;
-      text = await response.text();
-      break;
+    let result: LaunchpadResponse<unknown>;
+    try {
+      result = await send();
+    } catch (requestError) {
+      if (!(requestError instanceof LaunchpadApiError)) throw requestError;
+      // The diagnostic screen displays upstream failures instead of hiding their status.
+      result = { response: requestError.response, data: requestError.body };
     }
-
-    console.log("Launchpad request finished successfully", {
-      ...logContext,
-      status,
-    });
-  } catch (e) {
-    console.error("Launchpad request failed", {
-      ...logContext,
-      error: e instanceof Error ? e.message : String(e),
-    });
-    error(
-      502,
-      `Request to ${url.host} failed: ${e instanceof Error ? e.message : String(e)}`,
+    const { response, data } = result;
+    return /\bjson\b/i.test(response.headers.get("content-type") ?? "")
+      ? { status: response.status, json: data }
+      : { status: response.status, text: typeof data === "string" ? data : "" };
+  } catch (requestError) {
+    console.error(
+      "Launchpad connection failed",
+      requestError instanceof Error
+        ? requestError.message
+        : String(requestError),
     );
-  }
-
-  try {
-    return { status, json: JSON.parse(text) };
-  } catch {
-    return { status, text };
+    error(502, "Request to Launchpad failed");
   }
 }
 
 export type ConnectionResponse =
-  | {
-      status: number;
-      json: unknown;
-    }
-  | {
-      status: number;
-      text: string;
-    };
+  | { status: number; json: unknown }
+  | { status: number; text: string };

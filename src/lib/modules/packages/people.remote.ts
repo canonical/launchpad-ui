@@ -1,9 +1,7 @@
+import { LaunchpadApiError } from "@canonical/launchpad-client";
+import type { PersonFull } from "@canonical/launchpad-client/schemas/models/person";
 import * as v from "valibot";
-import {
-  findPeople as findLaunchpadPeople,
-  getPerson,
-} from "$lib/server/launchpad/client.js";
-import type { PersonEntry } from "$lib/server/launchpad/types.js";
+import { launchpadClient } from "$lib/server/launchpad/config.js";
 import { toLaunchpadName } from "$lib/utils/launchpad/launchpadName.js";
 import { MAX_PEOPLE_SEARCH_LENGTH } from "./constants.js";
 import { PersonSearchSchema } from "./schema.js";
@@ -11,12 +9,11 @@ import { query } from "$app/server";
 
 export const findPeople = query(
   v.object({ text: PersonSearchSchema }),
-  async ({ text }): Promise<PersonEntry[]> => {
+  async ({ text }): Promise<PersonFull[]> => {
     const searchedName = toLaunchpadName(text);
-
-    const [exactMatch, found] = await Promise.all([
+    const [exactMatch, { data }] = await Promise.all([
       searchedName !== null
-        ? getPerson(searchedName).catch((requestError: unknown) => {
+        ? fetchPerson(searchedName).catch((requestError: unknown) => {
             console.error(
               `Failed to look up the Launchpad person ${searchedName}`,
               requestError,
@@ -24,29 +21,37 @@ export const findPeople = query(
             return null;
           })
         : null,
-      findLaunchpadPeople(searchedName ?? text),
+      launchpadClient.people.find({ query: { text: searchedName ?? text } }),
     ]);
-
-    const people =
-      exactMatch === null
-        ? found.entries
-        : [
-            exactMatch,
-            ...found.entries.filter(
-              (person) => person.name !== exactMatch.name,
-            ),
-          ];
-
-    return people;
+    return exactMatch === null
+      ? data.entries
+      : [
+          exactMatch,
+          ...data.entries.filter((person) => person.name !== exactMatch.name),
+        ];
   },
 );
 
 export const getPersonByName = query(
   v.pipe(v.string(), v.trim(), v.maxLength(MAX_PEOPLE_SEARCH_LENGTH)),
-  async (reference): Promise<PersonEntry | null> => {
+  async (reference) => {
     const name = toLaunchpadName(reference);
-    if (!name) return null;
-
-    return await getPerson(name);
+    return name ? fetchPerson(name) : null;
   },
 );
+
+async function fetchPerson(name: string): Promise<PersonFull | null> {
+  try {
+    const { data } = await launchpadClient.person.get({
+      path: { person: `~${name}` },
+    });
+    return data;
+  } catch (requestError) {
+    if (
+      requestError instanceof LaunchpadApiError &&
+      [404, 410].includes(requestError.status)
+    )
+      return null;
+    throw requestError;
+  }
+}

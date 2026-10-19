@@ -4,7 +4,6 @@ import { userEvent } from "vitest/browser";
 import type { Locator } from "vitest/browser";
 import { render } from "vitest-browser-svelte";
 import type { RenderResult, SetupOptions } from "vitest-browser-svelte";
-import type { PersonEntry } from "$lib/server/launchpad/types.js";
 import { MIN_PEOPLE_SEARCH_LENGTH } from "../constants.js";
 import PersonFilterCombobox from "./PersonFilterCombobox.svelte";
 import FiltersFormFixture, {
@@ -44,7 +43,7 @@ function remoteQuery<T>(result: Promise<T>) {
   };
 }
 
-function person(name: string, displayName: string): PersonEntry {
+function person(name: string, displayName: string) {
   return {
     self_link: `https://launchpad.test/api/devel/~${name}`,
     resource_type_link: "https://launchpad.test/api/devel/#person",
@@ -57,7 +56,7 @@ function person(name: string, displayName: string): PersonEntry {
 
 const alice = person("alice", "Alice Example");
 const bob = person("bob", "Bob Example");
-const people: Record<string, PersonEntry> = { alice, bob };
+const people = [alice, bob];
 
 const onchange = vi.fn(submitOnChange);
 
@@ -82,11 +81,13 @@ beforeEach(() => {
   onchange.mockClear();
   findPeople
     .mockReset()
-    .mockImplementation(() => remoteQuery(Promise.resolve([alice, bob])));
+    .mockImplementation(() => remoteQuery(Promise.resolve(people)));
   getPersonByName
     .mockReset()
     .mockImplementation((name: string) =>
-      remoteQuery(Promise.resolve(people[name] ?? null)),
+      remoteQuery(
+        Promise.resolve(people.find((person) => person.name === name) ?? null),
+      ),
     );
   seedPerson.mockReset();
 });
@@ -165,7 +166,7 @@ describe("PersonFilterCombobox", () => {
   );
 
   it("shows a loading state instead of the previous results on every search", async () => {
-    const first = Promise.withResolvers<PersonEntry[]>();
+    const first = Promise.withResolvers<typeof people>();
     findPeople.mockImplementation(() => remoteQuery(first.promise));
     const screen = await render(PersonFilterCombobox, baseProps, formOptions);
     await openAndSearch(screen, "example");
@@ -177,7 +178,7 @@ describe("PersonFilterCombobox", () => {
       .toBeVisible();
     await expect.element(screen.getByText("Loading…")).not.toBeInTheDocument();
 
-    const second = Promise.withResolvers<PersonEntry[]>();
+    const second = Promise.withResolvers<typeof people>();
     findPeople.mockImplementation(() => remoteQuery(second.promise));
     await searchFor(screen, "alice");
 
