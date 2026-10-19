@@ -9,7 +9,6 @@
       "runtimeExecutable": "pnpm",
       "runtimeArgs": ["run", "dev"],
       "cwd": "${workspaceFolder}",
-      "runtimeVersion": "26",
       "console": "integratedTerminal",
       "skipFiles": [
         "<node_internals>/**",
