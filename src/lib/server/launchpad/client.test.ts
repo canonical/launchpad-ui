@@ -254,14 +254,14 @@ describe("getSourcePackageList", () => {
       "ws.op": "getSourcePackageList",
       include_binaries: "true",
       binary_names_limit: String(MAX_BINARY_NAMES),
-      distroseries: "https://lp.example/api/devel/ubuntu/noble",
+      distro_series: "https://lp.example/api/devel/ubuntu/noble",
       name: "firefox",
       exact_match: "true",
       maintained_by: "https://lp.example/api/devel/~ubuntu-mozillateam",
       signed_by: "https://lp.example/api/devel/~userl",
       pocket: "Updates",
       ubuntu_change: "true",
-      statuses: '["Pending","Published","Superseded","Deleted"]',
+      status: '["Pending","Published","Superseded","Deleted"]',
     });
   });
 
@@ -287,7 +287,7 @@ describe("getSourcePackageList", () => {
   ])("sends exactly $statuses as one JSON list", async ({ statuses }) => {
     respondWith(packageListing());
     await getSourcePackageList("ubuntu", { statuses });
-    expect(requestedUrl().searchParams.getAll("statuses")).toEqual([
+    expect(requestedUrl().searchParams.getAll("status")).toEqual([
       JSON.stringify(statuses),
     ]);
     expect(requestedUrl().searchParams.has("include_inactive")).toBe(false);
@@ -297,7 +297,7 @@ describe("getSourcePackageList", () => {
   it.each([undefined, null])("omits unset statuses %s", async (statuses) => {
     respondWith(packageListing());
     await getSourcePackageList("ubuntu", { statuses });
-    expect(requestedUrl().searchParams.has("statuses")).toBe(false);
+    expect(requestedUrl().searchParams.has("status")).toBe(false);
   });
 
   it.each([undefined, null, ""])(
