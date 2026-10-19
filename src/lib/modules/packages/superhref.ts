@@ -7,6 +7,7 @@ import {
 } from "@canonical/superhref";
 import type { OwnedKey } from "@canonical/superhref";
 import {
+  choiceCodec,
   flagCodec,
   launchpadNameCodec,
   paginationCodecs,
@@ -71,7 +72,7 @@ const packagesQuerySchema = {
     },
   ),
   search: textCodec(),
-  match: enumCodec(SEARCH_MATCHES, { default: "contains" }),
+  match: choiceCodec(SEARCH_MATCHES, "contains"),
   series: launchpadNameCodec(),
   pocket: enumCodec(POCKETS),
   maintainer: launchpadNameCodec(),
