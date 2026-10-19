@@ -23,12 +23,6 @@ export const DEFAULT_TABLE_VIEWS: TableView[] = [
     editable: false,
     filters: DEFAULT_PACKAGES_FILTERS,
   },
-  {
-    id: "resolute-packages",
-    name: "Resolute packages",
-    editable: true,
-    filters: { ...DEFAULT_PACKAGES_FILTERS, series: "resolute" },
-  },
 ].map(({ id, name, editable, filters }) => ({
   id,
   name,

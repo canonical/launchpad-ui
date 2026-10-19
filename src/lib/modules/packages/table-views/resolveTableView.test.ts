@@ -40,7 +40,11 @@ describe("resolveTableView", () => {
   });
 
   it("falls back to All packages for an unknown slug", () => {
-    const result = resolveTableView("unknown", DEFAULT_TABLE_VIEWS, urlFilters);
+    const result = resolveTableView(
+      "unknown",
+      [savedView, ...DEFAULT_TABLE_VIEWS],
+      urlFilters,
+    );
 
     expect(result.view.id).toBe(DEFAULT_TABLE_VIEW_ID);
     expect(result.filters).toBe(urlFilters);
@@ -59,13 +63,5 @@ describe("resolveTableView", () => {
     expect(result.view).toBe(savedView);
     expect(result.isDefaultView).toBe(false);
     expect(result.filters).toBe(savedView.filters);
-  });
-
-  it("does not rely on the default view's position", () => {
-    const views = [...DEFAULT_TABLE_VIEWS].reverse();
-    const result = resolveTableView("resolute-packages", views, urlFilters);
-
-    expect(result.view.id).toBe("resolute-packages");
-    expect(result.filters).toBe(result.view.filters);
   });
 });

@@ -9,6 +9,7 @@ import { TableViewEditFormSchema } from "./schema.js";
 describe("TableViewEditFormSchema", () => {
   it("requires a name to confirm", () => {
     const result = v.safeParse(TableViewEditFormSchema, {
+      distro: "ubuntu",
       id: "mine",
       name: "  ",
     });
@@ -26,6 +27,7 @@ describe("TableViewEditFormSchema", () => {
   it.each(searches)("doesn't require a name to %s", (intent, field) => {
     expect(
       v.safeParse(TableViewEditFormSchema, {
+        distro: "ubuntu",
         id: "mine",
         intent,
         name: "",
@@ -44,6 +46,7 @@ describe("TableViewEditFormSchema", () => {
     ),
   )("rejects an invalid %s %s (%j)", (intent, field, search) => {
     const result = v.safeParse(TableViewEditFormSchema, {
+      distro: "ubuntu",
       id: "mine",
       intent,
       [field]: search,
@@ -55,6 +58,7 @@ describe("TableViewEditFormSchema", () => {
   it("ignores the person searches when confirming", () => {
     expect(
       v.safeParse(TableViewEditFormSchema, {
+        distro: "ubuntu",
         id: "mine",
         name: "Mine",
         maintainerSearch: "",
@@ -62,9 +66,22 @@ describe("TableViewEditFormSchema", () => {
     ).toBe(true);
   });
 
+  it.each(["", "Ubuntu", "a/b"])("rejects an invalid distro (%j)", (distro) => {
+    const result = v.safeParse(TableViewEditFormSchema, {
+      distro,
+      id: "mine",
+      name: "Mine",
+    });
+
+    expect(result.issues?.map((issue) => v.getDotPath(issue))).toEqual([
+      "distro",
+    ]);
+  });
+
   it("rejects an unknown intent", () => {
     expect(
       v.safeParse(TableViewEditFormSchema, {
+        distro: "ubuntu",
         id: "mine",
         intent: "delete",
         name: "Mine",
