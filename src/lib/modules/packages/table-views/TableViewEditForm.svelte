@@ -30,6 +30,7 @@
 
   const {
     form,
+    distro,
     settings,
     heading,
     cancelHref,
@@ -38,6 +39,8 @@
     seriesGroups,
   }: {
     form: ReturnType<typeof editTableView.for> | typeof createTableView;
+    /** The distro whose table views are edited. */
+    distro: string;
     /** The settings to start editing from. */
     settings: TableViewSettings;
     heading: string;
@@ -116,6 +119,7 @@
     aria-hidden="true"
     disabled={submitDisabled}
   ></button>
+  <input {...fields.distro.as("hidden", distro)} />
   <h4>{heading}</h4>
 
   <!-- 

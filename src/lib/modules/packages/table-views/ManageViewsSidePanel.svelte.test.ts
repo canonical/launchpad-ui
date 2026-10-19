@@ -5,7 +5,7 @@ import type { Locator } from "vitest/browser";
 import { render } from "vitest-browser-svelte";
 import { DEFAULT_PACKAGES_FILTERS } from "../filters/constants.js";
 import type { TableView } from "./constants.js";
-import { updateTableViews } from "./table-views.remote.js";
+import { getTableViews, updateTableViews } from "./table-views.remote.js";
 import ManageViewsSidePanel from "./test.fixtures.svelte";
 import { goto, replaceState } from "$app/navigation";
 import { page } from "$app/state";
@@ -38,6 +38,7 @@ vi.mock("../context.js", async () => {
   const { page } = await import("$app/state");
   return {
     getPackagesContext: () => ({
+      distro: "ubuntu",
       get queryParams() {
         return QueryParams.bind(page.url);
       },
@@ -52,7 +53,7 @@ vi.mock("$lib/modules/packages/people.remote.js", () => ({
 
 vi.mock("./table-views.remote.js", async (importOriginal) => ({
   ...(await importOriginal<typeof import("./table-views.remote.js")>()),
-  getTableViews: () => tableViews.query(),
+  getTableViews: vi.fn(() => tableViews.query()),
   updateTableViews: vi.fn(),
 }));
 
@@ -67,6 +68,7 @@ beforeEach(() => {
   tableViews.current = [allPackages, noble, resolute];
   page.state = {};
   vi.mocked(updateTableViews).mockReset();
+  vi.mocked(getTableViews).mockClear();
   vi.mocked(goto).mockClear();
   vi.mocked(replaceState).mockClear();
 });
@@ -79,6 +81,15 @@ describe("ManageViewsSidePanel", () => {
     await expect.element(save).toBeDisabled();
     await screen.getByRole("button", { name: "Delete Noble" }).click();
     await expect.element(save).toBeEnabled();
+  });
+
+  it("loads the views of the context's distro", async () => {
+    await renderPanel();
+
+    expect(vi.mocked(getTableViews).mock.calls).not.toHaveLength(0);
+    expect(
+      vi.mocked(getTableViews).mock.calls.every(([arg]) => arg === "ubuntu"),
+    ).toBe(true);
   });
 
   it("saves the staged order, settings and deletions", async () => {
@@ -98,14 +109,17 @@ describe("ManageViewsSidePanel", () => {
       .poll(() => vi.mocked(updateTableViews).mock.calls)
       .toEqual([
         [
-          [
-            {
-              id: "noble",
-              settings: { name: "Noble 2", filters: noble.filters },
-            },
-            { id: "all-packages", settings: undefined },
-            { settings: { name: "Mine", filters: DEFAULT_PACKAGES_FILTERS } },
-          ],
+          {
+            distro: "ubuntu",
+            views: [
+              {
+                id: "noble",
+                settings: { name: "Noble 2", filters: noble.filters },
+              },
+              { id: "all-packages", settings: undefined },
+              { settings: { name: "Mine", filters: DEFAULT_PACKAGES_FILTERS } },
+            ],
+          },
         ],
       ]);
   });
@@ -131,22 +145,25 @@ describe("ManageViewsSidePanel", () => {
       .poll(() => vi.mocked(updateTableViews).mock.calls)
       .toEqual([
         [
-          [
-            { id: "all-packages", settings: undefined },
-            { id: "noble", settings: undefined },
-            { id: "resolute", settings: undefined },
-            {
-              settings: {
-                name,
-                filters: {
-                  ...DEFAULT_PACKAGES_FILTERS,
-                  search: "linux",
-                  series: "noble",
-                  ubuntuChange: true,
+          {
+            distro: "ubuntu",
+            views: [
+              { id: "all-packages", settings: undefined },
+              { id: "noble", settings: undefined },
+              { id: "resolute", settings: undefined },
+              {
+                settings: {
+                  name,
+                  filters: {
+                    ...DEFAULT_PACKAGES_FILTERS,
+                    search: "linux",
+                    series: "noble",
+                    ubuntuChange: true,
+                  },
                 },
               },
-            },
-          ],
+            ],
+          },
         ],
       ]);
   });

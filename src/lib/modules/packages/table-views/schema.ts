@@ -1,4 +1,5 @@
 import * as v from "valibot";
+import { LAUNCHPAD_NAME_PATTERN } from "$lib/utils/launchpad/launchpadName.js";
 import {
   PackagesFiltersSchema,
   ParsedPackagesFiltersSchema,
@@ -7,6 +8,12 @@ import { PersonSearchSchema } from "../schema.js";
 import { MAX_TABLE_VIEW_NAME_LENGTH } from "./constants.js";
 
 export const TableViewIdSchema = v.pipe(v.string(), v.nonEmpty());
+
+/** Table views are stored per distro, as each distro has its own series. */
+export const TableViewDistroSchema = v.pipe(
+  v.string(),
+  v.regex(LAUNCHPAD_NAME_PATTERN),
+);
 
 const TableViewNameSchema = v.pipe(
   v.optional(v.string(), ""),
@@ -32,6 +39,7 @@ export const ParsedTableViewSettingsSchema = v.object({
 });
 
 const TableViewEditFormCommonEntries = {
+  distro: TableViewDistroSchema,
   // Absent when creating a new view
   id: v.optional(TableViewIdSchema),
   filters: v.optional(PackagesFiltersSchema, {}),

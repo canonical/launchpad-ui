@@ -74,10 +74,11 @@
   let { open, seriesGroups }: { open: boolean; seriesGroups: SeriesGroups } =
     $props();
 
-  const items = $derived(await getTableViews());
-
   const context = getPackagesContext();
+  const distro = $derived(context.distro);
   const queryParams = $derived(context.queryParams);
+
+  const items = $derived(await getTableViews(distro));
 
   // The session outlives the closing, so the content doesn't change while the panel slides out.
   // Each opening starts a new one, fresh for local modifications.
@@ -151,7 +152,7 @@
 
   /** Starts over from the latest views, which may have changed elsewhere (e.g. in another tab). */
   async function restartSession() {
-    const tableViews = getTableViews();
+    const tableViews = getTableViews(distro);
     await tableViews.refresh();
     session.restart(tableViews.current!);
   }
@@ -166,13 +167,14 @@
       const currentView = items.find(({ slug }) => slug === queryParams.view);
       let savedViews: TableView[];
       try {
-        savedViews = await updateTableViews(
-          session.drafts.map(({ saved, settings, changed }) =>
+        savedViews = await updateTableViews({
+          distro,
+          views: session.drafts.map(({ saved, settings, changed }) =>
             saved
               ? { id: saved.id, settings: changed ? settings : undefined }
               : { settings },
           ),
-        );
+        });
       } catch (error) {
         session.saveError = isHttpError(error)
           ? error.body.message
@@ -203,7 +205,7 @@
         },
       );
 
-      getTableViews().set(savedViews);
+      getTableViews(distro).set(savedViews);
       // After awaited queries pick up the new state it is safe to clear the page state
       await settled();
       if (page.state.tableViews === savedViews) replaceState("", {});
@@ -249,6 +251,7 @@
     {#snippet item({ item: draft, index }, renderedInOverlay)}
       {#if isEditable(draft) && queryParams["manage-views"].edit === draft.key}
         <TableViewEditForm
+          {distro}
           form={editTableView.for(draft.key)}
           settings={draft.settings}
           heading="Editing – {draft.settings.name}"
@@ -287,6 +290,9 @@
                   page.url,
                 )}
             >
+              {#if deleteForm}
+                <input {...deleteForm.fields.distro.as("hidden", distro)} />
+              {/if}
               <Button
                 density="dense"
                 importance="tertiary"
@@ -306,6 +312,7 @@
   </ReorderableList>
   {#if addMode === "new"}
     <TableViewEditForm
+      {distro}
       form={createTableView}
       settings={{ name: "", filters: DEFAULT_PACKAGES_FILTERS }}
       heading="Adding a new view"
@@ -316,6 +323,7 @@
   {:else if addMode === "bookmark"}
     {const urlFilters = $derived(toPackagesFilters(queryParams))}
     <TableViewEditForm
+      {distro}
       form={createTableView}
       settings={{
         name: getRecommendedViewName(urlFilters),
@@ -349,7 +357,7 @@
       {#if session.saveError}
         <Button
           importance="secondary"
-          loading={getTableViews().loading}
+          loading={getTableViews(distro).loading}
           onclick={() => restartSession()}
         >
           Reload views

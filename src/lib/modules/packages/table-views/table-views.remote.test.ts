@@ -21,9 +21,15 @@ const mocks = vi.hoisted(() => ({
 
 // Kit checks that every export of a remote module carries `__`
 vi.mock("$app/server", () => ({
-  query: (handler: () => Promise<unknown>) =>
+  query: (
+    schema: v.GenericSchema,
+    handler: (arg: unknown) => Promise<unknown>,
+  ) =>
     Object.assign(
-      () => Object.assign(handler(), { set: mocks.setTableViews }),
+      (arg: unknown) =>
+        Object.assign(handler(v.parse(schema, arg)), {
+          set: (value: unknown) => mocks.setTableViews(arg, value),
+        }),
       { __: { type: "query" } },
     ),
   form: (
@@ -46,13 +52,15 @@ vi.mock("$app/server", () => ({
   }),
 }));
 
+const distro = "ubuntu";
+
 // Kit's remote form type isn't callable, but the mock above makes it so
 function submit(remoteForm: object, data: unknown) {
   return (remoteForm as (data: unknown) => Promise<unknown>)(data);
 }
 
 function storedViews() {
-  return tableViewsStore.get(mocks.userId);
+  return tableViewsStore.get(mocks.userId, distro);
 }
 
 function expectRedirect(location: string) {
@@ -67,7 +75,7 @@ function expectHttpError(status: number, message: string) {
     thrown.body.message === message;
 }
 
-const [allPackages, resolutePackages] = DEFAULT_TABLE_VIEWS;
+const [allPackages] = DEFAULT_TABLE_VIEWS;
 
 const nobleFilters = { ...DEFAULT_PACKAGES_FILTERS, series: "noble" };
 
@@ -79,38 +87,61 @@ const mine: TableView = {
   filters: DEFAULT_PACKAGES_FILTERS,
 };
 
+const resolutePackages: TableView = {
+  id: "resolute-packages",
+  name: "Resolute packages",
+  slug: "resolute-packages",
+  editable: true,
+  filters: { ...DEFAULT_PACKAGES_FILTERS, series: "resolute" },
+};
+
 beforeEach(async () => {
   mocks.url = new URL("https://launchpad.test/ubuntu/+source");
   mocks.setTableViews.mockReset();
-  await tableViewsStore.set(mocks.userId, [...DEFAULT_TABLE_VIEWS, mine]);
+  await tableViewsStore.set(mocks.userId, distro, [
+    ...DEFAULT_TABLE_VIEWS,
+    mine,
+  ]);
+  await tableViewsStore.set(mocks.userId, "debian", DEFAULT_TABLE_VIEWS);
 });
 
 describe("getTableViews", () => {
   it("returns the stored views", async () => {
-    await expect(getTableViews()).resolves.toEqual([
+    await expect(getTableViews(distro)).resolves.toEqual([
       ...DEFAULT_TABLE_VIEWS,
       mine,
     ]);
+  });
+
+  it("keeps each distro's views separate", async () => {
+    await expect(getTableViews("debian")).resolves.toEqual(DEFAULT_TABLE_VIEWS);
+  });
+
+  it("rejects an invalid distro", async () => {
+    expect(() => getTableViews("not a distro")).toThrow();
   });
 });
 
 describe("deleteTableView", () => {
   it("deletes an editable view", async () => {
-    await submit(deleteTableView, { id: mine.id });
+    await submit(deleteTableView, { distro, id: mine.id });
 
     expect(await storedViews()).toEqual(DEFAULT_TABLE_VIEWS);
-    expect(mocks.setTableViews).toHaveBeenCalledWith(DEFAULT_TABLE_VIEWS);
+    expect(mocks.setTableViews).toHaveBeenCalledWith(
+      distro,
+      DEFAULT_TABLE_VIEWS,
+    );
   });
 
   it("ignores a view that is already gone", async () => {
-    await submit(deleteTableView, { id: "gone" });
+    await submit(deleteTableView, { distro, id: "gone" });
 
     expect(await storedViews()).toEqual([...DEFAULT_TABLE_VIEWS, mine]);
   });
 
   it("refuses to delete a view that is not editable", async () => {
     await expect(
-      submit(deleteTableView, { id: allPackages.id }),
+      submit(deleteTableView, { distro, id: allPackages.id }),
     ).rejects.toSatisfy(
       expectHttpError(400, "This table view cannot be deleted"),
     );
@@ -120,9 +151,9 @@ describe("deleteTableView", () => {
   it("switches to the default view when deleting the current one", async () => {
     mocks.url = new URL("https://launchpad.test/ubuntu/+source?view=mine");
 
-    await expect(submit(deleteTableView, { id: mine.id })).rejects.toSatisfy(
-      isRedirect,
-    );
+    await expect(
+      submit(deleteTableView, { distro, id: mine.id }),
+    ).rejects.toSatisfy(isRedirect);
     expect(await storedViews()).toEqual(DEFAULT_TABLE_VIEWS);
   });
 });
@@ -135,6 +166,7 @@ describe("editTableView", () => {
 
     await expect(
       submit(editTableView, {
+        distro,
         id: mine.id,
         name: "Mine",
         filters: { series: "noble" },
@@ -148,7 +180,7 @@ describe("editTableView", () => {
 
   it("gives a renamed view a slug not taken by another view", async () => {
     await expect(
-      submit(editTableView, { id: mine.id, name: "All packages" }),
+      submit(editTableView, { distro, id: mine.id, name: "All packages" }),
     ).rejects.toSatisfy(isRedirect);
     expect(await storedViews()).toContainEqual({
       ...mine,
@@ -161,7 +193,7 @@ describe("editTableView", () => {
     mocks.url = new URL("https://launchpad.test/ubuntu/+source?view=mine");
 
     await expect(
-      submit(editTableView, { id: mine.id, name: "Ours" }),
+      submit(editTableView, { distro, id: mine.id, name: "Ours" }),
     ).rejects.toSatisfy(expectRedirect("?view=ours"));
   });
 
@@ -172,6 +204,7 @@ describe("editTableView", () => {
 
     await expect(
       submit(editTableView, {
+        distro,
         id: mine.id,
         name: "Mine",
         filters: { series: "noble" },
@@ -185,7 +218,7 @@ describe("editTableView", () => {
     );
 
     await expect(
-      submit(editTableView, { id: mine.id, name: "Mine" }),
+      submit(editTableView, { distro, id: mine.id, name: "Mine" }),
     ).rejects.toSatisfy(expectRedirect("?view=mine&page=3"));
   });
 
@@ -196,6 +229,7 @@ describe("editTableView", () => {
 
     await expect(
       submit(editTableView, {
+        distro,
         id: mine.id,
         name: "Mine",
         filters: { series: "noble" },
@@ -206,6 +240,7 @@ describe("editTableView", () => {
   it("keeps the submitted values without saving for a person search", async () => {
     await expect(
       submit(editTableView, {
+        distro,
         id: mine.id,
         intent: "search-maintainer",
         maintainerSearch: "userl",
@@ -216,9 +251,13 @@ describe("editTableView", () => {
   });
 
   it.each([
-    [{ id: "gone", name: "Gone" }, 404, "This table view no longer exists"],
     [
-      { id: allPackages.id, name: "Everything" },
+      { distro, id: "gone", name: "Gone" },
+      404,
+      "This table view no longer exists",
+    ],
+    [
+      { distro, id: allPackages.id, name: "Everything" },
       400,
       "This table view cannot be edited",
     ],
@@ -238,6 +277,7 @@ describe("createTableView", () => {
 
     await expect(
       submit(createTableView, {
+        distro,
         name: "Mine",
         filters: { series: "noble" },
       }),
@@ -255,9 +295,22 @@ describe("createTableView", () => {
     ]);
   });
 
+  it("creates the view for the submitted distro only", async () => {
+    await expect(
+      submit(createTableView, { distro: "debian", name: "Trixie" }),
+    ).rejects.toSatisfy(isRedirect);
+
+    expect(await storedViews()).toEqual([...DEFAULT_TABLE_VIEWS, mine]);
+    expect(await tableViewsStore.get(mocks.userId, "debian")).toEqual([
+      ...DEFAULT_TABLE_VIEWS,
+      expect.objectContaining({ name: "Trixie", slug: "trixie" }),
+    ]);
+  });
+
   it("keeps the submitted values without creating a view for a person search", async () => {
     await expect(
       submit(createTableView, {
+        distro,
         intent: "search-signer",
         signerSearch: "userl",
         name: "Unsaved",
@@ -269,10 +322,10 @@ describe("createTableView", () => {
 
 describe("updateTableViews", () => {
   it("reorders and deletes views", async () => {
-    const savedViews = await updateTableViews([
-      { id: mine.id },
-      { id: allPackages.id },
-    ]);
+    const savedViews = await updateTableViews({
+      distro,
+      views: [{ id: mine.id }, { id: allPackages.id }],
+    });
 
     expect(savedViews).toEqual([mine, allPackages]);
     expect(await storedViews()).toEqual(savedViews);
@@ -280,15 +333,32 @@ describe("updateTableViews", () => {
     expect(mocks.setTableViews).not.toHaveBeenCalled();
   });
 
+  it("only changes the given distro's views", async () => {
+    await updateTableViews({ distro, views: [{ id: allPackages.id }] });
+
+    expect(await storedViews()).toEqual([allPackages]);
+    expect(await tableViewsStore.get(mocks.userId, "debian")).toEqual(
+      DEFAULT_TABLE_VIEWS,
+    );
+  });
+
   it("edits views, keeping the slug unless renamed", async () => {
-    const savedViews = await updateTableViews([
-      { id: allPackages.id },
-      {
-        id: resolutePackages.id,
-        settings: { name: resolutePackages.name, filters: nobleFilters },
-      },
-      { id: mine.id, settings: { name: "Ours", filters: mine.filters } },
+    await tableViewsStore.set(mocks.userId, distro, [
+      allPackages,
+      resolutePackages,
+      mine,
     ]);
+    const savedViews = await updateTableViews({
+      distro,
+      views: [
+        { id: allPackages.id },
+        {
+          id: resolutePackages.id,
+          settings: { name: resolutePackages.name, filters: nobleFilters },
+        },
+        { id: mine.id, settings: { name: "Ours", filters: mine.filters } },
+      ],
+    });
 
     expect(savedViews).toEqual([
       allPackages,
@@ -298,11 +368,14 @@ describe("updateTableViews", () => {
   });
 
   it("creates views where they are placed", async () => {
-    const savedViews = await updateTableViews([
-      { id: allPackages.id },
-      { settings: { name: "New", filters: nobleFilters } },
-      { id: mine.id },
-    ]);
+    const savedViews = await updateTableViews({
+      distro,
+      views: [
+        { id: allPackages.id },
+        { settings: { name: "New", filters: nobleFilters } },
+        { id: mine.id },
+      ],
+    });
 
     expect(savedViews).toEqual([
       allPackages,
@@ -318,15 +391,23 @@ describe("updateTableViews", () => {
   });
 
   it("doesn't let new or renamed views take a kept slug", async () => {
-    const savedViews = await updateTableViews([
-      { settings: { name: "Mine", filters: nobleFilters } },
-      {
-        id: resolutePackages.id,
-        settings: { name: "All packages", filters: resolutePackages.filters },
-      },
-      { id: allPackages.id },
-      { id: mine.id },
+    await tableViewsStore.set(mocks.userId, distro, [
+      allPackages,
+      resolutePackages,
+      mine,
     ]);
+    const savedViews = await updateTableViews({
+      distro,
+      views: [
+        { settings: { name: "Mine", filters: nobleFilters } },
+        {
+          id: resolutePackages.id,
+          settings: { name: "All packages", filters: resolutePackages.filters },
+        },
+        { id: allPackages.id },
+        { id: mine.id },
+      ],
+    });
 
     expect(savedViews.map(({ slug }) => slug)).toEqual([
       "mine-2",
@@ -337,11 +418,14 @@ describe("updateTableViews", () => {
   });
 
   it("gives new views with the same name distinct slugs", async () => {
-    const savedViews = await updateTableViews([
-      { id: allPackages.id },
-      { settings: { name: "New", filters: nobleFilters } },
-      { settings: { name: "New", filters: nobleFilters } },
-    ]);
+    const savedViews = await updateTableViews({
+      distro,
+      views: [
+        { id: allPackages.id },
+        { settings: { name: "New", filters: nobleFilters } },
+        { settings: { name: "New", filters: nobleFilters } },
+      ],
+    });
 
     expect(savedViews.map(({ slug }) => slug)).toEqual([
       "all-packages",
@@ -378,7 +462,7 @@ describe("updateTableViews", () => {
       message: "Cannot edit a table view that is not editable",
     },
   ])("rejects $description", async ({ views, message }) => {
-    await expect(updateTableViews(views)).rejects.toSatisfy(
+    await expect(updateTableViews({ distro, views })).rejects.toSatisfy(
       expectHttpError(400, message),
     );
     expect(await storedViews()).toEqual([...DEFAULT_TABLE_VIEWS, mine]);

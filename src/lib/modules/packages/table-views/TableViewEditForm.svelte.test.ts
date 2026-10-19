@@ -150,6 +150,7 @@ async function renderForm(
   const onstage = vi.fn();
   const screen = await render(TableViewEditForm, {
     form: editTableView.for(`mine-${viewCount++}`),
+    distro: "ubuntu",
     settings,
     heading: "Editing – Mine",
     cancelHref: "?panel=manage-views",

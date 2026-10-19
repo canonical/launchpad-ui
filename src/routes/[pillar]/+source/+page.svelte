@@ -36,6 +36,9 @@
   const queryParams = $derived(QueryParams.bind(page.url));
 
   setPackagesContext({
+    get distro() {
+      return distro;
+    },
     get queryParams() {
       return queryParams;
     },
@@ -45,7 +48,7 @@
     getSeriesGroups({ pillar: params.pillar }),
   );
   const urlFilters = $derived(toPackagesFilters(queryParams));
-  const storedTableViews = $derived(await getTableViews());
+  const storedTableViews = $derived(await getTableViews(distro));
   // Views saved by a navigation take precedence, so they're applied together with its URL
   const tableViews = $derived(page.state.tableViews ?? storedTableViews);
   const {

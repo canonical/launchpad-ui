@@ -8,28 +8,30 @@ import { QueryParams } from "../superhref.js";
 import type { TableView } from "./constants.js";
 import {
   ParsedTableViewSettingsSchema,
+  TableViewDistroSchema,
   TableViewEditFormSchema,
   TableViewIdSchema,
 } from "./schema.js";
 import type { TableViewSettings } from "./schema.js";
 import { command, form, getRequestEvent, query } from "$app/server";
 
-export const getTableViews = query(() => {
-  return tableViewsStore.get(getCurrentUserId());
+export const getTableViews = query(TableViewDistroSchema, (distro) => {
+  return tableViewsStore.get(getCurrentUserId(), distro);
 });
 
 export const deleteTableView = form(
   v.object({
+    distro: TableViewDistroSchema,
     id: TableViewIdSchema,
   }),
-  async ({ id }) => {
+  async ({ distro, id }) => {
     const userId = getCurrentUserId();
-    const tableViews = await tableViewsStore.get(userId);
+    const tableViews = await tableViewsStore.get(userId, distro);
     const index = tableViews.findIndex((view) => view.id === id);
 
     if (index === -1) {
       // Already gone
-      getTableViews().set(tableViews);
+      getTableViews(distro).set(tableViews);
       return;
     }
 
@@ -38,8 +40,8 @@ export const deleteTableView = form(
     }
 
     const [deletedView] = tableViews.splice(index, 1);
-    await tableViewsStore.set(userId, tableViews);
-    getTableViews().set(tableViews);
+    await tableViewsStore.set(userId, distro, tableViews);
+    getTableViews(distro).set(tableViews);
 
     const queryParams = QueryParams.bind(getRequestEvent().url);
     if (queryParams.view === deletedView.slug) {
@@ -56,7 +58,7 @@ export const deleteTableView = form(
  */
 export const editTableView = form(TableViewEditFormSchema, async (data) => {
   const userId = getCurrentUserId();
-  const tableViews = await tableViewsStore.get(userId);
+  const tableViews = await tableViewsStore.get(userId, data.distro);
   const view = tableViews.find((view) => view.id === data.id);
 
   if (!view) {
@@ -89,8 +91,8 @@ export const editTableView = form(TableViewEditFormSchema, async (data) => {
   }
   view.name = data.name;
   view.filters = data.filters;
-  await tableViewsStore.set(userId, tableViews);
-  getTableViews().set(tableViews);
+  await tableViewsStore.set(userId, data.distro, tableViews);
+  getTableViews(data.distro).set(tableViews);
 
   if (isEditingCurrentView) {
     redirect(
@@ -118,34 +120,37 @@ export const createTableView = form(TableViewEditFormSchema, async (data) => {
 
   const userId = getCurrentUserId();
   const tableViews = assignSlugs([
-    ...(await tableViewsStore.get(userId)),
+    ...(await tableViewsStore.get(userId, data.distro)),
     newTableView(data),
   ]);
-  await tableViewsStore.set(userId, tableViews);
-  getTableViews().set(tableViews);
+  await tableViewsStore.set(userId, data.distro, tableViews);
+  getTableViews(data.distro).set(tableViews);
 
   const queryParams = QueryParams.bind(getRequestEvent().url);
   redirect(303, queryParams.patch({ "manage-views": null }));
 });
 
 /**
- * Reorders `tableViews` to match `views`, and deletes any view whose id is missing from it. Views with `settings` are considered edited, and views without an `id` are created.
+ * Reorders the distro's table views to match `views`, and deletes any view whose id is missing from it. Views with `settings` are considered edited, and views without an `id` are created.
  */
 export const updateTableViews = command(
-  v.array(
-    v.union([
-      v.object({
-        id: TableViewIdSchema,
-        settings: v.optional(ParsedTableViewSettingsSchema),
-      }),
-      v.object({
-        settings: ParsedTableViewSettingsSchema,
-      }),
-    ]),
-  ),
-  async (views) => {
+  v.object({
+    distro: TableViewDistroSchema,
+    views: v.array(
+      v.union([
+        v.object({
+          id: TableViewIdSchema,
+          settings: v.optional(ParsedTableViewSettingsSchema),
+        }),
+        v.object({
+          settings: ParsedTableViewSettingsSchema,
+        }),
+      ]),
+    ),
+  }),
+  async ({ distro, views }) => {
     const userId = getCurrentUserId();
-    const currentViews = await tableViewsStore.get(userId);
+    const currentViews = await tableViewsStore.get(userId, distro);
     const viewsById = new Map(currentViews.map((view) => [view.id, view]));
     const ids = views.flatMap((view) => ("id" in view ? [view.id] : []));
 
@@ -178,7 +183,7 @@ export const updateTableViews = command(
         };
       }),
     );
-    await tableViewsStore.set(userId, updatedViews);
+    await tableViewsStore.set(userId, distro, updatedViews);
     // `getTableViews` isn't updated here: a single-flight update would apply before the caller
     // navigates to the (possibly renamed) view's URL, so the caller updates it instead.
     return updatedViews;
