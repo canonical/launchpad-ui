@@ -1,5 +1,5 @@
 <script lang="ts" module>
-  import type { TableView } from "./constants.js";
+  import type { AddTableViewMode, TableView } from "./constants.js";
   import type { TableViewSettings } from "./schema.js";
 
   type ViewDraft = {
@@ -28,14 +28,27 @@
   class DraftsSession {
     drafts = $state<ViewDraft[]>([]);
     saveError = $state<string | null>(null);
+    bookmarkKey: string | null = null;
 
     constructor(items: TableView[]) {
       this.restart(items);
     }
 
+    add(settings: TableViewSettings, mode: AddTableViewMode) {
+      const key = `new-${crypto.randomUUID()}`;
+      this.drafts.push({ key, saved: null, settings, changed: true });
+      if (mode === "bookmark") this.bookmarkKey = key;
+    }
+
+    remove(key: string) {
+      this.drafts = this.drafts.filter((draft) => draft.key !== key);
+      if (this.bookmarkKey === key) this.bookmarkKey = null;
+    }
+
     restart(items: TableView[]) {
       this.drafts = items.map(toDraft);
       this.saveError = null;
+      this.bookmarkKey = null;
     }
   }
 </script>
@@ -49,6 +62,7 @@
   import { ReorderableList } from "$lib/components/ReorderableList/index.js";
   import { SidePanel } from "$lib/launchpad-components/index.js";
   import {
+    CLEARED_FILTER_PARAMS,
     MANAGE_VIEWS_PANEL,
     PANEL_QUERY_PARAM,
     QueryParams,
@@ -131,16 +145,12 @@
     closeViewForm();
   }
 
-  function stageNewView(settings: TableViewSettings) {
-    session.drafts.push({
-      key: `new-${crypto.randomUUID()}`,
-      saved: null,
-      settings,
-      changed: true,
-    });
+  const stageNewView =
+    (mode: AddTableViewMode) => (settings: TableViewSettings) => {
+      session.add(settings, mode);
 
-    closeViewForm();
-  }
+      closeViewForm();
+    };
 
   function closeViewForm() {
     // eslint-disable-next-line svelte/no-navigation-without-resolve
@@ -165,6 +175,9 @@
 
     try {
       const currentView = items.find(({ slug }) => slug === queryParams.view);
+      const bookmarkIndex = session.drafts.findIndex(
+        ({ key }) => key === session.bookmarkKey,
+      );
       let savedViews: TableView[];
       try {
         savedViews = await updateTableViews({
@@ -182,19 +195,23 @@
         return;
       }
       const updatedView = savedViews.find(({ id }) => id === currentView?.id);
+      const bookmarkedView = savedViews[bookmarkIndex];
 
       const shouldResetPage =
-        currentView &&
-        (updatedView === undefined ||
-          packagesFiltersDiffer(updatedView.filters, currentView.filters));
+        bookmarkedView !== undefined ||
+        (currentView &&
+          (updatedView === undefined ||
+            packagesFiltersDiffer(updatedView.filters, currentView.filters)));
+      const shouldClearUrlFilters = bookmarkedView !== undefined;
 
       await goto(
         // eslint-disable-next-line svelte/no-navigation-without-resolve
         queryParams.patch({
           panel: null,
           "manage-views": null,
-          view: updatedView?.slug ?? null,
+          view: (bookmarkedView ?? updatedView)?.slug ?? null,
           ...(shouldResetPage && { page: 1 }),
+          ...(shouldClearUrlFilters && CLEARED_FILTER_PARAMS),
         }),
         {
           keepFocus: true,
@@ -283,9 +300,7 @@
                 preserveQueryParams(
                   deleteForm.enhance(() => {
                     // If JS, don't delete immediately, and instead stage for deletion in drafts
-                    session.drafts = session.drafts.filter(
-                      ({ key }) => key !== draft.key,
-                    );
+                    session.remove(draft.key);
                   }),
                   page.url,
                 )}
@@ -317,7 +332,7 @@
       settings={{ name: "", filters: DEFAULT_PACKAGES_FILTERS }}
       heading="Adding a new view"
       cancelHref={queryParams["manage-views"].closeForm()}
-      onstage={stageNewView}
+      onstage={stageNewView(addMode)}
       {seriesGroups}
     />
   {:else if addMode === "bookmark"}
@@ -331,7 +346,7 @@
       }}
       heading="Adding a new view"
       cancelHref={queryParams["manage-views"].closeForm()}
-      onstage={stageNewView}
+      onstage={stageNewView(addMode)}
       requireChange={false}
       {seriesGroups}
     />

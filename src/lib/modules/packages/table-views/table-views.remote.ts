@@ -4,7 +4,7 @@ import { tableViewsStore } from "$lib/server/table-views/index.js";
 import { getCurrentUserId } from "$lib/server/user.js";
 import { slugify } from "$lib/utils/slugify.js";
 import { packagesFiltersDiffer } from "../filters/utils.js";
-import { QueryParams } from "../superhref.js";
+import { CLEARED_FILTER_PARAMS, QueryParams } from "../superhref.js";
 import type { TableView } from "./constants.js";
 import {
   ParsedTableViewSettingsSchema,
@@ -127,7 +127,21 @@ export const createTableView = form(TableViewEditFormSchema, async (data) => {
   getTableViews(data.distro).set(tableViews);
 
   const queryParams = QueryParams.bind(getRequestEvent().url);
-  redirect(303, queryParams.patch({ "manage-views": null }));
+  const bookmarkedView =
+    queryParams["manage-views"].add === "bookmark"
+      ? tableViews.at(-1)
+      : undefined;
+  redirect(
+    303,
+    queryParams.patch({
+      "manage-views": null,
+      ...(bookmarkedView && {
+        view: bookmarkedView.slug,
+        page: 1,
+        ...CLEARED_FILTER_PARAMS,
+      }),
+    }),
+  );
 });
 
 /**

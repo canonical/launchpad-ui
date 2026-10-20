@@ -18,9 +18,6 @@
     (typeof filterInputsNames)[keyof typeof filterInputsNames];
 
   const filterNames = Object.values(filterInputsNames) as FilterInputName[];
-  const clearableFilterNames = filterNames.filter(
-    (name) => name !== filterInputsNames.match,
-  );
 </script>
 
 <script lang="ts">
@@ -31,7 +28,7 @@
   import { QueryParamsForm } from "$lib/components/index.js";
   import { subId } from "$lib/utils/index.js";
   import { getPackagesContext } from "../context.js";
-  import { QueryParams } from "../superhref.js";
+  import { CLEARED_FILTER_PARAMS, QueryParams } from "../superhref.js";
   import MoreFiltersMenu from "./MoreFiltersMenu.svelte";
   import PersonFilterCombobox from "./PersonFilterCombobox.svelte";
   import PocketFilterMenu from "./PocketFilterMenu.svelte";
@@ -189,12 +186,7 @@
         </noscript>
         {#if hasActiveFilters}
           <Button
-            href={queryParams.patch({
-              ...Object.fromEntries(
-                clearableFilterNames.map((name) => [name, null]),
-              ),
-              page: null,
-            })}
+            href={queryParams.patch({ ...CLEARED_FILTER_PARAMS, page: null })}
             aria-label="Clear all filters"
             importance="secondary"
             class="filter-control-button"
