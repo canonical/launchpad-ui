@@ -201,50 +201,25 @@ describe("ManageViewsSidePanel", () => {
     expect(params.get("page") ?? "1").toBe("1");
   });
 
-  it("goes to the last created view, wherever it was moved", async () => {
+  it("keeps the current view and page when new views are added", async () => {
     vi.mocked(updateTableViews).mockResolvedValue([
       allPackages,
       noble,
       resolute,
+      view("first", "First"),
       view("second", "Second"),
-      view("first", "First"),
     ]);
     const screen = await renderPanel("?view=noble&page=3&panel=manage-views");
 
     await addView(screen, "First");
     await addView(screen, "Second");
-    await screen.getByRole("button", { name: "Reorder Second" }).click();
-    await userEvent.keyboard("{Enter}{ArrowUp}{Enter}");
-    await expect
-      .poll(() => viewNames(screen))
-      .toEqual(["All packages", "Noble", "Resolute", "Second", "First"]);
     await screen.getByRole("button", { name: "Save" }).click();
 
     await expect.poll(() => vi.mocked(replaceState).mock.calls.length).toBe(1);
     const [url] = vi.mocked(goto).mock.lastCall!;
-    expect(url).toBe("?view=second");
-  });
-
-  it("goes to the last created view that is still staged", async () => {
-    vi.mocked(updateTableViews).mockResolvedValue([
-      allPackages,
-      noble,
-      resolute,
-      view("first", "First"),
-    ]);
-    const screen = await renderPanel("?view=noble&page=3&panel=manage-views");
-
-    await addView(screen, "First");
-    await addView(screen, "Second");
-    await screen.getByRole("button", { name: "Delete Second" }).click();
-    await expect
-      .poll(() => viewNames(screen))
-      .toEqual(["All packages", "Noble", "Resolute", "First"]);
-    await screen.getByRole("button", { name: "Save" }).click();
-
-    await expect.poll(() => vi.mocked(replaceState).mock.calls.length).toBe(1);
-    const [url] = vi.mocked(goto).mock.lastCall!;
-    expect(url).toBe("?view=first");
+    const params = new URL(url as string, page.url).searchParams;
+    expect(params.get("view")).toBe("noble");
+    expect(params.get("page")).toBe("3");
   });
 
   it("goes to a bookmarked view without the URL filters", async () => {
@@ -254,6 +229,7 @@ describe("ManageViewsSidePanel", () => {
       noble,
       resolute,
       view("bookmarked", name),
+      view("extra", "Extra"),
     ]);
     const screen = await renderPanel(
       "?sort=series&search=linux&match=exact&series=noble&ubuntu-change=1" +
@@ -261,12 +237,42 @@ describe("ManageViewsSidePanel", () => {
     );
 
     await screen.getByRole("button", { name: "Confirm" }).click();
+    await addView(screen, "Extra");
     await expect.poll(() => viewNames(screen)).toContain(name);
     await screen.getByRole("button", { name: "Save" }).click();
 
     await expect.poll(() => vi.mocked(replaceState).mock.calls.length).toBe(1);
     const [url] = vi.mocked(goto).mock.lastCall!;
     expect(url).toBe("?sort=series&match=exact&view=bookmarked");
+  });
+
+  it("keeps the current view and filters when a staged bookmark is removed", async () => {
+    const name = '"linux" + Noble + Changed by Ubuntu';
+    vi.mocked(updateTableViews).mockResolvedValue([
+      allPackages,
+      noble,
+      resolute,
+      view("extra", "Extra"),
+    ]);
+    const screen = await renderPanel(
+      "?sort=series&search=linux&match=exact&series=noble&ubuntu-change=1" +
+        "&page=3&view=noble&panel=manage-views&manage-views.add=bookmark",
+    );
+
+    await screen.getByRole("button", { name: "Confirm" }).click();
+    await addView(screen, "Extra");
+    await screen.getByRole("button", { name: `Delete ${name}` }).click();
+    await screen.getByRole("button", { name: "Save" }).click();
+
+    const [url] = vi.mocked(goto).mock.lastCall!;
+    const params = new URL(url as string, page.url).searchParams;
+    expect(params.get("view")).toBe("noble");
+    expect(params.get("page")).toBe("3");
+    expect(params.get("sort")).toBe("series");
+    expect(params.get("search")).toBe("linux");
+    expect(params.get("match")).toBe("exact");
+    expect(params.get("series")).toBe("noble");
+    expect(params.get("ubuntu-change")).toBe("1");
   });
 
   it("discards staged changes on Cancel", async () => {

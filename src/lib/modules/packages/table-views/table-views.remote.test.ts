@@ -272,7 +272,7 @@ describe("editTableView", () => {
 describe("createTableView", () => {
   it("appends an editable view with a unique slug and closes the form", async () => {
     mocks.url = new URL(
-      "https://launchpad.test/ubuntu/+source?panel=manage-views&manage-views.add=new",
+      "https://launchpad.test/ubuntu/+source?view=noble&page=3&search=linux&panel=manage-views&manage-views.add=new",
     );
 
     await expect(
@@ -281,7 +281,17 @@ describe("createTableView", () => {
         name: "Mine",
         filters: { series: "noble" },
       }),
-    ).rejects.toSatisfy(expectRedirect("?panel=manage-views"));
+    ).rejects.toSatisfy((thrown) => {
+      if (!isRedirect(thrown)) return false;
+      const params = new URL(thrown.location, mocks.url).searchParams;
+      return (
+        params.get("view") === "noble" &&
+        params.get("page") === "3" &&
+        params.get("search") === "linux" &&
+        params.get("panel") === "manage-views" &&
+        !params.has("manage-views.add")
+      );
+    });
     expect(await storedViews()).toEqual([
       ...DEFAULT_TABLE_VIEWS,
       mine,
@@ -293,6 +303,34 @@ describe("createTableView", () => {
         filters: nobleFilters,
       },
     ]);
+  });
+
+  it("preselects a bookmarked view and clears the URL filters", async () => {
+    mocks.url = new URL(
+      "https://launchpad.test/ubuntu/+source?sort=series&search=linux&match=exact&series=noble&ubuntu-change=1&page=3&view=noble&panel=manage-views&manage-views.add=bookmark",
+    );
+
+    await expect(
+      submit(createTableView, {
+        distro,
+        name: "Bookmarked",
+        filters: { series: "noble" },
+      }),
+    ).rejects.toSatisfy((thrown) => {
+      if (!isRedirect(thrown)) return false;
+      const params = new URL(thrown.location, mocks.url).searchParams;
+      return (
+        params.get("view") === "bookmarked" &&
+        (params.get("page") ?? "1") === "1" &&
+        params.get("sort") === "series" &&
+        params.get("match") === "exact" &&
+        !params.has("search") &&
+        !params.has("series") &&
+        !params.has("ubuntu-change") &&
+        params.get("panel") === "manage-views" &&
+        !params.has("manage-views.add")
+      );
+    });
   });
 
   it("creates the view for the submitted distro only", async () => {

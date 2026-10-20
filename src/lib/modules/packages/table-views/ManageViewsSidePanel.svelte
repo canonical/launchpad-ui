@@ -28,16 +28,27 @@
   class DraftsSession {
     drafts = $state<ViewDraft[]>([]);
     saveError = $state<string | null>(null);
-    created: { key: string; mode: AddTableViewMode }[] = [];
+    bookmarkKey: string | null = null;
 
     constructor(items: TableView[]) {
       this.restart(items);
     }
 
+    add(settings: TableViewSettings, mode: AddTableViewMode) {
+      const key = `new-${crypto.randomUUID()}`;
+      this.drafts.push({ key, saved: null, settings, changed: true });
+      if (mode === "bookmark") this.bookmarkKey = key;
+    }
+
+    remove(key: string) {
+      this.drafts = this.drafts.filter((draft) => draft.key !== key);
+      if (this.bookmarkKey === key) this.bookmarkKey = null;
+    }
+
     restart(items: TableView[]) {
       this.drafts = items.map(toDraft);
       this.saveError = null;
-      this.created = [];
+      this.bookmarkKey = null;
     }
   }
 </script>
@@ -134,13 +145,12 @@
     closeViewForm();
   }
 
-  const stageNewView = (mode: AddTableViewMode) => (settings: TableViewSettings) => {
-    const key = `new-${crypto.randomUUID()}`;
-    session.drafts.push({ key, saved: null, settings, changed: true });
-    session.created.push({ key, mode });
+  const stageNewView =
+    (mode: AddTableViewMode) => (settings: TableViewSettings) => {
+      session.add(settings, mode);
 
-    closeViewForm();
-  }
+      closeViewForm();
+    };
 
   function closeViewForm() {
     // eslint-disable-next-line svelte/no-navigation-without-resolve
@@ -165,11 +175,8 @@
 
     try {
       const currentView = items.find(({ slug }) => slug === queryParams.view);
-      const stagedCreations = session.created.filter(({ key }) =>
-        session.drafts.some((draft) => draft.key === key),
-      );
-      const createdIndex = session.drafts.findIndex(
-        ({ key }) => key === stagedCreations.at(-1)?.key,
+      const bookmarkIndex = session.drafts.findIndex(
+        ({ key }) => key === session.bookmarkKey,
       );
       let savedViews: TableView[];
       try {
@@ -188,23 +195,21 @@
         return;
       }
       const updatedView = savedViews.find(({ id }) => id === currentView?.id);
-      const createdView = savedViews[createdIndex];
+      const bookmarkedView = savedViews[bookmarkIndex];
 
       const shouldResetPage =
-        createdView !== undefined ||
+        bookmarkedView !== undefined ||
         (currentView &&
           (updatedView === undefined ||
             packagesFiltersDiffer(updatedView.filters, currentView.filters)));
-      const shouldClearUrlFilters = stagedCreations.some(
-        ({ mode }) => mode === "bookmark",
-      );
+      const shouldClearUrlFilters = bookmarkedView !== undefined;
 
       await goto(
         // eslint-disable-next-line svelte/no-navigation-without-resolve
         queryParams.patch({
           panel: null,
           "manage-views": null,
-          view: (createdView ?? updatedView)?.slug ?? null,
+          view: (bookmarkedView ?? updatedView)?.slug ?? null,
           ...(shouldResetPage && { page: 1 }),
           ...(shouldClearUrlFilters && CLEARED_FILTER_PARAMS),
         }),
@@ -295,9 +300,7 @@
                 preserveQueryParams(
                   deleteForm.enhance(() => {
                     // If JS, don't delete immediately, and instead stage for deletion in drafts
-                    session.drafts = session.drafts.filter(
-                      ({ key }) => key !== draft.key,
-                    );
+                    session.remove(draft.key);
                   }),
                   page.url,
                 )}
