@@ -24,7 +24,9 @@ export default defineConfig({
             provider: playwright(),
             instances: [
               { browser: "chromium" },
-              { browser: "firefox" },
+              // Parallel Firefox pages can blur inputs in other pages' test iframes.
+              // Revisit after https://github.com/microsoft/playwright/issues/42933 is fixed.
+              { browser: "firefox", fileParallelism: false },
               { browser: "webkit" },
             ],
           },
