@@ -4,6 +4,10 @@ import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   plugins: [sveltekit()],
+  build: {
+    // As required by Pragma (https://github.com/canonical/pragma-web/blob/69ba3095fea252e827a6e9731bd44e745d5c301c/packages/styles/main/README.md?plain=1#L292)
+    cssTarget: ["chrome125", "safari17.5", "firefox120"],
+  },
   test: {
     expect: {
       requireAssertions: true,
