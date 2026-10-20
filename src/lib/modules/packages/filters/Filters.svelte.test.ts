@@ -105,7 +105,6 @@ describe("Filters", () => {
       expect(await submitted).toEqual({
         sort: "series",
         pocket: "Release",
-        match: "contains",
         "page-size": "50",
         ...applied,
       });
@@ -122,7 +121,7 @@ describe("Filters", () => {
       .fill("  linux  ");
     await userEvent.keyboard("{Enter}");
 
-    expect(await submitted).toEqual({ search: "linux", match: "contains" });
+    expect(await submitted).toEqual({ search: "linux" });
   });
 
   it("restores person searches submitted without JS and drops them from the URL", async () => {

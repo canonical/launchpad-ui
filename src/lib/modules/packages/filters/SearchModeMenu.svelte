@@ -10,7 +10,6 @@
 
 <script lang="ts">
   import { Popover } from "@canonical/svelte-ds-app-launchpad";
-  import { InformationIcon } from "@canonical/svelte-icons";
   import { ContextualMenuContent } from "$lib/components/index.js";
   import { PopoverTrigger } from "$lib/launchpad-components/index.js";
   import type { ChoiceFilterProps } from "./types.js";
@@ -46,13 +45,5 @@
         />
       {/each}
     </ContextualMenuContent.Group>
-    {#snippet helper(id)}
-      <ContextualMenuContent.Helper {id}>
-        {#snippet icon()}
-          <InformationIcon />
-        {/snippet}
-        You can search both source package and binary package names
-      </ContextualMenuContent.Helper>
-    {/snippet}
   </ContextualMenuContent>
 </Popover>
