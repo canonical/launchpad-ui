@@ -5,7 +5,7 @@ import {
   superhref,
   withActions,
 } from "@canonical/superhref";
-import type { OwnedKey } from "@canonical/superhref";
+import type { OwnedKey, SuperhrefPatchInput } from "@canonical/superhref";
 import {
   flagCodec,
   launchpadNameCodec,
@@ -112,6 +112,18 @@ export const QueryParams = superhref(packagesQuerySchema, {
 export type BoundPackagesQueryParams = ReturnType<typeof QueryParams.bind>;
 
 export type PackageOwnedQueryKey = OwnedKey<typeof packagesQuerySchema>;
+
+export const CLEARED_FILTER_PARAMS = {
+  search: null,
+  series: null,
+  pocket: null,
+  maintainer: null,
+  signer: null,
+  "maintainer-search": null,
+  "signer-search": null,
+  "ubuntu-change": null,
+  "all-statuses": null,
+} as const satisfies SuperhrefPatchInput<typeof packagesQuerySchema>;
 
 export function toPackagesFilters(
   queryParams: BoundPackagesQueryParams,

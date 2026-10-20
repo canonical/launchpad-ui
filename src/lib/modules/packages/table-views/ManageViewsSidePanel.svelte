@@ -1,5 +1,5 @@
 <script lang="ts" module>
-  import type { TableView } from "./constants.js";
+  import type { AddTableViewMode, TableView } from "./constants.js";
   import type { TableViewSettings } from "./schema.js";
 
   type ViewDraft = {
@@ -28,6 +28,7 @@
   class DraftsSession {
     drafts = $state<ViewDraft[]>([]);
     saveError = $state<string | null>(null);
+    created: { key: string; mode: AddTableViewMode }[] = [];
 
     constructor(items: TableView[]) {
       this.restart(items);
@@ -36,6 +37,7 @@
     restart(items: TableView[]) {
       this.drafts = items.map(toDraft);
       this.saveError = null;
+      this.created = [];
     }
   }
 </script>
@@ -49,6 +51,7 @@
   import { ReorderableList } from "$lib/components/ReorderableList/index.js";
   import { SidePanel } from "$lib/launchpad-components/index.js";
   import {
+    CLEARED_FILTER_PARAMS,
     MANAGE_VIEWS_PANEL,
     PANEL_QUERY_PARAM,
     QueryParams,
@@ -131,13 +134,10 @@
     closeViewForm();
   }
 
-  function stageNewView(settings: TableViewSettings) {
-    session.drafts.push({
-      key: `new-${crypto.randomUUID()}`,
-      saved: null,
-      settings,
-      changed: true,
-    });
+  const stageNewView = (mode: AddTableViewMode) => (settings: TableViewSettings) => {
+    const key = `new-${crypto.randomUUID()}`;
+    session.drafts.push({ key, saved: null, settings, changed: true });
+    session.created.push({ key, mode });
 
     closeViewForm();
   }
@@ -165,6 +165,12 @@
 
     try {
       const currentView = items.find(({ slug }) => slug === queryParams.view);
+      const stagedCreations = session.created.filter(({ key }) =>
+        session.drafts.some((draft) => draft.key === key),
+      );
+      const createdIndex = session.drafts.findIndex(
+        ({ key }) => key === stagedCreations.at(-1)?.key,
+      );
       let savedViews: TableView[];
       try {
         savedViews = await updateTableViews({
@@ -182,19 +188,25 @@
         return;
       }
       const updatedView = savedViews.find(({ id }) => id === currentView?.id);
+      const createdView = savedViews[createdIndex];
 
       const shouldResetPage =
-        currentView &&
-        (updatedView === undefined ||
-          packagesFiltersDiffer(updatedView.filters, currentView.filters));
+        createdView !== undefined ||
+        (currentView &&
+          (updatedView === undefined ||
+            packagesFiltersDiffer(updatedView.filters, currentView.filters)));
+      const shouldClearUrlFilters = stagedCreations.some(
+        ({ mode }) => mode === "bookmark",
+      );
 
       await goto(
         // eslint-disable-next-line svelte/no-navigation-without-resolve
         queryParams.patch({
           panel: null,
           "manage-views": null,
-          view: updatedView?.slug ?? null,
+          view: (createdView ?? updatedView)?.slug ?? null,
           ...(shouldResetPage && { page: 1 }),
+          ...(shouldClearUrlFilters && CLEARED_FILTER_PARAMS),
         }),
         {
           keepFocus: true,
@@ -317,7 +329,7 @@
       settings={{ name: "", filters: DEFAULT_PACKAGES_FILTERS }}
       heading="Adding a new view"
       cancelHref={queryParams["manage-views"].closeForm()}
-      onstage={stageNewView}
+      onstage={stageNewView(addMode)}
       {seriesGroups}
     />
   {:else if addMode === "bookmark"}
@@ -331,7 +343,7 @@
       }}
       heading="Adding a new view"
       cancelHref={queryParams["manage-views"].closeForm()}
-      onstage={stageNewView}
+      onstage={stageNewView(addMode)}
       requireChange={false}
       {seriesGroups}
     />
