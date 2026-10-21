@@ -2,7 +2,7 @@
   import type { TableView } from "./constants.js";
   import type { TableViewSettings } from "./schema.js";
 
-  type ViewDraft = {
+  interface ViewDraft {
     /** The saved view's id, or a placeholder until a new view is saved. */
     key: string;
     /** `null` for a view created in the panel. */
@@ -10,7 +10,7 @@
     settings: TableViewSettings;
     /** Whether `settings` should be sent on Save. */
     changed: boolean;
-  };
+  }
 
   function toDraft(view: TableView): ViewDraft {
     return {
