@@ -33,7 +33,7 @@
   const { params }: PageProps = $props();
 
   const distro = $derived(params.pillar);
-  const queryParams = $derived(QueryParams.bind(page.url));
+  const queryParams = $derived(QueryParams.bind(new URL(page.url.href)));
 
   setPackagesContext({
     get distro() {
@@ -126,8 +126,7 @@
                     aria-label={next.direction === "none"
                       ? `Remove sorting by ${column.label}`
                       : `Sort by ${column.label} ${next.direction}`}
-                    data-sveltekit-noscroll
-                    data-sveltekit-keepfocus
+                    data-sveltekit-reset={false}
                   />
                 {/if}
               {/snippet}
@@ -171,8 +170,7 @@
           url={page.url}
           replaceParams={["page-size", "page"]}
           class="pagination-form"
-          data-sveltekit-noscroll
-          data-sveltekit-keepfocus
+          data-sveltekit-reset={false}
         >
           <Pagination.ItemsPerPageSelect
             name="page-size"
@@ -203,7 +201,7 @@
           url={page.url}
           replaceParams={["page"]}
           class="pagination-form"
-          data-sveltekit-keepfocus
+          data-sveltekit-reset={false}
         >
           <Pagination.PageInput
             name="page"
@@ -219,25 +217,25 @@
         direction="first"
         href={queryParams.set("page", 1)}
         disabled={queryParams.page === 1}
-        data-sveltekit-keepfocus
+        data-sveltekit-reset={false}
       />
       <Pagination.PageNavigation
         direction="previous"
         href={queryParams.set("page", queryParams.page - 1)}
         disabled={queryParams.page === 1}
-        data-sveltekit-keepfocus
+        data-sveltekit-reset={false}
       />
       <Pagination.PageNavigation
         direction="next"
         href={queryParams.set("page", queryParams.page + 1)}
         disabled={sourcePackages.page >= sourcePackages.total_pages}
-        data-sveltekit-keepfocus
+        data-sveltekit-reset={false}
       />
       <Pagination.PageNavigation
         direction="last"
         href={queryParams.set("page", Math.max(1, sourcePackages.total_pages))}
         disabled={queryParams.page >= sourcePackages.total_pages}
-        data-sveltekit-keepfocus
+        data-sveltekit-reset={false}
       />
     </Pagination>
   </div>

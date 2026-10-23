@@ -155,8 +155,8 @@
   function closeViewForm() {
     // eslint-disable-next-line svelte/no-navigation-without-resolve
     goto(queryParams["manage-views"].closeForm(), {
-      keepFocus: true,
-      noScroll: true,
+      reset: false,
+      replace: true,
     });
   }
 
@@ -213,8 +213,7 @@
           ...(shouldClearUrlFilters && CLEARED_FILTER_PARAMS),
         }),
         {
-          keepFocus: true,
-          noScroll: true,
+          reset: false,
           // The views travel in the navigation state, so they're applied in the same update as the new URL.
           // Otherwise the URL can briefly point at a renamed view's old slug, or vice versa.
           state: { tableViews: savedViews },
@@ -225,7 +224,11 @@
       // After awaited queries pick up the new state it is safe to clear the page state
       await settled();
       if (page.state.tableViews === savedViews)
-        goto("", { shallow: true, replace: true });
+        goto(
+          // eslint-disable-next-line svelte/no-navigation-without-resolve
+          "",
+          { shallow: true, replace: true },
+        );
     } catch (error) {
       console.error(error);
     } finally {
@@ -250,8 +253,7 @@
         "manage-views": null,
       }),
       {
-        keepFocus: true,
-        noScroll: true,
+        reset: false,
       },
     );
   }}
@@ -302,7 +304,7 @@
                     // If JS, don't delete immediately, and instead stage for deletion in drafts
                     session.remove(draft.key);
                   }),
-                  page.url,
+                  new URL(page.url.href),
                 )}
             >
               {#if deleteForm}

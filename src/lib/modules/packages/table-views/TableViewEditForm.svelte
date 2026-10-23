@@ -1,5 +1,4 @@
 <script lang="ts">
-  import type { RemoteFormField } from "$app/server";
   import {
     Button,
     Checkbox,
@@ -26,6 +25,7 @@
   import type { TableViewSettings } from "./schema.js";
   import type { createTableView, editTableView } from "./table-views.remote.js";
   import { browser } from "$app/env";
+  import type { RemoteFormField } from "$app/server";
   import { page } from "$app/state";
 
   const {
@@ -110,7 +110,7 @@
     form.preflight(TableViewEditFormSchema).enhance(({ fields }) => {
       onstage(v.parse(TableViewSettingsSchema, fields.value()));
     }),
-    page.url,
+    new URL(page.url.href),
   )}
 >
   <!-- Without JS, Enter in a text field submits with the first submit button, so it must confirm rather than search -->

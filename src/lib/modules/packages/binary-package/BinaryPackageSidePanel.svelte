@@ -39,12 +39,10 @@
     schema: QueryParams,
     replaceParams: [BINARY_PACKAGE_QUERY_PARAM],
   }}
-  onclose={(
+  onclose={() =>
     // eslint-disable-next-line svelte/no-navigation-without-resolve
-  ) =>
     goto(queryParams.set("binary-package", null), {
-      keepFocus: true,
-      noScroll: true,
+      reset: false,
     })}
 >
   {#if binaryPackage}

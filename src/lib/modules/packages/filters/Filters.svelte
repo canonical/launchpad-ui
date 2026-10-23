@@ -74,7 +74,7 @@
     goto(
       // eslint-disable-next-line svelte/no-navigation-without-resolve
       queryParams.patch({ "maintainer-search": null, "signer-search": null }),
-      { replaceState: true, keepFocus: true, noScroll: true },
+      { replace: true, reset: false },
     );
   });
 </script>
@@ -84,8 +84,7 @@
     schema={QueryParams}
     url={page.url}
     replaceParams={[...filterNames, "page"]}
-    data-sveltekit-keepfocus
-    data-sveltekit-noscroll
+    data-sveltekit-reset={false}
     class="dense"
   >
     <div class="search">

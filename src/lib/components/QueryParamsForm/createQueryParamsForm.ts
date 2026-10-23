@@ -3,6 +3,7 @@ import type {
   SuperhrefSchema,
 } from "@canonical/superhref";
 import type { QueryParam, QueryParamsFormSchema } from "./types.js";
+import type { ReadonlyURL } from "$app/state";
 
 export type FormDataEntries = readonly (readonly [
   name: string,
@@ -18,7 +19,7 @@ export type QueryParamsFormBindings = {
 
 export function createQueryParamsForm<S extends SuperhrefSchema>(
   schema: QueryParamsFormSchema<S>,
-  url: URL,
+  url: ReadonlyURL,
   replaceParams: readonly QueryParam<S>[],
 ): QueryParamsFormBindings {
   return {
@@ -26,7 +27,7 @@ export function createQueryParamsForm<S extends SuperhrefSchema>(
       ([name]) => !replaceParams.some((key) => belongsTo(name, key)),
     ),
     patch: (entries) => {
-      const submitted = new URL(url);
+      const submitted = new URL(url.href);
       submitted.search = String(
         new URLSearchParams(entries.map(([name, value]) => [name, value])),
       );
@@ -37,7 +38,7 @@ export function createQueryParamsForm<S extends SuperhrefSchema>(
           entries.some(([name]) => belongsTo(name, key)) ? parsed[key] : null,
         ]),
       ) as SuperhrefPatchInput<S>;
-      const patched = schema.patch(url, payload).searchParams;
+      const patched = schema.patch(new URL(url.href), payload).searchParams;
       const names = new Set([
         ...entries.map(([name]) => name),
         ...patched.keys(),

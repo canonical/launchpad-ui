@@ -58,8 +58,7 @@
           href={href(binary.id)}
           title={binary.name}
           soft
-          data-sveltekit-noscroll
-          data-sveltekit-keepfocus>{binary.name}</Link
+          data-sveltekit-reset={false}>{binary.name}</Link
         >
       </li>
     {/each}
