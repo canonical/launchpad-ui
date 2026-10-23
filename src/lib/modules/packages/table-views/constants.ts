@@ -1,4 +1,4 @@
-import { slugify } from "$lib/utils/slugify.js";
+import { slugify } from "#lib/utils/slugify.js";
 import { DEFAULT_PACKAGES_FILTERS } from "../filters/constants.js";
 import type { PackagesFilters } from "../filters/schema.js";
 

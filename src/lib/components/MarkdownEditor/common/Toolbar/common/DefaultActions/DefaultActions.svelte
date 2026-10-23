@@ -2,7 +2,7 @@
 
 <script lang="ts">
   import { HelpIcon, LinkIcon } from "@canonical/svelte-icons";
-  import ShortcutsHelpSidePanel from "$lib/components/ShortcutsHelpSidePanel/ShortcutsHelpSidePanel.svelte";
+  import ShortcutsHelpSidePanel from "#lib/components/ShortcutsHelpSidePanel/ShortcutsHelpSidePanel.svelte";
   import {
     BoldIcon,
     BulletedListIcon,
@@ -12,8 +12,8 @@
     NumberedListIcon,
     QuoteIcon,
     TaskListIcon,
-  } from "$lib/components/icons/index.js";
-  import { Shortcut, useShortcuts } from "$lib/shortcuts";
+  } from "#lib/components/icons/index.js";
+  import { Shortcut, useShortcuts } from "#lib/shortcuts/index.js";
   import { getMarkdownEditorContext } from "../../../../context.js";
   import { ActionButton } from "../ActionButton";
   import Group from "../Group/Group.svelte";

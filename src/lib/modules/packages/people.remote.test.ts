@@ -3,8 +3,8 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   findPeople as findLaunchpadPeople,
   getPerson,
-} from "$lib/server/launchpad/client.js";
-import type { PersonEntry } from "$lib/server/launchpad/types.js";
+} from "#lib/server/launchpad/client.js";
+import type { PersonEntry } from "#lib/server/launchpad/types.js";
 import {
   MAX_PEOPLE_SEARCH_LENGTH,
   MIN_PEOPLE_SEARCH_LENGTH,
@@ -21,7 +21,7 @@ vi.mock("$app/server", () => ({
     }),
 }));
 
-vi.mock("$lib/server/launchpad/client.js", () => ({
+vi.mock("#lib/server/launchpad/client.js", () => ({
   findPeople: vi.fn(),
   getPerson: vi.fn(),
 }));

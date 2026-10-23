@@ -1,10 +1,13 @@
 import { error } from "@sveltejs/kit";
 import * as v from "valibot";
-import { launchpadFetch } from "$lib/server/launchpad/launchpadFetch.js";
+import { launchpadFetch } from "#lib/server/launchpad/launchpadFetch.js";
 import { form, getRequestEvent, query } from "$app/server";
-import { env } from "$env/dynamic/private";
+import {
+  MAIN_LAUNCHPAD_COOKIE_NAME,
+  MAIN_LAUNCHPAD_BASE_HOST,
+} from "$app/env/private";
 
-const lpCookieName = env.MAIN_LAUNCHPAD_COOKIE_NAME || "lp";
+const lpCookieName = MAIN_LAUNCHPAD_COOKIE_NAME || "lp";
 
 export const getUbuntu = query(() => client("/api/devel/ubuntu"));
 
@@ -41,7 +44,8 @@ async function client(
   path: string,
   lpCookie?: string,
 ): Promise<ConnectionResponse> {
-  const baseHost = env.MAIN_LAUNCHPAD_BASE_HOST;
+  const baseHost = MAIN_LAUNCHPAD_BASE_HOST;
+
   if (!baseHost) {
     error(500, "MAIN_LAUNCHPAD_BASE_HOST is not set");
   }
@@ -106,11 +110,4 @@ async function client(
 }
 
 export type ConnectionResponse =
-  | {
-      status: number;
-      json: unknown;
-    }
-  | {
-      status: number;
-      text: string;
-    };
+  { status: number; json: unknown } | { status: number; text: string };

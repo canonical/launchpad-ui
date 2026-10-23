@@ -1,9 +1,9 @@
 <script module lang="ts">
   import { Button } from "@canonical/svelte-ds-app-launchpad";
   import { defineMeta } from "@storybook/addon-svelte-csf";
-  import GlobalShortcutsProvider from "$lib/shortcuts/ShortcutsProvider/GlobalShortcutsProvider.svelte";
-  import ShortcutsProvider from "$lib/shortcuts/ShortcutsProvider/ShortcutsProvider.svelte";
-  import { Shortcut, UseShortcuts } from "$lib/shortcuts/index.js";
+  import GlobalShortcutsProvider from "#lib/shortcuts/ShortcutsProvider/GlobalShortcutsProvider.svelte";
+  import ShortcutsProvider from "#lib/shortcuts/ShortcutsProvider/ShortcutsProvider.svelte";
+  import { Shortcut, UseShortcuts } from "#lib/shortcuts/index.js";
   import ShortcutsHelpSidePanel from "./ShortcutsHelpSidePanel.svelte";
 
   const { Story } = defineMeta({

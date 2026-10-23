@@ -59,16 +59,16 @@
   import { DeleteIcon, EditIcon, PlusIcon } from "@canonical/svelte-icons";
   import { isHttpError } from "@sveltejs/kit";
   import { settled, tick, untrack } from "svelte";
-  import { ReorderableList } from "$lib/components/ReorderableList/index.js";
-  import { SidePanel } from "$lib/launchpad-components/index.js";
+  import { ReorderableList } from "#lib/components/ReorderableList/index.js";
+  import { SidePanel } from "#lib/launchpad-components/index.js";
   import {
     CLEARED_FILTER_PARAMS,
     MANAGE_VIEWS_PANEL,
     PANEL_QUERY_PARAM,
     QueryParams,
     toPackagesFilters,
-  } from "$lib/modules/packages/superhref.js";
-  import { preserveQueryParams } from "$lib/utils/index.js";
+  } from "#lib/modules/packages/superhref.js";
+  import { preserveQueryParams } from "#lib/utils/index.js";
   import { getPackagesContext } from "../context.js";
   import { DEFAULT_PACKAGES_FILTERS } from "../filters/constants.js";
   import type { SeriesGroups } from "../filters/types.js";
@@ -82,7 +82,7 @@
     updateTableViews,
   } from "./table-views.remote.js";
   import { getRecommendedViewName } from "./utils.js";
-  import { goto, replaceState } from "$app/navigation";
+  import { goto } from "$app/navigation";
   import { page } from "$app/state";
 
   let { open, seriesGroups }: { open: boolean; seriesGroups: SeriesGroups } =
@@ -196,7 +196,6 @@
       }
       const updatedView = savedViews.find(({ id }) => id === currentView?.id);
       const bookmarkedView = savedViews[bookmarkIndex];
-
       const shouldResetPage =
         bookmarkedView !== undefined ||
         (currentView &&
@@ -225,7 +224,8 @@
       getTableViews(distro).set(savedViews);
       // After awaited queries pick up the new state it is safe to clear the page state
       await settled();
-      if (page.state.tableViews === savedViews) replaceState("", {});
+      if (page.state.tableViews === savedViews)
+        goto("", { shallow: true, replace: true });
     } catch (error) {
       console.error(error);
     } finally {

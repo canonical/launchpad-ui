@@ -8,18 +8,18 @@
     SearchBoxProps,
     SearchBoxSearchButtonProps,
   } from "@canonical/svelte-ds-app-launchpad";
-  import { Combobox } from "$lib/components/index.js";
-  import { PopoverTrigger } from "$lib/launchpad-components/index.js";
+  import { Combobox } from "#lib/components/index.js";
+  import { PopoverTrigger } from "#lib/launchpad-components/index.js";
   import {
     MAX_PEOPLE_SEARCH_LENGTH,
     MIN_PEOPLE_SEARCH_LENGTH,
-  } from "$lib/modules/packages/constants.js";
+  } from "#lib/modules/packages/constants.js";
   import {
     findPeople,
     getPersonByName,
-  } from "$lib/modules/packages/people.remote.js";
-  import type { PersonEntry } from "$lib/server/launchpad/types.js";
-  import { minTrimmedLength, subId } from "$lib/utils/index.js";
+  } from "#lib/modules/packages/people.remote.js";
+  import type { PersonEntry } from "#lib/server/launchpad/types.js";
+  import { minTrimmedLength, subId } from "#lib/utils/index.js";
   import type { ChoiceFilterProps } from "./types.js";
   import { browser } from "$app/env";
 

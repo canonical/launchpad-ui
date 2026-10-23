@@ -1,6 +1,6 @@
-import type { Handle } from "@sveltejs/kit";
-import { server } from "$lib/api/packages/mocks/server.js";
-import { resolveUser } from "$lib/server/user.js";
+import type { Handle } from "@sveltejs/kit/hooks";
+import { server } from "#lib/api/packages/mocks/server.js";
+import { resolveUser } from "#lib/server/user.js";
 
 // MSW only intercepts under `pnpm dev:mock` (mode=mock). Regular `pnpm dev`
 // leaves it off. The browser-side counterpart starts in `hooks.client.ts`.

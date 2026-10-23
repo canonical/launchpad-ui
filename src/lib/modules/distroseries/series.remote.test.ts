@@ -21,7 +21,7 @@ vi.mock("$env/dynamic/private", () => ({
 }));
 
 const launchpadFetch = vi.hoisted(() => vi.fn());
-vi.mock("$lib/server/launchpad/launchpadFetch.js", () => ({ launchpadFetch }));
+vi.mock("#lib/server/launchpad/launchpadFetch.js", () => ({ launchpadFetch }));
 
 function jsonResponse(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), {

@@ -4,7 +4,7 @@ import { userEvent } from "vitest/browser";
 import type { Locator } from "vitest/browser";
 import { render } from "vitest-browser-svelte";
 import type { RenderResult, SetupOptions } from "vitest-browser-svelte";
-import type { PersonEntry } from "$lib/server/launchpad/types.js";
+import type { PersonEntry } from "#lib/server/launchpad/types.js";
 import { MIN_PEOPLE_SEARCH_LENGTH } from "../constants.js";
 import PersonFilterCombobox from "./PersonFilterCombobox.svelte";
 import FiltersFormFixture, {
@@ -23,7 +23,7 @@ const { findPeople, getPersonByName, seedPerson } = vi.hoisted(() => ({
   seedPerson: vi.fn(),
 }));
 
-vi.mock("$lib/modules/packages/people.remote.js", () => ({
+vi.mock("#lib/modules/packages/people.remote.js", () => ({
   findPeople,
   getPersonByName,
 }));

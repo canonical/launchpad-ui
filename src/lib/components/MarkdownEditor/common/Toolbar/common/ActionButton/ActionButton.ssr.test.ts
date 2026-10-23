@@ -7,7 +7,7 @@ import { createRawSnippet } from "svelte";
 import { describe, expect, it, vi } from "vitest";
 import Component from "./ActionButton.svelte";
 
-vi.mock("$lib/shortcuts/index.js", () => {
+vi.mock("#lib/shortcuts/index.js", () => {
   return {
     // Mock so we don't get errors about `useShortcuts` being called outside of a provider
     useShortcuts: vi.fn(),

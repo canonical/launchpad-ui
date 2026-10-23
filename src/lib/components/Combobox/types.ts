@@ -1,7 +1,7 @@
 /* @canonical/generator-ds 0.10.0-experimental.2 */
 
 import type { Snippet } from "svelte";
-import type { OptionsPanelProps } from "$lib/components/common/index.js";
+import type { OptionsPanelProps } from "#lib/components/common/index.js";
 
 export interface ComboboxProps extends OptionsPanelProps {
   /**

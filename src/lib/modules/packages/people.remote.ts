@@ -2,9 +2,9 @@ import * as v from "valibot";
 import {
   findPeople as findLaunchpadPeople,
   getPerson,
-} from "$lib/server/launchpad/client.js";
-import type { PersonEntry } from "$lib/server/launchpad/types.js";
-import { toLaunchpadName } from "$lib/utils/launchpad/launchpadName.js";
+} from "#lib/server/launchpad/client.js";
+import type { PersonEntry } from "#lib/server/launchpad/types.js";
+import { toLaunchpadName } from "#lib/utils/launchpad/launchpadName.js";
 import { MAX_PEOPLE_SEARCH_LENGTH } from "./constants.js";
 import { PersonSearchSchema } from "./schema.js";
 import { query } from "$app/server";

@@ -3,7 +3,7 @@ import * as v from "valibot";
 import {
   LaunchpadApiError,
   getBinaryPackageDetails,
-} from "$lib/server/launchpad/client.js";
+} from "#lib/server/launchpad/client.js";
 import { query } from "$app/server";
 
 const binaryIdSchema = v.pipe(

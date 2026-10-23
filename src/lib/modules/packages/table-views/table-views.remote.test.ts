@@ -1,7 +1,7 @@
 import { isHttpError, isRedirect, isValidationError } from "@sveltejs/kit";
 import * as v from "valibot";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { tableViewsStore } from "$lib/server/table-views/index.js";
+import { tableViewsStore } from "#lib/server/table-views/index.js";
 import { DEFAULT_PACKAGES_FILTERS } from "../filters/constants.js";
 import { DEFAULT_TABLE_VIEWS } from "./constants.js";
 import type { TableView } from "./constants.js";

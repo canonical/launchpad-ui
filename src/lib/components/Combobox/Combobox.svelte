@@ -2,7 +2,7 @@
 
 <script lang="ts">
   import { useIsMounted } from "@canonical/svelte-ds-app-launchpad";
-  import { OptionsPanel } from "$lib/components/common/index.js";
+  import { OptionsPanel } from "#lib/components/common/index.js";
   import { setComboboxContext } from "./context.js";
   import type { ComboboxProps } from "./types.js";
 

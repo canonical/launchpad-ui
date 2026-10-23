@@ -1,8 +1,8 @@
 import { error, invalid, redirect } from "@sveltejs/kit";
 import * as v from "valibot";
-import { tableViewsStore } from "$lib/server/table-views/index.js";
-import { getCurrentUserId } from "$lib/server/user.js";
-import { slugify } from "$lib/utils/slugify.js";
+import { tableViewsStore } from "#lib/server/table-views/index.js";
+import { getCurrentUserId } from "#lib/server/user.js";
+import { slugify } from "#lib/utils/slugify.js";
 import { packagesFiltersDiffer } from "../filters/utils.js";
 import { CLEARED_FILTER_PARAMS, QueryParams } from "../superhref.js";
 import type { TableView } from "./constants.js";

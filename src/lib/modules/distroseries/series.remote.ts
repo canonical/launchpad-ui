@@ -5,9 +5,9 @@ import {
   getActiveSeriesMilestones,
   getDistroSeries,
   getDistroSeriesCollection,
-} from "$lib/server/launchpad/client.js";
-import type { DistroSeriesEntry } from "$lib/server/launchpad/types.js";
-import { LAUNCHPAD_NAME_PATTERN } from "$lib/utils/launchpad/launchpadName.js";
+} from "#lib/server/launchpad/client.js";
+import type { DistroSeriesEntry } from "#lib/server/launchpad/types.js";
+import { LAUNCHPAD_NAME_PATTERN } from "#lib/utils/launchpad/launchpadName.js";
 import { query } from "$app/server";
 
 const nameSchema = v.pipe(v.string(), v.regex(LAUNCHPAD_NAME_PATTERN));

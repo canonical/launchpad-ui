@@ -24,9 +24,9 @@
   import { Button, SearchBox } from "@canonical/svelte-ds-app-launchpad";
   import { CloseIcon } from "@canonical/svelte-icons";
   import { onMount } from "svelte";
-  import { BookmarkIcon } from "$lib/components/icons/index.js";
-  import { QueryParamsForm } from "$lib/components/index.js";
-  import { subId } from "$lib/utils/index.js";
+  import { BookmarkIcon } from "#lib/components/icons/index.js";
+  import { QueryParamsForm } from "#lib/components/index.js";
+  import { subId } from "#lib/utils/index.js";
   import { getPackagesContext } from "../context.js";
   import { CLEARED_FILTER_PARAMS, QueryParams } from "../superhref.js";
   import MoreFiltersMenu from "./MoreFiltersMenu.svelte";

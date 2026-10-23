@@ -5,27 +5,27 @@
     Pagination,
     QueryParamsForm,
     TableViewBar,
-  } from "$lib/components/index.js";
+  } from "#lib/components/index.js";
   import {
     PageLayout,
     distroSegment,
-  } from "$lib/launchpad-components/index.js";
-  import { getSeriesGroups } from "$lib/modules/distroseries/series.remote.js";
-  import BinaryPackagesList from "$lib/modules/packages/BinaryPackagesList.svelte";
-  import BinaryPackageSidePanel from "$lib/modules/packages/binary-package/BinaryPackageSidePanel.svelte";
-  import { setPackagesContext } from "$lib/modules/packages/context.js";
-  import Filters from "$lib/modules/packages/filters/Filters.svelte";
-  import FiltersSummary from "$lib/modules/packages/filters/FiltersSummary.svelte";
-  import { getSourcePackages } from "$lib/modules/packages/packages.remote.js";
+  } from "#lib/launchpad-components/index.js";
+  import { getSeriesGroups } from "#lib/modules/distroseries/series.remote.js";
+  import BinaryPackagesList from "#lib/modules/packages/BinaryPackagesList.svelte";
+  import BinaryPackageSidePanel from "#lib/modules/packages/binary-package/BinaryPackageSidePanel.svelte";
+  import { setPackagesContext } from "#lib/modules/packages/context.js";
+  import Filters from "#lib/modules/packages/filters/Filters.svelte";
+  import FiltersSummary from "#lib/modules/packages/filters/FiltersSummary.svelte";
+  import { getSourcePackages } from "#lib/modules/packages/packages.remote.js";
   import {
     PACKAGES_TABLE_COLUMNS,
     PAGE_SIZE_OPTIONS,
     QueryParams,
     toPackagesFilters,
-  } from "$lib/modules/packages/superhref.js";
-  import ManageViewsSidePanel from "$lib/modules/packages/table-views/ManageViewsSidePanel.svelte";
-  import { resolveTableView } from "$lib/modules/packages/table-views/resolveTableView.js";
-  import { getTableViews } from "$lib/modules/packages/table-views/table-views.remote.js";
+  } from "#lib/modules/packages/superhref.js";
+  import ManageViewsSidePanel from "#lib/modules/packages/table-views/ManageViewsSidePanel.svelte";
+  import { resolveTableView } from "#lib/modules/packages/table-views/resolveTableView.js";
+  import { getTableViews } from "#lib/modules/packages/table-views/table-views.remote.js";
   import type { PageProps } from "./$types.js";
   import { resolve } from "$app/paths";
   import { page } from "$app/state";

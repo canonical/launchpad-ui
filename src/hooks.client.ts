@@ -1,4 +1,4 @@
-import type { ClientInit } from "@sveltejs/kit";
+import type { ClientInit } from "@sveltejs/kit/hooks";
 
 // MSW only intercepts under `pnpm dev:mock` (mode=mock); regular `pnpm dev`
 // leaves it off. Mirrors the server-side gate in `hooks.server.ts` so that
@@ -7,7 +7,7 @@ import type { ClientInit } from "@sveltejs/kit";
 // requests (Vite assets, etc.) through.
 export const init: ClientInit = async () => {
   if (import.meta.env.MODE === "mock") {
-    const { worker } = await import("$lib/api/packages/mocks/browser.js");
+    const { worker } = await import("#lib/api/packages/mocks/browser.js");
     await worker.start({ onUnhandledRequest: "bypass" });
   }
 };

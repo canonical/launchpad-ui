@@ -1,5 +1,5 @@
 import * as v from "valibot";
-import { MAX_BINARY_NAMES } from "$lib/modules/packages/constants.js";
+import { MAX_BINARY_NAMES } from "#lib/modules/packages/constants.js";
 import { launchpadFetch } from "./launchpadFetch.js";
 import {
   binaryPackageDetailsSchema,
@@ -15,7 +15,7 @@ import type {
   SourcePackageListFilter,
   SourcePackageListQuery,
 } from "./types.js";
-import { env } from "$env/dynamic/private";
+import { MAIN_LAUNCHPAD_BASE_HOST } from "$app/env/private";
 
 export class LaunchpadApiError extends Error {
   constructor(
@@ -199,7 +199,7 @@ function seriesUrl(distro: string, series: string): string {
 }
 
 function apiBase(): string {
-  const host = env.MAIN_LAUNCHPAD_BASE_HOST;
+  const host = MAIN_LAUNCHPAD_BASE_HOST;
   if (!host) {
     throw new Error("MAIN_LAUNCHPAD_BASE_HOST is not set");
   }

@@ -1,9 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { MAX_BINARY_NAMES } from "$lib/modules/packages/constants.js";
+import { MAX_BINARY_NAMES } from "#lib/modules/packages/constants.js";
 import {
   binaryDetails,
   packageListing,
-} from "$lib/modules/packages/test.fixtures.js";
+} from "#lib/modules/packages/test.fixtures.js";
 import {
   LaunchpadApiError,
   findPeople,

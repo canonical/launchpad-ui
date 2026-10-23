@@ -1,4 +1,4 @@
-import type { Pocket } from "$lib/server/launchpad/types.js";
+import type { Pocket } from "#lib/server/launchpad/types.js";
 import type { PackagesFilters } from "./schema.js";
 
 export const MAX_PACKAGES_SEARCH_LENGTH = 200;

@@ -1,8 +1,7 @@
+import type { RemoteForm, RemoteFormInput } from "$app/server";
+
 // Remote form submissions preserve query params automatically in Kit v3 (https://github.com/sveltejs/kit/pull/16373)
 // TODO: Remove this once upgraded.
-
-import type { RemoteForm, RemoteFormInput } from "@sveltejs/kit";
-
 type RemoteFormProps = ReturnType<
   RemoteForm<RemoteFormInput, unknown>["enhance"]
 >;

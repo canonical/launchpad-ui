@@ -1,6 +1,6 @@
 <script module lang="ts">
   import { defineMeta } from "@storybook/addon-svelte-csf";
-  import { BoldIcon } from "$lib/components/icons/index.js";
+  import { BoldIcon } from "#lib/components/icons/index.js";
   import { MarkdownEditor } from "../../../../index.js";
 
   const { Story } = defineMeta({

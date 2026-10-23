@@ -2,7 +2,7 @@
 
 <script lang="ts">
   import { SidePanel, TextInput } from "@canonical/svelte-ds-app-launchpad";
-  import { Shortcut, useShortcuts } from "$lib/shortcuts/index.js";
+  import { Shortcut, useShortcuts } from "#lib/shortcuts/index.js";
   import { Section } from "./common/index.js";
   import type { ShortcutsHelpSidePanelProps } from "./types.js";
 

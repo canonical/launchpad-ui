@@ -1,13 +1,18 @@
 import { Agent, request as undiciRequest } from "undici";
-import { env } from "$env/dynamic/private";
+
+import {
+  MAIN_LAUNCHPAD_BASE_HOST,
+  MAIN_LAUNCHPAD_IP_ADDRESS,
+  MAIN_LAUNCHPAD_SKIP_TLS_VERIFY,
+} from "$app/env/private";
 
 export async function launchpadFetch(
   input: RequestInfo | URL,
   init?: RequestInit,
 ): Promise<Response> {
   const requestUrl = new URL(input instanceof Request ? input.url : input);
-  const baseHost = env.MAIN_LAUNCHPAD_BASE_HOST;
-  const ipAddress = env.MAIN_LAUNCHPAD_IP_ADDRESS;
+  const baseHost = MAIN_LAUNCHPAD_BASE_HOST;
+  const ipAddress = MAIN_LAUNCHPAD_IP_ADDRESS;
   const baseOrigin = baseHost ? new URL(baseHost).origin : null;
 
   const headers: Record<string, string> = {};
@@ -28,7 +33,7 @@ export async function launchpadFetch(
     method: init?.method ?? "GET",
     headers,
     dispatcher:
-      env.MAIN_LAUNCHPAD_SKIP_TLS_VERIFY === "true"
+      MAIN_LAUNCHPAD_SKIP_TLS_VERIFY === "true"
         ? new Agent({ connect: { rejectUnauthorized: false } })
         : undefined,
   });

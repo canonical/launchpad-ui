@@ -2,7 +2,7 @@
   import { Button, Popover } from "@canonical/svelte-ds-app-launchpad";
   import { ChevronUpIcon, InformationIcon } from "@canonical/svelte-icons";
   import { defineMeta } from "@storybook/addon-svelte-csf";
-  import { ContextualMenuContent } from "$lib/components/index.js";
+  import { ContextualMenuContent } from "#lib/components/index.js";
 
   const { Story } = defineMeta({
     tags: ["autodocs"],

@@ -6,9 +6,9 @@
   import { SidePanel } from "@canonical/svelte-ds-app-launchpad";
   import type { SidePanelProps } from "@canonical/svelte-ds-app-launchpad";
   import type { Snippet } from "svelte";
-  import { QueryParamsForm } from "$lib/components/index.js";
-  import type { QueryParamsFormProps } from "$lib/components/index.js";
-  import { browser } from "$app/environment";
+  import { QueryParamsForm } from "#lib/components/index.js";
+  import type { QueryParamsFormProps } from "#lib/components/index.js";
+  import { browser } from "$app/env";
   import { page } from "$app/state";
 
   let {
@@ -19,12 +19,13 @@
     open,
     onclose,
     ...rest
-  }: Omit<SidePanelProps, "children" | "closedby"> & {
-    title?: string;
-    children: Snippet;
+
     /**
      * Footer content of the SidePanel. It receives props for buttons that should close the panel.
      */
+  }: Omit<SidePanelProps, "children" | "closedby"> & {
+    title?: string;
+    children: Snippet;
     footer?: Snippet<[ReturnType<typeof closeButtonProps>]>;
     closeForm?: Pick<QueryParamsFormProps<S>, "schema" | "replaceParams">;
   } = $props();

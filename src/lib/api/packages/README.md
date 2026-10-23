@@ -1,7 +1,7 @@
 # `packages` API client (mocked via MSW)
 
 The distribution packages table and binary-details panel use
-`$lib/server/launchpad/client.ts`, not this client or MSW. They require
+`#lib/server/launchpad/client.ts`, not this client or MSW. They require
 `getSourcePackageList` and `getBinaryPackageDetails` on the Launchpad backend
 configured by `MAIN_LAUNCHPAD_BASE_HOST`, including in `dev:mock` mode.
 
@@ -14,7 +14,7 @@ backend swaps it out.
 ## Consumer usage
 
 ```ts
-import { packagesApi } from "$lib/api/packages/client.js";
+import { packagesApi } from "#lib/api/packages/client.js";
 
 export const load = async ({ params, url, fetch }) => {
   const { data, error } = await packagesApi.GET("/source-packages/{name}", {
@@ -113,8 +113,8 @@ a runtime override that returns `passthrough()`:
 
 ```ts
 import { http, passthrough } from "msw";
-import { server } from "$lib/api/packages/mocks/server.js";
-import { PACKAGES_API } from "$lib/api/packages/mocks/handlers/helpers/paths.js";
+import { server } from "#lib/api/packages/mocks/server.js";
+import { PACKAGES_API } from "#lib/api/packages/mocks/handlers/helpers/paths.js";
 
 server.use(
   http.get(`${PACKAGES_API}/source-packages/:name`, () => passthrough()),

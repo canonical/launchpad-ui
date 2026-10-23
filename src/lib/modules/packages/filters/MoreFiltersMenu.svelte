@@ -2,8 +2,8 @@
   import { Popover } from "@canonical/svelte-ds-app-launchpad";
   import type { PopoverProps } from "@canonical/svelte-ds-app-launchpad";
   import { FilterIcon } from "@canonical/svelte-icons";
-  import { ContextualMenuContent } from "$lib/components/index.js";
-  import { PopoverTrigger } from "$lib/launchpad-components/index.js";
+  import { ContextualMenuContent } from "#lib/components/index.js";
+  import { PopoverTrigger } from "#lib/launchpad-components/index.js";
 
   const {
     switches,

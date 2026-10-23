@@ -2,7 +2,7 @@ import type {
   Collection,
   DistroSeriesEntry,
   MilestoneEntry,
-} from "$lib/server/launchpad/types.js";
+} from "#lib/server/launchpad/types.js";
 import type { SeriesGroups } from "../packages/filters/types.js";
 import type { getSeriesOverview } from "./series.remote.js";
 

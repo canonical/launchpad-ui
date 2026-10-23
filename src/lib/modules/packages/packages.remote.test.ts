@@ -1,10 +1,10 @@
 import * as v from "valibot";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { DEFAULT_PACKAGES_FILTERS } from "$lib/modules/packages/filters/constants.js";
+import { DEFAULT_PACKAGES_FILTERS } from "#lib/modules/packages/filters/constants.js";
 import {
   LaunchpadApiError,
   getSourcePackageList,
-} from "$lib/server/launchpad/client.js";
+} from "#lib/server/launchpad/client.js";
 import { getSourcePackages } from "./packages.remote.js";
 import { packageListing } from "./test.fixtures.js";
 
@@ -17,8 +17,8 @@ vi.mock("$app/server", () => ({
       __: { type: "query" },
     }),
 }));
-vi.mock("$lib/server/launchpad/client.js", async (importOriginal) => ({
-  ...(await importOriginal<typeof import("$lib/server/launchpad/client.js")>()),
+vi.mock("#lib/server/launchpad/client.js", async (importOriginal) => ({
+  ...(await importOriginal<typeof import("#lib/server/launchpad/client.js")>()),
   getSourcePackageList: vi.fn(),
 }));
 

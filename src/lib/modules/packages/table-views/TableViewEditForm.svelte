@@ -1,13 +1,13 @@
 <script lang="ts">
+  import type { RemoteFormField } from "$app/server";
   import {
     Button,
     Checkbox,
     TextInput,
   } from "@canonical/svelte-ds-app-launchpad";
   import type { TextInputProps } from "@canonical/svelte-ds-app-launchpad";
-  import type { RemoteFormField } from "@sveltejs/kit";
   import * as v from "valibot";
-  import { preserveQueryParams, subId } from "$lib/utils/index.js";
+  import { preserveQueryParams, subId } from "#lib/utils/index.js";
   import PersonFilterCombobox from "../filters/PersonFilterCombobox.svelte";
   import PocketFilterMenu from "../filters/PocketFilterMenu.svelte";
   import SearchModeMenu from "../filters/SearchModeMenu.svelte";
@@ -37,17 +37,18 @@
     onstage,
     requireChange = true,
     seriesGroups,
+
+    /** The distro whose table views are edited. */
+    /** The settings to start editing from. */
+    /** Called with JS instead of submitting, so the edit is saved with the rest of the panel. */
+    /** Whether confirming is disabled until `settings` are changed. */
   }: {
     form: ReturnType<typeof editTableView.for> | typeof createTableView;
-    /** The distro whose table views are edited. */
     distro: string;
-    /** The settings to start editing from. */
     settings: TableViewSettings;
     heading: string;
     cancelHref: string;
-    /** Called with JS instead of submitting, so the edit is saved with the rest of the panel. */
     onstage: (settings: TableViewSettings) => void;
-    /** Whether confirming is disabled until `settings` are changed. */
     requireChange?: boolean;
     seriesGroups: SeriesGroups;
   } = $props();
@@ -84,6 +85,7 @@
 
   const isUnchanged = $derived.by(() => {
     const result = v.safeParse(TableViewSettingsSchema, fields.value());
+
     return (
       result.success &&
       result.output.name === settings.name &&
@@ -206,7 +208,8 @@
       id={nameId}
       aria-required="true"
       // Without JS, the person searches submit this form too, and mustn't be blocked by an unfinished name
-      required={browser}
+      required={// Without JS, the person searches submit this form too, and mustn't be blocked by an unfinished name
+      browser}
       maxlength={MAX_TABLE_VIEW_NAME_LENGTH}
       {...fields.name.as("text") as TextInputProps}
     />

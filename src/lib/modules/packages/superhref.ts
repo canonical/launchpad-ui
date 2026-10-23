@@ -13,17 +13,17 @@ import {
   paginationCodecs,
   sortCodec,
   textCodec,
-} from "$lib/codecs/index.js";
+} from "#lib/codecs/index.js";
 import {
   POCKETS,
   SEARCH_MATCHES,
-} from "$lib/modules/packages/filters/constants.js";
-import type { PackagesFilters } from "$lib/modules/packages/filters/schema.js";
+} from "#lib/modules/packages/filters/constants.js";
+import type { PackagesFilters } from "#lib/modules/packages/filters/schema.js";
 import {
   ADD_TABLE_VIEW_MODES,
   DEFAULT_TABLE_VIEW_SLUG,
-} from "$lib/modules/packages/table-views/constants.js";
-import type { AddTableViewMode } from "$lib/modules/packages/table-views/constants.js";
+} from "#lib/modules/packages/table-views/constants.js";
+import type { AddTableViewMode } from "#lib/modules/packages/table-views/constants.js";
 
 /** The packages table columns, in display order.*/
 export const PACKAGES_TABLE_COLUMNS = [

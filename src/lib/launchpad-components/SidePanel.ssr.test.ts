@@ -3,7 +3,7 @@ import { render } from "@canonical/svelte-ssr-test";
 import { createRawSnippet } from "svelte";
 import type { Component, ComponentProps } from "svelte";
 import { describe, expect, it, vi } from "vitest";
-import type { QueryParamsFormProps } from "$lib/components/index.js";
+import type { QueryParamsFormProps } from "#lib/components/index.js";
 import SidePanel from "./SidePanel.svelte";
 
 vi.mock("$app/state", () => ({

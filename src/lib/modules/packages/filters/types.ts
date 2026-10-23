@@ -1,6 +1,6 @@
 import type { PopoverProps } from "@canonical/svelte-ds-app-launchpad";
 import type { AriaAttributes } from "svelte/elements";
-import type { getSeriesGroups } from "$lib/modules/distroseries/series.remote.js";
+import type { getSeriesGroups } from "#lib/modules/distroseries/series.remote.js";
 
 /** Called when a filter control picks a new value. */
 export type FilterChangeHandler<T> = (

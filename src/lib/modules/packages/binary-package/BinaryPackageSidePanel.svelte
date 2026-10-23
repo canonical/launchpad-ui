@@ -2,13 +2,13 @@
   import { Spinner } from "@canonical/svelte-ds-app-launchpad";
   import { isHttpError } from "@sveltejs/kit";
   import { untrack } from "svelte";
-  import { PartialTextDisclosure } from "$lib/components/index.js";
-  import { SidePanel } from "$lib/launchpad-components/index.js";
+  import { PartialTextDisclosure } from "#lib/components/index.js";
+  import { SidePanel } from "#lib/launchpad-components/index.js";
   import { getPackagesContext } from "../context.js";
   import { BINARY_PACKAGE_QUERY_PARAM, QueryParams } from "../superhref.js";
   import ArtifactsSection from "./ArtifactsSection.svelte";
   import { getBinaryPackage } from "./binary-package.remote.js";
-  import { browser } from "$app/environment";
+  import { browser } from "$app/env";
   import { goto } from "$app/navigation";
 
   let {
@@ -39,8 +39,9 @@
     schema: QueryParams,
     replaceParams: [BINARY_PACKAGE_QUERY_PARAM],
   }}
-  onclose={() =>
+  onclose={(
     // eslint-disable-next-line svelte/no-navigation-without-resolve
+  ) =>
     goto(queryParams.set("binary-package", null), {
       keepFocus: true,
       noScroll: true,

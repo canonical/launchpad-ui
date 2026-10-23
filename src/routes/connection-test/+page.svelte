@@ -1,9 +1,9 @@
 <script lang="ts">
   import { Button, TextInput } from "@canonical/svelte-ds-app-launchpad";
-  import type { RemoteQueryFunction } from "@sveltejs/kit";
   import { getMe, getUbuntu, setLpCookie } from "./connection-test.remote.js";
   import type { ConnectionResponse } from "./connection-test.remote.js";
-  import { browser } from "$app/environment";
+  import { browser } from "$app/env";
+  import type { RemoteQueryFunction } from "$app/server";
 </script>
 
 <main class="page">

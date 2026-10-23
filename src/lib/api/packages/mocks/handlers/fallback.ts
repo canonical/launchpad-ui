@@ -6,7 +6,7 @@ import {
   notFoundResponse,
 } from "./helpers/responses.js";
 import { safeWrap } from "./helpers/wrap.js";
-import { browser } from "$app/environment";
+import { browser } from "$app/env";
 
 const REGEX_METACHARS = /[.*+?^${}()|[\]\\]/g;
 

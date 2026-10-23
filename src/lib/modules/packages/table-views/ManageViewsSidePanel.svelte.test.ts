@@ -7,7 +7,7 @@ import { DEFAULT_PACKAGES_FILTERS } from "../filters/constants.js";
 import type { TableView } from "./constants.js";
 import { getTableViews, updateTableViews } from "./table-views.remote.js";
 import ManageViewsSidePanel from "./test.fixtures.svelte";
-import { goto, replaceState } from "$app/navigation";
+import { goto } from "$app/navigation";
 import { page } from "$app/state";
 
 vi.mock("$app/state", async () => {
@@ -46,7 +46,7 @@ vi.mock("../context.js", async () => {
   };
 });
 
-vi.mock("$lib/modules/packages/people.remote.js", () => ({
+vi.mock("#lib/modules/packages/people.remote.js", () => ({
   findPeople: vi.fn(() => Promise.resolve([])),
   getPersonByName: vi.fn(() => Promise.resolve(null)),
 }));

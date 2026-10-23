@@ -1,16 +1,16 @@
 import { error } from "@sveltejs/kit";
 import * as v from "valibot";
-import { SORT_DIRECTIONS } from "$lib/codecs/sortCodec.js";
-import { ParsedPackagesFiltersSchema } from "$lib/modules/packages/filters/schema.js";
+import { SORT_DIRECTIONS } from "#lib/codecs/sortCodec.js";
+import { ParsedPackagesFiltersSchema } from "#lib/modules/packages/filters/schema.js";
 import {
   LaunchpadApiError,
   getSourcePackageList,
-} from "$lib/server/launchpad/client.js";
+} from "#lib/server/launchpad/client.js";
 import type {
   SourcePackageList,
   SourcePackageListFilter,
   SourcePackageSortKey,
-} from "$lib/server/launchpad/types.js";
+} from "#lib/server/launchpad/types.js";
 import { MAX_PAGE_SIZE, SORTABLE_PACKAGES_COLUMNS } from "./superhref.js";
 import { query } from "$app/server";
 

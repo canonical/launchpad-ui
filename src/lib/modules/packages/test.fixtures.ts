@@ -1,7 +1,7 @@
 import type {
   BinaryPackageDetails,
   SourcePackageList,
-} from "$lib/server/launchpad/types.js";
+} from "#lib/server/launchpad/types.js";
 
 export function packageListing(
   overrides: Partial<SourcePackageList> = {},

@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { render } from "vitest-browser-svelte";
 import type { SetupOptions } from "vitest-browser-svelte";
-import { seriesGroups } from "$lib/modules/distroseries/series.fixtures.js";
+import { seriesGroups } from "#lib/modules/distroseries/series.fixtures.js";
 import MoreFiltersMenu from "./MoreFiltersMenu.svelte";
 import PocketFilterMenu from "./PocketFilterMenu.svelte";
 import SearchModeMenu from "./SearchModeMenu.svelte";

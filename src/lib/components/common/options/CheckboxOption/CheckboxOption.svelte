@@ -2,7 +2,7 @@
 
 <script lang="ts" generics="T">
   import { Checkbox } from "@canonical/svelte-ds-app-launchpad";
-  import { extractAria } from "$lib/utils/extractAria.js";
+  import { extractAria } from "#lib/utils/extractAria.js";
   import { OptionContent } from "../common/index.js";
   import type { CheckboxOptionProps } from "./types.js";
   import "../option.css";
