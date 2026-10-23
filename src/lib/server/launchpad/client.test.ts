@@ -22,8 +22,8 @@ import type {
   PublishingStatus,
 } from "./types.js";
 
-vi.mock("$env/dynamic/private", () => ({
-  env: { MAIN_LAUNCHPAD_BASE_HOST: "https://lp.example" },
+vi.mock("$app/env/private", () => ({
+  MAIN_LAUNCHPAD_BASE_HOST: "https://lp.example",
 }));
 
 const launchpadFetch = vi.hoisted(() => vi.fn());

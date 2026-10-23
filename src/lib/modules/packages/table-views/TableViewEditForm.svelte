@@ -26,7 +26,6 @@
   import type { createTableView, editTableView } from "./table-views.remote.js";
   import { browser } from "$app/env";
   import type { RemoteFormField } from "$app/server";
-  import { page } from "$app/state";
 
   const {
     form,

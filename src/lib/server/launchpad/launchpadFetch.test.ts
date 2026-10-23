@@ -3,12 +3,13 @@ import { launchpadFetch } from "./launchpadFetch.js";
 
 const mockEnv = vi.hoisted(
   () =>
-    ({ MAIN_LAUNCHPAD_BASE_HOST: "https://lp.example" }) as Record<
-      string,
-      string | undefined
-    >,
+    ({
+      MAIN_LAUNCHPAD_BASE_HOST: "https://lp.example",
+      MAIN_LAUNCHPAD_IP_ADDRESS: undefined,
+      MAIN_LAUNCHPAD_SKIP_TLS_VERIFY: undefined,
+    }) as Record<string, string | undefined>,
 );
-vi.mock("$env/dynamic/private", () => ({ env: mockEnv }));
+vi.mock("$app/env/private", () => mockEnv);
 
 const requestMock = vi.hoisted(() => vi.fn());
 vi.mock("undici", () => ({
@@ -33,8 +34,8 @@ function undiciResponse(
 beforeEach(() => {
   requestMock.mockReset();
   mockEnv.MAIN_LAUNCHPAD_BASE_HOST = "https://lp.example";
-  delete mockEnv.MAIN_LAUNCHPAD_IP_ADDRESS;
-  delete mockEnv.MAIN_LAUNCHPAD_SKIP_TLS_VERIFY;
+  mockEnv.MAIN_LAUNCHPAD_IP_ADDRESS = undefined;
+  mockEnv.MAIN_LAUNCHPAD_SKIP_TLS_VERIFY = undefined;
 });
 
 describe("launchpadFetch", () => {

@@ -1,27 +1,29 @@
+import { SvelteURL } from "svelte/reactivity";
 import { describe, expect, it, vi } from "vitest";
 import { userEvent } from "vitest/browser";
 import { render } from "vitest-browser-svelte";
 import { seriesGroups } from "#lib/modules/distroseries/series.fixtures.js";
 import Filters from "./Filters.svelte";
 import { goto } from "$app/navigation";
-import { page } from "$app/state";
+
+const url = new SvelteURL("https://launchpad.test/ubuntu/+source");
 
 vi.mock("$app/navigation", () => ({ goto: vi.fn() }));
 
-vi.mock("$app/state", async () => {
-  const { SvelteURL } = await import("svelte/reactivity");
-  return {
-    page: { url: new SvelteURL("https://launchpad.test/ubuntu/+source") },
-  };
-});
+vi.mock("$app/state", () => ({
+  page: {
+    get url() {
+      return url;
+    },
+  },
+}));
 
 vi.mock("../context.js", async () => {
   const { QueryParams } = await import("../superhref.js");
-  const { page } = await import("$app/state");
   return {
     getPackagesContext: () => ({
       get queryParams() {
-        return QueryParams.bind(page.url);
+        return QueryParams.bind(new URL(url.href));
       },
     }),
   };
@@ -54,7 +56,7 @@ function submittedParams(container: Element): Promise<Record<string, string>> {
 
 describe("Filters", () => {
   it("reflects the URL filters in the controls", async () => {
-    page.url.search =
+    url.search =
       "?search=linux&match=exact&maintainer=alice&signer=bob&series=noble" +
       "&pocket=Proposed&all-statuses=1";
     const screen = await render(Filters, { seriesGroups });
@@ -93,7 +95,7 @@ describe("Filters", () => {
   ] as const)(
     "applies the %s filter on the first page, keeping other params",
     async (trigger, role, name, applied) => {
-      page.url.search = "?sort=series&pocket=Release&page=3&page-size=50";
+      url.search = "?sort=series&pocket=Release&page=3&page-size=50";
       const screen = await render(Filters, { seriesGroups });
       const submitted = submittedParams(screen.container);
 
@@ -112,7 +114,7 @@ describe("Filters", () => {
   );
 
   it("applies the search on Enter", async () => {
-    page.url.search = "?page=3";
+    url.search = "?page=3";
     const screen = await render(Filters, { seriesGroups });
     const submitted = submittedParams(screen.container);
 
@@ -126,7 +128,7 @@ describe("Filters", () => {
 
   it("restores person searches submitted without JS and drops them from the URL", async () => {
     vi.mocked(goto).mockClear();
-    page.url.search = "?maintainer-search=alice&signer-search=bob&page=2";
+    url.search = "?maintainer-search=alice&signer-search=bob&page=2";
     const screen = await render(Filters, { seriesGroups });
 
     await screen.getByRole("button", { name: /^Maintained by:/ }).click();
@@ -134,14 +136,13 @@ describe("Filters", () => {
       .element(screen.getByRole("combobox", { name: "Search maintainers" }))
       .toHaveValue("alice");
     expect(goto).toHaveBeenCalledExactlyOnceWith("?page=2", {
-      replaceState: true,
-      keepFocus: true,
-      noScroll: true,
+      replace: true,
+      reset: false,
     });
   });
 
   it("clears every filter except the search mode and returns to the first page", async () => {
-    page.url.search =
+    url.search =
       "?sort=series&search=linux&match=exact&maintainer=alice&signer=bob" +
       "&series=noble&pocket=Proposed&ubuntu-change=1&all-statuses=1&page=3";
     const screen = await render(Filters, { seriesGroups });
@@ -152,14 +153,14 @@ describe("Filters", () => {
   });
 
   it("offers to bookmark the active filters as a new view", async () => {
-    page.url.search = "?search=linux&series=noble&page=3";
+    url.search = "?search=linux&series=noble&page=3";
     const screen = await render(Filters, { seriesGroups });
 
     const link = screen.getByRole("link", { name: "Save current filters" });
     await expect.element(link).toBeVisible();
 
     const href = link.element().getAttribute("href")!;
-    const params = new URL(href, page.url).searchParams;
+    const params = new URL(href, url).searchParams;
     expect(params.get("search")).toBe("linux");
     expect(params.get("series")).toBe("noble");
     expect(params.get("panel")).toBe("manage-views");
@@ -170,7 +171,7 @@ describe("Filters", () => {
     ["no filters", ""],
     ["only a search mode", "?match=exact"],
   ])("does not offer to clear or bookmark %s", async (_, search) => {
-    page.url.search = search;
+    url.search = search;
     const screen = await render(Filters, { seriesGroups });
 
     await expect

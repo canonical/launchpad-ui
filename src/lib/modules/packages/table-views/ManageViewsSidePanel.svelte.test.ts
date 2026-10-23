@@ -1,4 +1,5 @@
 import { error } from "@sveltejs/kit";
+import { SvelteURL } from "svelte/reactivity";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { userEvent } from "vitest/browser";
 import type { Locator } from "vitest/browser";
@@ -10,37 +11,42 @@ import ManageViewsSidePanel from "./test.fixtures.svelte";
 import { goto } from "$app/navigation";
 import { page } from "$app/state";
 
-vi.mock("$app/state", async () => {
-  const { SvelteURL } = await import("svelte/reactivity");
-  return {
-    page: {
-      url: new SvelteURL("https://launchpad.test/ubuntu/+source"),
-      state: {},
+const url = new SvelteURL("https://launchpad.test/ubuntu/+source");
+
+// SidePanel passes `page.url` to its form, so it must match the context's URL
+vi.mock("$app/state", () => ({
+  page: {
+    get url() {
+      return url;
     },
-  };
-});
+    state: {},
+  },
+}));
 
 vi.mock("$app/navigation", async () => {
   const { page } = await import("$app/state");
   return {
-    goto: vi.fn(async (url: string, opts?: { state?: App.PageState }) => {
-      page.url.href = new URL(url, page.url).href;
-      page.state = opts?.state ?? {};
-    }),
-    replaceState: vi.fn((_url: string, state: App.PageState) => {
-      page.state = state;
-    }),
+    // Imported by SvelteKit's root component, which the remote functions client runtime pulls in
+    afterNavigate: vi.fn(),
+    goto: vi.fn(
+      async (
+        href: string,
+        opts?: { state?: App.PageState; shallow?: boolean },
+      ) => {
+        if (!opts?.shallow) url.href = new URL(href, url).href;
+        page.state = opts?.state ?? {};
+      },
+    ),
   };
 });
 
 vi.mock("../context.js", async () => {
   const { QueryParams } = await import("../superhref.js");
-  const { page } = await import("$app/state");
   return {
     getPackagesContext: () => ({
       distro: "ubuntu",
       get queryParams() {
-        return QueryParams.bind(page.url);
+        return QueryParams.bind(new URL(url.href));
       },
     }),
   };
@@ -70,7 +76,6 @@ beforeEach(() => {
   vi.mocked(updateTableViews).mockReset();
   vi.mocked(getTableViews).mockClear();
   vi.mocked(goto).mockClear();
-  vi.mocked(replaceState).mockClear();
 });
 
 describe("ManageViewsSidePanel", () => {
@@ -176,9 +181,8 @@ describe("ManageViewsSidePanel", () => {
     await editName(screen, "Noble", "Noble 2");
     await screen.getByRole("button", { name: "Save" }).click();
 
-    await expect.poll(() => vi.mocked(replaceState).mock.calls.length).toBe(1);
-    const [url, options] = vi.mocked(goto).mock.lastCall!;
-    const params = new URL(url as string, page.url).searchParams;
+    const [href, options] = await savedNavigation();
+    const params = new URL(href, url).searchParams;
     expect(params.get("view")).toBe("noble-2");
     expect(params.get("page")).toBe("3");
     expect(params.has("panel")).toBe(false);
@@ -194,9 +198,8 @@ describe("ManageViewsSidePanel", () => {
     await screen.getByRole("button", { name: "Delete Noble" }).click();
     await screen.getByRole("button", { name: "Save" }).click();
 
-    await expect.poll(() => vi.mocked(replaceState).mock.calls.length).toBe(1);
-    const [url] = vi.mocked(goto).mock.lastCall!;
-    const params = new URL(url as string, page.url).searchParams;
+    const [href] = await savedNavigation();
+    const params = new URL(href, url).searchParams;
     expect(params.has("view")).toBe(false);
     expect(params.get("page") ?? "1").toBe("1");
   });
@@ -215,9 +218,8 @@ describe("ManageViewsSidePanel", () => {
     await addView(screen, "Second");
     await screen.getByRole("button", { name: "Save" }).click();
 
-    await expect.poll(() => vi.mocked(replaceState).mock.calls.length).toBe(1);
-    const [url] = vi.mocked(goto).mock.lastCall!;
-    const params = new URL(url as string, page.url).searchParams;
+    const [href] = await savedNavigation();
+    const params = new URL(href, url).searchParams;
     expect(params.get("view")).toBe("noble");
     expect(params.get("page")).toBe("3");
   });
@@ -241,9 +243,8 @@ describe("ManageViewsSidePanel", () => {
     await expect.poll(() => viewNames(screen)).toContain(name);
     await screen.getByRole("button", { name: "Save" }).click();
 
-    await expect.poll(() => vi.mocked(replaceState).mock.calls.length).toBe(1);
-    const [url] = vi.mocked(goto).mock.lastCall!;
-    expect(url).toBe("?sort=series&match=exact&view=bookmarked");
+    const [href] = await savedNavigation();
+    expect(href).toBe("?sort=series&match=exact&view=bookmarked");
   });
 
   it("keeps the current view and filters when a staged bookmark is removed", async () => {
@@ -264,8 +265,8 @@ describe("ManageViewsSidePanel", () => {
     await screen.getByRole("button", { name: `Delete ${name}` }).click();
     await screen.getByRole("button", { name: "Save" }).click();
 
-    const [url] = vi.mocked(goto).mock.lastCall!;
-    const params = new URL(url as string, page.url).searchParams;
+    const [href] = await savedNavigation();
+    const params = new URL(href, url).searchParams;
     expect(params.get("view")).toBe("noble");
     expect(params.get("page")).toBe("3");
     expect(params.get("sort")).toBe("series");
@@ -375,8 +376,18 @@ function view(id: string, name: string, editable = true): TableView {
 
 /** Navigates the way the SvelteKit router would. */
 function navigate(href: string) {
-  page.url.href = new URL(href, page.url).href;
+  url.href = new URL(href, url).href;
   page.state = {};
+}
+
+/** Waits for a save to clear the page state, then returns the navigation that applied it. */
+async function savedNavigation() {
+  const calls = () => vi.mocked(goto).mock.calls;
+  await expect
+    .poll(() => calls().filter(([, opts]) => opts?.shallow).length)
+    .toBe(1);
+  const [href, options] = calls().findLast(([, opts]) => !opts?.shallow)!;
+  return [href as string, options] as const;
 }
 
 function hrefOf(link: Locator) {
@@ -384,7 +395,7 @@ function hrefOf(link: Locator) {
 }
 
 async function renderPanel(search = "?panel=manage-views") {
-  page.url.href = `https://launchpad.test/ubuntu/+source${search}`;
+  url.href = `https://launchpad.test/ubuntu/+source${search}`;
   const screen = await render(ManageViewsSidePanel);
   await expect.element(screen.getByText("Active views")).toBeVisible();
   return screen;
