@@ -62,13 +62,9 @@ export const sourcePackageDetailHandlers = [
       const query = parseQuery(new URL(request.url));
       const seriesFilter = readFilterField(query, "series");
       const importanceFilter = readFilterField(query, "importance") as
-        | BugImportance
-        | BugImportance[]
-        | undefined;
+        BugImportance | BugImportance[] | undefined;
       const statusFilter = readFilterField(query, "status") as
-        | BugStatus
-        | BugStatus[]
-        | undefined;
+        BugStatus | BugStatus[] | undefined;
 
       const filtered = seed.bugs.filter(
         (bug) =>
@@ -88,13 +84,9 @@ export const sourcePackageDetailHandlers = [
     withSourcePackage((seed, { request }) => {
       const query = parseQuery(new URL(request.url));
       const severityFilter = readFilterField(query, "severity") as
-        | CveSeverity
-        | CveSeverity[]
-        | undefined;
+        CveSeverity | CveSeverity[] | undefined;
       const statusFilter = readFilterField(query, "status") as
-        | CveStatus
-        | CveStatus[]
-        | undefined;
+        CveStatus | CveStatus[] | undefined;
 
       const filtered = seed.cves.filter(
         (cve) =>

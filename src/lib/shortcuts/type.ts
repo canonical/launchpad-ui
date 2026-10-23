@@ -7,9 +7,7 @@ type TwoModShortcut<
 > = `${M1}+${M2}+${Key}`;
 
 type ShortcutExpression<M1 extends string, M2 extends string = M1> =
-  | Key
-  | OneModShortcut<M1>
-  | TwoModShortcut<M1, M2>;
+  Key | OneModShortcut<M1> | TwoModShortcut<M1, M2>;
 
 export type StandardShortcut = ShortcutExpression<StandardModifier>;
 export type MacShortcut = ShortcutExpression<MacModifier>;

@@ -153,18 +153,12 @@ const buildListing = (
 
   const search = readString(queryParams.search) ?? readString(queryParams.q);
   const statusFilter = readFilterField(queryParams, "status") as
-    | PublishingStatus
-    | PublishingStatus[]
-    | undefined;
+    PublishingStatus | PublishingStatus[] | undefined;
   const seriesFilter = readFilterField(queryParams, "series");
   const pocketFilter = readFilterField(queryParams, "pocket") as
-    | Pocket
-    | Pocket[]
-    | undefined;
+    Pocket | Pocket[] | undefined;
   const componentFilter = readFilterField(queryParams, "component") as
-    | Component
-    | Component[]
-    | undefined;
+    Component | Component[] | undefined;
   const sectionFilter = readFilterField(queryParams, "section");
   // accepted but unused — no team data in the seed yet.
   void readFilterField(queryParams, "team");

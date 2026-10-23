@@ -15,11 +15,7 @@ import { DEFAULT_ARCHES, lp, versionSlug } from "../shared.js";
 import type { SourcePackageSeed } from "../types.js";
 
 type MaintainerId =
-  | "ubuntuDevelopers"
-  | "avaNovak"
-  | "kaiTanaka"
-  | "ninaHolt"
-  | "omarFaruk";
+  "ubuntuDevelopers" | "avaNovak" | "kaiTanaka" | "ninaHolt" | "omarFaruk";
 
 export type ExtraSpec = {
   name: string;

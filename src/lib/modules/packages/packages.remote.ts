@@ -28,20 +28,18 @@ const distroSchema = v.pipe(v.string(), v.trim(), v.minLength(1));
 
 const filterArgsSchema = v.pipe(
   ParsedPackagesFiltersSchema,
-  v.transform(
-    (filters): SourcePackageListFilter => ({
-      series: filters.series,
-      statuses: filters.allStatuses
-        ? ["Pending", "Published", "Superseded", "Deleted", "Obsolete"]
-        : ["Pending", "Published"],
-      sourceName: filters.search,
-      exactMatch: filters.match === "exact",
-      pocket: filters.pocket,
-      maintainedBy: filters.maintainer,
-      signedBy: filters.signer,
-      ubuntuChange: filters.ubuntuChange,
-    }),
-  ),
+  v.transform((filters): SourcePackageListFilter => ({
+    series: filters.series,
+    statuses: filters.allStatuses
+      ? ["Pending", "Published", "Superseded", "Deleted", "Obsolete"]
+      : ["Pending", "Published"],
+    sourceName: filters.search,
+    exactMatch: filters.match === "exact",
+    pocket: filters.pocket,
+    maintainedBy: filters.maintainer,
+    signedBy: filters.signer,
+    ubuntuChange: filters.ubuntuChange,
+  })),
 );
 
 const listArgsSchema = v.intersect([

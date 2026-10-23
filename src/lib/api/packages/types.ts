@@ -23,27 +23,15 @@ export type Architecture =
 export type Component = "main" | "universe" | "restricted" | "multiverse";
 
 export type Pocket =
-  | "Release"
-  | "Security"
-  | "Updates"
-  | "Proposed"
-  | "Backports";
+  "Release" | "Security" | "Updates" | "Proposed" | "Backports";
 
 export type Priority =
-  | "Required"
-  | "Important"
-  | "Standard"
-  | "Optional"
-  | "Extra";
+  "Required" | "Important" | "Standard" | "Optional" | "Extra";
 
 export type Urgency = "Low" | "Medium" | "High" | "Critical" | "Emergency";
 
 export type PublishingStatus =
-  | "Published"
-  | "Pending"
-  | "Superseded"
-  | "Deleted"
-  | "Obsolete";
+  "Published" | "Pending" | "Superseded" | "Deleted" | "Obsolete";
 
 export type VersionStatus =
   | "Published"
@@ -67,21 +55,10 @@ export type BuildStatus =
 export type CveStatus = "active" | "released" | "ignored" | "mitigated";
 
 export type CveSeverity =
-  | "untriaged"
-  | "negligible"
-  | "low"
-  | "medium"
-  | "high"
-  | "critical";
+  "untriaged" | "negligible" | "low" | "medium" | "high" | "critical";
 
 export type BugImportance =
-  | "Critical"
-  | "High"
-  | "Medium"
-  | "Low"
-  | "Wishlist"
-  | "Undecided"
-  | "Unknown";
+  "Critical" | "High" | "Medium" | "Low" | "Wishlist" | "Undecided" | "Unknown";
 
 export type BugStatus =
   | "New"
@@ -417,10 +394,7 @@ export type CollectionQuery = BaseQuery & {
 };
 
 export type SourcePackagesTab =
-  | "all"
-  | "my-uploads"
-  | "latest-uploads"
-  | "ubuntu-server";
+  "all" | "my-uploads" | "latest-uploads" | "ubuntu-server";
 
 export type SortOrder = "asc" | "desc";
 
