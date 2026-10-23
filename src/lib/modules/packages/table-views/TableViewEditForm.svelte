@@ -6,7 +6,7 @@
   } from "@canonical/svelte-ds-app-launchpad";
   import type { TextInputProps } from "@canonical/svelte-ds-app-launchpad";
   import * as v from "valibot";
-  import { preserveQueryParams, subId } from "#lib/utils/index.js";
+  import { subId } from "#lib/utils/index.js";
   import PersonFilterCombobox from "../filters/PersonFilterCombobox.svelte";
   import PocketFilterMenu from "../filters/PocketFilterMenu.svelte";
   import SearchModeMenu from "../filters/SearchModeMenu.svelte";
@@ -106,12 +106,9 @@
 </script>
 
 <form
-  {...preserveQueryParams(
-    form.preflight(TableViewEditFormSchema).enhance(({ fields }) => {
-      onstage(v.parse(TableViewSettingsSchema, fields.value()));
-    }),
-    new URL(page.url.href),
-  )}
+  {...form.preflight(TableViewEditFormSchema).enhance(({ fields }) => {
+    onstage(v.parse(TableViewSettingsSchema, fields.value()));
+  })}
 >
   <!-- Without JS, Enter in a text field submits with the first submit button, so it must confirm rather than search -->
   <button
