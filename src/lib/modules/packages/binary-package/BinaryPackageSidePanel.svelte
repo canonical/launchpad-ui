@@ -10,6 +10,7 @@
   import { getBinaryPackage } from "./binary-package.remote.js";
   import { browser } from "$app/environment";
   import { goto } from "$app/navigation";
+  import { resolve } from "$app/paths";
 
   let {
     distro,
@@ -55,7 +56,13 @@
         {/if}
         <PartialTextDisclosure text={details.description} />
         {#if details.files.length}
-          <ArtifactsSection artifacts={details.files} />
+          <ArtifactsSection
+            artifacts={details.files}
+            downloadAllHref={resolve(
+              "/[pillar]/+source/+binary-package/[binaryId]/+download-all",
+              { pillar: distro, binaryId: String(details.id) },
+            )}
+          />
         {/if}
         {#snippet failed(error)}
           <p class="package-details-error" role="alert">

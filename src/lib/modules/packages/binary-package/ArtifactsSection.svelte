@@ -1,14 +1,38 @@
 <script lang="ts">
-  import { Link } from "@canonical/svelte-ds-app-launchpad";
+  import { Button, Link } from "@canonical/svelte-ds-app-launchpad";
+  import { DownloadIcon } from "@canonical/svelte-icons";
   import type { BinaryPackageDetails } from "$lib/server/launchpad/types.js";
   import { bytesToHumanReadable } from "$lib/utils/bytesToHumanReadable.js";
 
-  const { artifacts }: { artifacts: BinaryPackageDetails["files"] } = $props();
+  const {
+    artifacts,
+    downloadAllHref,
+  }: {
+    artifacts: BinaryPackageDetails["files"];
+    downloadAllHref: string;
+  } = $props();
+
+  const totalSize = $derived(
+    artifacts.reduce((total, artifact) => total + artifact.size, 0),
+  );
 </script>
 
 <section>
   <header>
     <h3>Artifacts</h3>
+    {#if artifacts.length > 1}
+      <Button
+        href={downloadAllHref}
+        download=""
+        importance="tertiary"
+        density="dense"
+      >
+        {#snippet iconLeft()}
+          <DownloadIcon />
+        {/snippet}
+        Download all ({bytesToHumanReadable(totalSize)})
+      </Button>
+    {/if}
   </header>
   <ul>
     {#each artifacts as artifact (artifact.url)}

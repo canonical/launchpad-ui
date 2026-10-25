@@ -1,5 +1,6 @@
+import { Readable } from "node:stream";
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { launchpadFetch } from "./launchpadFetch.js";
+import { launchpadFetch, launchpadFetchStream } from "./launchpadFetch.js";
 
 const mockEnv = vi.hoisted(
   () =>
@@ -20,13 +21,17 @@ vi.mock("undici", () => ({
 
 function undiciResponse(
   statusCode: number,
-  body = "",
-  headers: Record<string, string> = {},
+  chunks: string[] = [],
+  headers: Record<string, string | string[]> = {},
 ) {
+  const body = Readable.from(
+    chunks.map((chunk) => Buffer.from(chunk)),
+    { objectMode: false },
+  );
   return {
     statusCode,
     headers,
-    body: { text: async () => body, dump: async () => {} },
+    body: Object.assign(body, { text: async () => chunks.join("") }),
   };
 }
 
@@ -37,11 +42,14 @@ beforeEach(() => {
   delete mockEnv.MAIN_LAUNCHPAD_SKIP_TLS_VERIFY;
 });
 
-describe("launchpadFetch", () => {
+describe.each([
+  ["launchpadFetch", launchpadFetch],
+  ["launchpadFetchStream", launchpadFetchStream],
+])("%s", (_name, fetchLaunchpad) => {
   it("requests the URL as given and returns status and body", async () => {
-    requestMock.mockResolvedValueOnce(undiciResponse(200, '{"ok":true}'));
+    requestMock.mockResolvedValueOnce(undiciResponse(200, ['{"ok":true}']));
 
-    const response = await launchpadFetch(
+    const response = await fetchLaunchpad(
       "https://lp.example/api/devel/ubuntu",
     );
 
@@ -56,7 +64,7 @@ describe("launchpadFetch", () => {
     mockEnv.MAIN_LAUNCHPAD_IP_ADDRESS = "https://10.0.0.7";
     requestMock.mockResolvedValueOnce(undiciResponse(200));
 
-    await launchpadFetch("https://lp.example/api/devel/ubuntu?ws.size=1");
+    await fetchLaunchpad("https://lp.example/api/devel/ubuntu?ws.size=1");
 
     const [url, options] = requestMock.mock.calls[0];
     expect(url.toString()).toBe("https://10.0.0.7/api/devel/ubuntu?ws.size=1");
@@ -67,7 +75,7 @@ describe("launchpadFetch", () => {
     mockEnv.MAIN_LAUNCHPAD_IP_ADDRESS = "https://10.0.0.7";
     requestMock.mockResolvedValueOnce(undiciResponse(200));
 
-    await launchpadFetch("https://elsewhere.example/path");
+    await fetchLaunchpad("https://elsewhere.example/path");
 
     const [url, options] = requestMock.mock.calls[0];
     expect(url.toString()).toBe("https://elsewhere.example/path");
@@ -76,10 +84,10 @@ describe("launchpadFetch", () => {
 
   it("does not follow redirects and exposes response headers", async () => {
     requestMock.mockResolvedValueOnce(
-      undiciResponse(302, "", { location: "https://lp.example/moved" }),
+      undiciResponse(302, [], { location: "https://lp.example/moved" }),
     );
 
-    const response = await launchpadFetch(
+    const response = await fetchLaunchpad(
       "https://lp.example/api/devel/ubuntu",
     );
 
@@ -88,16 +96,50 @@ describe("launchpadFetch", () => {
     expect(response.headers.get("location")).toBe("https://lp.example/moved");
   });
 
+  it("joins repeated header values", async () => {
+    requestMock.mockResolvedValueOnce(
+      undiciResponse(200, [], { "set-cookie": ["a=1", "b=2"] }),
+    );
+
+    const response = await fetchLaunchpad("https://lp.example/");
+
+    expect(response.headers.get("set-cookie")).toBe("a=1, b=2");
+  });
+
   it("skips TLS verification only when configured", async () => {
     requestMock.mockResolvedValueOnce(undiciResponse(200));
-    await launchpadFetch("https://lp.example/");
+    await fetchLaunchpad("https://lp.example/");
     expect(requestMock.mock.calls[0][1].dispatcher).toBeUndefined();
 
     mockEnv.MAIN_LAUNCHPAD_SKIP_TLS_VERIFY = "true";
     requestMock.mockResolvedValueOnce(undiciResponse(200));
-    await launchpadFetch("https://lp.example/");
+    await fetchLaunchpad("https://lp.example/");
     expect(requestMock.mock.calls[1][1].dispatcher).toMatchObject({
       options: { connect: { rejectUnauthorized: false } },
     });
+  });
+});
+
+describe("launchpadFetchStream", () => {
+  it("streams the body chunks unchanged", async () => {
+    requestMock.mockResolvedValueOnce(undiciResponse(200, ["ab", "cd"]));
+
+    const response = await launchpadFetchStream(
+      "https://lp.example/files/x.deb",
+    );
+
+    await expect(response.text()).resolves.toBe("abcd");
+  });
+
+  it("cancelling the body destroys the upstream stream", async () => {
+    const upstream = undiciResponse(200, ["ab", "cd"]);
+    requestMock.mockResolvedValueOnce(upstream);
+
+    const response = await launchpadFetchStream(
+      "https://lp.example/files/x.deb",
+    );
+    await response.body?.cancel();
+
+    expect(upstream.body.destroyed).toBe(true);
   });
 });

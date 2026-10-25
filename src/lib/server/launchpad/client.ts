@@ -97,8 +97,8 @@ export function findPeople(text: string): Promise<Collection<PersonEntry>> {
 
 export async function getPerson(name: string): Promise<PersonEntry | null> {
   const url = personLink(name);
-  const response = await fetchFollowingRedirects(url, {
-    accept: "application/json",
+  const { response } = await fetchFollowingRedirects(url, {
+    headers: { accept: "application/json" },
   });
   if (response.status === 404 || response.status === 410) {
     return null;
@@ -109,6 +109,26 @@ export async function getPerson(name: string): Promise<PersonEntry | null> {
   return response.json();
 }
 
+export async function fetchFollowingRedirects(
+  url: string,
+  init: RequestInit,
+  fetcher: typeof launchpadFetch = launchpadFetch,
+): Promise<{ url: string; response: Response }> {
+  let currentUrl = url;
+  let response = await fetcher(currentUrl, init);
+  for (let redirects = 0; redirects < MAX_REDIRECTS; redirects++) {
+    const location = response.headers.get("location");
+    const isRedirect = response.status >= 300 && response.status < 400;
+    if (!isRedirect || location === null) {
+      break;
+    }
+    await response.body?.cancel();
+    currentUrl = new URL(location, currentUrl).toString();
+    response = await fetcher(currentUrl, init);
+  }
+  return { url: currentUrl, response };
+}
+
 async function getJson<T>(url: string): Promise<T> {
   const response = await launchpadFetch(url, {
     headers: { accept: "application/json" },
@@ -117,24 +137,6 @@ async function getJson<T>(url: string): Promise<T> {
     throw new LaunchpadApiError(response.status, url);
   }
   return response.json();
-}
-
-async function fetchFollowingRedirects(
-  url: string,
-  headers: Record<string, string>,
-): Promise<Response> {
-  let currentUrl = url;
-  let response = await launchpadFetch(currentUrl, { headers });
-  for (let redirects = 0; redirects < MAX_REDIRECTS; redirects++) {
-    const location = response.headers.get("location");
-    const isRedirect = response.status >= 300 && response.status < 400;
-    if (!isRedirect || location === null) {
-      break;
-    }
-    currentUrl = new URL(location, currentUrl).toString();
-    response = await launchpadFetch(currentUrl, { headers });
-  }
-  return response;
 }
 
 function sourcePackagesFilterParams(
