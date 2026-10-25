@@ -172,7 +172,19 @@ describe("package listing query", () => {
     expect(fetchMock).toHaveBeenCalledTimes(1);
   });
 
-  it.each([404, 500, 503])(
+  it("passes a missing distribution or page through as 404", async () => {
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    fetchMock.mockResolvedValueOnce(new Response("Not found", { status: 404 }));
+    await expect(
+      getSourcePackages({ ...listArgs, distro: "soss" }),
+    ).rejects.toMatchObject({
+      status: 404,
+      body: { message: "Packages not found." },
+    });
+    expect(fetchMock).toHaveBeenCalledTimes(1);
+  });
+
+  it.each([500, 503])(
     "maps HTTP %i to a service error without retrying",
     async (status) => {
       const log = vi.spyOn(console, "error").mockImplementation(() => {});

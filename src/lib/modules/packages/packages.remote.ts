@@ -7,6 +7,7 @@ import {
   launchpadApiBaseUrl,
   launchpadClient,
 } from "$lib/server/launchpad/config.js";
+import { getMainArchiveName } from "$lib/server/launchpad/mainArchive.js";
 import { sourcePackageListSchema } from "./api.schema.js";
 import { MAX_BINARY_NAMES } from "./constants.js";
 import { MAX_PAGE_SIZE, SORTABLE_PACKAGES_COLUMNS } from "./superhref.js";
@@ -42,7 +43,10 @@ export const getSourcePackages = query(
       const { data } =
         await launchpadClient.archive.distribution.getSourcePackageList(
           {
-            path: { distribution: distro, archive: "primary" },
+            path: {
+              distribution: distro,
+              archive: getMainArchiveName(distro),
+            },
             query: {
               page: String(page),
               page_size: String(size),
@@ -96,6 +100,12 @@ export const getSourcePackages = query(
       return data;
     } catch (requestError) {
       console.error("Failed to load source packages", requestError);
+      if (
+        requestError instanceof LaunchpadApiError &&
+        requestError.status === 404
+      ) {
+        error(404, "Packages not found.");
+      }
       if (
         requestError instanceof LaunchpadApiError &&
         requestError.status === 400

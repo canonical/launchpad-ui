@@ -2,6 +2,7 @@ import { LaunchpadApiError } from "@canonical/launchpad-client";
 import { error } from "@sveltejs/kit";
 import * as v from "valibot";
 import { launchpadClient } from "$lib/server/launchpad/config.js";
+import { getMainArchiveName } from "$lib/server/launchpad/mainArchive.js";
 import { binaryPackageDetailsSchema } from "../api.schema.js";
 import { query } from "$app/server";
 
@@ -26,7 +27,10 @@ export const getBinaryPackage = query(
       const { data } =
         await launchpadClient.archive.distribution.getBinaryPackageDetails(
           {
-            path: { distribution: distro, archive: "primary" },
+            path: {
+              distribution: distro,
+              archive: getMainArchiveName(distro),
+            },
             query: { binary_id: String(binaryId) },
           },
           // This qastaging-only operation has no documented response contract yet.
