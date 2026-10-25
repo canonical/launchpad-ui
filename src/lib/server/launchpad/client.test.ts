@@ -152,6 +152,15 @@ describe("Launchpad client transport configuration", () => {
     });
   });
 
+  it("launchpadFetch reports the URL it landed on after a cross-origin redirect", async () => {
+    const { launchpadFetch } = await import("./client.js");
+    const response = await launchpadFetch(
+      "https://launchpad.invalid/api/devel/external",
+    );
+    expect(response.url).toBe(`${otherAddress}/outside`);
+    expect(await response.json()).toMatchObject({ backend: "other" });
+  });
+
   it("does not disable certificate verification for a redirect to another origin", async () => {
     const { launchpadClient } = await import("./client.js");
     await expect(

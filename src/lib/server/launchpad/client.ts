@@ -19,10 +19,13 @@ const fetcher = globalThis.fetch;
 // Shared transport only: user cookies belong in per-request headers.
 export const launchpadClient = createLaunchpadClient({
   baseUrl: launchpadApiBaseUrl,
-  fetch: dispatcher
-    ? (input, init) => {
-        const connectionOptions = { ...init, dispatcher };
-        return fetcher(input, connectionOptions);
-      }
-    : undefined,
+  fetch: dispatcher ? launchpadFetch : undefined,
 });
+
+export function launchpadFetch(
+  input: RequestInfo | URL,
+  init?: RequestInit,
+): Promise<Response> {
+  const connectionOptions = { ...init, dispatcher };
+  return fetcher(input, connectionOptions);
+}
