@@ -96,7 +96,9 @@ describe("ManageViewsSidePanel", () => {
     vi.mocked(updateTableViews).mockResolvedValue([allPackages]);
     const screen = await renderPanel();
 
-    await screen.getByRole("button", { name: "Reorder Noble" }).click();
+    const reorder = screen.getByRole("button", { name: "Reorder Noble" });
+    // WebKit on macOS doesn't focus buttons on click, so focus the handle directly.
+    (reorder.element() as HTMLElement).focus();
     await userEvent.keyboard("{Enter}{ArrowUp}{ArrowUp}{Enter}");
     await editName(screen, "Noble", "Noble 2");
     await screen.getByRole("button", { name: "Delete Resolute" }).click();
