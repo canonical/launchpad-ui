@@ -1,8 +1,5 @@
 import { error } from "@sveltejs/kit";
-import {
-  getImageCounts,
-  getImages,
-} from "$lib/server/image-provider/client.js";
+import { getImageCounts, getImages } from "$lib/server/test-observer/client";
 import {
   getSeriesImageCountsArgsSchema,
   getSeriesImagesArgsSchema,
@@ -13,7 +10,7 @@ export const getSeriesImages = query(
   getSeriesImagesArgsSchema,
   async ({ pillar, series, ...rest }) => {
     if (pillar !== "ubuntu")
-      error(404, "Images are only available for Ubuntu series");
+      return { items: [], total: 0, page: 1, pageSize: 10, totalPages: 1 };
 
     try {
       return await getImages(series, rest);
@@ -28,7 +25,11 @@ export const getSeriesImageCounts = query(
   getSeriesImageCountsArgsSchema,
   async ({ pillar, series, ...rest }) => {
     if (pillar !== "ubuntu")
-      error(404, "Images are only available for Ubuntu series");
+      return {
+        total: 0,
+        building: { total: 0, successful: 0, failed: 0, running: 0 },
+        testing: { total: 0, passed: 0, failed: 0, running: 0 },
+      };
 
     try {
       return await getImageCounts(series, rest);

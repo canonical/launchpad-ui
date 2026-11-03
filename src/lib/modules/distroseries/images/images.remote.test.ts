@@ -1,9 +1,6 @@
 import * as v from "valibot";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import {
-  getImageCounts,
-  getImages,
-} from "$lib/server/image-provider/client.js";
+import { getImageCounts, getImages } from "$lib/server/test-observer/client";
 import { getSeriesImageCounts, getSeriesImages } from "./images.remote.js";
 
 vi.mock("$app/server", () => ({
@@ -16,7 +13,7 @@ vi.mock("$app/server", () => ({
     }),
 }));
 
-vi.mock("$lib/server/image-provider/client.js", () => ({
+vi.mock("$lib/server/test-observer/client", () => ({
   getImages: vi.fn(),
   getImageCounts: vi.fn(),
 }));
@@ -163,6 +160,7 @@ describe.each([
     provider: getImages,
     logMessage: "Failed to load series images",
     errorMessage: "Couldn't load images. Try again shortly.",
+    emptyResult: { items: [], total: 0, page: 1, pageSize: 10, totalPages: 1 },
   },
   {
     label: "series image counts",
@@ -170,28 +168,33 @@ describe.each([
     provider: getImageCounts,
     logMessage: "Failed to load series image counts",
     errorMessage: "Couldn't load image counts. Try again shortly.",
+    emptyResult: {
+      total: 0,
+      building: { total: 0, successful: 0, failed: 0, running: 0 },
+      testing: { total: 0, passed: 0, failed: 0, running: 0 },
+    },
   },
-])("$label query errors", ({ query, provider, logMessage, errorMessage }) => {
-  it("uses a SvelteKit 404 for distributions other than Ubuntu", async () => {
-    await expect(
-      query({ pillar: "debian", series: "sid" }),
-    ).rejects.toMatchObject({
-      status: 404,
-      body: { message: "Images are only available for Ubuntu series" },
+])(
+  "$label query errors",
+  ({ query, provider, logMessage, errorMessage, emptyResult }) => {
+    it("returns empty results for distributions other than Ubuntu", async () => {
+      await expect(query({ pillar: "debian", series: "sid" })).resolves.toEqual(
+        emptyResult,
+      );
+      expect(provider).not.toHaveBeenCalled();
     });
-    expect(provider).not.toHaveBeenCalled();
-  });
 
-  it("logs provider failures and raises a SvelteKit 503", async () => {
-    const failure = new TypeError("Connection failed");
-    const log = vi.spyOn(console, "error").mockImplementation(() => {});
-    vi.mocked(provider).mockRejectedValue(failure);
+    it("logs provider failures and raises a SvelteKit 503", async () => {
+      const failure = new TypeError("Connection failed");
+      const log = vi.spyOn(console, "error").mockImplementation(() => {});
+      vi.mocked(provider).mockRejectedValue(failure);
 
-    await expect(query(queryArgs)).rejects.toMatchObject({
-      status: 503,
-      body: { message: errorMessage },
+      await expect(query(queryArgs)).rejects.toMatchObject({
+        status: 503,
+        body: { message: errorMessage },
+      });
+      expect(log).toHaveBeenCalledExactlyOnceWith(logMessage, failure);
+      expect(provider).toHaveBeenCalledTimes(1);
     });
-    expect(log).toHaveBeenCalledExactlyOnceWith(logMessage, failure);
-    expect(provider).toHaveBeenCalledTimes(1);
-  });
-});
+  },
+);

@@ -1,6 +1,6 @@
-import type { SeriesImage } from "$lib/server/image-provider/types.js";
+import type { SeriesImage } from "../test-observer/types";
 
-export const seriesImagesFixture: SeriesImage[] = [
+export const imagesFixture: SeriesImage[] = [
   {
     id: 1001,
     name: "resolute-base-amd64.tar.gz",
