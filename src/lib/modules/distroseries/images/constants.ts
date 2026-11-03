@@ -37,7 +37,7 @@ export const DEFAULT_PAGE_SIZE = 25;
 export const MAX_PAGE_SIZE = 100;
 
 export const IMAGES_TABLE_COLUMNS = [
-  { key: "image-name", label: "Image name", sortable: true },
+  { key: "name", label: "Image name", sortable: true },
   { key: "build-status", label: "Build status", sortable: false },
   { key: "test-status", label: "Test status", sortable: false },
   { key: "bugs", label: "Bugs", sortable: false },

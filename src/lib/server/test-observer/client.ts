@@ -1,28 +1,21 @@
 import * as v from "valibot";
+import type { Paginated } from "$lib/api/common/types.js";
 import type { Product } from "$lib/modules/distroseries/images/types.js";
-import { imagesFixture } from "./image.fixtures.js";
 import { imageArtifactSchema } from "./types.js";
 import type {
   ImageArtifact,
   ImagesFilter,
   ImagesQuery,
-  Paginated,
   SeriesImage,
   SeriesImageCounts,
 } from "./types.js";
 import { env } from "$env/dynamic/private";
 
-if (!env.TEST_OBSERVER_IMAGE_ARTIFACTS_URL) {
-  console.warn(
-    "TEST_OBSERVER_IMAGE_ARTIFACTS_URL is not configured; using fixture image data",
-  );
-}
+const CACHE_TTL = 10 * 60_000;
 
-const CACHE_TTL = 60_000;
-let cachedArtifacts:
-  | { expiresAt: number; artifacts: ImageArtifact[] }
+let artifactRequest:
+  | { expiresAt?: number; promise: Promise<ImageArtifact[]> }
   | undefined;
-let pendingPromise: Promise<ImageArtifact[]> | undefined;
 
 export class TestObserverApiError extends Error {
   constructor(
@@ -34,20 +27,22 @@ export class TestObserverApiError extends Error {
   }
 }
 
-export async function getImages(
+export async function getUbuntuImages(
   series: string,
   query: ImagesQuery = {},
 ): Promise<Paginated<SeriesImage>> {
   const images = await getFilteredImages(series, query);
   const { sortKey, sortOrder, page = 1 } = query;
-  if (sortKey && sortOrder && sortOrder !== "none") {
-    const field = sortKey === "image-name" ? "name" : "version";
-    images.sort((first, second) => {
-      const comparison = first[field].localeCompare(second[field], "en", {
-        numeric: true,
-      });
-      return sortOrder === "ascending" ? comparison : -comparison;
-    });
+  if (sortKey && sortOrder) {
+    const field = sortKey === "name" ? "name" : "version";
+    const order = sortOrder === "ascending" ? 1 : -1;
+    images.sort(
+      (first, second) =>
+        order *
+        first[field].localeCompare(second[field], "en", {
+          numeric: true,
+        }),
+    );
   }
   const pageSize = 10;
   const totalPages = Math.max(1, Math.ceil(images.length / pageSize));
@@ -57,12 +52,11 @@ export async function getImages(
     items: images.slice(offset, offset + pageSize),
     total: images.length,
     page: currentPage,
-    pageSize,
-    totalPages,
+    size: pageSize,
   };
 }
 
-export async function getImageCounts(
+export async function getUbuntuImageCounts(
   series: string,
   filter: ImagesFilter = {},
 ): Promise<SeriesImageCounts> {
@@ -89,22 +83,20 @@ async function getFilteredImages(
   series: string,
   filter: ImagesFilter,
 ): Promise<SeriesImage[]> {
-  const images = env.TEST_OBSERVER_IMAGE_ARTIFACTS_URL
-    ? (await getImageArtifacts()).map(
-        (artifact): SeriesImage => ({
-          id: artifact.id,
-          product: osToProductMapper(artifact.os),
-          name: artifact.name,
-          buildStatus: "failed",
-          testStatus: null,
-          bugs: [],
-          version: artifact.version,
-          url: artifact.image_url,
-          fileSize: 0,
-          series: artifact.release,
-        }),
-      )
-    : imagesFixture;
+  const images = (await getImageArtifacts()).map(
+    (artifact): SeriesImage => ({
+      id: artifact.id,
+      product: osToProductMapper(artifact.os),
+      name: artifact.name,
+      buildStatus: "failed",
+      testStatus: null,
+      bugs: [],
+      version: artifact.version,
+      url: artifact.image_url,
+      fileSize: 0,
+      series: artifact.release,
+    }),
+  );
 
   return images.filter(
     (image) =>
@@ -115,24 +107,29 @@ async function getFilteredImages(
   );
 }
 
-export async function getImageArtifacts(): Promise<ImageArtifact[]> {
+export function getImageArtifacts(): Promise<ImageArtifact[]> {
   const url = env.TEST_OBSERVER_IMAGE_ARTIFACTS_URL;
   if (!url)
     throw new Error("TEST_OBSERVER_IMAGE_ARTIFACTS_URL is not configured");
 
-  if (cachedArtifacts && cachedArtifacts.expiresAt > Date.now())
-    return cachedArtifacts.artifacts;
-  if (pendingPromise) return pendingPromise;
+  if (artifactRequest?.expiresAt && artifactRequest.expiresAt > Date.now())
+    return artifactRequest.promise;
 
-  const promise = fetchImageArtifacts(url);
-  pendingPromise = promise;
-  try {
-    const artifacts = await promise;
-    cachedArtifacts = { artifacts, expiresAt: Date.now() + CACHE_TTL };
-    return artifacts;
-  } finally {
-    pendingPromise = undefined;
-  }
+  const req: { expiresAt?: number; promise: Promise<ImageArtifact[]> } = {
+    promise: fetchImageArtifacts(url)
+      .then((artifacts) => {
+        req.expiresAt = Date.now() + CACHE_TTL;
+
+        return artifacts;
+      })
+      .catch((requestError) => {
+        if (artifactRequest === req) artifactRequest = undefined;
+        throw requestError;
+      }),
+  };
+  artifactRequest = req;
+
+  return artifactRequest.promise;
 }
 
 async function fetchImageArtifacts(url: string): Promise<ImageArtifact[]> {

@@ -45,8 +45,8 @@ export type ImagesFilter = {
 
 export type ImagesQuery = ImagesFilter & {
   page?: number;
-  sortKey?: "image-name" | "version" | null;
-  sortOrder?: "ascending" | "descending" | "none";
+  sortKey?: "name" | "version";
+  sortOrder?: "ascending" | "descending";
 };
 
 export type SeriesImage = {
@@ -60,14 +60,6 @@ export type SeriesImage = {
   fileSize: number;
   series: string;
   product: Product | null;
-};
-
-export type Paginated<T> = {
-  items: T[];
-  total: number;
-  page: number;
-  pageSize: number;
-  totalPages: number;
 };
 
 export type SeriesImageCounts = {
