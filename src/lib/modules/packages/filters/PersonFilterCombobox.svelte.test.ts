@@ -4,7 +4,6 @@ import { userEvent } from "vitest/browser";
 import type { Locator } from "vitest/browser";
 import { render } from "vitest-browser-svelte";
 import type { RenderResult, SetupOptions } from "vitest-browser-svelte";
-import type { PersonEntry } from "$lib/server/launchpad/types.js";
 import { MIN_PEOPLE_SEARCH_LENGTH } from "../constants.js";
 import PersonFilterCombobox from "./PersonFilterCombobox.svelte";
 import FiltersFormFixture, {
@@ -44,7 +43,7 @@ function remoteQuery<T>(result: Promise<T>) {
   };
 }
 
-function person(name: string, displayName: string): PersonEntry {
+function person(name: string, displayName: string) {
   return {
     self_link: `https://launchpad.test/api/devel/~${name}`,
     resource_type_link: "https://launchpad.test/api/devel/#person",
@@ -54,6 +53,8 @@ function person(name: string, displayName: string): PersonEntry {
     mugshot_link: `https://launchpad.test/api/devel/~${name}/mugshot`,
   };
 }
+
+type PersonEntry = ReturnType<typeof person>;
 
 const alice = person("alice", "Alice Example");
 const bob = person("bob", "Bob Example");

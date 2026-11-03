@@ -1,4 +1,4 @@
-import type { Pocket } from "$lib/server/launchpad/types.js";
+import type { SourcePackagePublishingHistoryFull } from "@canonical/launchpad-client/schemas/models/source_package_publishing_history";
 import type { PackagesFilters } from "./schema.js";
 
 export const MAX_PACKAGES_SEARCH_LENGTH = 200;
@@ -17,7 +17,7 @@ export const POCKETS = [
   "Updates",
   "Proposed",
   "Backports",
-] as const satisfies readonly Pocket[];
+] as const satisfies readonly SourcePackagePublishingHistoryFull["pocket"][];
 
 export const PACKAGES_FILTER_LABELS = {
   match: "Search mode",

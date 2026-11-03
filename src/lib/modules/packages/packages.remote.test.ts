@@ -1,25 +1,25 @@
+import { LaunchpadApiError } from "@canonical/launchpad-client";
 import * as v from "valibot";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { DEFAULT_PACKAGES_FILTERS } from "$lib/modules/packages/filters/constants.js";
-import {
-  LaunchpadApiError,
-  getSourcePackageList,
-} from "$lib/server/launchpad/client.js";
+import { MAX_BINARY_NAMES } from "./constants.js";
 import { getSourcePackages } from "./packages.remote.js";
 import { packageListing } from "./test.fixtures.js";
 
 vi.mock("$app/server", () => ({
-  query: (
-    schema: v.GenericSchema,
-    handler: (args: unknown) => Promise<unknown>,
-  ) =>
+  query: (schema: v.GenericSchema, handler: (args: unknown) => unknown) =>
     Object.assign(async (args: unknown) => handler(v.parse(schema, args)), {
       __: { type: "query" },
     }),
 }));
+vi.mock("$env/dynamic/private", () => ({
+  env: { MAIN_LAUNCHPAD_BASE_HOST: "https://lp.example" },
+}));
+
+const getSourcePackageList = vi.hoisted(() => vi.fn());
 vi.mock("$lib/server/launchpad/client.js", async (importOriginal) => ({
   ...(await importOriginal<typeof import("$lib/server/launchpad/client.js")>()),
-  getSourcePackageList: vi.fn(),
+  launchpadClient: { archive: { distribution: { getSourcePackageList } } },
 }));
 
 const listArgs = {
@@ -31,10 +31,21 @@ const listArgs = {
   ...DEFAULT_PACKAGES_FILTERS,
 } as const;
 
+function apiError(status: number): LaunchpadApiError {
+  return new LaunchpadApiError(new Response(null, { status }), undefined);
+}
+
+function expectQuery(query: Record<string, unknown>) {
+  expect(getSourcePackageList).toHaveBeenCalledWith(
+    expect.objectContaining({ query: expect.objectContaining(query) }),
+    expect.anything(),
+  );
+}
+
 beforeEach(() => {
-  vi.mocked(getSourcePackageList)
+  getSourcePackageList
     .mockReset()
-    .mockResolvedValue(packageListing());
+    .mockResolvedValue({ data: packageListing() });
 });
 afterEach(() => vi.restoreAllMocks());
 
@@ -54,36 +65,58 @@ describe("package listing query", () => {
       size: 50,
     });
     expect(result).toEqual(packageListing());
-    expect(getSourcePackageList).toHaveBeenCalledExactlyOnceWith("ubuntu", {
-      sourceName: "firefox",
-      exactMatch: true,
-      series: "noble",
-      pocket: "Updates",
-      maintainedBy: "ubuntu-mozillateam",
-      signedBy: "userl",
-      ubuntuChange: true,
-      statuses: ["Pending", "Published", "Superseded", "Deleted", "Obsolete"],
-      size: 50,
-      page: 3,
-      orderBy: ["-date_created"],
-    });
+    expect(getSourcePackageList).toHaveBeenCalledExactlyOnceWith(
+      {
+        path: { distribution: "ubuntu", archive: "primary" },
+        query: {
+          name: "firefox",
+          exact_match: "true",
+          distro_series: "https://lp.example/api/devel/ubuntu/noble",
+          pocket: "Updates",
+          maintained_by: "https://lp.example/api/devel/~ubuntu-mozillateam",
+          signed_by: "https://lp.example/api/devel/~userl",
+          ubuntu_change: "true",
+          status: JSON.stringify([
+            "Pending",
+            "Published",
+            "Superseded",
+            "Deleted",
+            "Obsolete",
+          ]),
+          page: "3",
+          page_size: "50",
+          order_by: JSON.stringify(["-date_created"]),
+          include_binaries: "true",
+          binary_names_limit: String(MAX_BINARY_NAMES),
+        },
+      },
+      { decode: expect.any(Function) },
+    );
   });
 
-  it("passes default filters as null with active-only statuses and newest-first ordering", async () => {
+  it("leaves default filters unset with active-only statuses and newest-first ordering", async () => {
     await getSourcePackages(listArgs);
-    expect(getSourcePackageList).toHaveBeenCalledExactlyOnceWith("ubuntu", {
-      sourceName: null,
-      exactMatch: false,
-      series: null,
-      pocket: null,
-      maintainedBy: null,
-      signedBy: null,
-      ubuntuChange: false,
-      statuses: ["Pending", "Published"],
-      size: 25,
-      page: 1,
-      orderBy: ["-date_created"],
-    });
+    expect(getSourcePackageList).toHaveBeenCalledExactlyOnceWith(
+      {
+        path: { distribution: "ubuntu", archive: "primary" },
+        query: {
+          name: undefined,
+          exact_match: undefined,
+          distro_series: undefined,
+          pocket: undefined,
+          maintained_by: undefined,
+          signed_by: undefined,
+          ubuntu_change: undefined,
+          status: JSON.stringify(["Pending", "Published"]),
+          page: "1",
+          page_size: "25",
+          order_by: JSON.stringify(["-date_created"]),
+          include_binaries: "true",
+          binary_names_limit: String(MAX_BINARY_NAMES),
+        },
+      },
+      { decode: expect.any(Function) },
+    );
   });
 
   it.each([
@@ -129,14 +162,11 @@ describe("package listing query", () => {
       maintainer: "xx",
       signer: "xx",
     });
-    expect(getSourcePackageList).toHaveBeenCalledWith(
-      "ubuntu",
-      expect.objectContaining({
-        series: "xx",
-        maintainedBy: "xx",
-        signedBy: "xx",
-      }),
-    );
+    expectQuery({
+      distro_series: "https://lp.example/api/devel/ubuntu/xx",
+      maintained_by: "https://lp.example/api/devel/~xx",
+      signed_by: "https://lp.example/api/devel/~xx",
+    });
   });
 
   it("uses partial search with the contains mode", async () => {
@@ -145,13 +175,7 @@ describe("package listing query", () => {
       search: "fire",
       match: "contains",
     });
-    expect(getSourcePackageList).toHaveBeenCalledWith(
-      "ubuntu",
-      expect.objectContaining({
-        sourceName: "fire",
-        exactMatch: false,
-      }),
-    );
+    expectQuery({ name: "fire", exact_match: "false" });
   });
 
   it.each([
@@ -164,24 +188,25 @@ describe("package listing query", () => {
     { maintainer: "ubuntu-mozillateam", signer: "userl" },
   ])("keeps person/team filters independent: %j", async (filters) => {
     await getSourcePackages({ ...listArgs, ...filters });
-    expect(getSourcePackageList).toHaveBeenCalledWith(
-      "ubuntu",
-      expect.objectContaining({
-        maintainedBy: filters.maintainer ?? null,
-        signedBy: filters.signer ?? null,
-      }),
-    );
+    expectQuery({
+      maintained_by: filters.maintainer
+        ? `https://lp.example/api/devel/~${filters.maintainer}`
+        : undefined,
+      signed_by: filters.signer
+        ? `https://lp.example/api/devel/~${filters.signer}`
+        : undefined,
+    });
   });
 
   it("preserves a successful empty response", async () => {
     const empty = packageListing({ sources: [], total: 0, total_pages: 0 });
-    vi.mocked(getSourcePackageList).mockResolvedValue(empty);
+    getSourcePackageList.mockResolvedValue({ data: empty });
     await expect(getSourcePackages(listArgs)).resolves.toEqual(empty);
   });
 
   it("logs rejected filters and returns an empty listing", async () => {
-    const failure = new LaunchpadApiError(400, "https://lp.example");
-    vi.mocked(getSourcePackageList).mockRejectedValue(failure);
+    const failure = apiError(400);
+    getSourcePackageList.mockRejectedValue(failure);
     const log = vi.spyOn(console, "error").mockImplementation(() => {});
     await expect(
       getSourcePackages({
@@ -204,8 +229,8 @@ describe("package listing query", () => {
   it.each([404, 500, 503])(
     "logs HTTP %i and throws a service error without an empty result or retry",
     async (status) => {
-      const failure = new LaunchpadApiError(status, "https://lp.example");
-      vi.mocked(getSourcePackageList).mockRejectedValue(failure);
+      const failure = apiError(status);
+      getSourcePackageList.mockRejectedValue(failure);
       const log = vi.spyOn(console, "error").mockImplementation(() => {});
       await expect(getSourcePackages(listArgs)).rejects.toMatchObject({
         status: 503,
@@ -223,7 +248,7 @@ describe("package listing query", () => {
 
   it("surfaces malformed responses and connection failures", async () => {
     const failure = new Error("Invalid response");
-    vi.mocked(getSourcePackageList).mockRejectedValue(failure);
+    getSourcePackageList.mockRejectedValue(failure);
     const log = vi.spyOn(console, "error").mockImplementation(() => {});
     await expect(getSourcePackages(listArgs)).rejects.toMatchObject({
       status: 503,
@@ -246,12 +271,7 @@ describe("package sorting", () => {
       ["series", "none"],
     ] as const)("uses newest-first for %s %s", async (sortKey, sortOrder) => {
       await getSourcePackages({ ...listArgs, ...filters, sortKey, sortOrder });
-      expect(getSourcePackageList).toHaveBeenCalledWith(
-        "ubuntu",
-        expect.objectContaining({
-          orderBy: ["-date_created"],
-        }),
-      );
+      expectQuery({ order_by: JSON.stringify(["-date_created"]) });
     });
 
     it.each([
@@ -265,12 +285,7 @@ describe("package sorting", () => {
       ["status", "descending", "-status"],
     ] as const)("sorts by %s %s", async (sortKey, sortOrder, expectedOrder) => {
       await getSourcePackages({ ...listArgs, ...filters, sortKey, sortOrder });
-      expect(getSourcePackageList).toHaveBeenCalledWith(
-        "ubuntu",
-        expect.objectContaining({
-          orderBy: [expectedOrder],
-        }),
-      );
+      expectQuery({ order_by: JSON.stringify([expectedOrder]) });
     });
   });
 });

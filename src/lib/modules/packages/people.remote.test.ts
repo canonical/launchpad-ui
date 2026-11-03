@@ -1,10 +1,6 @@
+import { LaunchpadApiError } from "@canonical/launchpad-client";
 import * as v from "valibot";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import {
-  findPeople as findLaunchpadPeople,
-  getPerson,
-} from "$lib/server/launchpad/client.js";
-import type { PersonEntry } from "$lib/server/launchpad/types.js";
 import {
   MAX_PEOPLE_SEARCH_LENGTH,
   MIN_PEOPLE_SEARCH_LENGTH,
@@ -12,21 +8,24 @@ import {
 import { findPeople, getPersonByName } from "./people.remote.js";
 
 vi.mock("$app/server", () => ({
-  query: (
-    schema: v.GenericSchema,
-    handler: (args: unknown) => Promise<unknown>,
-  ) =>
+  query: (schema: v.GenericSchema, handler: (args: unknown) => unknown) =>
     Object.assign(async (args: unknown) => handler(v.parse(schema, args)), {
       __: { type: "query" },
     }),
 }));
 
-vi.mock("$lib/server/launchpad/client.js", () => ({
-  findPeople: vi.fn(),
+const { findLaunchpadPeople, getPerson } = vi.hoisted(() => ({
+  findLaunchpadPeople: vi.fn(),
   getPerson: vi.fn(),
 }));
+vi.mock("$lib/server/launchpad/client.js", () => ({
+  launchpadClient: {
+    people: { find: findLaunchpadPeople },
+    person: { get: getPerson },
+  },
+}));
 
-const userl: PersonEntry = {
+const userl = {
   self_link: "https://lp.example/api/devel/~userl",
   resource_type_link: "https://lp.example/api/devel/#person",
   name: "userl",
@@ -34,7 +33,7 @@ const userl: PersonEntry = {
   is_team: false,
   mugshot_link: "https://lp.example/media/userl.jpg",
 };
-const team: PersonEntry = {
+const team = {
   ...userl,
   self_link: "https://lp.example/api/devel/~userl-team",
   name: "userl-team",
@@ -42,15 +41,25 @@ const team: PersonEntry = {
   is_team: true,
 };
 
-beforeEach(() => {
-  vi.mocked(findLaunchpadPeople)
-    .mockReset()
-    .mockResolvedValue({
+function respondWith(entries = [team, userl]) {
+  findLaunchpadPeople.mockResolvedValue({
+    data: {
       start: 0,
-      entries: [team, userl],
+      entries,
       next_collection_link: "https://lp.example/api/devel/people?ws.start=2",
-    });
-  vi.mocked(getPerson).mockReset().mockResolvedValue(userl);
+    },
+  });
+  getPerson.mockResolvedValue({ data: userl });
+}
+
+function apiError(status: number): LaunchpadApiError {
+  return new LaunchpadApiError(new Response(null, { status }), undefined);
+}
+
+beforeEach(() => {
+  findLaunchpadPeople.mockReset();
+  getPerson.mockReset();
+  respondWith();
 });
 
 afterEach(() => {
@@ -84,8 +93,8 @@ describe("findPeople", () => {
       expected: [],
     },
   ])("$description", async ({ entries, exactMatch, expected }) => {
-    vi.mocked(findLaunchpadPeople).mockResolvedValue({ start: 0, entries });
-    vi.mocked(getPerson).mockResolvedValue(exactMatch);
+    respondWith(entries);
+    if (exactMatch === null) getPerson.mockRejectedValue(apiError(404));
 
     await expect(findPeople({ text: "userl" })).resolves.toEqual(expected);
   });
@@ -94,8 +103,12 @@ describe("findPeople", () => {
     "normalizes %s and searches once without pagination",
     async (text) => {
       await expect(findPeople({ text })).resolves.toEqual([userl, team]);
-      expect(findLaunchpadPeople).toHaveBeenCalledExactlyOnceWith("userl");
-      expect(getPerson).toHaveBeenCalledExactlyOnceWith("userl");
+      expect(findLaunchpadPeople).toHaveBeenCalledExactlyOnceWith({
+        query: { text: "userl" },
+      });
+      expect(getPerson).toHaveBeenCalledExactlyOnceWith({
+        path: { person: "~userl" },
+      });
     },
   );
 
@@ -104,9 +117,9 @@ describe("findPeople", () => {
       team,
       userl,
     ]);
-    expect(findLaunchpadPeople).toHaveBeenCalledExactlyOnceWith(
-      "User Launchpadio",
-    );
+    expect(findLaunchpadPeople).toHaveBeenCalledExactlyOnceWith({
+      query: { text: "User Launchpadio" },
+    });
     expect(getPerson).not.toHaveBeenCalled();
   });
 
@@ -116,7 +129,9 @@ describe("findPeople", () => {
       const text = "a".repeat(length);
       await findPeople({ text });
 
-      expect(findLaunchpadPeople).toHaveBeenCalledExactlyOnceWith(text);
+      expect(findLaunchpadPeople).toHaveBeenCalledExactlyOnceWith({
+        query: { text },
+      });
     },
   );
 
@@ -136,7 +151,7 @@ describe("findPeople", () => {
   it("logs an exact-name lookup failure and keeps the search results", async () => {
     const failure = new Error("Lookup failed");
     const log = vi.spyOn(console, "error").mockImplementation(() => {});
-    vi.mocked(getPerson).mockRejectedValue(failure);
+    getPerson.mockRejectedValue(failure);
 
     await expect(findPeople({ text: "userl" })).resolves.toEqual([team, userl]);
     expect(log).toHaveBeenCalledWith(
@@ -147,7 +162,7 @@ describe("findPeople", () => {
 
   it("propagates a search failure", async () => {
     const failure = new Error("Search failed");
-    vi.mocked(findLaunchpadPeople).mockRejectedValue(failure);
+    findLaunchpadPeople.mockRejectedValue(failure);
 
     await expect(findPeople({ text: "userl" })).rejects.toBe(failure);
   });
@@ -158,14 +173,18 @@ describe("getPersonByName", () => {
     "normalizes %s and looks the person up",
     async (reference) => {
       await expect(getPersonByName(reference)).resolves.toEqual(userl);
-      expect(getPerson).toHaveBeenCalledExactlyOnceWith("userl");
+      expect(getPerson).toHaveBeenCalledExactlyOnceWith({
+        path: { person: "~userl" },
+      });
     },
   );
 
   it("looks up names shorter than the minimum search length", async () => {
     await getPersonByName("ab");
 
-    expect(getPerson).toHaveBeenCalledExactlyOnceWith("ab");
+    expect(getPerson).toHaveBeenCalledExactlyOnceWith({
+      path: { person: "~ab" },
+    });
   });
 
   it("returns null for a reference that is not a Launchpad name", async () => {
@@ -174,7 +193,7 @@ describe("getPersonByName", () => {
   });
 
   it("returns null when the person does not exist", async () => {
-    vi.mocked(getPerson).mockResolvedValue(null);
+    getPerson.mockRejectedValue(apiError(404));
 
     await expect(getPersonByName("userl")).resolves.toBeNull();
   });
