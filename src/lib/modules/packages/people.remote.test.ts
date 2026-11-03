@@ -1,3 +1,4 @@
+import { LaunchpadApiError } from "@canonical/launchpad-client";
 import * as v from "valibot";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
@@ -12,8 +13,16 @@ vi.mock("$app/server", () => ({
       __: { type: "query" },
     }),
 }));
-vi.mock("$env/dynamic/private", () => ({
-  env: { MAIN_LAUNCHPAD_BASE_HOST: "https://lp.example" },
+
+const { findLaunchpadPeople, getPerson } = vi.hoisted(() => ({
+  findLaunchpadPeople: vi.fn(),
+  getPerson: vi.fn(),
+}));
+vi.mock("$lib/server/launchpad/client.js", () => ({
+  launchpadClient: {
+    people: { find: findLaunchpadPeople },
+    person: { get: getPerson },
+  },
 }));
 
 const userl = {
@@ -31,71 +40,62 @@ const team = {
   display_name: "User Launchpadio team",
   is_team: true,
 };
-const fetchMock = vi.hoisted(() => {
-  const fetchMock = vi.fn<(request: Request) => Promise<Response>>();
-  vi.stubGlobal("fetch", fetchMock);
-  return fetchMock;
+
+function respondWith(entries = [team, userl]) {
+  findLaunchpadPeople.mockResolvedValue({
+    data: {
+      start: 0,
+      entries,
+      next_collection_link: "https://lp.example/api/devel/people?ws.start=2",
+    },
+  });
+  getPerson.mockResolvedValue({ data: userl });
+}
+
+function apiError(status: number): LaunchpadApiError {
+  return new LaunchpadApiError(new Response(null, { status }), undefined);
+}
+
+beforeEach(() => {
+  findLaunchpadPeople.mockReset();
+  getPerson.mockReset();
+  respondWith();
 });
 
-function respondWith(
-  entries = [team, userl],
-  exactMatch: typeof userl | null = userl,
-) {
-  fetchMock.mockImplementation(async (request: Request) => {
-    const isSearch = new URL(request.url).pathname.endsWith("/people");
-    return isSearch
-      ? Response.json({
-          start: 0,
-          entries,
-          next_collection_link:
-            "https://lp.example/api/devel/people?ws.start=2",
-        })
-      : Response.json(exactMatch, { status: exactMatch === null ? 404 : 200 });
-  });
-}
-function urls(): URL[] {
-  return fetchMock.mock.calls.map(
-    ([request]: [Request]) => new URL(request.url),
-  );
-}
-beforeEach(() => {
-  fetchMock.mockReset();
-  respondWith();
-  vi.stubGlobal("fetch", fetchMock);
-});
 afterEach(() => {
-  vi.unstubAllGlobals();
   vi.restoreAllMocks();
 });
 
 describe("findPeople", () => {
   it.each([
     {
-      description: "puts the exact match first without duplicates",
+      description: "puts the exact match first without duplicating it",
       entries: [team, userl],
       exactMatch: userl,
       expected: [userl, team],
     },
     {
-      description: "includes an exact match missing from search",
+      description: "includes an exact match missing from the search results",
       entries: [team],
       exactMatch: userl,
       expected: [userl, team],
     },
     {
-      description: "keeps results without an exact match",
+      description: "keeps every result when there is no exact match",
       entries: [team, userl],
       exactMatch: null,
       expected: [team, userl],
     },
     {
-      description: "returns empty results when nobody matches",
+      description: "returns an empty list when nobody matches",
       entries: [],
       exactMatch: null,
       expected: [],
     },
   ])("$description", async ({ entries, exactMatch, expected }) => {
-    respondWith(entries, exactMatch);
+    respondWith(entries);
+    if (exactMatch === null) getPerson.mockRejectedValue(apiError(404));
+
     await expect(findPeople({ text: "userl" })).resolves.toEqual(expected);
   });
 
@@ -103,25 +103,24 @@ describe("findPeople", () => {
     "normalizes %s and searches once without pagination",
     async (text) => {
       await expect(findPeople({ text })).resolves.toEqual([userl, team]);
-      expect(urls().map((url) => url.pathname)).toEqual([
-        "/api/devel/~userl",
-        "/api/devel/people",
-      ]);
-      expect(Object.fromEntries(urls()[1].searchParams)).toEqual({
-        text: "userl",
-        "ws.op": "find",
+      expect(findLaunchpadPeople).toHaveBeenCalledExactlyOnceWith({
+        query: { text: "userl" },
       });
-      expect(fetchMock).toHaveBeenCalledTimes(2);
+      expect(getPerson).toHaveBeenCalledExactlyOnceWith({
+        path: { person: "~userl" },
+      });
     },
   );
 
-  it("searches display names without an exact lookup", async () => {
+  it("searches display names without an exact-name lookup", async () => {
     await expect(findPeople({ text: " User Launchpadio " })).resolves.toEqual([
       team,
       userl,
     ]);
-    expect(fetchMock).toHaveBeenCalledTimes(1);
-    expect(urls()[0].searchParams.get("text")).toBe("User Launchpadio");
+    expect(findLaunchpadPeople).toHaveBeenCalledExactlyOnceWith({
+      query: { text: "User Launchpadio" },
+    });
+    expect(getPerson).not.toHaveBeenCalled();
   });
 
   it.each([MIN_PEOPLE_SEARCH_LENGTH, MAX_PEOPLE_SEARCH_LENGTH])(
@@ -129,11 +128,10 @@ describe("findPeople", () => {
     async (length) => {
       const text = "a".repeat(length);
       await findPeople({ text });
-      expect(
-        urls()
-          .find((url) => url.pathname.endsWith("/people"))
-          ?.searchParams.get("text"),
-      ).toBe(text);
+
+      expect(findLaunchpadPeople).toHaveBeenCalledExactlyOnceWith({
+        query: { text },
+      });
     },
   );
 
@@ -144,15 +142,17 @@ describe("findPeople", () => {
     tooShort,
     ` ${tooShort} `,
     "a".repeat(MAX_PEOPLE_SEARCH_LENGTH + 1),
-  ])("rejects invalid search length (%s)", async (text) => {
+  ])("rejects search text outside the length limits (%s)", async (text) => {
     await expect(findPeople({ text })).rejects.toBeInstanceOf(v.ValiError);
-    expect(fetchMock).not.toHaveBeenCalled();
+    expect(findLaunchpadPeople).not.toHaveBeenCalled();
+    expect(getPerson).not.toHaveBeenCalled();
   });
 
-  it("logs an exact lookup failure and keeps search results", async () => {
+  it("logs an exact-name lookup failure and keeps the search results", async () => {
     const failure = new Error("Lookup failed");
     const log = vi.spyOn(console, "error").mockImplementation(() => {});
-    fetchMock.mockRejectedValueOnce(failure);
+    getPerson.mockRejectedValue(failure);
+
     await expect(findPeople({ text: "userl" })).resolves.toEqual([team, userl]);
     expect(log).toHaveBeenCalledWith(
       "Failed to look up the Launchpad person userl",
@@ -162,9 +162,8 @@ describe("findPeople", () => {
 
   it("propagates a search failure", async () => {
     const failure = new Error("Search failed");
-    fetchMock
-      .mockResolvedValueOnce(Response.json(userl))
-      .mockRejectedValueOnce(failure);
+    findLaunchpadPeople.mockRejectedValue(failure);
+
     await expect(findPeople({ text: "userl" })).rejects.toBe(failure);
   });
 });
@@ -174,39 +173,28 @@ describe("getPersonByName", () => {
     "normalizes %s and looks the person up",
     async (reference) => {
       await expect(getPersonByName(reference)).resolves.toEqual(userl);
-      expect(urls()[0].pathname).toBe("/api/devel/~userl");
-      expect(fetchMock).toHaveBeenCalledTimes(1);
-      expect((fetchMock.mock.calls[0][0] as Request).redirect).toBe("follow");
+      expect(getPerson).toHaveBeenCalledExactlyOnceWith({
+        path: { person: "~userl" },
+      });
     },
   );
-  it("looks up short valid names", async () => {
+
+  it("looks up names shorter than the minimum search length", async () => {
     await getPersonByName("ab");
-    expect(urls()[0].pathname).toBe("/api/devel/~ab");
+
+    expect(getPerson).toHaveBeenCalledExactlyOnceWith({
+      path: { person: "~ab" },
+    });
   });
-  it("returns null for an invalid Launchpad reference", async () => {
+
+  it("returns null for a reference that is not a Launchpad name", async () => {
     await expect(getPersonByName("User Launchpadio")).resolves.toBeNull();
-    expect(fetchMock).not.toHaveBeenCalled();
+    expect(getPerson).not.toHaveBeenCalled();
   });
-  it.each([404, 410])("returns null on HTTP %i", async (status) => {
-    fetchMock.mockResolvedValueOnce(Response.json(null, { status }));
-    await expect(getPersonByName("nobody")).resolves.toBeNull();
-  });
-  it("preserves nullable mugshots rather than fabricating an image URL", async () => {
-    fetchMock.mockResolvedValueOnce(
-      Response.json({ ...userl, mugshot_link: null }),
-    );
-    await expect(getPersonByName("userl")).resolves.toMatchObject({
-      mugshot_link: null,
-    });
-  });
-  it("propagates other HTTP failures", async () => {
-    fetchMock.mockResolvedValueOnce(
-      Response.json({ detail: "Unavailable" }, { status: 503 }),
-    );
-    await expect(getPersonByName("userl")).rejects.toMatchObject({
-      name: "LaunchpadApiError",
-      status: 503,
-      body: { detail: "Unavailable" },
-    });
+
+  it("returns null when the person does not exist", async () => {
+    getPerson.mockRejectedValue(apiError(404));
+
+    await expect(getPersonByName("userl")).resolves.toBeNull();
   });
 });

@@ -1,6 +1,6 @@
 import * as v from "valibot";
 
-// Temporary UI response schemas for getSourcePackageList and getBinaryPackageDetails.
+// TODO: Temporary UI response schemas for getSourcePackageList and getBinaryPackageDetails.
 // Their WADL omits return schemas, so the generated client outputs remain unknown.
 // Remove these fallbacks once upstream OpenAPI provides the response contracts.
 const publishingStatusSchema = v.picklist([

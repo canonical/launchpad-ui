@@ -3,10 +3,7 @@ import { error } from "@sveltejs/kit";
 import * as v from "valibot";
 import { SORT_DIRECTIONS } from "$lib/codecs/sortCodec.js";
 import { ParsedPackagesFiltersSchema } from "$lib/modules/packages/filters/schema.js";
-import {
-  launchpadApiBaseUrl,
-  launchpadClient,
-} from "$lib/server/launchpad/config.js";
+import { launchpadClient, launchpadUrl } from "$lib/server/launchpad/client.js";
 import { sourcePackageListSchema } from "./api.schema.js";
 import { MAX_BINARY_NAMES } from "./constants.js";
 import { MAX_PAGE_SIZE, SORTABLE_PACKAGES_COLUMNS } from "./superhref.js";
@@ -64,29 +61,14 @@ export const getSourcePackages = query(
                     ]
                   : ["Pending", "Published"],
               ),
-              distro_series: filters.series
-                ? new URL(
-                    `${encodeURIComponent(distro)}/${encodeURIComponent(filters.series)}`,
-                    launchpadApiBaseUrl,
-                  ).href
-                : undefined,
+              distro_series: launchpadUrl(distro, filters.series),
               name: filters.search ?? undefined,
               exact_match: filters.search
                 ? String(filters.match === "exact")
                 : undefined,
               pocket: filters.pocket ?? undefined,
-              maintained_by: filters.maintainer
-                ? new URL(
-                    `~${encodeURIComponent(filters.maintainer)}`,
-                    launchpadApiBaseUrl,
-                  ).href
-                : undefined,
-              signed_by: filters.signer
-                ? new URL(
-                    `~${encodeURIComponent(filters.signer)}`,
-                    launchpadApiBaseUrl,
-                  ).href
-                : undefined,
+              maintained_by: launchpadUrl("~", filters.maintainer),
+              signed_by: launchpadUrl("~", filters.signer),
               ubuntu_change: filters.ubuntuChange ? "true" : undefined,
             },
           },

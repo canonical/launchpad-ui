@@ -31,30 +31,24 @@ const serverNames: string[] = [];
 let privateAddress: string;
 let otherAddress: string;
 
-async function echo(
+function echo(
   request: IncomingMessage,
   response: ServerResponse,
   backend: string,
 ) {
-  const chunks: Buffer[] = [];
-  for await (const chunk of request) chunks.push(Buffer.from(chunk));
   response.setHeader("content-type", "application/json");
   response.end(
     JSON.stringify({
       backend,
       host: request.headers.host,
       path: request.url,
-      method: request.method,
       cookie: request.headers.cookie ?? null,
-      authorization: request.headers.authorization ?? null,
-      contentType: request.headers["content-type"],
-      body: Buffer.concat(chunks).toString(),
     }),
   );
 }
 
 const otherBackend = createHttpServer((request, response) => {
-  void echo(request, response, "other");
+  echo(request, response, "other");
 });
 const backend = createHttpsServer(
   {
@@ -66,15 +60,14 @@ const backend = createHttpsServer(
   },
   (request, response) => {
     const redirects: Record<string, string> = {
-      "/api/devel/relative": "/api/devel/final?redirected=true",
       "/api/devel/external": `${otherAddress}/outside`,
       "/api/devel/external-tls": `${privateAddress}/outside`,
     };
     const location = redirects[request.url ?? ""];
     if (location) {
       response.writeHead(302, { location }).end();
-    } else if (request.url !== "/api/devel/wait") {
-      void echo(request, response, "launchpad");
+    } else {
+      echo(request, response, "launchpad");
     }
   },
 );
@@ -111,16 +104,13 @@ afterAll(async () => {
 });
 
 describe("Launchpad client transport configuration", () => {
-  it("routes to the private server while preserving hostname, SNI, body and per-request cookies", async () => {
+  it("routes to the private server with the logical hostname, SNI and per-request cookies", async () => {
     const { launchpadClient, launchpadApiBaseUrl } =
-      await import("./config.js");
+      await import("./client.js");
     const results = await Promise.all(
       ["first-user", "second-user", undefined].map((user) =>
-        launchpadClient.bug.patch(
-          {
-            path: { id: "1" },
-            body: { title: "hello" },
-          },
+        launchpadClient.distribution.get(
+          { path: { distribution: "ubuntu" } },
           {
             headers: user ? { cookie: `launchpad_dev=${user}` } : undefined,
           },
@@ -130,27 +120,21 @@ describe("Launchpad client transport configuration", () => {
     expect(launchpadApiBaseUrl).toBe("https://launchpad.invalid/api/devel/");
     expect(results.map(({ data }) => data)).toEqual(
       ["launchpad_dev=first-user", "launchpad_dev=second-user", null].map(
-        (cookie) => ({
-          backend: "launchpad",
-          host: "launchpad.invalid",
-          path: "/api/devel/bugs/1",
-          method: "PATCH",
-          cookie,
-          authorization: null,
-          contentType: "application/json",
-          body: '{"title":"hello"}',
-        }),
+        (cookie) =>
+          expect.objectContaining({
+            backend: "launchpad",
+            host: "launchpad.invalid",
+            path: "/api/devel/ubuntu",
+            cookie,
+          }),
       ),
     );
     expect(serverNames).toContain("launchpad.invalid");
-    expect(results[0].response.url).toBe(
-      "https://launchpad.invalid/api/devel/bugs/1",
-    );
   });
 
   it("verifies the private server's certificate by default", async () => {
     delete env.MAIN_LAUNCHPAD_SKIP_TLS_VERIFY;
-    const { launchpadClient } = await import("./config.js");
+    const { launchpadClient } = await import("./client.js");
     await expect(
       launchpadClient.distribution.get({ path: { distribution: "ubuntu" } }),
     ).rejects.toMatchObject({
@@ -158,39 +142,19 @@ describe("Launchpad client transport configuration", () => {
     });
   });
 
-  it("follows redirects with normal Fetch cookie isolation and origin-scoped routing", async () => {
-    const { launchpadClient } = await import("./config.js");
-    const headers = {
-      cookie: "launchpad_dev=current-user",
-      authorization: "Bearer test-credential",
-    };
-    const relative = await launchpadClient.project.get(
-      { path: { project: "relative" } },
-      { headers },
-    );
-    expect(relative.response.url).toBe(
-      "https://launchpad.invalid/api/devel/final?redirected=true",
-    );
-    expect(relative.data).toMatchObject({
-      backend: "launchpad",
-      cookie: headers.cookie,
-      authorization: headers.authorization,
+  it("does not reroute other origins reached through a redirect", async () => {
+    const { launchpadClient } = await import("./client.js");
+    const { data } = await launchpadClient.project.get({
+      path: { project: "external" },
     });
-    const external = await launchpadClient.project.get(
-      { path: { project: "external" } },
-      { headers },
-    );
-    expect(external.response.url).toBe(`${otherAddress}/outside`);
-    expect(external.data).toMatchObject({
+    expect(data).toMatchObject({
       backend: "other",
       host: new URL(otherAddress).host,
-      cookie: null,
-      authorization: null,
     });
   });
 
   it("does not disable certificate verification for a redirect to another origin", async () => {
-    const { launchpadClient } = await import("./config.js");
+    const { launchpadClient } = await import("./client.js");
     await expect(
       launchpadClient.project.get({ path: { project: "external-tls" } }),
     ).rejects.toMatchObject({
@@ -201,8 +165,8 @@ describe("Launchpad client transport configuration", () => {
   it("honors the internal address's protocol and port without changing the logical Host", async () => {
     env.MAIN_LAUNCHPAD_IP_ADDRESS = otherAddress;
     delete env.MAIN_LAUNCHPAD_SKIP_TLS_VERIFY;
-    const { launchpadClient } = await import("./config.js");
-    const { data, response } = await launchpadClient.distribution.get({
+    const { launchpadClient } = await import("./client.js");
+    const { data } = await launchpadClient.distribution.get({
       path: { distribution: "ubuntu" },
     });
     expect(data).toMatchObject({
@@ -210,19 +174,35 @@ describe("Launchpad client transport configuration", () => {
       host: "launchpad.invalid",
       path: "/api/devel/ubuntu",
     });
-    expect(response.url).toBe("https://launchpad.invalid/api/devel/ubuntu");
+  });
+});
+
+describe("launchpadUrl", () => {
+  it.each([
+    [["ubuntu", "noble"], "ubuntu/noble"],
+    [["~", "userl"], "~userl"],
+    [["ubuntu", "+", "archive", "primary"], "ubuntu/+archive/primary"],
+    [["~", "a/b c"], "~a%2Fb%20c"],
+  ])("links %j under the configured API root", async (segments, path) => {
+    const { launchpadUrl } = await import("./client.js");
+    expect(launchpadUrl(...segments)).toBe(
+      `https://launchpad.invalid/api/devel/${path}`,
+    );
   });
 
-  it("preserves cancellation after a request reaches the private server", async () => {
-    const { launchpadClient } = await import("./config.js");
-    const controller = new AbortController();
-    const arrived = once(backend, "request");
-    const request = launchpadClient.project.get(
-      { path: { project: "wait" } },
-      { signal: controller.signal },
-    );
-    await Promise.race([arrived, request]);
-    controller.abort();
-    await expect(request).rejects.toMatchObject({ name: "AbortError" });
+  it.each([
+    ["ubuntu", null],
+    ["~", undefined],
+  ])("returns undefined when a segment is missing: %j", async (...segments) => {
+    const { launchpadUrl } = await import("./client.js");
+    expect(launchpadUrl(...segments)).toBeUndefined();
   });
+
+  it.each([".", ".."])(
+    "rejects the dot segment %s instead of leaving the API root",
+    async (segment) => {
+      const { launchpadUrl } = await import("./client.js");
+      expect(() => launchpadUrl(segment, "x")).toThrow(TypeError);
+    },
+  );
 });

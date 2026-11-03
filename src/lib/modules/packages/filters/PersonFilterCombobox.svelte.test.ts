@@ -54,9 +54,11 @@ function person(name: string, displayName: string) {
   };
 }
 
+type PersonEntry = ReturnType<typeof person>;
+
 const alice = person("alice", "Alice Example");
 const bob = person("bob", "Bob Example");
-const people = [alice, bob];
+const people: Record<string, PersonEntry> = { alice, bob };
 
 const onchange = vi.fn(submitOnChange);
 
@@ -81,13 +83,11 @@ beforeEach(() => {
   onchange.mockClear();
   findPeople
     .mockReset()
-    .mockImplementation(() => remoteQuery(Promise.resolve(people)));
+    .mockImplementation(() => remoteQuery(Promise.resolve([alice, bob])));
   getPersonByName
     .mockReset()
     .mockImplementation((name: string) =>
-      remoteQuery(
-        Promise.resolve(people.find((person) => person.name === name) ?? null),
-      ),
+      remoteQuery(Promise.resolve(people[name] ?? null)),
     );
   seedPerson.mockReset();
 });
@@ -166,7 +166,7 @@ describe("PersonFilterCombobox", () => {
   );
 
   it("shows a loading state instead of the previous results on every search", async () => {
-    const first = Promise.withResolvers<typeof people>();
+    const first = Promise.withResolvers<PersonEntry[]>();
     findPeople.mockImplementation(() => remoteQuery(first.promise));
     const screen = await render(PersonFilterCombobox, baseProps, formOptions);
     await openAndSearch(screen, "example");
@@ -178,7 +178,7 @@ describe("PersonFilterCombobox", () => {
       .toBeVisible();
     await expect.element(screen.getByText("Loading…")).not.toBeInTheDocument();
 
-    const second = Promise.withResolvers<typeof people>();
+    const second = Promise.withResolvers<PersonEntry[]>();
     findPeople.mockImplementation(() => remoteQuery(second.promise));
     await searchFor(screen, "alice");
 

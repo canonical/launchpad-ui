@@ -2,7 +2,7 @@ import { LaunchpadApiError } from "@canonical/launchpad-client";
 import type { DistroSeriesFull } from "@canonical/launchpad-client/schemas/models/distro_series";
 import { error } from "@sveltejs/kit";
 import * as v from "valibot";
-import { launchpadClient } from "$lib/server/launchpad/config.js";
+import { launchpadClient } from "$lib/server/launchpad/client.js";
 import { LAUNCHPAD_NAME_PATTERN } from "$lib/utils/launchpad/launchpadName.js";
 import { query } from "$app/server";
 
