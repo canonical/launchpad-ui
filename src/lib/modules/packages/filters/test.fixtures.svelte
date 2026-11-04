@@ -1,5 +1,5 @@
 <script lang="ts" module>
-  import type { FilterChangeHandler } from "./types.js";
+  import type { FilterChangeHandler } from "$lib/modules/filtering/types";
 
   export const FILTER_LABEL_ID = "filter-label";
 

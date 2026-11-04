@@ -3,11 +3,12 @@ import {
   getUbuntuImageCounts,
   getUbuntuImages,
 } from "$lib/server/test-observer/client";
-import { getSeriesImageCounts, getSeriesImages } from "./images.remote.js";
 import {
+  getSeriesImageCounts,
   getSeriesImageCountsArgsSchema,
+  getSeriesImages,
   getSeriesImagesArgsSchema,
-} from "./schema";
+} from "./images.remote.js";
 
 const { query } = vi.hoisted(() => ({
   query: vi.fn(

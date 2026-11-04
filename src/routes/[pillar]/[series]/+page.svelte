@@ -7,6 +7,7 @@
   import GetInvolved from "$lib/modules/distroseries/GetInvolved.svelte";
   import SeriesHeader from "$lib/modules/distroseries/SeriesHeader.svelte";
   import SeriesMilestones from "$lib/modules/distroseries/SeriesMilestones.svelte";
+  import SeriesImages from "$lib/modules/distroseries/images/SeriesImages.svelte";
   import { getSeriesOverview } from "$lib/modules/distroseries/series.remote.js";
   import type { PageProps } from "./$types.js";
 
@@ -44,6 +45,10 @@
           allMilestonesHref={links.milestones}
         />
       </div>
+
+      {#if params.pillar === "ubuntu"}
+        <SeriesImages pillar={params.pillar} series={params.series} />
+      {/if}
     </ContentLayout>
   </div>
 </PageLayout>

@@ -2,6 +2,7 @@ import type {
   SuperhrefPatchInput,
   SuperhrefSchema,
 } from "@canonical/superhref";
+import { getNestedValue, setNestedValue } from "$lib/utils/object.js";
 import type { QueryParam, QueryParamsFormSchema } from "./types.js";
 
 export type FormDataEntries = readonly (readonly [
@@ -31,12 +32,13 @@ export function createQueryParamsForm<S extends SuperhrefSchema>(
         new URLSearchParams(entries.map(([name, value]) => [name, value])),
       );
       const parsed = schema.parse(submitted);
-      const payload = Object.fromEntries(
-        replaceParams.map((key) => [
-          key,
-          entries.some(([name]) => belongsTo(name, key)) ? parsed[key] : null,
-        ]),
-      ) as SuperhrefPatchInput<S>;
+      const payload = replaceParams.reduce((acc, key) => {
+        const value = entries.some(([name]) => belongsTo(name, key))
+          ? getNestedValue(parsed, key)
+          : null;
+        return setNestedValue(acc, key, value);
+      }, {}) as SuperhrefPatchInput<S>;
+
       const patched = schema.patch(url, payload).searchParams;
       const names = new Set([
         ...entries.map(([name]) => name),

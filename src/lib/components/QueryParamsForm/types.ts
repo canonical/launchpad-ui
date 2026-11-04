@@ -1,4 +1,5 @@
 import type {
+  OwnedKey,
   Superhref,
   SuperhrefParsed,
   SuperhrefSchema,
@@ -11,8 +12,9 @@ export type QueryParamsFormSchema<S extends SuperhrefSchema> = Superhref<
   Record<never, never>
 >;
 
-export type QueryParam<S extends SuperhrefSchema> = keyof SuperhrefParsed<S> &
-  string;
+export type QueryParam<S extends SuperhrefSchema> =
+  | OwnedKey<S>
+  | (keyof SuperhrefParsed<S> & string);
 
 export type QueryParamsFormProps<S extends SuperhrefSchema> = {
   schema: QueryParamsFormSchema<S>;

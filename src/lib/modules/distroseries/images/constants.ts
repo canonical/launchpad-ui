@@ -1,14 +1,5 @@
 import { slugify } from "$lib/utils/slugify";
-
-export const DEFAULT_TABLE_VIEWS = [
-  { name: "All packages", editable: false },
-  { name: "Failed to build", editable: true },
-  { name: "Failed testing", editable: true },
-].map(({ name, editable }) => ({ name, slug: slugify(name), editable }));
-
-export const DEFAULT_TABLE_VIEW_SLUG = DEFAULT_TABLE_VIEWS[0].slug;
-
-export const MANAGE_VIEWS_PANEL = "manage-views";
+import type { ImageOwnedQueryKey } from "./superhref";
 
 export const PRODUCTS = [
   { name: "Edubuntu" },
@@ -52,3 +43,20 @@ export const IMAGES_TABLE_COLUMNS = [
 export const SORTABLE_IMAGES_TABLE_COLUMNS = IMAGES_TABLE_COLUMNS.flatMap(
   (column) => (column.sortable ? [column.key] : []),
 );
+
+export const IMAGE_FILTERS = {
+  product: { key: "images.product", codecKey: "product", label: "Product" },
+  buildStatus: {
+    key: "images.build-status",
+    codecKey: "build-status",
+    label: "Build status",
+  },
+  testStatus: {
+    key: "images.test-status",
+    codecKey: "test-status",
+    label: "Test status",
+  },
+} as const satisfies Record<
+  string,
+  { key: ImageOwnedQueryKey; codecKey: string; label: string }
+>;

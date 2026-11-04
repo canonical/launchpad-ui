@@ -1,0 +1,17 @@
+import * as v from "valibot";
+import { describe, expect, it } from "vitest";
+import { TableViewEditFormSchema } from "./schema.js";
+
+describe("TableViewEditFormSchema", () => {
+  it("requires a name to confirm", () => {
+    const result = v.safeParse(TableViewEditFormSchema, {
+      id: "mine",
+      name: "  ",
+      filters: {},
+    });
+
+    expect(
+      result.issues?.map((issue) => [v.getDotPath(issue), issue.message]),
+    ).toEqual([["name", "Enter a view name"]]);
+  });
+});

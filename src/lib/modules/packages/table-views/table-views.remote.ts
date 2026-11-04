@@ -1,10 +1,10 @@
 import { error, invalid } from "@sveltejs/kit";
 import * as v from "valibot";
+import { TableViewSlugSchema } from "$lib/modules/table-views/schema.js";
 import { DEFAULT_TABLE_VIEWS } from "./constants.js";
 import {
   ParsedTableViewSettingsSchema,
   TableViewEditFormSchema,
-  TableViewSlugSchema,
 } from "./schema.js";
 import { command, form, query } from "$app/server";
 

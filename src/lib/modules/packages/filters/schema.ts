@@ -1,4 +1,5 @@
 import * as v from "valibot";
+import { nullIfEmpty } from "$lib/modules/filtering/schema.js";
 import { LAUNCHPAD_NAME_PATTERN } from "$lib/utils/launchpad/launchpadName.js";
 import {
   MAX_PACKAGES_SEARCH_LENGTH,
@@ -25,21 +26,6 @@ export const PackagesFilterFields = {
   ubuntuChange: v.boolean(),
   allStatuses: v.boolean(),
 };
-
-/**
- * Converts missing or empty strings to null, then validates nonempty values.
- * With trimming enabled, whitespace-only strings also become null.
- */
-function nullIfEmpty<TSchema extends v.GenericSchema<string>>(
-  schema: TSchema,
-  trim = false,
-) {
-  return v.pipe(
-    v.optional(v.string(), ""),
-    v.transform((value) => (trim ? value.trim() : value) || null),
-    v.nullable(schema),
-  );
-}
 
 /**
  * Parses form-shaped filters, supplying defaults for missing fields and converting empty choices to null.

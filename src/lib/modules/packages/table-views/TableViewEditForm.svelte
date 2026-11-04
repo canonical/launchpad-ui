@@ -24,6 +24,7 @@
   import type { TextInputProps } from "@canonical/svelte-ds-app-launchpad";
   import type { RemoteFormField } from "@sveltejs/kit";
   import * as v from "valibot";
+  import { MAX_TABLE_VIEW_NAME_LENGTH } from "$lib/modules/table-views/constants.js";
   import { preserveQueryParams, subId } from "$lib/utils/index.js";
   import PersonFilterCombobox from "../filters/PersonFilterCombobox.svelte";
   import PocketFilterMenu from "../filters/PocketFilterMenu.svelte";
@@ -33,7 +34,6 @@
     MAX_PACKAGES_SEARCH_LENGTH,
     PACKAGES_FILTER_LABELS as labels,
   } from "../filters/constants.js";
-  import { MAX_TABLE_VIEW_NAME_LENGTH } from "./constants.js";
   import type { TableView } from "./constants.js";
   import {
     TableViewEditFormSchema,

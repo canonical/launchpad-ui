@@ -1,13 +1,36 @@
 import { error } from "@sveltejs/kit";
+import * as v from "valibot";
+import { SORT_DIRECTIONS } from "$lib/codecs/sortCodec";
 import {
   getUbuntuImageCounts,
   getUbuntuImages,
 } from "$lib/server/test-observer/client";
-import {
-  getSeriesImageCountsArgsSchema,
-  getSeriesImagesArgsSchema,
-} from "./schema";
+import { LAUNCHPAD_NAME_PATTERN } from "$lib/utils/launchpad/launchpadName";
+import { SORTABLE_IMAGES_TABLE_COLUMNS } from "./constants";
+import { ParsedImagesFiltersSchema } from "./filters/schema";
 import { query } from "$app/server";
+
+/**
+ * Remote function schemas
+ */
+const nameSchema = v.pipe(v.string(), v.regex(LAUNCHPAD_NAME_PATTERN));
+export const getSeriesImagesArgsSchema = v.intersect([
+  v.object({
+    pillar: nameSchema,
+    series: nameSchema,
+    sortKey: v.nullish(v.picklist(SORTABLE_IMAGES_TABLE_COLUMNS), null),
+    sortOrder: v.optional(v.picklist(SORT_DIRECTIONS), "none"),
+    page: v.optional(
+      v.pipe(v.number(), v.integer(), v.minValue(1), v.safeInteger()),
+      1,
+    ),
+  }),
+  v.partial(ParsedImagesFiltersSchema),
+]);
+export const getSeriesImageCountsArgsSchema = v.intersect([
+  v.object({ pillar: nameSchema, series: nameSchema }),
+  v.partial(ParsedImagesFiltersSchema),
+]);
 
 export const getSeriesImages = query(
   getSeriesImagesArgsSchema,

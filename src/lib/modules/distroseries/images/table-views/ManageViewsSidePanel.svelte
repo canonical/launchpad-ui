@@ -1,0 +1,239 @@
+<script lang="ts">
+  import { Button } from "@canonical/svelte-ds-app-launchpad";
+  import { DeleteIcon, EditIcon } from "@canonical/svelte-icons";
+  import { tick, untrack } from "svelte";
+  import { ReorderableList } from "$lib/components/ReorderableList/index.js";
+  import { SidePanel } from "$lib/launchpad-components/index.js";
+  import { preserveQueryParams } from "$lib/utils/index.js";
+  import { getImagesContext } from "../context.js";
+  import { DEFAULT_IMAGES_FILTERS } from "../filters/constants.js";
+  import {
+    MANAGE_VIEWS_PANEL,
+    PANEL_QUERY_PARAM,
+    QueryParams,
+  } from "../superhref";
+  import TableViewEditForm from "./TableViewEditForm.svelte";
+  import type { TableView } from "./constants";
+  import type { TableViewSettings } from "./schema";
+  import { deleteTableView, updateTableViews } from "./table-views.remote";
+  import { goto } from "$app/navigation";
+  import { page } from "$app/state";
+
+  let {
+    open,
+    items,
+  }: {
+    open: boolean;
+    items: TableView[];
+  } = $props();
+
+  const context = getImagesContext();
+  const queryParams = $derived(context.queryParams);
+
+  // Snapshot of the items for local modifications, with edits staged until Save
+  // svelte-ignore state_referenced_locally
+  let modifiedItems =
+    $state<(TableView & { stagedSettings?: TableViewSettings })[]>(items);
+  let suspendReorderAnimations = $state(false);
+  // Refresh the snapshot each time the panel is opened. Suspend the reorder animation to not see it while panel opens.
+  $effect.pre(() => {
+    if (open) {
+      modifiedItems = untrack(() => items);
+
+      suspendReorderAnimations = true;
+      void tick().then(() => {
+        suspendReorderAnimations = false;
+      });
+    }
+  });
+
+  const haveItemsChanged = $derived(
+    items.length !== modifiedItems.length ||
+      items.some(({ slug }, index) => slug !== modifiedItems[index].slug) ||
+      modifiedItems.some(({ stagedSettings }) => stagedSettings),
+  );
+
+  const willCurrentViewBeDeleted = $derived(
+    !modifiedItems.some(({ slug }) => slug === queryParams.images.view),
+  );
+
+  const isItemEdited = $derived.by(() => {
+    const editedItemSlug = queryParams[MANAGE_VIEWS_PANEL].edit;
+    if (!editedItemSlug) return false;
+    return modifiedItems.some(
+      ({ slug, editable }) => slug === editedItemSlug && editable,
+    );
+  });
+
+  function stageViewSettings(slug: string, settings: TableViewSettings) {
+    modifiedItems = modifiedItems.map((modifiedItem) =>
+      modifiedItem.slug === slug
+        ? {
+            ...modifiedItem,
+            name: settings.name,
+            stagedSettings: settings,
+          }
+        : modifiedItem,
+    );
+
+    // eslint-disable-next-line svelte/no-navigation-without-resolve
+    goto(queryParams[MANAGE_VIEWS_PANEL].set("edit", null), {
+      keepFocus: true,
+      noScroll: true,
+    });
+  }
+
+  let saving = $state(false);
+</script>
+
+<SidePanel
+  title="Packages table views"
+  {open}
+  closeForm={{
+    schema: QueryParams,
+    replaceParams: [PANEL_QUERY_PARAM, MANAGE_VIEWS_PANEL],
+  }}
+  onclose={() => {
+    goto(
+      // eslint-disable-next-line svelte/no-navigation-without-resolve
+      queryParams.patch({
+        [PANEL_QUERY_PARAM]: null,
+        [MANAGE_VIEWS_PANEL]: null,
+      }),
+      {
+        keepFocus: true,
+        noScroll: true,
+      },
+    );
+  }}
+>
+  <h3>Active views</h3>
+  <ReorderableList
+    bind:items={modifiedItems}
+    key={(item) => item.slug}
+    itemLabel={(item) => item.name}
+    disabled={isItemEdited}
+    animationDuration={suspendReorderAnimations ? 0 : undefined}
+    dragMode="drop-indicator"
+  >
+    {#snippet item({ item, index }, renderedInOverlay)}
+      {#if item.editable && queryParams[MANAGE_VIEWS_PANEL].edit === item.slug}
+        <TableViewEditForm
+          view={item}
+          settings={item.stagedSettings ?? {
+            name: item.name,
+            filters: DEFAULT_IMAGES_FILTERS,
+          }}
+          cancelHref={queryParams[MANAGE_VIEWS_PANEL].set("edit", null)}
+          onstage={(settings) => stageViewSettings(item.slug, settings)}
+        />
+      {:else}
+        <ReorderableList.Item {item} {index}>
+          <span style="margin-inline-end: auto;">{item.name}</span>
+          {#if item.editable}
+            <Button
+              density="dense"
+              importance="tertiary"
+              aria-label="Edit {item.name}"
+              href={queryParams[MANAGE_VIEWS_PANEL].set("edit", item.slug)}
+              disabled={isItemEdited}
+            >
+              {#snippet iconLeft()}
+                <EditIcon />
+              {/snippet}
+            </Button>
+            {const deleteForm = $derived(
+              // Only attach the form function to the real, non-overlay items
+              renderedInOverlay ? null : deleteTableView.for(item.slug),
+            )}
+            <form
+              {...deleteForm &&
+                preserveQueryParams(
+                  deleteForm.enhance(() => {
+                    // If JS, don't delete immediately, and instead stage for deletion in modifiedItems
+                    modifiedItems = modifiedItems.filter(
+                      ({ slug }) => slug !== item.slug,
+                    );
+                  }),
+                  // Like Save, deleting the current view falls back to the default one
+                  item.slug === queryParams.images.view
+                    ? new URL(
+                        queryParams.patch({ images: { view: null } }),
+                        page.url,
+                      )
+                    : page.url,
+                )}
+            >
+              <Button
+                density="dense"
+                importance="tertiary"
+                aria-label="Delete {item.name}"
+                disabled={isItemEdited}
+                {...deleteForm?.fields.slug.as("submit", item.slug)}
+              >
+                {#snippet iconLeft()}
+                  <DeleteIcon />
+                {/snippet}
+              </Button>
+            </form>
+          {/if}
+        </ReorderableList.Item>
+      {/if}
+    {/snippet}
+  </ReorderableList>
+  {#snippet footer(closeButtonProps)}
+    <div class="footer">
+      <Button {...closeButtonProps} importance="tertiary">Cancel</Button>
+      <Button
+        disabled={!haveItemsChanged}
+        loading={saving}
+        importance="primary"
+        anticipation="constructive"
+        onclick={async () => {
+          saving = true;
+          try {
+            await updateTableViews(
+              modifiedItems.map(({ slug, stagedSettings }) => ({
+                slug,
+                settings: stagedSettings,
+              })),
+            );
+            goto(
+              // eslint-disable-next-line svelte/no-navigation-without-resolve
+              queryParams.patch({
+                [PANEL_QUERY_PARAM]: null,
+                [MANAGE_VIEWS_PANEL]: null,
+                ...(willCurrentViewBeDeleted ? { view: null } : {}),
+              }),
+              {
+                keepFocus: true,
+                noScroll: true,
+              },
+            );
+          } catch (error) {
+            console.error(error);
+          }
+
+          saving = false;
+        }}
+      >
+        Save
+      </Button>
+    </div>
+  {/snippet}
+</SidePanel>
+
+<style>
+  h3 {
+    font: var(--ds-typography-text-primary-bold);
+    margin-block-end: var(--dimension-200);
+  }
+
+  .footer {
+    display: contents;
+
+    @media (scripting: none) {
+      display: none;
+    }
+  }
+</style>

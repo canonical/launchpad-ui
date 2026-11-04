@@ -1,0 +1,1 @@
+export const MAX_TABLE_VIEW_NAME_LENGTH = 100;
