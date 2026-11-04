@@ -59,7 +59,8 @@ jobs:
 
   terraform-bump-stg-ps7:
     needs: release
-    # Only the stg Terraform repo exists today, and it tracks the edge channel.
+    # Only the stg environment exists today, and it tracks the edge channel.
+    # vars.TERRAFORM_TARGET_REPO_STG must point at canonical/is-launchpad-ui.
     if: ${{ (inputs.channel || 'edge') == 'edge' }}
     permissions:
       contents: read
@@ -68,5 +69,6 @@ jobs:
     with:
       environment: stg
       app_name: launchpad-ui
+      tf_file_path: environments/k8s-stg-launchpad-ui-ps7/main.tf
       charm_revision: ${{ needs.release.outputs.charm_revision }}
       resource_revision: ${{ needs.release.outputs.resource_revision }}
