@@ -14,3 +14,6 @@ jobs:
     uses: canonical/launchpad-actions/.github/workflows/sync.yaml@29acf6ef813a528b94ee87f3680ad844cde6ca8f # 29acf6ef813a528b94ee87f3680ad844cde6ca8f
     with:
       source_url: https://git.launchpad.net/launchpad-ui
+      # GITHUB_TOKEN mirror pushes do not trigger push workflows.
+      trigger_workflow: publish.yaml
+      trigger_ref: main
