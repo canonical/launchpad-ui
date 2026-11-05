@@ -6,7 +6,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { Locator } from "vitest/browser";
 import { render } from "vitest-browser-svelte";
 import type { RenderResult } from "vitest-browser-svelte";
-import type { MarkdownEditorContext } from "$lib/components/MarkdownEditor/types";
+import type { MarkdownEditorContext } from "#lib/components/MarkdownEditor/types.js";
 import type { MarkdownEditorToolbarContext } from "../../types";
 import Component from "./ActionButton.svelte";
 

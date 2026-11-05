@@ -2,8 +2,8 @@
   import { Spinner } from "@canonical/svelte-ds-app-launchpad";
   import { isHttpError } from "@sveltejs/kit";
   import { untrack } from "svelte";
-  import { PartialTextDisclosure } from "$lib/components/index.js";
-  import { SidePanel } from "$lib/launchpad-components/index.js";
+  import { PartialTextDisclosure } from "#lib/components/index.js";
+  import { SidePanel } from "#lib/launchpad-components/index.js";
   import { getPackagesContext } from "../context.js";
   import { BINARY_PACKAGE_QUERY_PARAM, QueryParams } from "../superhref.js";
   import ArtifactsSection from "./ArtifactsSection.svelte";

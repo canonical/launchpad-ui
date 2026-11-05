@@ -57,7 +57,7 @@ export default ts.config(
               position: "before",
             },
             {
-              pattern: "$lib/**",
+              pattern: "#lib/**",
               group: "internal",
               position: "after",
             },

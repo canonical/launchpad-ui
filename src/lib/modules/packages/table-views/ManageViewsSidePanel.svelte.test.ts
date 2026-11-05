@@ -46,7 +46,7 @@ vi.mock("../context.js", async () => {
   };
 });
 
-vi.mock("$lib/modules/packages/people.remote.js", () => ({
+vi.mock("#lib/modules/packages/people.remote.js", () => ({
   findPeople: vi.fn(() => Promise.resolve([])),
   getPersonByName: vi.fn(() => Promise.resolve(null)),
 }));

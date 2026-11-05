@@ -1,7 +1,7 @@
 <!-- @canonical/generator-ds 0.10.0-experimental.0 -->
 
 <script lang="ts">
-  import { OptionsPanel } from "$lib/components/common/index.js";
+  import { OptionsPanel } from "#lib/components/common/index.js";
   import type { ContextualMenuProps } from "./types.js";
 
   const props: ContextualMenuProps = $props();

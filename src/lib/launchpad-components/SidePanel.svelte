@@ -6,8 +6,8 @@
   import { SidePanel } from "@canonical/svelte-ds-app-launchpad";
   import type { SidePanelProps } from "@canonical/svelte-ds-app-launchpad";
   import type { Snippet } from "svelte";
-  import { QueryParamsForm } from "$lib/components/index.js";
-  import type { QueryParamsFormProps } from "$lib/components/index.js";
+  import { QueryParamsForm } from "#lib/components/index.js";
+  import type { QueryParamsFormProps } from "#lib/components/index.js";
   import { browser } from "$app/environment";
   import { page } from "$app/state";
 

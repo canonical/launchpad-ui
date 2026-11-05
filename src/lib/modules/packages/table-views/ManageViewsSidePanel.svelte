@@ -59,15 +59,15 @@
   import { DeleteIcon, EditIcon, PlusIcon } from "@canonical/svelte-icons";
   import { isHttpError } from "@sveltejs/kit";
   import { settled, tick, untrack } from "svelte";
-  import { ReorderableList } from "$lib/components/ReorderableList/index.js";
-  import { SidePanel } from "$lib/launchpad-components/index.js";
+  import { ReorderableList } from "#lib/components/ReorderableList/index.js";
+  import { SidePanel } from "#lib/launchpad-components/index.js";
   import {
     CLEARED_FILTER_PARAMS,
     MANAGE_VIEWS_PANEL,
     PANEL_QUERY_PARAM,
     QueryParams,
     toPackagesFilters,
-  } from "$lib/modules/packages/superhref.js";
+  } from "#lib/modules/packages/superhref.js";
   import { getPackagesContext } from "../context.js";
   import { DEFAULT_PACKAGES_FILTERS } from "../filters/constants.js";
   import type { SeriesGroups } from "../filters/types.js";

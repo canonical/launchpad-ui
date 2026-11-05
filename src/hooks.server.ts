@@ -1,5 +1,5 @@
 import type { Handle } from "@sveltejs/kit";
-import { resolveUser } from "$lib/server/user.js";
+import { resolveUser } from "#lib/server/user.js";
 
 // When a universal `load` fetches during SSR, SvelteKit serializes the response
 // to replay it on the client and blocks reading any header not allowlisted here.

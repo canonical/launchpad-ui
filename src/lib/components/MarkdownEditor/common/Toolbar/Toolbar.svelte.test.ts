@@ -19,8 +19,8 @@ vi.mock("../../context.js", () => {
   };
 });
 
-vi.mock("$lib/shortcuts/index.js", async (importActual) => {
-  const actual = await importActual<typeof import("$lib/shortcuts/index.js")>();
+vi.mock("#lib/shortcuts/index.js", async (importActual) => {
+  const actual = await importActual<typeof import("#lib/shortcuts/index.js")>();
   const useShortcuts = () => () => [];
   return {
     ...actual,

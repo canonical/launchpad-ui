@@ -1,5 +1,5 @@
 import type { Codec } from "@canonical/superhref";
-import { booleanSearchParam } from "$lib/utils/booleanSearchParam.js";
+import { booleanSearchParam } from "#lib/utils/booleanSearchParam.js";
 
 export function flagCodec(): Codec<boolean> {
   return {

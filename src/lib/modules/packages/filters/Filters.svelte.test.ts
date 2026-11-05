@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { userEvent } from "vitest/browser";
 import { render } from "vitest-browser-svelte";
-import { seriesGroups } from "$lib/modules/distroseries/series.fixtures.js";
+import { seriesGroups } from "#lib/modules/distroseries/series.fixtures.js";
 import Filters from "./Filters.svelte";
 import { goto } from "$app/navigation";
 import { page } from "$app/state";
@@ -27,7 +27,7 @@ vi.mock("../context.js", async () => {
   };
 });
 
-vi.mock("$lib/modules/packages/people.remote.js", () => ({
+vi.mock("#lib/modules/packages/people.remote.js", () => ({
   findPeople: vi.fn(() => Promise.resolve([])),
   getPersonByName: vi.fn((name: string) =>
     Promise.resolve({

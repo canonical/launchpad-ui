@@ -3,7 +3,7 @@
 <script lang="ts">
   import { useIsMounted } from "@canonical/svelte-ds-app-launchpad";
   import type { Attachment } from "svelte/attachments";
-  import { CheckboxOption } from "$lib/components/common/index.js";
+  import { CheckboxOption } from "#lib/components/common/index.js";
   import { getComboboxContext } from "../../context.js";
   import type { CheckboxOptionProps } from "./types.js";
 

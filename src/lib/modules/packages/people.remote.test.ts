@@ -18,7 +18,7 @@ const { findLaunchpadPeople, getPerson } = vi.hoisted(() => ({
   findLaunchpadPeople: vi.fn(),
   getPerson: vi.fn(),
 }));
-vi.mock("$lib/server/launchpad/client.js", () => ({
+vi.mock("#lib/server/launchpad/client.js", () => ({
   launchpadClient: {
     people: { find: findLaunchpadPeople },
     person: { get: getPerson },

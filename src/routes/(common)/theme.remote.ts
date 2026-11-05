@@ -1,6 +1,6 @@
 import * as v from "valibot";
-import type { Theme } from "$lib/theme.js";
-import { ThemeSchema, themeCookieName } from "$lib/theme.js";
+import type { Theme } from "#lib/theme.js";
+import { ThemeSchema, themeCookieName } from "#lib/theme.js";
 import { command, form, getRequestEvent, query } from "$app/server";
 
 export const getTheme = query(() => {

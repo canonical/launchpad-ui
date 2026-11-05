@@ -2,7 +2,7 @@ import { LaunchpadApiError } from "@canonical/launchpad-client";
 import type { LaunchpadResponse } from "@canonical/launchpad-client";
 import { error } from "@sveltejs/kit";
 import * as v from "valibot";
-import { launchpadClient } from "$lib/server/launchpad/client.js";
+import { launchpadClient } from "#lib/server/launchpad/client.js";
 import { form, getRequestEvent, query } from "$app/server";
 import { env } from "$env/dynamic/private";
 

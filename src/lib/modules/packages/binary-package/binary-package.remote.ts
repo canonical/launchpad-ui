@@ -1,7 +1,7 @@
 import { LaunchpadApiError } from "@canonical/launchpad-client";
 import { error } from "@sveltejs/kit";
 import * as v from "valibot";
-import { launchpadClient } from "$lib/server/launchpad/client.js";
+import { launchpadClient } from "#lib/server/launchpad/client.js";
 import { binaryPackageDetailsSchema } from "../api.schema.js";
 import { query } from "$app/server";
 

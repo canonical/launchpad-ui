@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { seriesGroups } from "$lib/modules/distroseries/series.fixtures.js";
+  import { seriesGroups } from "#lib/modules/distroseries/series.fixtures.js";
   import { getPackagesContext } from "../context.js";
   import ManageViewsSidePanel from "./ManageViewsSidePanel.svelte";
 

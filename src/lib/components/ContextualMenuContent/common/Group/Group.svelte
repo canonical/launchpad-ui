@@ -1,7 +1,7 @@
 <!-- @canonical/generator-ds 0.10.0-experimental.0 -->
 
 <script lang="ts">
-  import { OptionsGroup } from "$lib/components/common/index.js";
+  import { OptionsGroup } from "#lib/components/common/index.js";
   import { setGroupContext } from "./context.js";
   import type { GroupProps } from "./types.js";
 

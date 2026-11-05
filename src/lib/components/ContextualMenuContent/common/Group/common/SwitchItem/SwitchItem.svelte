@@ -1,7 +1,7 @@
 <!-- @canonical/generator-ds 0.10.0-experimental.0 -->
 
 <script lang="ts" generics="T">
-  import { SwitchOption } from "$lib/components/common/index.js";
+  import { SwitchOption } from "#lib/components/common/index.js";
   import { getGroupContext } from "../../context.js";
   import type { SwitchItemProps } from "./types.js";
 
