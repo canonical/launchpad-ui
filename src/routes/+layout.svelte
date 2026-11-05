@@ -102,7 +102,7 @@
     <div class="app-layout">
       <SideNavigation expanded={isSideNavigationExpanded}>
         {#snippet logo()}
-          <a href={resolve("/")} aria-label="Launchpad Home" class="logo-link">
+          <a href="/" aria-label="Launchpad Home" class="logo-link">
             <LaunchpadLogo open={isSideNavigationExpanded} />
           </a>
         {/snippet}
@@ -140,7 +140,7 @@
           </form>
         {/snippet}
         <SideNavigation.NavigationItem
-          href={resolve("/")}
+          href="/"
           selected={page.url.pathname === "/"}
           aria-current={page.url.pathname === "/" ? "page" : undefined}
         >

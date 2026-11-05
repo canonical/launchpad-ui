@@ -4,7 +4,7 @@ import { resolve } from "$app/paths";
 export function distroSegment(distro: string): BreadcrumbsSegment {
   return {
     label: distro.charAt(0).toUpperCase() + distro.slice(1),
-    href: resolve("/[pillar]", { pillar: distro }),
+    href: `/${distro}`,
   };
 }
 
