@@ -79,5 +79,4 @@ async function inspectConnection(
 }
 
 export type ConnectionResponse =
-  | { status: number; json: unknown }
-  | { status: number; text: string };
+  { status: number; json: unknown } | { status: number; text: string };
