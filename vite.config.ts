@@ -1,9 +1,20 @@
+import adapter from "@sveltejs/adapter-node";
 import { sveltekit } from "@sveltejs/kit/vite";
+import { vitePreprocess } from "@sveltejs/vite-plugin-svelte";
 import { playwright } from "@vitest/browser-playwright";
 import { defineConfig } from "vitest/config";
 
 export default defineConfig({
-  plugins: [sveltekit()],
+  plugins: [
+    sveltekit({
+      // Consult https://svelte.dev/docs/kit/integrations
+      // for more information about preprocessors
+      preprocess: vitePreprocess(),
+      compilerOptions: { experimental: { async: true } },
+      adapter: adapter(),
+      experimental: { remoteFunctions: true },
+    }),
+  ],
   build: {
     // As required by Pragma (https://github.com/canonical/pragma-web/blob/69ba3095fea252e827a6e9731bd44e745d5c301c/packages/styles/main/README.md?plain=1#L292)
     cssTarget: ["chrome125", "safari17.5", "firefox120"],

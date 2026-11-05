@@ -6,7 +6,6 @@ import storybook from "eslint-plugin-storybook";
 import svelte from "eslint-plugin-svelte";
 import globals from "globals";
 import ts from "typescript-eslint";
-import svelteConfig from "./svelte.config.js";
 
 export default ts.config(
   js.configs.recommended,
@@ -106,7 +105,6 @@ export default ts.config(
         projectService: true,
         extraFileExtensions: [".svelte"],
         parser: ts.parser,
-        svelteConfig,
       },
     },
   },
