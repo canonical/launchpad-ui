@@ -5,7 +5,6 @@
     TextInput,
   } from "@canonical/svelte-ds-app-launchpad";
   import type { TextInputProps } from "@canonical/svelte-ds-app-launchpad";
-  import type { RemoteFormField } from "@sveltejs/kit";
   import * as v from "valibot";
   import { subId } from "#lib/utils/index.js";
   import PersonFilterCombobox from "../filters/PersonFilterCombobox.svelte";
@@ -26,6 +25,7 @@
   import type { TableViewSettings } from "./schema.js";
   import type { createTableView, editTableView } from "./table-views.remote.js";
   import { browser } from "$app/env";
+  import type { RemoteFormField } from "$app/server";
 
   const {
     form,
