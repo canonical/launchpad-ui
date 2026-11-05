@@ -23,6 +23,9 @@ export default ts.config(
       // typescript-eslint strongly recommend that you do not use the no-undef lint rule on TypeScript projects.
       // see: https://typescript-eslint.io/troubleshooting/faqs/eslint/#i-get-errors-from-the-no-undef-rule-about-global-variables-not-being-defined-even-though-there-are-no-typescript-errors
       "no-undef": "off",
+      // This rule also flags query-parameter strings from helpers like Superhref, forcing many local rule disables.
+      // TODO: Consider re-enabling this rule for string literals (https://warthogs.atlassian.net/browse/LP-5088)
+      "svelte/no-navigation-without-resolve": "off",
       "svelte/no-target-blank": "warn",
       "svelte/prefer-const": "warn",
       "import/no-empty-named-blocks": "error",
@@ -80,19 +83,6 @@ export default ts.config(
         {
           argsIgnorePattern: "^_",
           varsIgnorePattern: "^_",
-        },
-      ],
-    },
-  },
-  {
-    files: ["src/lib/components/**"],
-    rules: {
-      "svelte/no-navigation-without-resolve": [
-        "error",
-        {
-          // We have to ignore links, because our meant-to-be-upstreamed components can't depend on kit and its `resolve` (see: https://sveltejs.github.io/eslint-plugin-svelte/rules/no-navigation-without-resolve/).
-          // On our side, we should still enforce the rule
-          ignoreLinks: true,
         },
       ],
     },

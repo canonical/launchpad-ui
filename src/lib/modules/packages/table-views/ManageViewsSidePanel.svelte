@@ -203,7 +203,6 @@
       const shouldClearUrlFilters = bookmarkedView !== undefined;
 
       await goto(
-        // eslint-disable-next-line svelte/no-navigation-without-resolve
         queryParams.patch({
           panel: null,
           "manage-views": null,
@@ -242,7 +241,6 @@
   }}
   onclose={() => {
     goto(
-      // eslint-disable-next-line svelte/no-navigation-without-resolve
       queryParams.patch({
         panel: null,
         "manage-views": null,

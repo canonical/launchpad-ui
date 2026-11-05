@@ -72,7 +72,6 @@
       return;
     }
     goto(
-      // eslint-disable-next-line svelte/no-navigation-without-resolve
       queryParams.patch({ "maintainer-search": null, "signer-search": null }),
       { replaceState: true, keepFocus: true, noScroll: true },
     );
