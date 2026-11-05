@@ -74,7 +74,7 @@
     "@canonical/svelte-ds-app-launchpad": "^0.44.1",
     "@canonical/svelte-icons": "^0.0.9",
     "@floating-ui/dom": "^1.7.6",
-    "markdown-actions": "^1.1.2",
+    "markdown-actions": "^1.2.0",
     "undici": "^8.5.0",
     "valibot": "^1.4.1"
   }

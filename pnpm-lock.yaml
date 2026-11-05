@@ -7,11 +7,6 @@ settings:
 overrides:
   cookie@<0.7.0: 0.7.2
 
-patchedDependencies:
-  markdown-actions@1.1.2:
-    hash: 570db051dc2a8845defd2de3c63c55dbc6d1810524e60f692774040f40f563f9
-    path: patches/markdown-actions@1.1.2.patch
-
 importers:
 
   .:
@@ -38,8 +33,8 @@ importers:
         specifier: ^1.7.6
         version: 1.7.6
       markdown-actions:
-        specifier: ^1.1.2
-        version: 1.1.2(patch_hash=570db051dc2a8845defd2de3c63c55dbc6d1810524e60f692774040f40f563f9)
+        specifier: ^1.2.0
+        version: 1.2.0
       undici:
         specifier: ^8.5.0
         version: 8.5.0
@@ -130,7 +125,7 @@ importers:
         version: 5.57.3(@typescript-eslint/types@8.72.1)
       svelte-check:
         specifier: ^4.7.8
-        version: 4.7.8(picomatch@4.0.4)(svelte@5.57.3(@typescript-eslint/types@8.72.1))(typescript@6.0.3)
+        version: 4.7.8(picomatch@4.0.7)(svelte@5.57.3(@typescript-eslint/types@8.72.1))(typescript@6.0.3)
       typescript:
         specifier: ^6.0.3
         version: 6.0.3
@@ -2515,8 +2510,8 @@ packages:
   magic-string@1.4.5:
     resolution: {integrity: sha512-oLLC2+YvQUfAa+vxoufE/yc1icb87M9iXIRqAoR/2EhE/8cb3SF/+Gi0c2By1B+5Vz2e2vQtUvHiu1+63Znh+w==}
 
-  markdown-actions@1.1.2:
-    resolution: {integrity: sha512-U7rmgTvUP3neh3XaVblikslRWWhfpzF2SiI1A6z3az7IpYuAiVvdqtZrFCArV22TSj2Ht+r0ResohlsJ8/ntbw==}
+  markdown-actions@1.2.0:
+    resolution: {integrity: sha512-OgdhnOLF57SqnfcJXM2UPGzYxPbOOvOiIToRR22MW2FvQFCaS2cI8rLclIBJ6PMIRR6HtxuZA/ZtqQe++4XgiQ==}
 
   math-intrinsics@1.1.0:
     resolution: {integrity: sha512-/IXtbwEk5HTPyEwyKX6hGkYXxM9nbj64B+ilVJnC/R6B0pH5G4V3b0pVbL7DBj4tkhBAppbQUlf6F6Xl9LHu1g==}
@@ -5744,7 +5739,7 @@ snapshots:
     dependencies:
       '@jridgewell/sourcemap-codec': 1.6.0
 
-  markdown-actions@1.1.2(patch_hash=570db051dc2a8845defd2de3c63c55dbc6d1810524e60f692774040f40f563f9): {}
+  markdown-actions@1.2.0: {}
 
   math-intrinsics@1.1.0: {}
 
@@ -6364,12 +6359,12 @@ snapshots:
       svelte: 5.57.3(@typescript-eslint/types@8.72.1)
       zimmerframe: 1.1.2
 
-  svelte-check@4.7.8(picomatch@4.0.4)(svelte@5.57.3(@typescript-eslint/types@8.72.1))(typescript@6.0.3):
+  svelte-check@4.7.8(picomatch@4.0.7)(svelte@5.57.3(@typescript-eslint/types@8.72.1))(typescript@6.0.3):
     dependencies:
       '@jridgewell/trace-mapping': 0.3.31
       '@sveltejs/load-config': 0.2.3
       chokidar: 4.0.3
-      fdir: 6.5.0(picomatch@4.0.4)
+      fdir: 6.5.0(picomatch@4.0.7)
       picocolors: 1.1.1
       sade: 1.8.1
       svelte: 5.57.3(@typescript-eslint/types@8.72.1)
