@@ -1,13 +1,5 @@
 import type { Handle } from "@sveltejs/kit";
-import { server } from "$lib/api/packages/mocks/server.js";
 import { resolveUser } from "$lib/server/user.js";
-
-// MSW only intercepts under `pnpm dev:mock` (mode=mock). Regular `pnpm dev`
-// leaves it off. The browser-side counterpart starts in `hooks.client.ts`.
-// `bypass` lets non-packages requests (Vite assets, etc.) through.
-if (import.meta.env.MODE === "mock") {
-  server.listen({ onUnhandledRequest: "bypass" });
-}
 
 // When a universal `load` fetches during SSR, SvelteKit serializes the response
 // to replay it on the client and blocks reading any header not allowlisted here.

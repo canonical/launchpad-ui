@@ -10,7 +10,6 @@
   },
   "scripts": {
     "dev": "vite dev",
-    "dev:mock": "vite dev --mode mock",
     "build": "vite build",
     "preview": "vite preview",
     "prepare": "svelte-kit sync || echo ''",
@@ -55,7 +54,6 @@
     "eslint-plugin-storybook": "^10.4.6",
     "eslint-plugin-svelte": "^3.20.0",
     "globals": "^17.7.0",
-    "msw": "^2.14.6",
     "playwright": "^1.61.1",
     "prettier": "^3.8.4",
     "prettier-plugin-svelte": "^4.1.1",
@@ -77,13 +75,7 @@
     "@canonical/svelte-icons": "^0.0.9",
     "@floating-ui/dom": "^1.7.6",
     "markdown-actions": "^1.1.2",
-    "openapi-fetch": "^0.15.2",
     "undici": "^8.5.0",
     "valibot": "^1.4.1"
-  },
-  "msw": {
-    "workerDirectory": [
-      "static"
-    ]
   }
 }
