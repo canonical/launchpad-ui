@@ -12,13 +12,16 @@ vi.mock("$app/server", () => ({
       __: { type: "query" },
     }),
 }));
-vi.mock("$env/dynamic/private", () => ({
-  env: { MAIN_LAUNCHPAD_BASE_HOST: "https://lp.example" },
-}));
+vi.mock(
+  "$app/env/private",
+  () =>
+    ({
+      MAIN_LAUNCHPAD_BASE_HOST: "https://lp.example",
+    }) satisfies Partial<typeof import("$app/env/private")>,
+);
 
 const getSourcePackageList = vi.hoisted(() => vi.fn());
-vi.mock("#lib/server/launchpad/client.js", async (importOriginal) => ({
-  ...(await importOriginal<typeof import("#lib/server/launchpad/client.js")>()),
+vi.mock("#lib/server/launchpad/client.js", () => ({
   launchpadClient: { archive: { distribution: { getSourcePackageList } } },
 }));
 

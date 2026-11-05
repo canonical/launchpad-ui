@@ -3,10 +3,8 @@ import type { LaunchpadResponse } from "@canonical/launchpad-client";
 import { error } from "@sveltejs/kit";
 import * as v from "valibot";
 import { launchpadClient } from "#lib/server/launchpad/client.js";
+import { MAIN_LAUNCHPAD_COOKIE_NAME as lpCookieName } from "$app/env/private";
 import { form, getRequestEvent, query } from "$app/server";
-import { env } from "$env/dynamic/private";
-
-const lpCookieName = env.MAIN_LAUNCHPAD_COOKIE_NAME || "lp";
 
 export const getUbuntu = query(() =>
   inspectConnection(() =>

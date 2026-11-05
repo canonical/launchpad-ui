@@ -3,7 +3,7 @@
 <script lang="ts">
   import type { TabProps } from "./types.js";
   import "./styles.css";
-  import { browser } from "$app/environment";
+  import { browser } from "$app/env";
 
   const componentCssClassName = "ds table-view-bar-tab";
 

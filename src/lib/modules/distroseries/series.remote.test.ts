@@ -16,9 +16,16 @@ vi.mock("$app/server", () => ({
     }),
 }));
 
-vi.mock("$env/dynamic/private", () => ({
-  env: { MAIN_LAUNCHPAD_BASE_HOST: "https://lp.example" },
-}));
+vi.mock(
+  "$app/env/private",
+  () =>
+    ({
+      MAIN_LAUNCHPAD_BASE_HOST: "https://lp.example",
+      MAIN_LAUNCHPAD_COOKIE_NAME: "lp",
+      MAIN_LAUNCHPAD_IP_ADDRESS: undefined,
+      MAIN_LAUNCHPAD_SKIP_TLS_VERIFY: false,
+    }) satisfies typeof import("$app/env/private"),
+);
 
 const fetchMock = vi.hoisted(() => {
   const fetchMock = vi.fn<(request: Request) => Promise<Response>>();

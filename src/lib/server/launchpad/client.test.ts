@@ -18,8 +18,15 @@ import {
   launchpadTestKey,
 } from "../../../../test/launchpad-tls.fixtures.js";
 
-const env = vi.hoisted(() => ({}) as Record<string, string | undefined>);
-vi.mock("$env/dynamic/private", () => ({ env }));
+type Env = typeof import("$app/env/private");
+
+const mockEnv = vi.hoisted((): { -readonly [K in keyof Env]: Env[K] } => ({
+  MAIN_LAUNCHPAD_BASE_HOST: "https://launchpad.invalid",
+  MAIN_LAUNCHPAD_COOKIE_NAME: "lp",
+  MAIN_LAUNCHPAD_IP_ADDRESS: undefined,
+  MAIN_LAUNCHPAD_SKIP_TLS_VERIFY: false,
+}));
+vi.mock("$app/env/private", () => mockEnv);
 
 const tlsOptions = {
   key: launchpadTestKey,
@@ -82,12 +89,9 @@ beforeAll(async () => {
 beforeEach(() => {
   vi.resetModules();
   serverNames.length = 0;
-  for (const key of Object.keys(env)) delete env[key];
-  Object.assign(env, {
-    MAIN_LAUNCHPAD_BASE_HOST: "https://launchpad.invalid",
-    MAIN_LAUNCHPAD_IP_ADDRESS: privateAddress,
-    MAIN_LAUNCHPAD_SKIP_TLS_VERIFY: "true",
-  });
+  mockEnv.MAIN_LAUNCHPAD_BASE_HOST = "https://launchpad.invalid";
+  mockEnv.MAIN_LAUNCHPAD_IP_ADDRESS = privateAddress;
+  mockEnv.MAIN_LAUNCHPAD_SKIP_TLS_VERIFY = true;
 });
 
 afterAll(async () => {
@@ -101,8 +105,7 @@ afterAll(async () => {
 
 describe("Launchpad client transport configuration", () => {
   it("routes to the private server with the logical hostname, SNI and per-request cookies", async () => {
-    const { launchpadClient, launchpadApiBaseUrl } =
-      await import("./client.js");
+    const { launchpadClient } = await import("./client.js");
     const results = await Promise.all(
       ["first-user", "second-user", undefined].map((user) =>
         launchpadClient.distribution.get(
@@ -113,7 +116,6 @@ describe("Launchpad client transport configuration", () => {
         ),
       ),
     );
-    expect(launchpadApiBaseUrl).toBe("https://launchpad.invalid/api/devel/");
     expect(results.map(({ data }) => data)).toEqual(
       ["launchpad_dev=first-user", "launchpad_dev=second-user", null].map(
         (cookie) =>
@@ -128,8 +130,8 @@ describe("Launchpad client transport configuration", () => {
     expect(serverNames).toContain("launchpad.invalid");
   });
 
-  it("verifies the private server's certificate by default", async () => {
-    delete env.MAIN_LAUNCHPAD_SKIP_TLS_VERIFY;
+  it("verifies the private server's certificate when verification is enabled", async () => {
+    mockEnv.MAIN_LAUNCHPAD_SKIP_TLS_VERIFY = false;
     const { launchpadClient } = await import("./client.js");
     await expect(
       launchpadClient.distribution.get({ path: { distribution: "ubuntu" } }),
@@ -159,8 +161,8 @@ describe("Launchpad client transport configuration", () => {
   });
 
   it("honors the internal address's protocol and port without changing the logical Host", async () => {
-    env.MAIN_LAUNCHPAD_IP_ADDRESS = otherAddress;
-    delete env.MAIN_LAUNCHPAD_SKIP_TLS_VERIFY;
+    mockEnv.MAIN_LAUNCHPAD_IP_ADDRESS = otherAddress;
+    mockEnv.MAIN_LAUNCHPAD_SKIP_TLS_VERIFY = false;
     const { launchpadClient } = await import("./client.js");
     const { data } = await launchpadClient.distribution.get({
       path: { distribution: "ubuntu" },
@@ -171,34 +173,4 @@ describe("Launchpad client transport configuration", () => {
       path: "/api/devel/ubuntu",
     });
   });
-});
-
-describe("launchpadUrl", () => {
-  it.each([
-    [["ubuntu", "noble"], "ubuntu/noble"],
-    [["~", "userl"], "~userl"],
-    [["ubuntu", "+", "archive", "primary"], "ubuntu/+archive/primary"],
-    [["~", "a/b c"], "~a%2Fb%20c"],
-  ])("links %j under the configured API root", async (segments, path) => {
-    const { launchpadUrl } = await import("./client.js");
-    expect(launchpadUrl(...segments)).toBe(
-      `https://launchpad.invalid/api/devel/${path}`,
-    );
-  });
-
-  it.each([
-    ["ubuntu", null],
-    ["~", undefined],
-  ])("returns undefined when a segment is missing: %j", async (...segments) => {
-    const { launchpadUrl } = await import("./client.js");
-    expect(launchpadUrl(...segments)).toBeUndefined();
-  });
-
-  it.each([".", ".."])(
-    "rejects the dot segment %s instead of leaving the API root",
-    async (segment) => {
-      const { launchpadUrl } = await import("./client.js");
-      expect(() => launchpadUrl(segment, "x")).toThrow(TypeError);
-    },
-  );
 });

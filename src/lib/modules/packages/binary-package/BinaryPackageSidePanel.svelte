@@ -8,7 +8,7 @@
   import { BINARY_PACKAGE_QUERY_PARAM, QueryParams } from "../superhref.js";
   import ArtifactsSection from "./ArtifactsSection.svelte";
   import { getBinaryPackage } from "./binary-package.remote.js";
-  import { browser } from "$app/environment";
+  import { browser } from "$app/env";
   import { goto } from "$app/navigation";
 
   let {
