@@ -134,9 +134,8 @@ describe("Filters", () => {
       .element(screen.getByRole("combobox", { name: "Search maintainers" }))
       .toHaveValue("alice");
     expect(goto).toHaveBeenCalledExactlyOnceWith("?page=2", {
-      replaceState: true,
-      keepFocus: true,
-      noScroll: true,
+      replace: true,
+      reset: false,
     });
   });
 

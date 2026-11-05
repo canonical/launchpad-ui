@@ -64,9 +64,7 @@
   let helpOpen = $state(false);
   const helpShortcut = new Shortcut(
     "ctrl+/",
-    {
-      label: "Open command guide",
-    },
+    { label: "Open command guide" },
     () => (helpOpen = true),
   );
 
@@ -152,7 +150,7 @@
           {/snippet}
         </SideNavigation.NavigationItem>
         <SideNavigation.NavigationItem
-          href={resolve("/connection-test")}
+          href={resolve("connection-test")}
           selected={page.url.pathname === "/connection-test"}
           aria-current={page.url.pathname === "/connection-test"
             ? "page"

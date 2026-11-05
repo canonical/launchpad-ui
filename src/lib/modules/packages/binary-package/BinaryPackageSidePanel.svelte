@@ -41,8 +41,7 @@
   }}
   onclose={() =>
     goto(queryParams.set("binary-package", null), {
-      keepFocus: true,
-      noScroll: true,
+      reset: false,
     })}
 >
   {#if binaryPackage}
