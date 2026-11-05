@@ -68,7 +68,6 @@
     QueryParams,
     toPackagesFilters,
   } from "$lib/modules/packages/superhref.js";
-  import { preserveQueryParams } from "$lib/utils/index.js";
   import { getPackagesContext } from "../context.js";
   import { DEFAULT_PACKAGES_FILTERS } from "../filters/constants.js";
   import type { SeriesGroups } from "../filters/types.js";
@@ -153,7 +152,6 @@
     };
 
   function closeViewForm() {
-    // eslint-disable-next-line svelte/no-navigation-without-resolve
     goto(queryParams["manage-views"].closeForm(), {
       keepFocus: true,
       noScroll: true,
@@ -296,14 +294,10 @@
               renderedInOverlay ? null : deleteTableView.for(draft.key),
             )}
             <form
-              {...deleteForm &&
-                preserveQueryParams(
-                  deleteForm.enhance(() => {
-                    // If JS, don't delete immediately, and instead stage for deletion in drafts
-                    session.remove(draft.key);
-                  }),
-                  page.url,
-                )}
+              {...deleteForm?.enhance(() => {
+                // If JS, don't delete immediately, and instead stage for deletion in drafts
+                session.remove(draft.key);
+              })}
             >
               {#if deleteForm}
                 <input {...deleteForm.fields.distro.as("hidden", distro)} />
