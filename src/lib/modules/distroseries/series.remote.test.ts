@@ -25,6 +25,8 @@ vi.mock(
       MAIN_LAUNCHPAD_COOKIE_NAME: "lp",
       MAIN_LAUNCHPAD_IP_ADDRESS: undefined,
       MAIN_LAUNCHPAD_SKIP_TLS_VERIFY: false,
+      TEST_OBSERVER_IMAGE_ARTIFACTS_URL:
+        "https://observer.example/v1/artefacts?family=image",
     }) satisfies typeof import("$app/env/private"),
 );
 
@@ -66,7 +68,7 @@ afterEach(() => {
 describe("series overview query", () => {
   it("maps the real series and milestones with exactly two requests", async () => {
     await expect(
-      getSeriesOverview({ pillar: "ubuntu", series: "resolute" }),
+      getSeriesOverview({ distro: "ubuntu", series: "resolute" }),
     ).resolves.toEqual(seriesOverview);
     const urls = fetchMock.mock.calls.map(
       ([request]: [Request]) => new URL(request.url),
@@ -91,7 +93,7 @@ describe("series overview query", () => {
       .mockImplementationOnce(() => series.promise)
       .mockImplementationOnce(() => milestones.promise);
 
-    const result = getSeriesOverview({ pillar: "ubuntu", series: "resolute" });
+    const result = getSeriesOverview({ distro: "ubuntu", series: "resolute" });
 
     expect(fetchMock).toHaveBeenCalledTimes(2);
     series.resolve(jsonResponse(distroSeries));
@@ -113,7 +115,7 @@ describe("series overview query", () => {
     );
 
     await expect(
-      getSeriesOverview({ pillar: "debian", series: "sid" }),
+      getSeriesOverview({ distro: "debian", series: "sid" }),
     ).resolves.toEqual({
       displayName: "98 Sid",
       distribution: { displayName: "Debian", url: "/debian" },
@@ -148,10 +150,10 @@ describe("series overview query", () => {
     ["ubuntu", "26.04.1", "26.04.1"],
     ["ubuntu", "26.04-beta", "26.04-beta"],
     ["debian", "26.04", "26.04"],
-  ])("formats %s version %s as %s", async (pillar, version, heading) => {
+  ])("formats %s version %s as %s", async (distro, version, heading) => {
     respondWith({ ...distroSeries, version });
 
-    const result = await getSeriesOverview({ pillar, series: "release" });
+    const result = await getSeriesOverview({ distro, series: "release" });
 
     expect(result.displayName).toBe(`${heading} Resolute`);
   });
@@ -160,7 +162,7 @@ describe("series overview query", () => {
     respondWith({ ...distroSeries, displayname: "The Resolute Raccoon" });
 
     const result = await getSeriesOverview({
-      pillar: "ubuntu",
+      distro: "ubuntu",
       series: "resolute",
     });
 
@@ -177,7 +179,7 @@ describe("series overview query", () => {
     });
 
     const result = await getSeriesOverview({
-      pillar: "example",
+      distro: "example",
       series: "release",
     });
 
@@ -203,7 +205,7 @@ describe("series overview query", () => {
       respondWith({ ...distroSeries, translations_usage });
 
       const result = await getSeriesOverview({
-        pillar: "ubuntu",
+        distro: "ubuntu",
         series: "resolute",
       });
 
@@ -232,7 +234,7 @@ describe("series overview query", () => {
     });
 
     const result = await getSeriesOverview({
-      pillar: "ubuntu",
+      distro: "ubuntu",
       series: "resolute",
     });
 
@@ -251,7 +253,7 @@ describe("series overview query", () => {
     fetchMock.mockImplementation(async () => jsonResponse({}, 404));
 
     await expect(
-      getSeriesOverview({ pillar: "ubuntu", series: "unknown" }),
+      getSeriesOverview({ distro: "ubuntu", series: "unknown" }),
     ).rejects.toMatchObject({
       status: 404,
       body: { message: "Series not found" },
@@ -271,7 +273,7 @@ describe("series overview query", () => {
       });
 
       await expect(
-        getSeriesOverview({ pillar: "ubuntu", series: "resolute" }),
+        getSeriesOverview({ distro: "ubuntu", series: "resolute" }),
       ).rejects.toMatchObject({
         status: 503,
         body: {
@@ -291,19 +293,19 @@ describe("series overview query", () => {
     fetchMock.mockRejectedValue(failure);
 
     await expect(
-      getSeriesOverview({ pillar: "ubuntu", series: "resolute" }),
+      getSeriesOverview({ distro: "ubuntu", series: "resolute" }),
     ).rejects.toMatchObject({ status: 503 });
     expect(log).toHaveBeenCalledWith("Failed to load series overview", failure);
     expect(fetchMock).toHaveBeenCalledTimes(2);
   });
 
   it.each([
-    { pillar: "", series: "resolute" },
-    { pillar: "Invalid Name", series: "resolute" },
-    { pillar: "ubuntu", series: "" },
-    { pillar: "ubuntu", series: "Invalid Name" },
-    { pillar: "../ubuntu", series: "resolute" },
-    { pillar: "ubuntu", series: "../resolute" },
+    { distro: "", series: "resolute" },
+    { distro: "Invalid Name", series: "resolute" },
+    { distro: "ubuntu", series: "" },
+    { distro: "ubuntu", series: "Invalid Name" },
+    { distro: "../ubuntu", series: "resolute" },
+    { distro: "ubuntu", series: "../resolute" },
   ])("rejects invalid query arguments: %j", async (args) => {
     await expect(getSeriesOverview(args)).rejects.toBeInstanceOf(v.ValiError);
     expect(fetchMock).not.toHaveBeenCalled();
@@ -318,7 +320,7 @@ describe("series groups query", () => {
   });
 
   it("groups the non-obsolete series by status in Launchpad's order with one request", async () => {
-    await expect(getSeriesGroups({ pillar: "ubuntu" })).resolves.toEqual(
+    await expect(getSeriesGroups({ distro: "ubuntu" })).resolves.toEqual(
       seriesGroups,
     );
     expect(fetchMock.mock.calls.map(([request]) => request.url)).toEqual([
@@ -371,7 +373,7 @@ describe("series groups query", () => {
       }),
     );
 
-    await expect(getSeriesGroups({ pillar: "debian" })).resolves.toEqual([
+    await expect(getSeriesGroups({ distro: "debian" })).resolves.toEqual([
       {
         status: "Experimental",
         series: [{ name: "experimental", displayName: "99 Experimental" }],
@@ -401,7 +403,7 @@ describe("series groups query", () => {
     const log = vi.spyOn(console, "error").mockImplementation(() => {});
     fetchMock.mockImplementation(async () => jsonResponse({}, 503));
 
-    await expect(getSeriesGroups({ pillar: "ubuntu" })).resolves.toEqual([]);
+    await expect(getSeriesGroups({ distro: "ubuntu" })).resolves.toEqual([]);
     expect(log).toHaveBeenCalledWith(
       "Failed to load distro series",
       expect.objectContaining({ name: "LaunchpadApiError", status: 503 }),
@@ -413,14 +415,14 @@ describe("series groups query", () => {
     const log = vi.spyOn(console, "error").mockImplementation(() => {});
     fetchMock.mockRejectedValue(failure);
 
-    await expect(getSeriesGroups({ pillar: "ubuntu" })).resolves.toEqual([]);
+    await expect(getSeriesGroups({ distro: "ubuntu" })).resolves.toEqual([]);
     expect(log).toHaveBeenCalledWith("Failed to load distro series", failure);
   });
 
   it.each([
-    { pillar: "" },
-    { pillar: "Invalid Name" },
-    { pillar: "../ubuntu" },
+    { distro: "" },
+    { distro: "Invalid Name" },
+    { distro: "../ubuntu" },
   ])("rejects invalid query arguments: %j", async (args) => {
     await expect(getSeriesGroups(args)).rejects.toBeInstanceOf(v.ValiError);
     expect(fetchMock).not.toHaveBeenCalled();

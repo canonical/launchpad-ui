@@ -25,6 +25,8 @@ const mockEnv = vi.hoisted((): { -readonly [K in keyof Env]: Env[K] } => ({
   MAIN_LAUNCHPAD_COOKIE_NAME: "lp",
   MAIN_LAUNCHPAD_IP_ADDRESS: undefined,
   MAIN_LAUNCHPAD_SKIP_TLS_VERIFY: false,
+  TEST_OBSERVER_IMAGE_ARTIFACTS_URL:
+    "https://observer.example/v1/artefacts?family=image",
 }));
 // TODO: Reduce repeated env mocks (https://warthogs.atlassian.net/browse/LP-5132)
 vi.mock("$app/env/private", () => mockEnv);

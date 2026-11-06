@@ -24,6 +24,7 @@ import {
   DEFAULT_TABLE_VIEW_SLUG,
 } from "#lib/modules/packages/table-views/constants.js";
 import type { AddTableViewMode } from "#lib/modules/packages/table-views/constants.js";
+import { MAX_PAGE_SIZE } from "#lib/schemas/index.js";
 
 /** The packages table columns, in display order.*/
 export const PACKAGES_TABLE_COLUMNS = [
@@ -52,7 +53,6 @@ export const PANEL_QUERY_PARAM = "panel";
 export const MANAGE_VIEWS_PANEL = "manage-views";
 
 export const DEFAULT_PAGE_SIZE = 25;
-export const MAX_PAGE_SIZE = 100;
 export const PAGE_SIZE_OPTIONS = [10, 25, 50, MAX_PAGE_SIZE];
 
 const packagesQuerySchema = {

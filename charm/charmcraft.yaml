@@ -55,6 +55,12 @@ config:
       description: >
         Session cookie name used with the main Launchpad service
         (MAIN_LAUNCHPAD_COOKIE_NAME).
+    test-observer-image-artifacts-url:
+      type: string
+      default: "https://tests-api.ubuntu.com/v1/artefacts?family=image"
+      description: >
+        URL for the Test Observer image artefacts API
+        (TEST_OBSERVER_IMAGE_ARTIFACTS_URL).
 
 # Uncomment the integrations used by your application
 # Integrations set to "optional: false" will block the charm

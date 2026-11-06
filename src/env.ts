@@ -22,4 +22,8 @@ export const variables = defineEnvVars({
     description:
       "Skip TLS certificate verification when contacting the main Launchpad service",
   },
+  TEST_OBSERVER_IMAGE_ARTIFACTS_URL: {
+    schema: v.pipe(v.string(), v.url()),
+    description: "URL used to fetch Test Observer image artifacts",
+  },
 });

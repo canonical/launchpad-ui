@@ -14,7 +14,7 @@
 
   const { displayName, status, description, links, milestones } = $derived(
     await getSeriesOverview({
-      pillar: params.pillar,
+      distro: params.pillar,
       series: params.series,
     }),
   );
