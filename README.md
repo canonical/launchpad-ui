@@ -24,7 +24,7 @@ Running the project against the real backend requires a populated `.env`.
 Create a `.env` file in the project root:
 
 ```bash
-cp .env.mock .env
+cp .env.example .env
 ```
 
 Then update the variables in `.env` as needed.

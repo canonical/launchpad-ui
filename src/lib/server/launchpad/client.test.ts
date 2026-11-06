@@ -4,7 +4,6 @@ import type { IncomingMessage, ServerResponse } from "node:http";
 import { createServer as createHttpsServer } from "node:https";
 import type { AddressInfo } from "node:net";
 import { createSecureContext } from "node:tls";
-import { http, passthrough } from "msw";
 import {
   afterAll,
   beforeAll,
@@ -14,7 +13,6 @@ import {
   it,
   vi,
 } from "vitest";
-import { server as mocks } from "$lib/api/packages/mocks/server.js";
 import {
   launchpadTestCertificate,
   launchpadTestKey,
@@ -90,8 +88,6 @@ beforeEach(() => {
     MAIN_LAUNCHPAD_IP_ADDRESS: privateAddress,
     MAIN_LAUNCHPAD_SKIP_TLS_VERIFY: "true",
   });
-  // Exercise real sockets through the configured Fetch transport, not MSW replies.
-  mocks.use(http.all("*", () => passthrough()));
 });
 
 afterAll(async () => {

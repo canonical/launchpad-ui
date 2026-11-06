@@ -46,7 +46,6 @@ export default defineConfig({
           environment: "node",
           include: ["src/**/*.test.ts"],
           exclude: ["src/**/*.svelte.test.ts"],
-          setupFiles: ["./test/vitest-setup-msw.ts"],
         },
       },
     ],
