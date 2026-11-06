@@ -45,7 +45,7 @@
 
   const queryParams = $derived(QueryParams.bind(page.url));
 
-  const tableViewsPromise = getTableViews();
+  const tableViewsPromise = $derived(getTableViews());
   const imagePagePromise = $derived(
     getSeriesImages({
       pillar,
@@ -61,16 +61,16 @@
   const imageCountsPromise = $derived(getSeriesImageCounts({ pillar, series }));
 
   // loading is to actually run promises in parallel https://github.com/sveltejs/svelte/issues/16483#issuecomment-4803286374
-  void tableViewsPromise.loading;
   // untrack is to avoid registering dependencies and a state_referenced_locally warning
   untrack(() => {
+    void tableViewsPromise.loading;
     void imagePagePromise.loading;
     void imageCountsPromise.loading;
   });
 
   const imagePage = $derived(await imagePagePromise);
   const counts = $derived(await imageCountsPromise);
-  const tableViews = await tableViewsPromise;
+  const tableViews = $derived(await tableViewsPromise);
 
   const totalPages = $derived(
     imagePage?.total === undefined

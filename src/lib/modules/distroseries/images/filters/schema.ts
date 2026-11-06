@@ -19,7 +19,7 @@ export type ImagesFilters = v.InferOutput<typeof ImagesFiltersSchema>;
 
 /** Parses API-shaped image filters */
 export const ParsedImagesFiltersSchema = v.object({
-  product: v.nullable(ImageFilterFields.product),
+  product: ImageFilterFields.product,
   buildStatus: v.nullable(ImageFilterFields.buildStatus),
   testStatus: v.nullable(ImageFilterFields.testStatus),
 });

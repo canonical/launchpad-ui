@@ -14,12 +14,12 @@ import { query } from "$app/server";
  * Remote function schemas
  */
 const nameSchema = v.pipe(v.string(), v.regex(LAUNCHPAD_NAME_PATTERN));
-export const getSeriesImagesArgsSchema = v.intersect([
+const getSeriesImagesArgsSchema = v.intersect([
   v.object({
     pillar: nameSchema,
     series: nameSchema,
-    sortKey: v.nullish(v.picklist(SORTABLE_IMAGES_TABLE_COLUMNS), null),
-    sortOrder: v.optional(v.picklist(SORT_DIRECTIONS), "none"),
+    sortKey: v.nullable(v.picklist(SORTABLE_IMAGES_TABLE_COLUMNS)),
+    sortOrder: v.nullable(v.picklist(SORT_DIRECTIONS)),
     page: v.optional(
       v.pipe(v.number(), v.integer(), v.minValue(1), v.safeInteger()),
       1,
@@ -27,7 +27,7 @@ export const getSeriesImagesArgsSchema = v.intersect([
   }),
   v.partial(ParsedImagesFiltersSchema),
 ]);
-export const getSeriesImageCountsArgsSchema = v.intersect([
+const getSeriesImageCountsArgsSchema = v.intersect([
   v.object({ pillar: nameSchema, series: nameSchema }),
   v.partial(ParsedImagesFiltersSchema),
 ]);

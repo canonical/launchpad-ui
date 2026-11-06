@@ -108,6 +108,7 @@
   }}
 >
   <h3>Active views</h3>
+  {willCurrentViewBeDeleted}
   <ReorderableList
     bind:items={modifiedItems}
     key={(item) => item.slug}
@@ -203,8 +204,9 @@
               queryParams.patch({
                 [PANEL_QUERY_PARAM]: null,
                 [MANAGE_VIEWS_PANEL]: null,
-                ...(willCurrentViewBeDeleted ? { view: null } : {}),
+                images: { view: willCurrentViewBeDeleted ? null : undefined },
               }),
+
               {
                 keepFocus: true,
                 noScroll: true,

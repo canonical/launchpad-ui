@@ -1,5 +1,6 @@
 <script lang="ts" module>
-  import type { ImagesFilter } from "$lib/server/image-provider/types.js";
+  import type { ImagesFilter } from "$lib/server/test-observer/types.js";
+  import type { TableViewSettings } from "./schema.js";
 
   function areTableViewSettingsEqual(
     a: TableViewSettings,
@@ -29,7 +30,6 @@
     TableViewEditFormSchema,
     TableViewSettingsSchema,
   } from "./schema.js";
-  import type { TableViewSettings } from "./schema.js";
   import { editTableView } from "./table-views.remote.js";
   import { browser } from "$app/env";
   import { page } from "$app/state";

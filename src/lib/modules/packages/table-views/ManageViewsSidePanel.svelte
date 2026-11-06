@@ -199,7 +199,7 @@
               queryParams.patch({
                 panel: null,
                 "manage-views": null,
-                ...(willCurrentViewBeDeleted ? { view: null } : {}),
+                view: willCurrentViewBeDeleted ? null : undefined,
               }),
               {
                 keepFocus: true,
