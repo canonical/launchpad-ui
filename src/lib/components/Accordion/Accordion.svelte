@@ -3,7 +3,7 @@
     getFirstElement,
     getLastElement,
     getSiblingElement,
-  } from "$lib/utils/index.js";
+  } from "#lib/utils/index.js";
 
   const SUMMARY_SELECTOR = ".ds.accordion-item > summary";
 

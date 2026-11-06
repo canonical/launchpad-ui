@@ -7,11 +7,9 @@ import type { AccordionContext } from "../../types.js";
 import Component from "./Item.svelte";
 import { contentText, heading, headingText } from "./test.fixtures.svelte";
 
-let { name } = vi.hoisted(
-  (): AccordionContext => ({
-    name: undefined,
-  }),
-);
+let { name } = vi.hoisted((): AccordionContext => ({
+  name: undefined,
+}));
 
 vi.mock("../../context.js", () => {
   return {

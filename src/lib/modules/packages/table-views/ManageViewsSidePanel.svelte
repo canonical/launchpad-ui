@@ -59,16 +59,15 @@
   import { DeleteIcon, EditIcon, PlusIcon } from "@canonical/svelte-icons";
   import { isHttpError } from "@sveltejs/kit";
   import { settled, tick, untrack } from "svelte";
-  import { ReorderableList } from "$lib/components/ReorderableList/index.js";
-  import { SidePanel } from "$lib/launchpad-components/index.js";
+  import { ReorderableList } from "#lib/components/ReorderableList/index.js";
+  import { SidePanel } from "#lib/launchpad-components/index.js";
   import {
     CLEARED_FILTER_PARAMS,
     MANAGE_VIEWS_PANEL,
     PANEL_QUERY_PARAM,
     QueryParams,
     toPackagesFilters,
-  } from "$lib/modules/packages/superhref.js";
-  import { preserveQueryParams } from "$lib/utils/index.js";
+  } from "#lib/modules/packages/superhref.js";
   import { getPackagesContext } from "../context.js";
   import { DEFAULT_PACKAGES_FILTERS } from "../filters/constants.js";
   import type { SeriesGroups } from "../filters/types.js";
@@ -82,7 +81,7 @@
     updateTableViews,
   } from "./table-views.remote.js";
   import { getRecommendedViewName } from "./utils.js";
-  import { goto, replaceState } from "$app/navigation";
+  import { goto } from "$app/navigation";
   import { page } from "$app/state";
 
   let { open, seriesGroups }: { open: boolean; seriesGroups: SeriesGroups } =
@@ -153,10 +152,8 @@
     };
 
   function closeViewForm() {
-    // eslint-disable-next-line svelte/no-navigation-without-resolve
     goto(queryParams["manage-views"].closeForm(), {
-      keepFocus: true,
-      noScroll: true,
+      reset: false,
     });
   }
 
@@ -205,7 +202,6 @@
       const shouldClearUrlFilters = bookmarkedView !== undefined;
 
       await goto(
-        // eslint-disable-next-line svelte/no-navigation-without-resolve
         queryParams.patch({
           panel: null,
           "manage-views": null,
@@ -214,8 +210,7 @@
           ...(shouldClearUrlFilters && CLEARED_FILTER_PARAMS),
         }),
         {
-          keepFocus: true,
-          noScroll: true,
+          reset: false,
           // The views travel in the navigation state, so they're applied in the same update as the new URL.
           // Otherwise the URL can briefly point at a renamed view's old slug, or vice versa.
           state: { tableViews: savedViews },
@@ -225,7 +220,8 @@
       getTableViews(distro).set(savedViews);
       // After awaited queries pick up the new state it is safe to clear the page state
       await settled();
-      if (page.state.tableViews === savedViews) replaceState("", {});
+      if (page.state.tableViews === savedViews)
+        goto("", { shallow: true, replace: true });
     } catch (error) {
       console.error(error);
     } finally {
@@ -244,14 +240,12 @@
   }}
   onclose={() => {
     goto(
-      // eslint-disable-next-line svelte/no-navigation-without-resolve
       queryParams.patch({
         panel: null,
         "manage-views": null,
       }),
       {
-        keepFocus: true,
-        noScroll: true,
+        reset: false,
       },
     );
   }}
@@ -296,14 +290,10 @@
               renderedInOverlay ? null : deleteTableView.for(draft.key),
             )}
             <form
-              {...deleteForm &&
-                preserveQueryParams(
-                  deleteForm.enhance(() => {
-                    // If JS, don't delete immediately, and instead stage for deletion in drafts
-                    session.remove(draft.key);
-                  }),
-                  page.url,
-                )}
+              {...deleteForm?.enhance(() => {
+                // If JS, don't delete immediately, and instead stage for deletion in drafts
+                session.remove(draft.key);
+              })}
             >
               {#if deleteForm}
                 <input {...deleteForm.fields.distro.as("hidden", distro)} />

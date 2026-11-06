@@ -2,7 +2,7 @@ import type { ComponentProps } from "svelte";
 import { describe, expect, it, vi } from "vitest";
 import { userEvent } from "vitest/browser";
 import { render } from "vitest-browser-svelte";
-import { seriesGroups } from "$lib/modules/distroseries/series.fixtures.js";
+import { seriesGroups } from "#lib/modules/distroseries/series.fixtures.js";
 import { DEFAULT_PACKAGES_FILTERS } from "../filters/constants.js";
 import TableViewEditForm from "./TableViewEditForm.svelte";
 import type { TableViewSettings } from "./schema.js";
@@ -19,7 +19,7 @@ vi.mock("$app/state", async () => {
   };
 });
 
-vi.mock("$lib/modules/packages/people.remote.js", () => ({
+vi.mock("#lib/modules/packages/people.remote.js", () => ({
   findPeople: vi.fn(() => Promise.resolve([])),
   getPersonByName: vi.fn(() => Promise.resolve(null)),
 }));

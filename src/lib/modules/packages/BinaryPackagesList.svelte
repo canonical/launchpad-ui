@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Chip, Link } from "@canonical/svelte-ds-app-launchpad";
-  import type { SourcePackageListEntry } from "$lib/modules/packages/api.schema.js";
+  import type { SourcePackageListEntry } from "#lib/modules/packages/api.schema.js";
 
   const MAX_ROWS = 3;
   const ROW_LENGTH_IN_CHARS = 90;
@@ -58,8 +58,7 @@
           href={href(binary.id)}
           title={binary.name}
           soft
-          data-sveltekit-noscroll
-          data-sveltekit-keepfocus>{binary.name}</Link
+          data-sveltekit-reset={false}>{binary.name}</Link
         >
       </li>
     {/each}

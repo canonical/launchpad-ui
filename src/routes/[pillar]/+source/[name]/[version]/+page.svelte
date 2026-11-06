@@ -4,7 +4,7 @@
     distroSegment,
     packagesSegment,
     sourcePackageSegment,
-  } from "$lib/launchpad-components/index.js";
+  } from "#lib/launchpad-components/index.js";
   import type { PageProps } from "./$types.js";
   let { params }: PageProps = $props();
 </script>

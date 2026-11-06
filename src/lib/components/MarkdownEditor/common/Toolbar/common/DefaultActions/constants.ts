@@ -10,9 +10,9 @@ import {
   toggleQuote,
   toggleTaskList,
 } from "markdown-actions";
-import type { ShortcutMetadata } from "$lib/shortcuts/index.js";
-import { Shortcut } from "$lib/shortcuts/index.js";
-import { isEventTargetInElement } from "$lib/utils/isEventTargetInElement.js";
+import type { ShortcutMetadata } from "#lib/shortcuts/index.js";
+import { Shortcut } from "#lib/shortcuts/index.js";
+import { isEventTargetInElement } from "#lib/utils/isEventTargetInElement.js";
 
 export function createDefaultActions(
   getTextarea: () => HTMLTextAreaElement | undefined,

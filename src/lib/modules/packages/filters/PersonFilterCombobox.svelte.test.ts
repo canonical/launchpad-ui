@@ -22,7 +22,7 @@ const { findPeople, getPersonByName, seedPerson } = vi.hoisted(() => ({
   seedPerson: vi.fn(),
 }));
 
-vi.mock("$lib/modules/packages/people.remote.js", () => ({
+vi.mock("#lib/modules/packages/people.remote.js", () => ({
   findPeople,
   getPersonByName,
 }));

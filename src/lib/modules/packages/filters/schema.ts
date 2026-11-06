@@ -1,5 +1,5 @@
 import * as v from "valibot";
-import { LAUNCHPAD_NAME_PATTERN } from "$lib/utils/launchpad/launchpadName.js";
+import { LAUNCHPAD_NAME_PATTERN } from "#lib/utils/launchpad/launchpadName.js";
 import {
   MAX_PACKAGES_SEARCH_LENGTH,
   POCKETS,

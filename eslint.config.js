@@ -6,7 +6,6 @@ import storybook from "eslint-plugin-storybook";
 import svelte from "eslint-plugin-svelte";
 import globals from "globals";
 import ts from "typescript-eslint";
-import svelteConfig from "./svelte.config.js";
 
 export default ts.config(
   js.configs.recommended,
@@ -23,6 +22,9 @@ export default ts.config(
       // typescript-eslint strongly recommend that you do not use the no-undef lint rule on TypeScript projects.
       // see: https://typescript-eslint.io/troubleshooting/faqs/eslint/#i-get-errors-from-the-no-undef-rule-about-global-variables-not-being-defined-even-though-there-are-no-typescript-errors
       "no-undef": "off",
+      // This rule also flags query-parameter strings from helpers like Superhref, forcing many local rule disables.
+      // TODO: Consider re-enabling this rule for string literals (https://warthogs.atlassian.net/browse/LP-5088)
+      "svelte/no-navigation-without-resolve": "off",
       "svelte/no-target-blank": "warn",
       "svelte/prefer-const": "warn",
       "import/no-empty-named-blocks": "error",
@@ -55,7 +57,7 @@ export default ts.config(
               position: "before",
             },
             {
-              pattern: "$lib/**",
+              pattern: "#lib/**",
               group: "internal",
               position: "after",
             },
@@ -85,19 +87,6 @@ export default ts.config(
     },
   },
   {
-    files: ["src/lib/components/**"],
-    rules: {
-      "svelte/no-navigation-without-resolve": [
-        "error",
-        {
-          // We have to ignore links, because our meant-to-be-upstreamed components can't depend on kit and its `resolve` (see: https://sveltejs.github.io/eslint-plugin-svelte/rules/no-navigation-without-resolve/).
-          // On our side, we should still enforce the rule
-          ignoreLinks: true,
-        },
-      ],
-    },
-  },
-  {
     // Pragma opts-out from vcs integration and requires explicit ignore declarations
     ignores: [
       "pnpm-lock.yaml",
@@ -116,7 +105,6 @@ export default ts.config(
         projectService: true,
         extraFileExtensions: [".svelte"],
         parser: ts.parser,
-        svelteConfig,
       },
     },
   },

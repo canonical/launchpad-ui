@@ -1,9 +1,10 @@
 import { LaunchpadApiError } from "@canonical/launchpad-client";
 import { error } from "@sveltejs/kit";
 import * as v from "valibot";
-import { SORT_DIRECTIONS } from "$lib/codecs/sortCodec.js";
-import { ParsedPackagesFiltersSchema } from "$lib/modules/packages/filters/schema.js";
-import { launchpadClient, launchpadUrl } from "$lib/server/launchpad/client.js";
+import { SORT_DIRECTIONS } from "#lib/codecs/sortCodec.js";
+import { ParsedPackagesFiltersSchema } from "#lib/modules/packages/filters/schema.js";
+import { launchpadClient } from "#lib/server/launchpad/client.js";
+import { launchpadUrl } from "#lib/server/launchpad/launchpadUrl.js";
 import { sourcePackageListSchema } from "./api.schema.js";
 import { MAX_BINARY_NAMES } from "./constants.js";
 import { MAX_PAGE_SIZE, SORTABLE_PACKAGES_COLUMNS } from "./superhref.js";

@@ -3,11 +3,11 @@
   import {
     PageLayout,
     distroSegment,
-  } from "$lib/launchpad-components/index.js";
-  import GetInvolved from "$lib/modules/distroseries/GetInvolved.svelte";
-  import SeriesHeader from "$lib/modules/distroseries/SeriesHeader.svelte";
-  import SeriesMilestones from "$lib/modules/distroseries/SeriesMilestones.svelte";
-  import { getSeriesOverview } from "$lib/modules/distroseries/series.remote.js";
+  } from "#lib/launchpad-components/index.js";
+  import GetInvolved from "#lib/modules/distroseries/GetInvolved.svelte";
+  import SeriesHeader from "#lib/modules/distroseries/SeriesHeader.svelte";
+  import SeriesMilestones from "#lib/modules/distroseries/SeriesMilestones.svelte";
+  import { getSeriesOverview } from "#lib/modules/distroseries/series.remote.js";
   import type { PageProps } from "./$types.js";
 
   let { params }: PageProps = $props();

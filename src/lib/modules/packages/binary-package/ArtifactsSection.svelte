@@ -1,7 +1,7 @@
 <script lang="ts">
   import { Link } from "@canonical/svelte-ds-app-launchpad";
-  import type { BinaryPackageDetails } from "$lib/modules/packages/api.schema.js";
-  import { bytesToHumanReadable } from "$lib/utils/bytesToHumanReadable.js";
+  import type { BinaryPackageDetails } from "#lib/modules/packages/api.schema.js";
+  import { bytesToHumanReadable } from "#lib/utils/bytesToHumanReadable.js";
 
   const { artifacts }: { artifacts: BinaryPackageDetails["files"] } = $props();
 </script>

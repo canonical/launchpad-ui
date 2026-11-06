@@ -1,7 +1,7 @@
 import { LaunchpadApiError } from "@canonical/launchpad-client";
 import * as v from "valibot";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { DEFAULT_PACKAGES_FILTERS } from "$lib/modules/packages/filters/constants.js";
+import { DEFAULT_PACKAGES_FILTERS } from "#lib/modules/packages/filters/constants.js";
 import { MAX_BINARY_NAMES } from "./constants.js";
 import { getSourcePackages } from "./packages.remote.js";
 import { packageListing } from "./test.fixtures.js";
@@ -12,13 +12,17 @@ vi.mock("$app/server", () => ({
       __: { type: "query" },
     }),
 }));
-vi.mock("$env/dynamic/private", () => ({
-  env: { MAIN_LAUNCHPAD_BASE_HOST: "https://lp.example" },
-}));
+// TODO: Reduce repeated env mocks (https://warthogs.atlassian.net/browse/LP-5132)
+vi.mock(
+  "$app/env/private",
+  () =>
+    ({
+      MAIN_LAUNCHPAD_BASE_HOST: "https://lp.example",
+    }) satisfies Partial<typeof import("$app/env/private")>,
+);
 
 const getSourcePackageList = vi.hoisted(() => vi.fn());
-vi.mock("$lib/server/launchpad/client.js", async (importOriginal) => ({
-  ...(await importOriginal<typeof import("$lib/server/launchpad/client.js")>()),
+vi.mock("#lib/server/launchpad/client.js", () => ({
   launchpadClient: { archive: { distribution: { getSourcePackageList } } },
 }));
 

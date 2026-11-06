@@ -1,4 +1,4 @@
-import { assert, assertDefined } from "$lib/utils";
+import { assert, assertDefined } from "#lib/utils/index.js";
 import type { Modifier } from "./constants";
 import type {
   MacShortcut,

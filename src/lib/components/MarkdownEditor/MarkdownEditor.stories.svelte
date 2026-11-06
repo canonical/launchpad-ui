@@ -9,12 +9,12 @@
   } from "@canonical/svelte-icons";
   import { defineMeta } from "@storybook/addon-svelte-csf";
   import type { Component } from "svelte";
-  import { ShortcutsHelpSidePanel } from "$lib/components/ShortcutsHelpSidePanel/index.js";
+  import { ShortcutsHelpSidePanel } from "#lib/components/ShortcutsHelpSidePanel/index.js";
   import {
     BranchMergeIcon,
     BranchMergedIcon,
-  } from "$lib/components/icons/index.js";
-  import { Shortcut, UseShortcuts } from "$lib/shortcuts/index.js";
+  } from "#lib/components/icons/index.js";
+  import { Shortcut, UseShortcuts } from "#lib/shortcuts/index.js";
   import { MarkdownEditor } from "./index.js";
 
   const { Story } = defineMeta({

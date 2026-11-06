@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { DEFAULT_TABLE_VIEW_SLUG } from "$lib/modules/packages/table-views/constants.js";
+import { DEFAULT_TABLE_VIEW_SLUG } from "#lib/modules/packages/table-views/constants.js";
 import { QueryParams } from "./superhref";
 
 describe("package filter query parameters", () => {

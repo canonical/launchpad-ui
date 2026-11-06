@@ -14,7 +14,9 @@
     ...rest
   }: QueryParamsFormProps<S> = $props();
 
-  const form = $derived(createQueryParamsForm(schema, url, replaceParams));
+  const form = $derived(
+    createQueryParamsForm(schema, new URL(url.href), replaceParams),
+  );
 
   function onformdata({ formData }: FormDataEvent): void {
     const formDataEntries = Array.from(

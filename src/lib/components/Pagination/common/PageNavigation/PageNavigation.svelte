@@ -6,7 +6,7 @@
   import {
     SkipToEndIcon,
     SkipToStartIcon,
-  } from "$lib/components/icons/index.js";
+  } from "#lib/components/icons/index.js";
   import { getPaginationContext } from "../../context.js";
   import type { PageNavigationProps } from "./types.js";
   import "./styles.css";

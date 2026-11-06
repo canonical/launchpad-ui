@@ -46,6 +46,9 @@ parts:
     build-environment:
       - NPM_CONFIG_IGNORE_SCRIPTS: "true"
       - NODE_OPTIONS: "--max-old-space-size=3072" # avoid vite OOM
+      # Public origin baked into the build as SvelteKit's paths.origin (CSRF), so every rock only accepts POSTs from this origin.
+      # TODO: https://warthogs.atlassian.net/browse/LP-5107
+      - ORIGIN: "https://staging.paddev.net"
     stage-packages:
       # node runtime deps absent from the minimal base (+libgcc-s1 pulled in).
       - libstdc++6

@@ -5,6 +5,7 @@ import type {
 } from "@canonical/superhref";
 import type { Snippet } from "svelte";
 import type { HTMLFormAttributes } from "svelte/elements";
+import type { ReadonlyURL } from "$app/state";
 
 export type QueryParamsFormSchema<S extends SuperhrefSchema> = Superhref<
   S,
@@ -16,7 +17,7 @@ export type QueryParam<S extends SuperhrefSchema> = keyof SuperhrefParsed<S> &
 
 export type QueryParamsFormProps<S extends SuperhrefSchema> = {
   schema: QueryParamsFormSchema<S>;
-  url: URL;
+  url: ReadonlyURL;
   /**
    * Params or sections to replace instead of preserving as hidden inputs.
    * Missing values are cleared; with JavaScript, submitted values are normalized.

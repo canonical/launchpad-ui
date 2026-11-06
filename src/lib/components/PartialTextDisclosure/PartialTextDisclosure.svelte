@@ -1,7 +1,7 @@
 <script lang="ts">
   import { prefersReducedMotion } from "svelte/motion";
   import type { PartialTextDisclosureProps } from "./types.js";
-  import { browser } from "$app/environment";
+  import { browser } from "$app/env";
 
   let {
     text,
@@ -111,6 +111,7 @@
 >
   {text}
 </p>
+
 {#if maxLinesExceeded}
   <button
     aria-controls={paragraphId}

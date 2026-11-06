@@ -1,8 +1,8 @@
 import { LaunchpadApiError } from "@canonical/launchpad-client";
 import type { PersonFull } from "@canonical/launchpad-client/schemas/models/person";
 import * as v from "valibot";
-import { launchpadClient } from "$lib/server/launchpad/client.js";
-import { toLaunchpadName } from "$lib/utils/launchpad/launchpadName.js";
+import { launchpadClient } from "#lib/server/launchpad/client.js";
+import { toLaunchpadName } from "#lib/utils/launchpad/launchpadName.js";
 import { MAX_PEOPLE_SEARCH_LENGTH } from "./constants.js";
 import { PersonSearchSchema } from "./schema.js";
 import { query } from "$app/server";

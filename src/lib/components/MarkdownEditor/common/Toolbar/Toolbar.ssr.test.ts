@@ -7,8 +7,8 @@ import { createRawSnippet } from "svelte";
 import { describe, expect, it, vi } from "vitest";
 import Component from "./Toolbar.svelte";
 
-vi.mock("$lib/shortcuts/index.js", async (importActual) => {
-  const actual = await importActual<typeof import("$lib/shortcuts/index.js")>();
+vi.mock("#lib/shortcuts/index.js", async (importActual) => {
+  const actual = await importActual<typeof import("#lib/shortcuts/index.js")>();
   const useShortcuts = () => () => [];
   return {
     ...actual,

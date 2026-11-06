@@ -24,9 +24,9 @@
   import { Button, SearchBox } from "@canonical/svelte-ds-app-launchpad";
   import { CloseIcon } from "@canonical/svelte-icons";
   import { onMount } from "svelte";
-  import { BookmarkIcon } from "$lib/components/icons/index.js";
-  import { QueryParamsForm } from "$lib/components/index.js";
-  import { subId } from "$lib/utils/index.js";
+  import { BookmarkIcon } from "#lib/components/icons/index.js";
+  import { QueryParamsForm } from "#lib/components/index.js";
+  import { subId } from "#lib/utils/index.js";
   import { getPackagesContext } from "../context.js";
   import { CLEARED_FILTER_PARAMS, QueryParams } from "../superhref.js";
   import MoreFiltersMenu from "./MoreFiltersMenu.svelte";
@@ -72,9 +72,8 @@
       return;
     }
     goto(
-      // eslint-disable-next-line svelte/no-navigation-without-resolve
       queryParams.patch({ "maintainer-search": null, "signer-search": null }),
-      { replaceState: true, keepFocus: true, noScroll: true },
+      { replace: true, reset: false },
     );
   });
 </script>
@@ -84,8 +83,7 @@
     schema={QueryParams}
     url={page.url}
     replaceParams={[...filterNames, "page"]}
-    data-sveltekit-keepfocus
-    data-sveltekit-noscroll
+    data-sveltekit-reset={false}
     class="dense"
   >
     <div class="search">

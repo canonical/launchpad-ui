@@ -5,9 +5,8 @@
     TextInput,
   } from "@canonical/svelte-ds-app-launchpad";
   import type { TextInputProps } from "@canonical/svelte-ds-app-launchpad";
-  import type { RemoteFormField } from "@sveltejs/kit";
   import * as v from "valibot";
-  import { preserveQueryParams, subId } from "$lib/utils/index.js";
+  import { subId } from "#lib/utils/index.js";
   import PersonFilterCombobox from "../filters/PersonFilterCombobox.svelte";
   import PocketFilterMenu from "../filters/PocketFilterMenu.svelte";
   import SearchModeMenu from "../filters/SearchModeMenu.svelte";
@@ -26,7 +25,7 @@
   import type { TableViewSettings } from "./schema.js";
   import type { createTableView, editTableView } from "./table-views.remote.js";
   import { browser } from "$app/env";
-  import { page } from "$app/state";
+  import type { RemoteFormField } from "$app/server";
 
   const {
     form,
@@ -104,12 +103,9 @@
 </script>
 
 <form
-  {...preserveQueryParams(
-    form.preflight(TableViewEditFormSchema).enhance(({ fields }) => {
-      onstage(v.parse(TableViewSettingsSchema, fields.value()));
-    }),
-    page.url,
-  )}
+  {...form.preflight(TableViewEditFormSchema).enhance(({ fields }) => {
+    onstage(v.parse(TableViewSettingsSchema, fields.value()));
+  })}
 >
   <!-- Without JS, Enter in a text field submits with the first submit button, so it must confirm rather than search -->
   <button
