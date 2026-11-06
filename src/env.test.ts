@@ -2,63 +2,88 @@ import * as v from "valibot";
 import { describe, expect, it } from "vitest";
 import { variables } from "./env.js";
 
-describe("environment variables", () => {
-  it("provides defaults for unset variables", () => {
-    expect(v.parse(variables.MAIN_LAUNCHPAD_BASE_HOST.schema, undefined)).toBe(
-      "https://launchpad.net",
-    );
-    expect(
-      v.parse(variables.MAIN_LAUNCHPAD_COOKIE_NAME.schema, undefined),
-    ).toBe("lp");
-    expect(
-      v.parse(variables.MAIN_LAUNCHPAD_IP_ADDRESS.schema, undefined),
-    ).toBeUndefined();
-    expect(
-      v.parse(variables.MAIN_LAUNCHPAD_SKIP_TLS_VERIFY.schema, undefined),
-    ).toBe(false);
-  });
+describe("Environment variables", () => {
+  describe("MAIN_LAUNCHPAD_BASE_HOST", () => {
+    const { schema } = variables.MAIN_LAUNCHPAD_BASE_HOST;
 
-  it.each(Object.entries(variables))("rejects an empty %s", (_, { schema }) => {
-    expect(() => v.parse(schema, "")).toThrow(v.ValiError);
-  });
+    it("defaults to https://launchpad.net when unset", () => {
+      expect(v.parse(schema, undefined)).toBe("https://launchpad.net");
+    });
 
-  describe.each([
-    "MAIN_LAUNCHPAD_BASE_HOST",
-    "MAIN_LAUNCHPAD_IP_ADDRESS",
-  ] as const)("%s", (name) => {
+    it("rejects an empty string", () => {
+      expect(() => v.parse(schema, "")).toThrow(v.ValiError);
+    });
+
     it("accepts a configured URL", () => {
       const url = "https://launchpad.example:8443";
-      expect(v.parse(variables[name].schema, url)).toBe(url);
+      expect(v.parse(schema, url)).toBe(url);
     });
 
     it("rejects an invalid URL", () => {
-      expect(() => v.parse(variables[name].schema, "not-a-url")).toThrow(
-        v.ValiError,
-      );
+      expect(() => v.parse(schema, "not-a-url")).toThrow(v.ValiError);
     });
   });
 
-  it("accepts a configured cookie name", () => {
-    expect(
-      v.parse(variables.MAIN_LAUNCHPAD_COOKIE_NAME.schema, "launchpad_dev"),
-    ).toBe("launchpad_dev");
+  describe("MAIN_LAUNCHPAD_COOKIE_NAME", () => {
+    const { schema } = variables.MAIN_LAUNCHPAD_COOKIE_NAME;
+
+    it("defaults to lp when unset", () => {
+      expect(v.parse(schema, undefined)).toBe("lp");
+    });
+
+    it("rejects an empty string", () => {
+      expect(() => v.parse(schema, "")).toThrow(v.ValiError);
+    });
+
+    it("accepts a configured cookie name", () => {
+      expect(v.parse(schema, "launchpad_dev")).toBe("launchpad_dev");
+    });
   });
 
-  it.each([
-    ["true", true],
-    ["false", false],
-  ] as const)("maps TLS setting %j to boolean %j", (value, expected) => {
-    expect(
-      v.parse(variables.MAIN_LAUNCHPAD_SKIP_TLS_VERIFY.schema, value),
-    ).toBe(expected);
+  describe("MAIN_LAUNCHPAD_IP_ADDRESS", () => {
+    const { schema } = variables.MAIN_LAUNCHPAD_IP_ADDRESS;
+
+    it("remains undefined when unset", () => {
+      expect(v.parse(schema, undefined)).toBeUndefined();
+    });
+
+    it("rejects an empty string", () => {
+      expect(() => v.parse(schema, "")).toThrow(v.ValiError);
+    });
+
+    it("accepts a configured URL", () => {
+      const url = "https://launchpad.example:8443";
+      expect(v.parse(schema, url)).toBe(url);
+    });
+
+    it("rejects an invalid URL", () => {
+      expect(() => v.parse(schema, "not-a-url")).toThrow(v.ValiError);
+    });
   });
 
-  it.each(["TRUE", "False", "yes", "1", "0", " true "])(
-    "rejects invalid TLS setting %j",
-    (value) => {
-      expect(() =>
-        v.parse(variables.MAIN_LAUNCHPAD_SKIP_TLS_VERIFY.schema, value),
-      ).toThrow(v.ValiError);
-    },
-  );
+  describe("MAIN_LAUNCHPAD_SKIP_TLS_VERIFY", () => {
+    const { schema } = variables.MAIN_LAUNCHPAD_SKIP_TLS_VERIFY;
+
+    it("defaults to false when unset", () => {
+      expect(v.parse(schema, undefined)).toBe(false);
+    });
+
+    it("rejects an empty string", () => {
+      expect(() => v.parse(schema, "")).toThrow(v.ValiError);
+    });
+
+    it.each([
+      ["true", true],
+      ["false", false],
+    ] as const)("maps TLS setting %j to boolean %j", (value, expected) => {
+      expect(v.parse(schema, value)).toBe(expected);
+    });
+
+    it.each(["TRUE", "False", "yes", "1", "0", " true "])(
+      "rejects invalid TLS setting %j",
+      (value) => {
+        expect(() => v.parse(schema, value)).toThrow(v.ValiError);
+      },
+    );
+  });
 });
