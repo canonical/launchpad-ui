@@ -45,7 +45,7 @@
   });
 
   const seriesGroupsPromise = $derived(
-    getSeriesGroups({ pillar: params.pillar }),
+    getSeriesGroups({ distro: params.pillar }),
   );
   const urlFilters = $derived(toPackagesFilters(queryParams));
   const storedTableViews = $derived(await getTableViews(distro));

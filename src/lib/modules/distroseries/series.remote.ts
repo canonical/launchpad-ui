@@ -2,25 +2,20 @@ import { LaunchpadApiError } from "@canonical/launchpad-client";
 import type { DistroSeriesFull } from "@canonical/launchpad-client/schemas/models/distro_series";
 import { error } from "@sveltejs/kit";
 import * as v from "valibot";
+import { distroSeriesSchema, launchpadNameSchema } from "#lib/schemas/index.ts";
 import { launchpadClient } from "#lib/server/launchpad/client.js";
-import { LAUNCHPAD_NAME_PATTERN } from "#lib/utils/launchpad/launchpadName.js";
 import { query } from "$app/server";
 
-const nameSchema = v.pipe(v.string(), v.regex(LAUNCHPAD_NAME_PATTERN));
-
 export const getSeriesOverview = query(
-  v.object({
-    pillar: nameSchema,
-    series: nameSchema,
-  }),
-  async ({ pillar, series }) => {
+  distroSeriesSchema,
+  async ({ distro, series }) => {
     try {
       const [{ data: entry }, { data: milestones }] = await Promise.all([
         launchpadClient.distroSeries.series.get({
-          path: { distribution: pillar, series },
+          path: { distribution: distro, series },
         }),
         launchpadClient.distroSeries.series.searchMilestones({
-          path: { distribution: pillar, series },
+          path: { distribution: distro, series },
           query: {
             is_active: "true",
             order_by: "date_targeted",
@@ -32,16 +27,16 @@ export const getSeriesOverview = query(
       const seriesPath = new URL(entry.web_link).pathname;
 
       return {
-        displayName: seriesDisplayName(entry, pillar),
+        displayName: seriesDisplayName(entry, distro),
         distribution: {
-          displayName: pillar.charAt(0).toUpperCase() + pillar.slice(1),
-          url: `/${pillar}`,
+          displayName: distro.charAt(0).toUpperCase() + distro.slice(1),
+          url: `/${distro}`,
         },
         status: entry.status,
         description: entry.summary,
         links: {
-          reportBug: `https://bugs.launchpad.net/${pillar}/+filebug`,
-          askQuestion: `https://answers.launchpad.net/${pillar}/+addquestion`,
+          reportBug: `https://bugs.launchpad.net/${distro}/+filebug`,
+          askQuestion: `https://answers.launchpad.net/${distro}/+addquestion`,
           translate:
             entry.translations_usage === "Launchpad"
               ? `https://translations.launchpad.net${seriesPath}`
@@ -69,13 +64,13 @@ export const getSeriesOverview = query(
 );
 
 export const getSeriesGroups = query(
-  v.object({ pillar: nameSchema }),
-  async ({ pillar }) => {
+  v.object({ distro: launchpadNameSchema }),
+  async ({ distro }) => {
     try {
       const {
         data: { entries },
       } = await launchpadClient.distribution.series.get({
-        path: { distribution: pillar },
+        path: { distribution: distro },
       });
       const entriesByStatus = Map.groupBy(
         entries.filter((entry) => entry.status !== "Obsolete"),
@@ -86,7 +81,7 @@ export const getSeriesGroups = query(
         status,
         series: statusEntries.map((entry) => ({
           name: entry.name,
-          displayName: seriesDisplayName(entry, pillar),
+          displayName: seriesDisplayName(entry, distro),
         })),
       }));
     } catch (requestError) {
@@ -98,9 +93,9 @@ export const getSeriesGroups = query(
 
 function seriesDisplayName(
   entry: Pick<DistroSeriesFull, "version" | "displayname">,
-  pillar: string,
+  distro: string,
 ) {
-  return `${entry.version}${isLts(entry, pillar) ? " LTS" : ""} ${entry.displayname}`;
+  return `${entry.version}${isLts(entry, distro) ? " LTS" : ""} ${entry.displayname}`;
 }
 
 // TODO: Bring it up during the sprint in Mexico. Update with the decision. This code shouldn't be here in 2027
@@ -113,6 +108,6 @@ function seriesDisplayName(
 // Flavours are, probably, LTS if based on Ubuntu LTS
 // Elementary OS has no LTS marker
 // For linux mint every version is marked as LTS
-function isLts(entry: Pick<DistroSeriesFull, "version">, pillar: string) {
-  return pillar === "ubuntu" && /^\d[02468]\.04$/.test(entry.version);
+function isLts(entry: Pick<DistroSeriesFull, "version">, distro: string) {
+  return distro === "ubuntu" && /^\d[02468]\.04$/.test(entry.version);
 }

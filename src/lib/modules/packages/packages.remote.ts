@@ -1,13 +1,17 @@
 import { LaunchpadApiError } from "@canonical/launchpad-client";
 import { error } from "@sveltejs/kit";
 import * as v from "valibot";
-import { SORT_DIRECTIONS } from "#lib/codecs/sortCodec.js";
 import { ParsedPackagesFiltersSchema } from "#lib/modules/packages/filters/schema.js";
+import {
+  createSortingSchema,
+  launchpadNameSchema,
+  paginationSchema,
+} from "#lib/schemas/index.js";
 import { launchpadClient } from "#lib/server/launchpad/client.js";
 import { launchpadUrl } from "#lib/server/launchpad/launchpadUrl.js";
 import { sourcePackageListSchema } from "./api.schema.js";
 import { MAX_BINARY_NAMES } from "./constants.js";
-import { MAX_PAGE_SIZE, SORTABLE_PACKAGES_COLUMNS } from "./superhref.js";
+import { SORTABLE_PACKAGES_COLUMNS } from "./superhref.js";
 import { query } from "$app/server";
 
 const SORT_KEYS = {
@@ -18,17 +22,10 @@ const SORT_KEYS = {
 } as const satisfies Record<(typeof SORTABLE_PACKAGES_COLUMNS)[number], string>;
 
 const listArgsSchema = v.intersect([
+  createSortingSchema(SORTABLE_PACKAGES_COLUMNS),
+  paginationSchema,
   v.object({
-    distro: v.pipe(v.string(), v.trim(), v.minLength(1)),
-    sortKey: v.nullable(v.picklist(SORTABLE_PACKAGES_COLUMNS)),
-    sortOrder: v.picklist(SORT_DIRECTIONS),
-    page: v.pipe(v.number(), v.integer(), v.minValue(1)),
-    size: v.pipe(
-      v.number(),
-      v.integer(),
-      v.minValue(1),
-      v.maxValue(MAX_PAGE_SIZE),
-    ),
+    distro: launchpadNameSchema,
   }),
   ParsedPackagesFiltersSchema,
 ]);
