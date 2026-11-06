@@ -26,6 +26,7 @@ const mockEnv = vi.hoisted((): { -readonly [K in keyof Env]: Env[K] } => ({
   MAIN_LAUNCHPAD_IP_ADDRESS: undefined,
   MAIN_LAUNCHPAD_SKIP_TLS_VERIFY: false,
 }));
+// TODO: Reduce repeated env mocks (https://warthogs.atlassian.net/browse/LP-5132)
 vi.mock("$app/env/private", () => mockEnv);
 
 const tlsOptions = {

@@ -1,6 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { launchpadApiBaseUrl, launchpadUrl } from "./launchpadUrl.js";
 
+// TODO: Reduce repeated env mocks (https://warthogs.atlassian.net/browse/LP-5132)
 vi.mock(
   "$app/env/private",
   () =>
