@@ -49,7 +49,7 @@ beforeEach(() => {
 describe("binaryPackageArchive", () => {
   it("streams a stored archive of every artifact with download headers", async () => {
     const response = await binaryPackageArchive(details());
-    const { bytes, archive } = await archiveOf(response);
+    const { bytes, entries } = await archiveOf(response);
 
     expect(response.status).toBe(200);
     expect(response.headers.get("content-type")).toBe("application/zip");
@@ -60,13 +60,12 @@ describe("binaryPackageArchive", () => {
     expect(Number(response.headers.get("content-length"))).toBe(
       bytes.byteLength,
     );
-    expect(archive.entries.map((record) => record.name)).toEqual([
-      "firefox_1.0_amd64.deb",
-      "firefox_1.0_arm64.deb",
-    ]);
     expect(
-      archive.entries.map((record) => decoder.decode(record.data)),
-    ).toEqual(["amd64", "arm"]);
+      entries.map((record) => [record.name, decoder.decode(record.data)]),
+    ).toEqual([
+      ["firefox_1.0_amd64.deb", "amd64"],
+      ["firefox_1.0_arm64.deb", "arm"],
+    ]);
   });
 
   it.each([
@@ -76,7 +75,7 @@ describe("binaryPackageArchive", () => {
     const response = await binaryPackageArchive(
       details({ binary_package_name: name, binary_package_version: version }),
     );
-    await response.body?.cancel();
+    await response.arrayBuffer();
 
     expect(response.headers.get("content-disposition")).toBe(
       `attachment; filename="${filename}"`,
@@ -95,14 +94,16 @@ describe("binaryPackageArchive", () => {
     expect(getArtifactStream).not.toHaveBeenCalled();
   });
 
-  it("resolves every artifact URL up front and streams them lazily in order", async () => {
+  it("resolves every artifact URL up front and streams them one after another", async () => {
     const response = await binaryPackageArchive(details());
 
     expect(resolveArtifactUrl.mock.calls.map(([url]) => url)).toEqual([
       `${FILES_URL}/firefox_1.0_amd64.deb`,
       `${FILES_URL}/firefox_1.0_arm64.deb`,
     ]);
-    expect(getArtifactStream).not.toHaveBeenCalled();
+    expect(getArtifactStream.mock.calls.map(([url]) => url)).toEqual([
+      `${LIBRARIAN_URL}/firefox_1.0_amd64.deb`,
+    ]);
 
     await response.arrayBuffer();
 
