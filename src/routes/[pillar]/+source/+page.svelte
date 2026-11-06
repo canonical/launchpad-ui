@@ -33,7 +33,7 @@
   const { params }: PageProps = $props();
 
   const distro = $derived(params.pillar);
-  const queryParams = $derived(QueryParams.bind(page.url));
+  const queryParams = $derived(QueryParams.bind(new URL(page.url.href)));
 
   setPackagesContext({
     get distro() {
