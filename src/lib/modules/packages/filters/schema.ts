@@ -1,13 +1,10 @@
 import * as v from "valibot";
-import { LAUNCHPAD_NAME_PATTERN } from "#lib/utils/launchpad/launchpadName.js";
+import { launchpadNameSchema } from "#lib/schemas/index.js";
 import {
   MAX_PACKAGES_SEARCH_LENGTH,
   POCKETS,
   SEARCH_MATCHES,
 } from "./constants.js";
-
-/** Validates the syntax of a nonempty Launchpad name. */
-const launchpadNameSchema = v.pipe(v.string(), v.regex(LAUNCHPAD_NAME_PATTERN));
 
 /** Validators for populated filter values, without defaults or nullable wrappers. */
 export const PackagesFilterFields = {
