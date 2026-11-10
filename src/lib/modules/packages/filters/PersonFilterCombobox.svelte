@@ -40,6 +40,7 @@
      * `value` seeds only the search on creation and is ignored for subsequent changes.
      */
     searchInputProps: Omit<SearchBoxProps, "value" | "aria-label"> & {
+      // eslint-disable-next-line local/require-todo-jira-url -- Legacy TODO; Jira ticket pending.
       // TODO(DAL): Loosen the value type inputs on text-input based components to interop with Kit's remote form types.
       value?: string | number | null;
     };
@@ -93,7 +94,8 @@
   const selectedPerson = $derived(
     !value
       ? null
-      : // TODO: Currently this path returns null instead of 404-ing, which should IMO should not be the case. A bogus hand-typed person in the URL should probably throw the page as it's gonna end up in the filters.
+      : // eslint-disable-next-line local/require-todo-jira-url -- Legacy TODO; Jira ticket pending.
+        // TODO: Currently this path returns null instead of 404-ing, which should IMO should not be the case. A bogus hand-typed person in the URL should probably throw the page as it's gonna end up in the filters.
         await getPersonByName(value),
   );
 </script>

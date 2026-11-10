@@ -57,7 +57,7 @@ export default defineConfig({
         test: {
           name: "server",
           environment: "node",
-          include: ["src/**/*.test.ts"],
+          include: ["src/**/*.test.ts", "test/**/*.test.ts"],
           exclude: ["src/**/*.svelte.test.ts"],
         },
       },

@@ -98,6 +98,7 @@ function seriesDisplayName(
   return `${entry.version}${isLts(entry, distro) ? " LTS" : ""} ${entry.displayname}`;
 }
 
+// eslint-disable-next-line local/require-todo-jira-url -- Legacy TODO; Jira ticket pending.
 // TODO: Bring it up during the sprint in Mexico. Update with the decision. This code shouldn't be here in 2027
 // A very bad way to determine if a series is LTS
 // but there is no flag returned from launchpad

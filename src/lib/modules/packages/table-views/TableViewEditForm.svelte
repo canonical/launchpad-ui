@@ -118,6 +118,7 @@
   <input {...fields.distro.as("hidden", distro)} />
   <h4>{heading}</h4>
 
+  <!-- eslint-disable-next-line local/require-todo-jira-url -- Legacy TODO; Jira ticket pending. -->
   <!-- 
     A fieldset would be more appropriate here, but there is a bug in Chrome, where it doesn't properly propagate subgrid column definitions: https://issues.chromium.org/issues/40278914
     

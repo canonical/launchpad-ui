@@ -73,6 +73,7 @@
         role: "combobox",
         "aria-controls": comboboxContext?.listBoxElement?.id,
         "aria-autocomplete": "list",
+        // eslint-disable-next-line local/require-todo-jira-url -- Legacy TODO; Jira ticket pending.
         /*
           The `aria-expanded` is a bit problematic here, due to the fact that:
           - it has to be set as `aria-expanded` is a required attribute for `role="combobox"` (https://docs.rodeo/en-US/docs/Web/Accessibility/ARIA/Reference/Roles/combobox_role);

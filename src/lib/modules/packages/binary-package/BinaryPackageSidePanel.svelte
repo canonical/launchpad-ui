@@ -70,6 +70,7 @@
 </SidePanel>
 
 {#snippet pending()}
+  <!-- eslint-disable-next-line local/require-todo-jira-url -- Legacy TODO; Jira ticket pending. -->
   <!-- TODO(@Enzo): How should the loading state look like -->
   <div class="pending"><Spinner />Loading package details…</div>
 {/snippet}

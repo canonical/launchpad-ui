@@ -24,6 +24,7 @@ The following Contextual Menu example can be assembled using:
         <Button {...triggerProps}>
           Options
           {#snippet iconRight()}
+            <!-- eslint-disable-next-line local/require-todo-jira-url -- Legacy TODO; Jira ticket pending. -->
             <!-- TODO: Replace with <Chevron /> -->
             <ChevronUpIcon
               style="transform: rotate({open ? '180deg' : '0deg'});"

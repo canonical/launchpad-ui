@@ -247,6 +247,7 @@ export class ReorderableList<T> {
     return Math.min(Math.max(index, 0), this.itemsCount - 1);
   }
 
+  // eslint-disable-next-line local/require-todo-jira-url -- Legacy TODO; Jira ticket pending.
   /**
    * Moving an item in a keyed each block moves the DOM node, which blurs whatever was focused inside it.
    * The move is flushed synchronously so focus is restored before any new events are delivered.

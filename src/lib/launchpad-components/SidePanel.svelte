@@ -46,6 +46,7 @@
   }
 </script>
 
+<!-- eslint-disable-next-line local/require-todo-jira-url -- Legacy TODO; Jira ticket pending. -->
 <!-- TODO(DAL): Update SidePanel spacing to match the design. -->
 <!-- Without JS, dismissal must use the close form to clear the query param. -->
 <SidePanel

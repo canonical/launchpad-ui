@@ -68,6 +68,7 @@
       {/snippet}
     </Button>
   {/snippet}
+  <!-- eslint-disable-next-line local/require-todo-jira-url -- Legacy TODO; Jira ticket pending. -->
   <!-- TODO:  extract the shortcut label into a separate component (waiting for Enzo's design) -->
   {`${label}${shortcut ? ` (${shortcut.toHumanReadable()})` : ""}`}
 </Tooltip>

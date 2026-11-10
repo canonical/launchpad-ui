@@ -161,6 +161,7 @@
             <DisconnectedIcon />
           {/snippet}
         </SideNavigation.NavigationItem>
+        <!-- eslint-disable-next-line local/require-todo-jira-url -- Legacy TODO; Jira ticket pending. -->
         <!-- TODO: Placeholder links -->
         <SideNavigation.NavigationItem disabled>
           View another MP
@@ -221,6 +222,7 @@
               </form>
             </ContextualMenuContent>
           </Popover>
+          <!-- eslint-disable-next-line local/require-todo-jira-url -- Legacy TODO; Jira ticket pending. -->
           <!-- TODO: Placeholder links -->
           <SideNavigation.NavigationItem disabled>
             $username

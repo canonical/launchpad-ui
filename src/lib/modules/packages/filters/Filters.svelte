@@ -95,6 +95,7 @@
         onchange={submitFilters}
         aria-labelledby={searchModeLabelId}
       />
+      <!-- eslint-disable-next-line local/require-todo-jira-url -- Legacy TODO; Jira ticket pending. -->
       <!-- TODO(DAL): Style the searchbox according to the design -->
       <SearchBox
         name={filterInputsNames.search}

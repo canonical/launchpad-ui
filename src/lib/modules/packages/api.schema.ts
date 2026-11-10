@@ -1,5 +1,6 @@
 import * as v from "valibot";
 
+// eslint-disable-next-line local/require-todo-jira-url -- Legacy TODO; Jira ticket pending.
 // TODO: Temporary UI response schemas for getSourcePackageList and getBinaryPackageDetails.
 // Their WADL omits return schemas, so the generated client outputs remain unknown.
 // Remove these fallbacks once upstream OpenAPI provides the response contracts.

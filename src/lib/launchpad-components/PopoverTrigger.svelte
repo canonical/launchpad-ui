@@ -1,4 +1,5 @@
 <script lang="ts" module>
+  // eslint-disable-next-line local/require-todo-jira-url -- Legacy TODO; Jira ticket pending.
   // TODO(DAL): Export PopoverTriggerProps
   type PopoverTriggerProps =
     ComponentProps<typeof Popover>["trigger"] extends Snippet<

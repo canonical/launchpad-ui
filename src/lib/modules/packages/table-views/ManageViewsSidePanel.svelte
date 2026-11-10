@@ -352,6 +352,7 @@
   {/if}
   {#snippet footer(closeButtonProps)}
     <div class="footer">
+      <!-- eslint-disable-next-line local/require-todo-jira-url -- Legacy TODO; Jira ticket pending. -->
       <!-- TODO(@Enzo): Confirm the design of error reporting -->
       {#if session.saveError}
         <p class="save-error" role="alert">

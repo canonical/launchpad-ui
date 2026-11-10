@@ -163,6 +163,7 @@ only applied when JavaScript is available.
   }
 
   button {
+    /* eslint-disable-next-line local/require-todo-jira-url -- Legacy TODO; Jira ticket pending. */
     /* TODO: Link-looking-like button */
     background: none;
     border: none;

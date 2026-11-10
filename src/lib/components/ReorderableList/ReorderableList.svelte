@@ -242,6 +242,7 @@ During pointer dragging, the snippet is also rendered in an inert fixed-position
       transition-duration: var(--reorderable-list-animation-duration);
       transition-timing-function: var(--ds-transition-timing-ease-out);
 
+      /* eslint-disable-next-line local/require-todo-jira-url -- Legacy TODO; Jira ticket pending. */
       /* TODO: Shadow design tokens */
       --grabbed-shadow:
         0 1px 2px rgba(0, 0, 0, 0.15), 0 8px 20px rgba(0, 0, 0, 0.2);
@@ -252,6 +253,7 @@ During pointer dragging, the snippet is also rendered in an inert fixed-position
       }
 
       &[data-dragging="drop-indicator"] {
+        /* eslint-disable-next-line local/require-todo-jira-url -- Legacy TODO; Jira ticket pending. */
         /* TODO(@Enzo): Confirm opacity values/tokens */
         opacity: 0.3;
       }
@@ -295,6 +297,7 @@ During pointer dragging, the snippet is also rendered in an inert fixed-position
         }
 
         &[data-dragmode="drop-indicator"] {
+          /* eslint-disable-next-line local/require-todo-jira-url -- Legacy TODO; Jira ticket pending. */
           /* TODO(@Enzo): Confirm opacity values/tokens */
           opacity: 0.7;
 

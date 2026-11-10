@@ -73,6 +73,7 @@
   <title>{distro} packages — Launchpad</title>
 </svelte:head>
 
+<!-- eslint-disable-next-line local/require-todo-jira-url -- Legacy TODO; Jira ticket pending. -->
 <!-- TODO(@Enzo): Mobile layout -->
 <PageLayout
   breadcrumbsSegments={[distroSegment(distro), { label: "Packages" }]}
@@ -292,6 +293,7 @@
 
       :global {
         .package-link {
+          /* eslint-disable-next-line local/require-todo-jira-url -- Legacy TODO; Jira ticket pending. */
           /* TODO(DAL): We should probably have an `underline` prop on the Link component similar to `soft`. */
           text-decoration: underline;
 

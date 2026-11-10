@@ -12,6 +12,7 @@
   <form {...setLpCookie}>
     <TextInput
       // remote form.as("password") now is typed with value: string | number which our TextInput doesn't tolerate.
+      // eslint-disable-next-line local/require-todo-jira-url -- Legacy TODO; Jira ticket pending.
       // TODO(DAL): Investigate why and fix in DAL?
       {...setLpCookie.fields._lp.as("password") as { value: string }}
       placeholder="Enter your Launchpad cookie value"

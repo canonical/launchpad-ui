@@ -1,3 +1,4 @@
+<!-- eslint-disable-next-line local/require-todo-jira-url -- Legacy TODO; Jira ticket pending. -->
 <!-- TODO: Proper error component -->
 
 <script lang="ts">
