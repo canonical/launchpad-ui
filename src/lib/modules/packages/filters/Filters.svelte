@@ -26,6 +26,10 @@
   import { onMount } from "svelte";
   import { BookmarkIcon } from "#lib/components/icons/index.js";
   import { QueryParamsForm } from "#lib/components/index.js";
+  import type {
+    FilterChangeHandler,
+    SeriesGroups,
+  } from "#lib/modules/filtering/types.js";
   import { subId } from "#lib/utils/index.js";
   import { getPackagesContext } from "../context.js";
   import { CLEARED_FILTER_PARAMS, QueryParams } from "../superhref.js";
@@ -35,7 +39,6 @@
   import SearchModeMenu from "./SearchModeMenu.svelte";
   import SeriesFilterMenu from "./SeriesFilterMenu.svelte";
   import { PACKAGES_FILTER_LABELS as labels } from "./constants.js";
-  import type { FilterChangeHandler, SeriesGroups } from "./types.js";
   import { goto } from "$app/navigation";
   import { page } from "$app/state";
 
@@ -77,6 +80,9 @@
     );
   });
 </script>
+
+<!-- TODO: Use the common Filters component once
+https://warthogs.atlassian.net/browse/LP-5118 lands -->
 
 <div class="filters-bar">
   <QueryParamsForm

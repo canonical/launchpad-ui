@@ -2,7 +2,10 @@
   import { Popover } from "@canonical/svelte-ds-app-launchpad";
   import { ContextualMenuContent } from "#lib/components/index.js";
   import { PopoverTrigger } from "#lib/launchpad-components/index.js";
-  import type { ChoiceFilterProps, SeriesGroups } from "./types.js";
+  import type {
+    ChoiceFilterProps,
+    SeriesGroups,
+  } from "#lib/modules/filtering/types.js";
 
   const {
     name,
@@ -21,6 +24,9 @@
       .find((series) => series.name === value),
   );
 </script>
+
+<!-- TODO: Rebuild this with the more generic filter component once
+https://warthogs.atlassian.net/browse/LP-5118 lands -->
 
 <Popover {position}>
   {#snippet trigger(triggerProps)}

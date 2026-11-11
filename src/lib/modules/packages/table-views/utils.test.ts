@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
+import { MAX_TABLE_VIEW_NAME_LENGTH } from "#lib/modules/table-views/constants.js";
 import { DEFAULT_PACKAGES_FILTERS } from "../filters/constants.js";
-import { MAX_TABLE_VIEW_NAME_LENGTH } from "./constants.js";
 import { getRecommendedViewName } from "./utils.js";
 
 describe("getRecommendedViewName", () => {

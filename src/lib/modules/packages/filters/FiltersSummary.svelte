@@ -56,6 +56,9 @@
   );
 </script>
 
+<!-- TODO: Use the common FilterSummary component once
+https://warthogs.atlassian.net/browse/LP-5118 lands -->
+
 <div class="filters-summary">
   {#if filters.search || activeFilters.length}
     <ul aria-label="Saved view filters" role="list">

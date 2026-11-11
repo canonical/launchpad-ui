@@ -195,6 +195,19 @@ describe("createQueryParamsForm", () => {
       ).toEqual({ "bugs.page": ["7"] });
     });
 
+    it("replaces an individual section key through its codec", () => {
+      const form = createQueryParamsForm(sectioned, sectionUrl, ["bugs.page"]);
+
+      expect(form.preserveParams).toEqual([
+        ["panel", "bugs"],
+        ["bugs.q", "crash"],
+        ["utm", "x"],
+      ]);
+      expect(
+        form.patch([...form.preserveParams, ["bugs.page", "007"]]),
+      ).toEqual({ "bugs.page": ["7"] });
+    });
+
     it("passes controls in an unlisted section through unchanged", () => {
       const form = createQueryParamsForm(sectioned, sectionUrl, ["panel"]);
 

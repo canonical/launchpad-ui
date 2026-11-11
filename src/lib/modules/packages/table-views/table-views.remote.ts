@@ -1,16 +1,18 @@
 import { error, invalid, redirect } from "@sveltejs/kit";
 import * as v from "valibot";
+import { filtersDiffer } from "#lib/modules/filtering/utils.js";
+import {
+  TableViewDistroSchema,
+  TableViewIdSchema,
+} from "#lib/modules/table-views/schema.js";
 import { tableViewsStore } from "#lib/server/table-views/index.js";
 import { getCurrentUserId } from "#lib/server/user.js";
 import { slugify } from "#lib/utils/slugify.js";
-import { packagesFiltersDiffer } from "../filters/utils.js";
 import { CLEARED_FILTER_PARAMS, QueryParams } from "../superhref.js";
 import type { TableView } from "./constants.js";
 import {
   ParsedTableViewSettingsSchema,
-  TableViewDistroSchema,
   TableViewEditFormSchema,
-  TableViewIdSchema,
 } from "./schema.js";
 import type { TableViewSettings } from "./schema.js";
 import { command, form, getRequestEvent, query } from "$app/server";
@@ -76,7 +78,7 @@ export const editTableView = form(TableViewEditFormSchema, async (data) => {
 
   const queryParams = QueryParams.bind(getRequestEvent().url);
   const isEditingCurrentView = queryParams.view === view.slug;
-  const hasFiltersChanged = packagesFiltersDiffer(view.filters, data.filters);
+  const hasFiltersChanged = filtersDiffer(view.filters, data.filters);
   const oldSlug = view.slug;
 
   if (view.name !== data.name) {

@@ -1,7 +1,7 @@
 import type { LaunchpadCollection } from "@canonical/launchpad-client";
 import type { DistroSeriesFull } from "@canonical/launchpad-client/schemas/models/distro_series";
 import type { MilestoneFull } from "@canonical/launchpad-client/schemas/models/milestone";
-import type { SeriesGroups } from "../packages/filters/types.js";
+import type { SeriesGroups } from "../filtering/types.js";
 import type { getSeriesOverview } from "./series.remote.js";
 
 export const distroSeries = {

@@ -104,6 +104,7 @@
     {:else}
       <FiltersSummary tableView={currentTableView} />
     {/if}
+    <!-- TODO: Use the common Table integrated with filters once https://warthogs.atlassian.net/browse/LP-5118 lands -->
     <Table class="packages-table">
       <thead>
         <tr>

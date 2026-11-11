@@ -1,7 +1,6 @@
 <script lang="ts">
   import { Spinner } from "@canonical/svelte-ds-app-launchpad";
   import { isHttpError } from "@sveltejs/kit";
-  import { untrack } from "svelte";
   import { PartialTextDisclosure } from "#lib/components/index.js";
   import { SidePanel } from "#lib/launchpad-components/index.js";
   import { getPackagesContext } from "../context.js";
@@ -23,17 +22,15 @@
   const queryParams = $derived(context.queryParams);
 
   const open = $derived(binaryId !== null);
+
   const binaryPackage = $derived(
     binaryId !== null ? getBinaryPackage({ distro, binaryId }) : undefined,
   );
-  const serverDetails = browser
-    ? undefined
-    : await untrack(() => binaryPackage);
 </script>
 
 <SidePanel
-  title={(browser ? binaryPackage?.current : serverDetails)
-    ?.binary_package_name ?? "Binary package"}
+  title={(await binaryPackage?.catch(() => undefined))?.binary_package_name ??
+    "Binary package"}
   {open}
   closeForm={{
     schema: QueryParams,
@@ -56,7 +53,7 @@
           <ArtifactsSection artifacts={details.files} />
         {/if}
         {#snippet failed(error)}
-          <p class="package-details-error" role="alert">
+          <p role="alert">
             {isHttpError(error)
               ? error.body.message
               : error instanceof Error

@@ -25,6 +25,9 @@
   const activeCountId = $props.id();
 </script>
 
+<!-- TODO: Rebuild this with the more generic filter component once
+https://warthogs.atlassian.net/browse/LP-5118 lands -->
+
 <Popover {position}>
   {#snippet trigger(triggerProps)}
     <PopoverTrigger

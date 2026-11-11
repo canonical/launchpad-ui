@@ -2,8 +2,8 @@
   import { Popover } from "@canonical/svelte-ds-app-launchpad";
   import { ContextualMenuContent } from "#lib/components/index.js";
   import { PopoverTrigger } from "#lib/launchpad-components/index.js";
+  import type { ChoiceFilterProps } from "#lib/modules/filtering/types.js";
   import { POCKETS } from "./constants.js";
-  import type { ChoiceFilterProps } from "./types.js";
 
   type Pocket = (typeof POCKETS)[number];
 
@@ -17,6 +17,9 @@
 
   const selectedLabel = $derived(value || "All");
 </script>
+
+<!-- TODO: Rebuild this with the more generic filter component once
+https://warthogs.atlassian.net/browse/LP-5118 lands -->
 
 <Popover {position}>
   {#snippet trigger(triggerProps)}

@@ -30,13 +30,26 @@ export function createQueryParamsForm<S extends SuperhrefSchema>(
       submitted.search = String(
         new URLSearchParams(entries.map(([name, value]) => [name, value])),
       );
+
       const parsed = schema.parse(submitted);
-      const payload = Object.fromEntries(
-        replaceParams.map((key) => [
-          key,
-          entries.some(([name]) => belongsTo(name, key)) ? parsed[key] : null,
-        ]),
+      const payload = replaceParams.reduce(
+        (acc, key) => {
+          const [prefix, suffix] = key.split(".");
+          const value = entries.some(([name]) => belongsTo(name, key))
+            ? suffix
+              ? parsed[prefix][suffix]
+              : parsed[prefix]
+            : null;
+
+          if (suffix) {
+            acc[prefix] = acc[prefix] ?? {};
+            acc[prefix][suffix] = value;
+          } else acc[prefix] = value;
+          return acc;
+        },
+        {} as Record<string, Record<string, unknown>>,
       ) as SuperhrefPatchInput<S>;
+
       const patched = schema.patch(url, payload).searchParams;
       const names = new Set([
         ...entries.map(([name]) => name),

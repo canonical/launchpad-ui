@@ -10,6 +10,7 @@
   } from "@canonical/svelte-ds-app-launchpad";
   import { Combobox } from "#lib/components/index.js";
   import { PopoverTrigger } from "#lib/launchpad-components/index.js";
+  import type { ChoiceFilterProps } from "#lib/modules/filtering/types.js";
   import {
     MAX_PEOPLE_SEARCH_LENGTH,
     MIN_PEOPLE_SEARCH_LENGTH,
@@ -19,7 +20,6 @@
     getPersonByName,
   } from "#lib/modules/packages/people.remote.js";
   import { minTrimmedLength, subId } from "#lib/utils/index.js";
-  import type { ChoiceFilterProps } from "./types.js";
   import { browser } from "$app/env";
 
   const {
@@ -97,6 +97,9 @@
         await getPersonByName(value),
   );
 </script>
+
+<!-- TODO: Rebuild this with the more generic filter component once
+https://warthogs.atlassian.net/browse/LP-5118 lands -->
 
 <Popover {position}>
   {#snippet trigger(triggerProps)}

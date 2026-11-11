@@ -17,12 +17,12 @@ const getSeriesImagesArgsSchema = v.intersect([
   distroSeriesSchema,
   paginationSchema,
   createSortingSchema(SORTABLE_IMAGES_TABLE_COLUMNS),
-  v.partial(ParsedImagesFiltersSchema),
+  ParsedImagesFiltersSchema,
 ]);
 
 const getSeriesImageCountsArgsSchema = v.intersect([
   distroSeriesSchema,
-  v.partial(ParsedImagesFiltersSchema),
+  ParsedImagesFiltersSchema,
 ]);
 
 export const getSeriesImages = query(
