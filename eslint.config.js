@@ -2,6 +2,7 @@
 import js from "@eslint/js";
 import prettier from "eslint-config-prettier";
 import importPlugin from "eslint-plugin-import";
+import sonarjs from "eslint-plugin-sonarjs";
 import storybook from "eslint-plugin-storybook";
 import svelte from "eslint-plugin-svelte";
 import globals from "globals";
@@ -15,6 +16,7 @@ export default ts.config(
   ...svelte.configs.prettier,
   importPlugin.flatConfigs.warnings,
   {
+    plugins: { sonarjs },
     languageOptions: {
       globals: { ...globals.browser, ...globals.node },
     },
@@ -61,6 +63,7 @@ export default ts.config(
       "svelte/no-navigation-without-resolve": "off",
       "svelte/no-target-blank": "warn",
       "svelte/prefer-const": "warn",
+      "sonarjs/cognitive-complexity": ["warn", 15],
       "import/no-empty-named-blocks": "error",
       "import/order": [
         "error",
