@@ -1,4 +1,5 @@
-import { slugify } from "#lib/utils/slugify.js";
+import { slugify } from "#lib/utils/slugify.ts";
+import type { ImageOwnedQueryKey } from "./superhref";
 
 export const PRODUCTS = [
   { name: "Edubuntu" },
@@ -20,8 +21,22 @@ export const PRODUCTS = [
   { name: "Xubuntu" },
 ].map(({ name }) => ({ name, slug: slugify(name) }));
 
-export const BUILD_STATUSES = ["successful", "failed", "running"] as const;
-export const TEST_STATUSES = ["passed", "failed", "running"] as const;
+export const NOT_DEFINED = "<not defined>";
+
+export const BUILD_STATUSES = [
+  "successful",
+  "failed",
+  "running",
+  NOT_DEFINED,
+] as const;
+export const TEST_STATUSES = [
+  "passed",
+  "failed",
+  "running",
+  NOT_DEFINED,
+] as const;
+
+export const MAX_PAGE_SIZE = 100;
 
 export const IMAGES_TABLE_COLUMNS = [
   { key: "name", label: "Image name", sortable: true },
@@ -39,3 +54,20 @@ export const IMAGES_TABLE_COLUMNS = [
 export const SORTABLE_IMAGES_TABLE_COLUMNS = IMAGES_TABLE_COLUMNS.flatMap(
   (column) => (column.sortable ? [column.key] : []),
 );
+
+export const IMAGE_FILTERS = {
+  product: { key: "images.product", codecKey: "product", label: "Product" },
+  buildStatus: {
+    key: "images.build-status",
+    codecKey: "build-status",
+    label: "Build status",
+  },
+  testStatus: {
+    key: "images.test-status",
+    codecKey: "test-status",
+    label: "Test status",
+  },
+} as const satisfies Record<
+  string,
+  { key: ImageOwnedQueryKey; codecKey: string; label: string }
+>;

@@ -1,7 +1,9 @@
 import * as v from "valibot";
+import { NOT_DEFINED } from "#lib/modules/distroseries/images/constants.js";
 import type { Product } from "#lib/modules/distroseries/images/types.js";
+import { DEFAULT_PAGE_SIZE } from "#lib/schemas/index.js";
 import type { Paginated } from "../common/types.js";
-import { NOT_DEFINED, imageArtifactSchema } from "./types.js";
+import { imageArtifactSchema } from "./types.js";
 import type {
   ArtifactsCache,
   ImageArtifact,
@@ -13,7 +15,6 @@ import type {
 import { TEST_OBSERVER_IMAGE_ARTIFACTS_URL } from "$app/env/private";
 
 const CACHE_TTL = 10 * 60_000;
-const DEFAULT_PAGE_SIZE = 10;
 
 let artifactRequest: ArtifactsCache | undefined;
 

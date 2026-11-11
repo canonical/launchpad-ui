@@ -1,9 +1,9 @@
+import { MAX_TABLE_VIEW_NAME_LENGTH } from "#lib/modules/table-views/constants.js";
 import {
   PACKAGES_FILTER_LABELS,
   PACKAGES_FILTER_SUMMARY_LABELS,
 } from "../filters/constants.js";
 import type { PackagesFilters } from "../filters/schema.js";
-import { MAX_TABLE_VIEW_NAME_LENGTH } from "./constants.js";
 
 const capitalize = (value: string) =>
   value.charAt(0).toUpperCase() + value.slice(1);

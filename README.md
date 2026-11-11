@@ -46,6 +46,11 @@ pnpm dev
 
 Launchpad UI will be available at [http://localhost:5173](http://localhost:5173).
 
+In development, series pages (for example `/ubuntu/resolute`) include an
+"Images (development test)" section showing the `getSeriesImages` and
+`getSeriesImageCounts` responses. Use Previous/Next to test pagination.
+The section is not included in production builds.
+
 ## Storybook
 
 Use Storybook to develop and test UI components in isolation.

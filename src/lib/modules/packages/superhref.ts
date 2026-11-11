@@ -19,12 +19,10 @@ import {
   SEARCH_MATCHES,
 } from "#lib/modules/packages/filters/constants.js";
 import type { PackagesFilters } from "#lib/modules/packages/filters/schema.js";
-import {
-  ADD_TABLE_VIEW_MODES,
-  DEFAULT_TABLE_VIEW_SLUG,
-} from "#lib/modules/packages/table-views/constants.js";
-import type { AddTableViewMode } from "#lib/modules/packages/table-views/constants.js";
+import { DEFAULT_TABLE_VIEW_SLUG } from "#lib/modules/packages/table-views/constants.js";
 import { MAX_PAGE_SIZE } from "#lib/schemas/index.js";
+import { ADD_TABLE_VIEW_MODES } from "../table-views/constants";
+import type { AddTableViewMode } from "../table-views/constants";
 
 /** The packages table columns, in display order.*/
 export const PACKAGES_TABLE_COLUMNS = [

@@ -6,6 +6,9 @@
   } from "@canonical/svelte-ds-app-launchpad";
   import type { TextInputProps } from "@canonical/svelte-ds-app-launchpad";
   import * as v from "valibot";
+  import type { SeriesGroups } from "#lib/modules/filtering/types.js";
+  import { filtersDiffer } from "#lib/modules/filtering/utils.js";
+  import { MAX_TABLE_VIEW_NAME_LENGTH } from "#lib/modules/table-views/constants.js";
   import { subId } from "#lib/utils/index.js";
   import PersonFilterCombobox from "../filters/PersonFilterCombobox.svelte";
   import PocketFilterMenu from "../filters/PocketFilterMenu.svelte";
@@ -15,9 +18,6 @@
     MAX_PACKAGES_SEARCH_LENGTH,
     PACKAGES_FILTER_LABELS as labels,
   } from "../filters/constants.js";
-  import type { SeriesGroups } from "../filters/types.js";
-  import { packagesFiltersDiffer } from "../filters/utils.js";
-  import { MAX_TABLE_VIEW_NAME_LENGTH } from "./constants.js";
   import {
     TableViewEditFormSchema,
     TableViewSettingsSchema,
@@ -86,7 +86,7 @@
     return (
       result.success &&
       result.output.name === settings.name &&
-      !packagesFiltersDiffer(result.output.filters, settings.filters)
+      !filtersDiffer(result.output.filters, settings.filters)
     );
   });
   const submitDisabled = $derived(browser && requireChange && isUnchanged);

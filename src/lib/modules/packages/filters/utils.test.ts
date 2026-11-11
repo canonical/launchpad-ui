@@ -1,12 +1,12 @@
 import { describe, expect, it } from "vitest";
+import { filtersDiffer } from "#lib/modules/filtering/utils.js";
 import { DEFAULT_PACKAGES_FILTERS } from "./constants.js";
 import type { PackagesFilters } from "./schema.js";
-import { packagesFiltersDiffer } from "./utils.js";
 
-describe("packagesFiltersDiffer", () => {
+describe("filtersDiffer", () => {
   it("is false for equal filters", () => {
     expect(
-      packagesFiltersDiffer(DEFAULT_PACKAGES_FILTERS, {
+      filtersDiffer(DEFAULT_PACKAGES_FILTERS, {
         ...DEFAULT_PACKAGES_FILTERS,
       }),
     ).toBe(false);
@@ -19,7 +19,7 @@ describe("packagesFiltersDiffer", () => {
     { allStatuses: true },
   ] as Partial<PackagesFilters>[])("is true when %j changes", (change) => {
     expect(
-      packagesFiltersDiffer(DEFAULT_PACKAGES_FILTERS, {
+      filtersDiffer(DEFAULT_PACKAGES_FILTERS, {
         ...DEFAULT_PACKAGES_FILTERS,
         ...change,
       }),
@@ -32,8 +32,8 @@ describe("packagesFiltersDiffer", () => {
       series: ["noble"],
     } as unknown as PackagesFilters;
 
-    expect(() =>
-      packagesFiltersDiffer(DEFAULT_PACKAGES_FILTERS, withObject),
-    ).toThrow(/series/);
+    expect(() => filtersDiffer(DEFAULT_PACKAGES_FILTERS, withObject)).toThrow(
+      /series/,
+    );
   });
 });

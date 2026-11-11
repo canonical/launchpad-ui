@@ -1,5 +1,5 @@
 <script lang="ts" module>
-  import type { AddTableViewMode, TableView } from "./constants.js";
+  import type { TableView } from "./constants.js";
   import type { TableViewSettings } from "./schema.js";
 
   type ViewDraft = {
@@ -61,6 +61,8 @@
   import { settled, tick, untrack } from "svelte";
   import { ReorderableList } from "#lib/components/ReorderableList/index.js";
   import { SidePanel } from "#lib/launchpad-components/index.js";
+  import type { SeriesGroups } from "#lib/modules/filtering/types.js";
+  import { filtersDiffer } from "#lib/modules/filtering/utils.js";
   import {
     CLEARED_FILTER_PARAMS,
     MANAGE_VIEWS_PANEL,
@@ -68,10 +70,9 @@
     QueryParams,
     toPackagesFilters,
   } from "#lib/modules/packages/superhref.js";
+  import type { AddTableViewMode } from "#lib/modules/table-views/constants.js";
   import { getPackagesContext } from "../context.js";
   import { DEFAULT_PACKAGES_FILTERS } from "../filters/constants.js";
-  import type { SeriesGroups } from "../filters/types.js";
-  import { packagesFiltersDiffer } from "../filters/utils.js";
   import TableViewEditForm from "./TableViewEditForm.svelte";
   import {
     createTableView,
@@ -198,7 +199,7 @@
         bookmarkedView !== undefined ||
         (currentView &&
           (updatedView === undefined ||
-            packagesFiltersDiffer(updatedView.filters, currentView.filters)));
+            filtersDiffer(updatedView.filters, currentView.filters)));
       const shouldClearUrlFilters = bookmarkedView !== undefined;
 
       await goto(
