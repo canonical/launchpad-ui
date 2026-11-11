@@ -133,13 +133,23 @@ export default ts.config(
     ],
   },
   {
-    files: ["**/*.svelte", "**/*.svelte.ts", "**/*.svelte.js"],
+    files: [
+      "**/*.svelte",
+      "**/*.svelte.ts",
+      "**/*.svelte.js",
+      "src/**/*.ts",
+      "test/**/*.ts",
+      "vite.config.ts",
+    ],
     languageOptions: {
       parserOptions: {
         projectService: true,
         extraFileExtensions: [".svelte"],
         parser: ts.parser,
       },
+    },
+    rules: {
+      "@typescript-eslint/no-unnecessary-boolean-literal-compare": "warn",
     },
   },
   storybook.configs["flat/recommended"],
