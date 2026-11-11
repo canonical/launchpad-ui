@@ -35,6 +35,11 @@ export default ts.config(
           message:
             "Use #private members instead of the TypeScript private modifier.",
         },
+        {
+          selector:
+            ":matches(ImportDeclaration, ExportNamedDeclaration, ExportAllDeclaration, ImportExpression, TSImportType, TSExternalModuleReference) > Literal[value=/\\.ts$/]",
+          message: "Use .js instead of .ts in module specifiers.",
+        },
       ],
       "@typescript-eslint/member-ordering": [
         "error",

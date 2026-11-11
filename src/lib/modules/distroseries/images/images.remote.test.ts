@@ -3,7 +3,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
   getUbuntuImageCounts,
   getUbuntuImages,
-} from "#lib/server/test-observer/client.ts";
+} from "#lib/server/test-observer/client.js";
 import { getSeriesImageCounts, getSeriesImages } from "./images.remote";
 
 vi.mock("$app/server", () => ({
