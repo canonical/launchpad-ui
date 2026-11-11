@@ -34,6 +34,25 @@ export default ts.config(
             "Use #private members instead of the TypeScript private modifier.",
         },
       ],
+      "@typescript-eslint/member-ordering": [
+        "error",
+        {
+          default: {
+            memberTypes: [
+              "constructor",
+              [
+                "public-method",
+                "public-get",
+                "public-set",
+                "protected-method",
+                "protected-get",
+                "protected-set",
+              ],
+              ["#private-method", "#private-get", "#private-set"],
+            ],
+          },
+        },
+      ],
       // typescript-eslint strongly recommend that you do not use the no-undef lint rule on TypeScript projects.
       // see: https://typescript-eslint.io/troubleshooting/faqs/eslint/#i-get-errors-from-the-no-undef-rule-about-global-variables-not-being-defined-even-though-there-are-no-typescript-errors
       "no-undef": "off",

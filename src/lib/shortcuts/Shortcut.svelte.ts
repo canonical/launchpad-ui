@@ -102,35 +102,6 @@ export class Shortcut {
   }
 
   /**
-   * Parse the shortcut into a flat list of modifiers and key to be formatted as wished.
-   */
-  #parse(): ParsedShortcut {
-    const standardMods = this.#standardShortcut.split("+");
-    let key = standardMods.pop();
-    assert(
-      standardMods.every((m) => isStandardModifier(m)),
-      `Invalid shortcut, invalid standard modifier ${this.#standardShortcut}`,
-    );
-    assert(isKey(key), `Invalid shortcut, invalid key '${String(key)}'`);
-
-    if (!this.#isMacPlatform) return [...standardMods, key];
-
-    if (!this.#macShortcut) {
-      return [...remapStandardModsToMacMods(standardMods), key];
-    }
-
-    const macMods = this.#macShortcut.split("+");
-    key = macMods.pop();
-    assert(
-      macMods.every((m) => isMacModifier(m)),
-      `Invalid shortcut, invalid mac modifier ${this.#macShortcut}`,
-    );
-    assert(isKey(key), `Invalid shortcut, invalid mac key '${String(key)}'`);
-
-    return [...macMods, key];
-  }
-
-  /**
    * Check if a `KeyboardEvent` matches a shortcut.
    * By default, extra pressed modifiers disqualify the match.
    */
@@ -178,5 +149,34 @@ export class Shortcut {
       (event.shift && !wants.shift);
 
     return !hasExtraMods;
+  }
+
+  /**
+   * Parse the shortcut into a flat list of modifiers and key to be formatted as wished.
+   */
+  #parse(): ParsedShortcut {
+    const standardMods = this.#standardShortcut.split("+");
+    let key = standardMods.pop();
+    assert(
+      standardMods.every((m) => isStandardModifier(m)),
+      `Invalid shortcut, invalid standard modifier ${this.#standardShortcut}`,
+    );
+    assert(isKey(key), `Invalid shortcut, invalid key '${String(key)}'`);
+
+    if (!this.#isMacPlatform) return [...standardMods, key];
+
+    if (!this.#macShortcut) {
+      return [...remapStandardModsToMacMods(standardMods), key];
+    }
+
+    const macMods = this.#macShortcut.split("+");
+    key = macMods.pop();
+    assert(
+      macMods.every((m) => isMacModifier(m)),
+      `Invalid shortcut, invalid mac modifier ${this.#macShortcut}`,
+    );
+    assert(isKey(key), `Invalid shortcut, invalid mac key '${String(key)}'`);
+
+    return [...macMods, key];
   }
 }

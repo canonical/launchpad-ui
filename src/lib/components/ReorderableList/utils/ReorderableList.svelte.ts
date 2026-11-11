@@ -71,10 +71,6 @@ export class ReorderableList<T> {
     });
   }
 
-  #gotInterrupted(pendingReorder: Reorder) {
-    return this.disabled || this.#rawIndexOf(pendingReorder.key) === -1;
-  }
-
   /** The pending reorder, or `null` when no reorder interaction is pending. */
   get pendingReorder() {
     return this.#pendingReorder;
@@ -239,6 +235,20 @@ export class ReorderableList<T> {
     return true;
   }
 
+  /** Returns an attachment that tracks an item's current root element. */
+  registerItem =
+    (key: string): Attachment<HTMLLIElement> =>
+    (node) => {
+      this.#elements.set(key, node);
+      return () => {
+        if (this.#elements.get(key) === node) this.#elements.delete(key);
+      };
+    };
+
+  #gotInterrupted(pendingReorder: Reorder) {
+    return this.disabled || this.#rawIndexOf(pendingReorder.key) === -1;
+  }
+
   #rawIndexOf(key: string) {
     return this.#items.findIndex((item) => this.#key(item) === key);
   }
@@ -307,14 +317,4 @@ export class ReorderableList<T> {
 
     this.#announcement = message;
   }
-
-  /** Returns an attachment that tracks an item's current root element. */
-  registerItem =
-    (key: string): Attachment<HTMLLIElement> =>
-    (node) => {
-      this.#elements.set(key, node);
-      return () => {
-        if (this.#elements.get(key) === node) this.#elements.delete(key);
-      };
-    };
 }
