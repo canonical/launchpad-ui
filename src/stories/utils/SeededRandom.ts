@@ -2,14 +2,18 @@
  * A simple seeded pseudo-random number generator for use in stories.
  */
 export class SeededRandom {
-  constructor(private seed: number) {}
+  #seed: number;
+
+  constructor(seed: number) {
+    this.#seed = seed;
+  }
 
   /**
    * @returns A pseudo-random number between 0 and 1.
    */
   public random(): number {
     // Mulberry32 PRNG (https://github.com/cprosche/mulberry32)
-    let t = (this.seed += 0x6d2b79f5);
+    let t = (this.#seed += 0x6d2b79f5);
     t = Math.imul(t ^ (t >>> 15), t | 1);
     t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
