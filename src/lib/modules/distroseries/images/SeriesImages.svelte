@@ -195,6 +195,8 @@
               {/each}
             </tr>
           </thead>
+          <!-- TODO: Remove <not defined> placeholders and build UI for the missing
+          fields once https://warthogs.atlassian.net/browse/LP-5179 resolves -->
           <tbody>
             {#each imagePage.items as image (image.id)}
               <tr>

@@ -85,6 +85,7 @@ async function getFilteredImages(
   series: string,
   filter: ImagesFilter,
 ): Promise<SeriesImage[]> {
+  // TODO: Return the missing fields once https://warthogs.atlassian.net/browse/LP-5179 resolves
   const images = (await getImageArtifacts()).map((artifact): SeriesImage => ({
     id: artifact.id,
     product: osToProductMapper(artifact.os),
