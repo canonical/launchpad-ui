@@ -1,4 +1,5 @@
 import * as v from "valibot";
+import type { NOT_DEFINED } from "#lib/modules/distroseries/constants.js";
 import type {
   BuildStatus,
   Product,
@@ -49,8 +50,6 @@ export type ImagesQuery = ImagesFilter & {
   sortKey?: "name" | "version";
   sortOrder?: "ascending" | "descending";
 };
-
-export const NOT_DEFINED = "<not defined>";
 
 export type SeriesImage = {
   id: number;

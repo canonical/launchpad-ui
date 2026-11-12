@@ -15,9 +15,9 @@
 <Story name="Default">
   {#snippet template()}
     <Stat>
-      <Stat.Item term="Open critical bugs" details="1" marked></Stat.Item>
-      <Stat.Item term="Open bugs" details="58"></Stat.Item>
-      <Stat.Item term="In progress" details="16"></Stat.Item>
+      <Stat.Item term="Open critical bugs" details="1" criticality="error" />
+      <Stat.Item term="Open bugs" details="58" />
+      <Stat.Item term="In progress" details="16" />
     </Stat>
   {/snippet}
 </Story>
@@ -30,23 +30,23 @@
       <div class="grid-rectangle element3">Element 3</div>
       <div class="spacer"></div>
       <Stat class="storybook-stat">
-        <Stat.Item term="Images built" details="35/41"></Stat.Item>
-        <Stat.Item term="Failed to build" details="2" marked></Stat.Item>
-        <Stat.Item term="Building" details="4"></Stat.Item>
+        <Stat.Item term="Images built" details="35/41" />
+        <Stat.Item term="Failed to build" details="2" criticality="error" />
+        <Stat.Item term="Building" details="4" />
       </Stat>
 
       <div class="spacer"></div>
       <Stat>
-        <Stat.Item term="Images passed tests" details="22/35"></Stat.Item>
-        <Stat.Item term="Failed tests" details="3" marked></Stat.Item>
-        <Stat.Item term="Testing" details="10"></Stat.Item>
+        <Stat.Item term="Images passed tests" details="22/35" />
+        <Stat.Item term="Failed tests" details="0" criticality="success" />
+        <Stat.Item term="Testing" details="10" />
       </Stat>
 
       <div class="spacer"></div>
       <Stat>
-        <Stat.Item term="Open critical bugs" details="1" marked></Stat.Item>
-        <Stat.Item term="Open bugs" details="58"></Stat.Item>
-        <Stat.Item term="In progress" details="16"></Stat.Item>
+        <Stat.Item term="Open critical bugs" details="1" criticality="error" />
+        <Stat.Item term="Open bugs" details="58" />
+        <Stat.Item term="In progress" details="16" />
       </Stat>
     </ContentLayout>
   {/snippet}

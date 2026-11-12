@@ -11,5 +11,5 @@
 
 {#snippet children()}
   <Stat.Item term={firstTerm} details={firstDetails} />
-  <Stat.Item term={secondTerm} details={secondDetails} marked />
+  <Stat.Item term={secondTerm} details={secondDetails} criticality="error" />
 {/snippet}

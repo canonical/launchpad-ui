@@ -6,10 +6,15 @@
 
   const componentCssClassName = "ds stat-item";
 
+  const dotLabels: Record<NonNullable<ItemProps["criticality"]>, string> = {
+    success: "No issues",
+    error: "Attention",
+  };
+
   let {
     term,
     details,
-    marked = false,
+    criticality,
     class: className,
     ...rest
   }: ItemProps = $props();
@@ -18,7 +23,10 @@
 <div class={[componentCssClassName, className]} {...rest}>
   <dt class="stat-term">{term}</dt>
   <dd class="stat-description">
-    {#if marked}<span role="img" aria-label="Attention" class="stat-dot"
-      ></span>{/if}{details}
+    {#if criticality}<span
+        role="img"
+        aria-label={dotLabels[criticality]}
+        class={["stat-dot", criticality]}>
+      </span>{/if}{details}
   </dd>
 </div>

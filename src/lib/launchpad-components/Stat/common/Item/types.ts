@@ -7,5 +7,5 @@ type BaseProps = Omit<SvelteHTMLElements["div"], "children">;
 export interface ItemProps extends BaseProps {
   term: string;
   details: string;
-  marked?: boolean;
+  criticality?: "success" | "error";
 }

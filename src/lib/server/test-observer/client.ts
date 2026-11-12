@@ -1,7 +1,8 @@
 import * as v from "valibot";
+import { NOT_DEFINED } from "#lib/modules/distroseries/constants.js";
 import type { Product } from "#lib/modules/distroseries/images/types.js";
 import type { Paginated } from "../common/types.js";
-import { NOT_DEFINED, imageArtifactSchema } from "./types.js";
+import { imageArtifactSchema } from "./types.js";
 import type {
   ArtifactsCache,
   ImageArtifact,
