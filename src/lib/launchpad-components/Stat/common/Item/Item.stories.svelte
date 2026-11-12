@@ -9,7 +9,7 @@
     title: "Launchpad Components/Stat/Item",
     component: Item,
     tags: ["autodocs"],
-    args: { term: "Open bugs", details: "58", marked: false },
+    args: { term: "Open bugs", details: "58" },
   });
 </script>
 
@@ -21,7 +21,17 @@
   {/snippet}
 </Story>
 
-<Story name="Marked" args={{ marked: true }}>
+<Story name="Error criticality" args={{ criticality: "error" }}>
+  {#snippet template(args)}
+    <dl>
+      <Item {...args} />
+    </dl>
+  {/snippet}
+</Story>
+
+<Story
+  name="Success criticality"
+  args={{ term: "Failed tests", details: "0", criticality: "success" }}>
   {#snippet template(args)}
     <dl>
       <Item {...args} />
