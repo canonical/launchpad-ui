@@ -15,6 +15,7 @@
 }
 
 .placeholder-box {
+  /* stylelint-disable-next-line color-no-hex -- legacy */
   border: 1px dashed var(--lp-color-border-default, #ccc);
 
   &.center {

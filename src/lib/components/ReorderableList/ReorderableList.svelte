@@ -243,8 +243,10 @@ During pointer dragging, the snippet is also rendered in an inert fixed-position
       transition-timing-function: var(--ds-transition-timing-ease-out);
 
       /* TODO: Shadow design tokens */
+      /* stylelint-disable function-disallowed-list -- legacy */
       --grabbed-shadow:
         0 1px 2px rgba(0, 0, 0, 0.15), 0 8px 20px rgba(0, 0, 0, 0.2);
+      /* stylelint-enable function-disallowed-list */
 
       &[data-dragging="preview"] {
         opacity: 0;

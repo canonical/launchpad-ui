@@ -297,6 +297,7 @@
             /* Show the action that is a tab stop */
             .test-actions {
               .ds.markdown-editor-toolbar-action-button[tabindex="0"] {
+                /* stylelint-disable-next-line color-named -- legacy */
                 box-shadow: inset 0 0 0 3px red;
               }
             }
