@@ -23,7 +23,8 @@
     {#if artifacts.length > 1}
       <Button
         href={downloadAllHref}
-        download=""
+        target="_blank"
+        rel="noopener noreferrer"
         importance="tertiary"
         density="dense"
       >
@@ -31,6 +32,7 @@
           <DownloadIcon />
         {/snippet}
         Download all ({bytesToHumanReadable(totalSize)})
+        <span class="visually-hidden">(opens in a new tab)</span>
       </Button>
     {/if}
   </header>
