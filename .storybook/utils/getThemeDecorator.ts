@@ -6,7 +6,7 @@ import ThemeProvider from "./ThemeProvider.svelte";
 
 const { pluckThemeFromContext, initializeThemeState } = DecoratorHelpers;
 
-export const getThemeDecorator = (): Decorator => {
+export function getThemeDecorator(): Decorator {
   const defaultTheme: Theme = "light";
   initializeThemeState([...themes], defaultTheme);
 
@@ -16,4 +16,4 @@ export const getThemeDecorator = (): Decorator => {
       theme: pluckThemeFromContext(context) || defaultTheme,
     },
   });
-};
+}

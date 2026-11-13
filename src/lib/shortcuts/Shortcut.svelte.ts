@@ -34,25 +34,28 @@ import {
  */
 export class Shortcut {
   public readonly parsedShortcut: ParsedShortcut;
-  private readonly _standardShortcut: StandardShortcut;
-  private readonly _macShortcut?: MacShortcut;
+  readonly #standardShortcut: StandardShortcut;
+  readonly #macShortcut?: MacShortcut;
   public readonly options: ShortcutOptions;
-  private readonly _isMacPlatform = isMacPlatform();
+  readonly #isMacPlatform = isMacPlatform();
+  readonly #getEnabled: () => boolean;
 
   constructor(
     shortcut: StandardShortcut | [StandardShortcut, MacShortcut],
     public readonly metadata: ShortcutMetadata,
     public readonly callback: (event: KeyboardEvent) => void,
     options: Partial<ShortcutOptions> = {},
-    private readonly getEnabled = () => true,
+    getEnabled = () => true,
   ) {
+    this.#getEnabled = getEnabled;
+
     if (Array.isArray(shortcut)) {
-      [this._standardShortcut, this._macShortcut] = shortcut;
+      [this.#standardShortcut, this.#macShortcut] = shortcut;
     } else {
-      this._standardShortcut = shortcut;
+      this.#standardShortcut = shortcut;
     }
 
-    this.parsedShortcut = this.parse();
+    this.parsedShortcut = this.#parse();
 
     this.options = {
       exact: true,
@@ -63,7 +66,7 @@ export class Shortcut {
   }
 
   get enabled() {
-    return this.getEnabled();
+    return this.#getEnabled();
   }
 
   /**
@@ -87,7 +90,7 @@ export class Shortcut {
       }
     });
     const key = this.parsedShortcut.at(-1);
-    assertDefined(key, `Invalid shortcut, missing key ${this._macShortcut}`);
+    assertDefined(key, `Invalid shortcut, missing key ${this.#macShortcut}`);
     return [...metaParts, key].join("+");
   }
 
@@ -96,35 +99,6 @@ export class Shortcut {
    */
   toHumanReadable(): string {
     return this.parsedShortcut.join("+");
-  }
-
-  /**
-   * Parse the shortcut into a flat list of modifiers and key to be formatted as wished.
-   */
-  private parse(): ParsedShortcut {
-    const standardMods = this._standardShortcut.split("+");
-    let key = standardMods.pop();
-    assert(
-      standardMods.every((m) => isStandardModifier(m)),
-      `Invalid shortcut, invalid standard modifier ${this._standardShortcut}`,
-    );
-    assert(isKey(key), `Invalid shortcut, invalid key '${String(key)}'`);
-
-    if (!this._isMacPlatform) return [...standardMods, key];
-
-    if (!this._macShortcut) {
-      return [...remapStandardModsToMacMods(standardMods), key];
-    }
-
-    const macMods = this._macShortcut.split("+");
-    key = macMods.pop();
-    assert(
-      macMods.every((m) => isMacModifier(m)),
-      `Invalid shortcut, invalid mac modifier ${this._macShortcut}`,
-    );
-    assert(isKey(key), `Invalid shortcut, invalid mac key '${String(key)}'`);
-
-    return [...macMods, key];
   }
 
   /**
@@ -138,10 +112,10 @@ export class Shortcut {
     const wants = {
       ctrl:
         this.parsedShortcut.includes("ctrl") ||
-        (this._isMacPlatform && this.parsedShortcut.includes("cmd")),
+        (this.#isMacPlatform && this.parsedShortcut.includes("cmd")),
       alt:
         this.parsedShortcut.includes("alt") ||
-        (this._isMacPlatform && this.parsedShortcut.includes("option")),
+        (this.#isMacPlatform && this.parsedShortcut.includes("option")),
       shift: this.parsedShortcut.includes("shift"),
     };
 
@@ -149,7 +123,7 @@ export class Shortcut {
     // which means two keys can trigger the cmd key.
     // Mac ctrl key is not a common in shortcuts.
     const event = {
-      ctrl: this._isMacPlatform ? e.metaKey || e.ctrlKey : e.ctrlKey,
+      ctrl: this.#isMacPlatform ? e.metaKey || e.ctrlKey : e.ctrlKey,
       alt: e.altKey,
       shift: e.shiftKey,
     };
@@ -175,5 +149,34 @@ export class Shortcut {
       (event.shift && !wants.shift);
 
     return !hasExtraMods;
+  }
+
+  /**
+   * Parse the shortcut into a flat list of modifiers and key to be formatted as wished.
+   */
+  #parse(): ParsedShortcut {
+    const standardMods = this.#standardShortcut.split("+");
+    let key = standardMods.pop();
+    assert(
+      standardMods.every((m) => isStandardModifier(m)),
+      `Invalid shortcut, invalid standard modifier ${this.#standardShortcut}`,
+    );
+    assert(isKey(key), `Invalid shortcut, invalid key '${String(key)}'`);
+
+    if (!this.#isMacPlatform) return [...standardMods, key];
+
+    if (!this.#macShortcut) {
+      return [...remapStandardModsToMacMods(standardMods), key];
+    }
+
+    const macMods = this.#macShortcut.split("+");
+    key = macMods.pop();
+    assert(
+      macMods.every((m) => isMacModifier(m)),
+      `Invalid shortcut, invalid mac modifier ${this.#macShortcut}`,
+    );
+    assert(isKey(key), `Invalid shortcut, invalid mac key '${String(key)}'`);
+
+    return [...macMods, key];
   }
 }

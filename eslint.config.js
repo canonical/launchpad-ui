@@ -2,6 +2,7 @@
 import js from "@eslint/js";
 import prettier from "eslint-config-prettier";
 import importPlugin from "eslint-plugin-import";
+import sonarjs from "eslint-plugin-sonarjs";
 import storybook from "eslint-plugin-storybook";
 import svelte from "eslint-plugin-svelte";
 import globals from "globals";
@@ -15,10 +16,59 @@ export default ts.config(
   ...svelte.configs.prettier,
   importPlugin.flatConfigs.warnings,
   {
+    plugins: { sonarjs },
     languageOptions: {
       globals: { ...globals.browser, ...globals.node },
     },
     rules: {
+      "no-restricted-syntax": [
+        "error",
+        {
+          selector:
+            "ExportNamedDeclaration > VariableDeclaration > VariableDeclarator:not([id.typeAnnotation]) > :matches(ArrowFunctionExpression, FunctionExpression)",
+          message:
+            "Use an exported function declaration instead of an exported function expression.",
+        },
+        {
+          selector:
+            '[accessibility="private"]:not(MethodDefinition[kind="constructor"])',
+          message:
+            "Use #private members instead of the TypeScript private modifier.",
+        },
+        {
+          selector:
+            ":matches(ImportDeclaration, ExportNamedDeclaration, ExportAllDeclaration, ImportExpression, TSImportType, TSExternalModuleReference) > Literal[value=/\\.ts$/]",
+          message: "Use .js instead of .ts in module specifiers.",
+        },
+      ],
+      "@typescript-eslint/member-ordering": [
+        "error",
+        {
+          default: {
+            memberTypes: [
+              [
+                "static-field",
+                "static-accessor",
+                "static-method",
+                "static-get",
+                "static-set",
+                "static-initialization",
+              ],
+              ["field", "accessor"],
+              "constructor",
+              [
+                "public-method",
+                "public-get",
+                "public-set",
+                "protected-method",
+                "protected-get",
+                "protected-set",
+              ],
+              ["#private-method", "#private-get", "#private-set"],
+            ],
+          },
+        },
+      ],
       // typescript-eslint strongly recommend that you do not use the no-undef lint rule on TypeScript projects.
       // see: https://typescript-eslint.io/troubleshooting/faqs/eslint/#i-get-errors-from-the-no-undef-rule-about-global-variables-not-being-defined-even-though-there-are-no-typescript-errors
       "no-undef": "off",
@@ -27,6 +77,7 @@ export default ts.config(
       "svelte/no-navigation-without-resolve": "off",
       "svelte/no-target-blank": "warn",
       "svelte/prefer-const": "warn",
+      "sonarjs/cognitive-complexity": ["warn", 15],
       "import/no-empty-named-blocks": "error",
       "import/order": [
         "error",
@@ -102,10 +153,28 @@ export default ts.config(
     files: ["**/*.svelte", "**/*.svelte.ts", "**/*.svelte.js"],
     languageOptions: {
       parserOptions: {
-        projectService: true,
-        extraFileExtensions: [".svelte"],
         parser: ts.parser,
       },
+    },
+  },
+  {
+    name: "project/type-aware",
+    files: [
+      "**/*.svelte",
+      "**/*.svelte.ts",
+      "**/*.svelte.js",
+      "src/**/*.ts",
+      "test/**/*.ts",
+      "vite.config.ts",
+    ],
+    languageOptions: {
+      parserOptions: {
+        projectService: true,
+        extraFileExtensions: [".svelte"],
+      },
+    },
+    rules: {
+      "@typescript-eslint/no-unnecessary-boolean-literal-compare": "warn",
     },
   },
   storybook.configs["flat/recommended"],

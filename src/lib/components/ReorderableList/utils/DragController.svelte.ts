@@ -254,14 +254,6 @@ class DragReorder extends Reorder {
       : null,
   );
 
-  /** Pointer and slot centres share the list's padding-box coordinate system. */
-  centreIn(list: HTMLElement) {
-    const initialCentre = this.#draggedRect.top + this.#draggedRect.height / 2;
-    const centreInViewport = initialCentre + this.#pointerTravel;
-
-    return listCoordinates(list).viewportToList(centreInViewport);
-  }
-
   constructor(
     event: PointerEvent,
     key: string,
@@ -276,6 +268,14 @@ class DragReorder extends Reorder {
     this.#captureElement = captureElement;
     this.#draggedRect = draggedElement.getBoundingClientRect();
     this.#onDragStart = onDragStart;
+  }
+
+  /** Pointer and slot centres share the list's padding-box coordinate system. */
+  centreIn(list: HTMLElement) {
+    const initialCentre = this.#draggedRect.top + this.#draggedRect.height / 2;
+    const centreInViewport = initialCentre + this.#pointerTravel;
+
+    return listCoordinates(list).viewportToList(centreInViewport);
   }
 
   override teardown() {
