@@ -46,6 +46,15 @@ export default ts.config(
         {
           default: {
             memberTypes: [
+              [
+                "static-field",
+                "static-accessor",
+                "static-method",
+                "static-get",
+                "static-set",
+                "static-initialization",
+              ],
+              ["field", "accessor"],
               "constructor",
               [
                 "public-method",
@@ -141,6 +150,17 @@ export default ts.config(
     ],
   },
   {
+    files: ["**/*.svelte", "**/*.svelte.ts", "**/*.svelte.js"],
+    languageOptions: {
+      parserOptions: {
+        projectService: true,
+        extraFileExtensions: [".svelte"],
+        parser: ts.parser,
+      },
+    },
+  },
+  {
+    name: "project/type-aware",
     files: [
       "**/*.svelte",
       "**/*.svelte.ts",
@@ -153,7 +173,6 @@ export default ts.config(
       parserOptions: {
         projectService: true,
         extraFileExtensions: [".svelte"],
-        parser: ts.parser,
       },
     },
     rules: {
