@@ -60,11 +60,11 @@ export const getSourcePackages = query(
                   : ["Pending", "Published"],
               ),
               distro_series: launchpadUrl(distro, filters.series),
-              name: filters.search ?? undefined,
+              name: filters.search,
               exact_match: filters.search
                 ? String(filters.match === "exact")
                 : undefined,
-              pocket: filters.pocket ?? undefined,
+              pocket: filters.pocket,
               maintained_by: launchpadUrl("~", filters.maintainer),
               signed_by: launchpadUrl("~", filters.signer),
               ubuntu_change: filters.ubuntuChange ? "true" : undefined,

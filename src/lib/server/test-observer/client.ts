@@ -100,9 +100,11 @@ async function getFilteredImages(
   return images.filter(
     (image) =>
       image.series === series &&
-      (!filter.product || image.product === filter.product) &&
-      (!filter.buildStatus || image.buildStatus === filter.buildStatus) &&
-      (!filter.testStatus || image.testStatus === filter.testStatus),
+      (filter.product === undefined || image.product === filter.product) &&
+      (filter.buildStatus === undefined ||
+        image.buildStatus === filter.buildStatus) &&
+      (filter.testStatus === undefined ||
+        image.testStatus === filter.testStatus),
   );
 }
 

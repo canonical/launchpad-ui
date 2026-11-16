@@ -11,7 +11,7 @@
     position,
     "aria-labelledby": ariaLabelledBy,
     seriesGroups,
-  }: ChoiceFilterProps<string | null> & {
+  }: ChoiceFilterProps<string | undefined> & {
     seriesGroups: SeriesGroups;
   } = $props();
 
@@ -35,7 +35,7 @@
         value=""
         text="All"
         checked={!value}
-        onchange={(e) => onchange?.(e, null)}
+        onchange={(e) => onchange?.(e, undefined)}
       />
       {#if value && !selectedSeries}
         <ContextualMenuContent.RadioItem

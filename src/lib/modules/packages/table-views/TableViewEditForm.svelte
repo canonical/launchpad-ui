@@ -68,17 +68,7 @@
   if (Object.keys(fields.value()).length === 0)
     fields.set({
       name: settings.name,
-      // Form fields can't hold `null`, so "All" becomes `""`
-      filters: {
-        search: settings.filters.search ?? "",
-        match: settings.filters.match,
-        series: settings.filters.series ?? "",
-        pocket: settings.filters.pocket ?? "",
-        maintainer: settings.filters.maintainer ?? "",
-        signer: settings.filters.signer ?? "",
-        ubuntuChange: settings.filters.ubuntuChange,
-        allStatuses: settings.filters.allStatuses,
-      },
+      filters: settings.filters,
     });
 
   const isUnchanged = $derived.by(() => {

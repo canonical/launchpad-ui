@@ -371,7 +371,7 @@ function view(id: string, name: string, editable = true): TableView {
     name,
     slug: id,
     editable,
-    filters: { ...DEFAULT_PACKAGES_FILTERS, series: editable ? id : null },
+    filters: { ...DEFAULT_PACKAGES_FILTERS, series: editable ? id : undefined },
   };
 }
 

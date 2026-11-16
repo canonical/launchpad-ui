@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
+import { DEFAULT_PACKAGES_FILTERS } from "#lib/modules/packages/filters/constants.js";
 import { DEFAULT_TABLE_VIEW_SLUG } from "#lib/modules/packages/table-views/constants.js";
-import { QueryParams } from "./superhref";
+import { QueryParams, toPackagesFilters } from "./superhref";
 
 describe("package filter query parameters", () => {
   it("parses only supported parameters and normalizes people and search text", () => {
@@ -103,4 +104,14 @@ describe("manage views actions", () => {
       ).toBe("?view=mine&panel=manage-views");
     },
   );
+});
+
+describe("toPackagesFilters", () => {
+  it("maps absent filter parameters to undefined", () => {
+    expect(
+      toPackagesFilters(
+        QueryParams.bind(new URL("https://example.test/ubuntu/+source")),
+      ),
+    ).toStrictEqual(DEFAULT_PACKAGES_FILTERS);
+  });
 });

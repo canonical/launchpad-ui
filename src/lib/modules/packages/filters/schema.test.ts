@@ -28,6 +28,18 @@ describe("ParsedPackagesFiltersSchema", () => {
       }).success,
     ).toBe(false);
   });
+
+  it.each(["search", "series", "pocket", "maintainer", "signer"])(
+    "rejects null as an unset %s",
+    (field) => {
+      expect(
+        v.safeParse(ParsedPackagesFiltersSchema, {
+          ...DEFAULT_PACKAGES_FILTERS,
+          [field]: null,
+        }).success,
+      ).toBe(false);
+    },
+  );
 });
 
 describe("PackagesFiltersSchema", () => {
@@ -37,7 +49,7 @@ describe("PackagesFiltersSchema", () => {
     );
   });
 
-  it("parses empty fields and a blank search to null", () => {
+  it("parses empty fields and a blank search to undefined", () => {
     expect(
       v.parse(PackagesFiltersSchema, {
         search: "  ",
