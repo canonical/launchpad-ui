@@ -185,8 +185,8 @@ describe("package listing query", () => {
   it.each([
     { maintainer: "userl" },
     { signer: "userl" },
-    { maintainer: "userl", signer: null },
-    { maintainer: null, signer: "userl" },
+    { maintainer: "userl", signer: undefined },
+    { maintainer: undefined, signer: "userl" },
     { maintainer: "userl", signer: "userl" },
     { maintainer: "userl", signer: "userl-other" },
     { maintainer: "ubuntu-mozillateam", signer: "userl" },

@@ -6,7 +6,7 @@ import {
   SEARCH_MATCHES,
 } from "./constants.js";
 
-/** Validators for populated filter values, without defaults or nullable wrappers. */
+/** Validators for populated filter values, without defaults or optional wrappers. */
 export const PackagesFilterFields = {
   search: v.pipe(
     v.string(),
@@ -24,31 +24,31 @@ export const PackagesFilterFields = {
 };
 
 /**
- * Converts missing or empty strings to null, then validates nonempty values.
- * With trimming enabled, whitespace-only strings also become null.
+ * Converts missing or empty strings to undefined, then validates nonempty values.
+ * With trimming enabled, whitespace-only strings also become undefined.
  */
-function nullIfEmpty<TSchema extends v.GenericSchema<string>>(
+function undefinedIfEmpty<TSchema extends v.GenericSchema<string>>(
   schema: TSchema,
   trim = false,
 ) {
   return v.pipe(
     v.optional(v.string(), ""),
-    v.transform((value) => (trim ? value.trim() : value) || null),
-    v.nullable(schema),
+    v.transform((value) => (trim ? value.trim() : value) || undefined),
+    v.undefinedable(schema),
   );
 }
 
 /**
- * Parses form-shaped filters, supplying defaults for missing fields and converting empty choices to null.
- * Search is trimmed, so a whitespace-only search also becomes null.
+ * Parses form-shaped filters, supplying defaults for missing fields and converting empty choices to undefined.
+ * Search is trimmed, so a whitespace-only search also becomes undefined.
  */
 export const PackagesFiltersSchema = v.object({
-  search: nullIfEmpty(PackagesFilterFields.search, true),
+  search: undefinedIfEmpty(PackagesFilterFields.search, true),
   match: v.optional(PackagesFilterFields.match, "contains"),
-  series: nullIfEmpty(PackagesFilterFields.series),
-  pocket: nullIfEmpty(PackagesFilterFields.pocket),
-  maintainer: nullIfEmpty(PackagesFilterFields.maintainer),
-  signer: nullIfEmpty(PackagesFilterFields.signer),
+  series: undefinedIfEmpty(PackagesFilterFields.series),
+  pocket: undefinedIfEmpty(PackagesFilterFields.pocket),
+  maintainer: undefinedIfEmpty(PackagesFilterFields.maintainer),
+  signer: undefinedIfEmpty(PackagesFilterFields.signer),
   ubuntuChange: v.optional(PackagesFilterFields.ubuntuChange, false),
   allStatuses: v.optional(PackagesFilterFields.allStatuses, false),
 });
@@ -56,15 +56,15 @@ export const PackagesFiltersSchema = v.object({
 export type PackagesFilters = v.InferOutput<typeof PackagesFiltersSchema>;
 
 /**
- * Validates filters in their parsed shape: all fields are required, and unset choices must be null.
+ * Validates filters in their parsed shape: all fields are required, and unset choices must be undefined.
  */
 export const ParsedPackagesFiltersSchema = v.object({
-  search: v.nullable(PackagesFilterFields.search),
+  search: v.undefinedable(PackagesFilterFields.search),
   match: PackagesFilterFields.match,
-  series: v.nullable(PackagesFilterFields.series),
-  pocket: v.nullable(PackagesFilterFields.pocket),
-  maintainer: v.nullable(PackagesFilterFields.maintainer),
-  signer: v.nullable(PackagesFilterFields.signer),
+  series: v.undefinedable(PackagesFilterFields.series),
+  pocket: v.undefinedable(PackagesFilterFields.pocket),
+  maintainer: v.undefinedable(PackagesFilterFields.maintainer),
+  signer: v.undefinedable(PackagesFilterFields.signer),
   ubuntuChange: PackagesFilterFields.ubuntuChange,
   allStatuses: PackagesFilterFields.allStatuses,
 });

@@ -102,7 +102,7 @@ describe("SeriesFilterMenu", () => {
 
   it.each([
     [null, "26.04 LTS Resolute", "resolute", "resolute"],
-    ["noble", "All", "", null],
+    ["noble", "All", "", undefined],
   ])(
     "submits the picked series from %s",
     async (value, option, submitted, changedTo) => {
@@ -151,7 +151,7 @@ describe("PocketFilterMenu", () => {
 
   it.each([
     [null, "Proposed", "Proposed", "Proposed"],
-    ["Updates", "All", "", null],
+    ["Updates", "All", "", undefined],
   ] as const)(
     "submits the picked pocket from %s",
     async (value, option, submitted, changedTo) => {

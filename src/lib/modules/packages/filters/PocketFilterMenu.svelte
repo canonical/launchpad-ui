@@ -13,7 +13,7 @@
     onchange,
     position,
     "aria-labelledby": ariaLabelledBy,
-  }: ChoiceFilterProps<Pocket | null> = $props();
+  }: ChoiceFilterProps<Pocket | undefined> = $props();
 
   const selectedLabel = $derived(value || "All");
 </script>
@@ -31,7 +31,7 @@
         value=""
         text="All"
         checked={!value}
-        onchange={(e) => onchange?.(e, null)}
+        onchange={(e) => onchange?.(e, undefined)}
       />
       {#each POCKETS as pocket (pocket)}
         <ContextualMenuContent.RadioItem

@@ -247,7 +247,10 @@ describe("PersonFilterCombobox", () => {
 
     await choose(screen, screen.getByRole("option", { name: "All" }));
 
-    expect(onchange).toHaveBeenCalledExactlyOnceWith(expect.any(Event), null);
+    expect(onchange).toHaveBeenCalledExactlyOnceWith(
+      expect.any(Event),
+      undefined,
+    );
     expect(submissions).toEqual([[["maintainer", ""]]]);
     expect(seedPerson).not.toHaveBeenCalled();
   });

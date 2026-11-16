@@ -41,12 +41,12 @@ export const PACKAGES_FILTER_SUMMARY_LABELS = {
 } as const satisfies Record<BooleanFilterKey, string>;
 
 export const DEFAULT_PACKAGES_FILTERS = {
-  search: null,
+  search: undefined,
   match: "contains",
-  series: null,
-  pocket: null,
-  maintainer: null,
-  signer: null,
+  series: undefined,
+  pocket: undefined,
+  maintainer: undefined,
+  signer: undefined,
   ubuntuChange: false,
   allStatuses: false,
 } as const satisfies PackagesFilters;

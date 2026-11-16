@@ -38,9 +38,9 @@ export const imageArtifactSchema = v.object({
 });
 
 export type ImagesFilter = {
-  product?: string | null;
-  buildStatus?: BuildStatus | null;
-  testStatus?: TestStatus | null;
+  product?: string;
+  buildStatus?: BuildStatus;
+  testStatus?: TestStatus;
 };
 
 export type ImagesQuery = ImagesFilter & {

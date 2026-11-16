@@ -20,7 +20,7 @@
   const filterEntries = $derived<
     Record<
       Exclude<keyof PackagesFilters, "match" | "search">,
-      { label?: string; value: string | null }
+      { label?: string; value: string | undefined }
     >
   >({
     maintainer: {
@@ -42,12 +42,12 @@
     ubuntuChange: {
       value: filters.ubuntuChange
         ? PACKAGES_FILTER_SUMMARY_LABELS.ubuntuChange
-        : null,
+        : undefined,
     },
     allStatuses: {
       value: filters.allStatuses
         ? PACKAGES_FILTER_SUMMARY_LABELS.allStatuses
-        : null,
+        : undefined,
     },
   });
 

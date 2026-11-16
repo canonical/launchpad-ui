@@ -130,12 +130,12 @@ export function toPackagesFilters(
   queryParams: BoundPackagesQueryParams,
 ): PackagesFilters {
   return {
-    search: queryParams.search,
+    search: queryParams.search ?? undefined,
     match: queryParams.match,
-    series: queryParams.series,
-    pocket: queryParams.pocket,
-    maintainer: queryParams.maintainer,
-    signer: queryParams.signer,
+    series: queryParams.series ?? undefined,
+    pocket: queryParams.pocket ?? undefined,
+    maintainer: queryParams.maintainer ?? undefined,
+    signer: queryParams.signer ?? undefined,
     ubuntuChange: queryParams["ubuntu-change"],
     allStatuses: queryParams["all-statuses"],
   };

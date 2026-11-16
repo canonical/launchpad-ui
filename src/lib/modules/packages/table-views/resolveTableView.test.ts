@@ -21,7 +21,7 @@ const savedView = {
   editable: true,
   filters: {
     ...DEFAULT_PACKAGES_FILTERS,
-    search: null,
+    search: undefined,
     series: "noble",
   },
 } satisfies TableView;

@@ -31,7 +31,7 @@
     searchInputProps,
     searchButtonProps,
     position,
-  }: ChoiceFilterProps<string | null> & {
+  }: ChoiceFilterProps<string | undefined> & {
     /** Plural label used in the search prompt, e.g. "maintainers". */
     groupName: string;
     /**
@@ -87,7 +87,7 @@
       selectedPersonQuery = getPersonByName(person.name);
       selectedPersonQuery.set(person);
     }
-    onchange?.(event, person?.name ?? null);
+    onchange?.(event, person?.name);
   }
 
   const selectedPerson = $derived(
