@@ -31,7 +31,8 @@
 
 <Story
   name="Success criticality"
-  args={{ term: "Failed tests", details: "0", criticality: "success" }}>
+  args={{ term: "Failed tests", details: "0", criticality: "success" }}
+>
   {#snippet template(args)}
     <dl>
       <Item {...args} />

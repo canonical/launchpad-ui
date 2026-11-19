@@ -1,5 +1,5 @@
 import * as v from "valibot";
-import { NOT_DEFINED } from "#lib/modules/distroseries/images/constants.js";
+import { NOT_DEFINED } from "#lib/modules/distroseries/constants.js";
 import type { Product } from "#lib/modules/distroseries/images/types.js";
 import { DEFAULT_PAGE_SIZE } from "#lib/schemas/index.js";
 import type { Paginated } from "../common/types.js";

@@ -7,7 +7,7 @@ const config = {
   printWidth: 80,
   endOfLine: "lf",
   arrowParens: "always",
-  bracketSameLine: true,
+  bracketSameLine: false,
   bracketSpacing: true,
   jsxSingleQuote: false,
   quoteProps: "as-needed",
@@ -23,7 +23,6 @@ const config = {
       files: "*.svelte",
       options: {
         parser: "svelte",
-        htmlWhitespaceSensitivity: "ignore",
         svelteAllowShorthand: true,
         svelteIndentScriptAndStyle: true,
         svelteSortOrder: "options-scripts-markup-styles",

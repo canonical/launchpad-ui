@@ -1,5 +1,5 @@
 import * as v from "valibot";
-import type { NOT_DEFINED } from "#lib/modules/distroseries/images/constants.js";
+import type { NOT_DEFINED } from "#lib/modules/distroseries/constants.js";
 import type {
   BuildStatus,
   Product,

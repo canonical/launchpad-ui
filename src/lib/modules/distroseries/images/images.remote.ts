@@ -9,6 +9,7 @@ import {
   getUbuntuImageCounts,
   getUbuntuImages,
 } from "#lib/server/test-observer/client.js";
+import type { SeriesImageCounts } from "#lib/server/test-observer/types.js";
 import { SORTABLE_IMAGES_TABLE_COLUMNS } from "./constants.js";
 import { ParsedImagesFiltersSchema } from "./filters/schema.js";
 import { query } from "$app/server";
@@ -54,5 +55,14 @@ export const getSeriesImageCounts = query(
       console.error("Failed to load series image counts", requestError);
       error(503, "Couldn't load image counts. Try again shortly.");
     }
+  },
+);
+
+export const getSeriesStatsImageCounts = query(
+  distroSeriesSchema,
+  async ({ distro }): Promise<SeriesImageCounts | null> => {
+    if (distro !== "ubuntu") return null;
+
+    error(501, "Not implemented", { dontFailThePage: true });
   },
 );

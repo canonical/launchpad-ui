@@ -31,13 +31,11 @@ describe("Item component", () => {
     "renders an accessible %s marker labelled %s",
     async (criticality, label) => {
       const page = await render(Component, { ...baseProps, criticality });
-      const dot = componentLocator(page).element().querySelector(".stat-dot");
+      const dot = page.getByLabelText(label).element();
 
-      expect(dot).not.toBeNull();
-      expect(dot?.getAttribute("role")).toBe("img");
-      expect(dot?.getAttribute("aria-label")).toBe(label);
-      expect(dot?.classList.contains(criticality)).toBe(true);
-      expect(dot?.hasAttribute("aria-hidden")).toBe(false);
+      expect(dot.getAttribute("role")).toBe("img");
+      expect(dot.classList.contains(criticality)).toBe(true);
+      expect(dot.hasAttribute("aria-hidden")).toBe(false);
       await expect
         .element(page.getByRole("img", { name: label }))
         .toBeVisible();
@@ -47,9 +45,7 @@ describe("Item component", () => {
   it("does not render a dot without a criticality", async () => {
     const page = await render(Component, { ...baseProps });
 
-    expect(
-      componentLocator(page).element().querySelector(".stat-dot"),
-    ).toBeNull();
+    await expect.element(page.getByRole("img")).not.toBeInTheDocument();
   });
 
   describe("attributes", () => {

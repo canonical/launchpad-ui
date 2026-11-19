@@ -38,20 +38,18 @@ describe("Item SSR", () => {
         const page = render(Component, {
           props: { ...baseProps, criticality },
         });
-        const dot = componentLocator(page).querySelector(".stat-dot");
+        const dot = page.getByLabelText(label);
 
-        expect(dot).not.toBeNull();
-        expect(dot?.getAttribute("role")).toBe("img");
-        expect(dot?.getAttribute("aria-label")).toBe(label);
-        expect(dot?.classList.contains(criticality)).toBe(true);
-        expect(dot?.hasAttribute("aria-hidden")).toBe(false);
+        expect(dot.getAttribute("role")).toBe("img");
+        expect(dot.classList.contains(criticality)).toBe(true);
+        expect(dot.hasAttribute("aria-hidden")).toBe(false);
       },
     );
 
     it("renders no marker without a criticality", () => {
       const page = render(Component, { props: { ...baseProps } });
 
-      expect(componentLocator(page).querySelector(".stat-dot")).toBeNull();
+      expect(page.queryByRole("img")).toBeNull();
     });
   });
 

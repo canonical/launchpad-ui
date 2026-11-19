@@ -17,8 +17,9 @@
     TableViewBar,
   } from "#lib/components/index.js";
   import { DEFAULT_PAGE_SIZE } from "#lib/schemas/index.js";
+  import { NOT_DEFINED } from "../constants.js";
   import ImageStatusSummary from "./ImageStatusSummary.svelte";
-  import { IMAGES_TABLE_COLUMNS, NOT_DEFINED } from "./constants.js";
+  import { IMAGES_TABLE_COLUMNS } from "./constants.js";
   import { setImagesContext } from "./context.js";
   import Filters from "./filters/Filters.svelte";
   import FiltersSummary from "./filters/FiltersSummary.svelte";
