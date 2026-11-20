@@ -60,3 +60,8 @@ Storybook will be available at [http://localhost:6006](http://localhost:6006).
 
 - `pnpm check` runs typechecks + lint.
 - `pnpm test` runs all tests once.
+
+## Coding standards
+
+Read [CODING_STANDARDS.md](CODING_STANDARDS.md) for project conventions.
+AI coding assistants should also follow [AGENTS.md](AGENTS.md).
