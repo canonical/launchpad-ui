@@ -9,7 +9,7 @@
     width: var(--dimension-100);
     height: var(--dimension-100);
     border-radius: 50%;
-    background-color: var(--color-icon-error);
+    background-color: var(--modifier-color-icon);
     margin-right: var(--dimension-050);
   }
 

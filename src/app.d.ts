@@ -5,7 +5,9 @@ import type { TableView } from "#lib/modules/packages/table-views/constants.js";
 
 declare global {
   namespace App {
-    // interface Error {}
+    interface Error {
+      dontFailThePage?: boolean;
+    }
     interface Locals {
       user: { id: string };
     }

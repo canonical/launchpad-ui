@@ -24,25 +24,28 @@ describe("Item component", () => {
     expect(componentLocator(page).element().querySelector("dd")).not.toBeNull();
   });
 
-  it("renders an accessible attention marker when marked", async () => {
-    const page = await render(Component, { ...baseProps, marked: true });
-    const dot = componentLocator(page).element().querySelector(".stat-dot");
+  it.each([
+    ["error", "Attention"],
+    ["success", "No issues"],
+  ] as const)(
+    "renders an accessible %s marker labelled %s",
+    async (criticality, label) => {
+      const page = await render(Component, { ...baseProps, criticality });
+      const dot = page.getByLabelText(label).element();
 
-    expect(dot).not.toBeNull();
-    expect(dot?.getAttribute("role")).toBe("img");
-    expect(dot?.getAttribute("aria-label")).toBe("Attention");
-    expect(dot?.hasAttribute("aria-hidden")).toBe(false);
-    await expect
-      .element(page.getByRole("img", { name: "Attention" }))
-      .toBeVisible();
-  });
+      expect(dot.getAttribute("role")).toBe("img");
+      expect(dot.classList.contains(criticality)).toBe(true);
+      expect(dot.hasAttribute("aria-hidden")).toBe(false);
+      await expect
+        .element(page.getByRole("img", { name: label }))
+        .toBeVisible();
+    },
+  );
 
-  it("does not render a dot when unmarked", async () => {
+  it("does not render a dot without a criticality", async () => {
     const page = await render(Component, { ...baseProps });
 
-    expect(
-      componentLocator(page).element().querySelector(".stat-dot"),
-    ).toBeNull();
+    await expect.element(page.getByRole("img")).not.toBeInTheDocument();
   });
 
   describe("attributes", () => {

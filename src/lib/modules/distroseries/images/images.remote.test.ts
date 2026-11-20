@@ -4,7 +4,11 @@ import {
   getUbuntuImageCounts,
   getUbuntuImages,
 } from "#lib/server/test-observer/client.js";
-import { getSeriesImageCounts, getSeriesImages } from "./images.remote";
+import {
+  getSeriesImageCounts,
+  getSeriesImages,
+  getSeriesStatsImageCounts,
+} from "./images.remote";
 
 vi.mock("$app/server", () => ({
   query: (
@@ -129,5 +133,23 @@ describe("series image queries", () => {
       "Failed to load series image counts",
       failure,
     );
+  });
+
+  describe("getSeriesStatsImageCounts", () => {
+    it("rejects Ubuntu as not implemented", async () => {
+      await expect(
+        getSeriesStatsImageCounts(regularParams),
+      ).rejects.toMatchObject({
+        status: 501,
+        body: { message: "Not implemented", dontFailThePage: true },
+      });
+      expect(getUbuntuImageCounts).not.toHaveBeenCalled();
+    });
+
+    it("returns null for other distributions", async () => {
+      await expect(
+        getSeriesStatsImageCounts({ ...regularParams, distro: "ubuntu-core" }),
+      ).resolves.toBeNull();
+    });
   });
 });

@@ -8,37 +8,23 @@
   import GetInvolved from "#lib/modules/distroseries/GetInvolved.svelte";
   import SeriesHeader from "#lib/modules/distroseries/SeriesHeader.svelte";
   import SeriesMilestones from "#lib/modules/distroseries/SeriesMilestones.svelte";
+  import SeriesStats from "#lib/modules/distroseries/SeriesStats.svelte";
   import SeriesImages from "#lib/modules/distroseries/images/SeriesImages.svelte";
   import { getSeriesOverview } from "#lib/modules/distroseries/series.remote.js";
   import type { PageProps } from "./$types.js";
 
   let { params }: PageProps = $props();
 
-  /*
-   * TODO: Remove `pillar` and `series`, and use `params` directly once
-   * https://github.com/sveltejs/svelte/pull/19166 is released.
-   *
-   * A <svelte:boundary> that fails during SSR breaks hydration when it's nested
-   * inside an `{#if}` block that WAITS on a script-level `await`. The page then
-   * can't recover (https://github.com/sveltejs/svelte/issues/19213).
-   *
-   * The compiler makes any template code that reads `params` WAIT, because the
-   * `await` below reads it. Now, the template reads these copies instead. Keep
-   * `params` in the `await`, or the bug returns.
-   */
-  const pillar = $derived(params.pillar);
-  const series = $derived(params.series);
+  const seriesArgs = $derived({
+    distro: params.pillar,
+    series: params.series,
+  });
 
-  const { displayName, status, description, links, milestones } = $derived(
-    await getSeriesOverview({
-      distro: params.pillar,
-      series: params.series,
-    }),
-  );
+  const overview = $derived(getSeriesOverview(seriesArgs));
 </script>
 
 <svelte:head>
-  <title>{displayName} - Launchpad</title>
+  <title>{(await overview).displayName} - Launchpad</title>
 </svelte:head>
 
 <PageLayout
@@ -46,6 +32,9 @@
 >
   <div class="series-overview app">
     <ContentLayout grid="responsive">
+      {const { displayName, status, description, links, milestones } = $derived(
+        await overview,
+      )}
       <SeriesHeader {displayName} {status} />
 
       <div class="overview subgrid">
@@ -60,11 +49,13 @@
           {milestones}
           allMilestonesHref={links.milestones}
         />
+
+        <SeriesStats class="stats" {...seriesArgs} />
       </div>
 
-      {#if pillar === "ubuntu"}
+      {#if params.pillar === "ubuntu"}
         <svelte:boundary>
-          <SeriesImages {pillar} {series} />
+          <SeriesImages pillar={params.pillar} series={params.series} />
           {#snippet failed(error)}
             <p class="images-error" role="alert">
               {isHttpError(error)
@@ -110,6 +101,10 @@
       > :global(.milestones) {
         grid-column: span 4;
       }
+
+      > :global(.stats) {
+        grid-column: 3 / -1;
+      }
     }
   }
 
@@ -122,6 +117,10 @@
 
       > :global(.involvement) {
         grid-column: span 2;
+      }
+
+      > :global(.stats) {
+        grid-column: span 6;
       }
     }
   }
