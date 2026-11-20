@@ -106,25 +106,6 @@ describe("SeriesStats", () => {
       .not.toBeInTheDocument();
   });
 
-  it("keeps unknown image results distinct from retrieval errors", async () => {
-    getSeriesStatsImageCounts.mockResolvedValue({
-      ...imageCounts,
-      building: { total: 0, successful: 0, failed: 0, running: 0 },
-      testing: { total: 0, passed: 0, failed: 0, running: 0 },
-    });
-    const page = await render(SeriesStats, args);
-
-    await expect.element(page.getByText("Images built")).toBeVisible();
-    expect(page.getByText("<not defined>").elements()).toHaveLength(6);
-    expect(
-      page.getByRole("img", { name: "Attention" }).elements(),
-    ).toHaveLength(2);
-    await expect
-      .element(page.getByRole("img", { name: "No issues" }))
-      .toBeVisible();
-    expect(page.getByText(COULD_NOT_LOAD).elements()).toHaveLength(0);
-  });
-
   it("resets a failed boundary when the series changes", async () => {
     vi.spyOn(console, "error").mockImplementation(() => {});
     getSeriesBugCounts.mockRejectedValueOnce(new Error("Source unavailable"));

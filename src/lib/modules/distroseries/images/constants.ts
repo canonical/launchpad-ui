@@ -1,5 +1,4 @@
 import { slugify } from "#lib/utils/slugify.js";
-import { NOT_DEFINED } from "../constants.js";
 import type { ImageOwnedQueryKey } from "./superhref";
 
 export const PRODUCTS = [
@@ -21,6 +20,8 @@ export const PRODUCTS = [
   { name: "Ubuntu WSL" },
   { name: "Xubuntu" },
 ].map(({ name }) => ({ name, slug: slugify(name) }));
+
+export const NOT_DEFINED = "<not defined>";
 
 export const BUILD_STATUSES = [
   "successful",

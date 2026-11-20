@@ -6,7 +6,6 @@
   import type { ClassValue } from "svelte/elements";
   import { Stat } from "#lib/launchpad-components/index.js";
   import { getSeriesBugCounts } from "./bugs/bugs.remote.js";
-  import { NOT_DEFINED } from "./constants.js";
   import { getSeriesStatsImageCounts } from "./images/images.remote.js";
 
   type ImageCounts = NonNullable<
@@ -25,9 +24,8 @@
   } = $props();
 
   // TODO: Revisit image counts after https://warthogs.atlassian.net/browse/LP-5179.
-  function formatCount(value: number | undefined, total?: number) {
-    if (value === undefined) return COULD_NOT_LOAD;
-    return total === 0 ? NOT_DEFINED : String(value);
+  function formatCount(value: number | undefined) {
+    return value === undefined ? COULD_NOT_LOAD : String(value);
   }
 
   function formatProgress(
@@ -35,11 +33,11 @@
     total: number | undefined,
   ) {
     if (completed === undefined || total === undefined) return COULD_NOT_LOAD;
-    return total === 0 ? NOT_DEFINED : `${completed}/${total}`;
+    return `${completed}/${total}`;
   }
 
-  function criticality(failures: number | undefined, total?: number) {
-    return failures === 0 && total !== 0 ? "success" : "error";
+  function criticality(failures: number | undefined) {
+    return failures === 0 ? "success" : "error";
   }
 </script>
 
@@ -53,13 +51,10 @@
     />
     <Stat.Item
       term="Failed to build"
-      details={formatCount(builds?.failed, builds?.total)}
-      criticality={criticality(builds?.failed, builds?.total)}
+      details={formatCount(builds?.failed)}
+      criticality={criticality(builds?.failed)}
     />
-    <Stat.Item
-      term="Building"
-      details={formatCount(builds?.running, builds?.total)}
-    />
+    <Stat.Item term="Building" details={formatCount(builds?.running)} />
   </Stat>
   <Stat>
     <Stat.Item
@@ -68,13 +63,10 @@
     />
     <Stat.Item
       term="Failed tests"
-      details={formatCount(tests?.failed, tests?.total)}
-      criticality={criticality(tests?.failed, tests?.total)}
+      details={formatCount(tests?.failed)}
+      criticality={criticality(tests?.failed)}
     />
-    <Stat.Item
-      term="Testing"
-      details={formatCount(tests?.running, tests?.total)}
-    />
+    <Stat.Item term="Testing" details={formatCount(tests?.running)} />
   </Stat>
 {/snippet}
 
