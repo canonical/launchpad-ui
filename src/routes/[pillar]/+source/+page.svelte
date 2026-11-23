@@ -2,11 +2,11 @@
   import { Button, Link, Table } from "@canonical/svelte-ds-app-launchpad";
   import { EditIcon, SettingsIcon } from "@canonical/svelte-icons";
   import {
-    FilterSummary,
     Pagination,
     TableViewBar,
   } from "#lib/components/index.js";
   import {
+    FilterSummary,
     PageLayout,
     QueryParamsForm,
     distroSegment,

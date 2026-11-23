@@ -1,4 +1,4 @@
-import type { FilterRepresentationConfig } from "#lib/filter/index.js";
+import type { FilterRepresentationConfig } from "#lib/modules/filtering/representation.js";
 import { PRODUCTS } from "../constants.js";
 import type { ImagesFilters } from "./schema.js";
 

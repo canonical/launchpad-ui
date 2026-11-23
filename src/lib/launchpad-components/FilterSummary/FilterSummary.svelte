@@ -1,5 +1,5 @@
 <script lang="ts" generics="TFilters extends object">
-  import { getFilterTextParts } from "#lib/filter/index.js";
+  import { getFilterTextParts } from "#lib/modules/filtering/representation.js";
   import { Group } from "./common/index.js";
   import type { FilterSummaryProps } from "./types.js";
 

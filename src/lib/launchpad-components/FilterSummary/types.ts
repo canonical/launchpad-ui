@@ -3,7 +3,7 @@ import type { HTMLAttributes } from "svelte/elements";
 import type {
   FilterRepresentationConfig,
   FilterTextPart,
-} from "#lib/filter/index.js";
+} from "#lib/modules/filtering/representation.js";
 
 export type FilterSummaryProps<TFilters extends object> = Omit<
   HTMLAttributes<HTMLDivElement>,

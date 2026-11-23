@@ -6,7 +6,7 @@
   import { FilterSummary } from "./index.js";
 
   const { Story } = defineMeta({
-    title: "Components/FilterSummary",
+    title: "Launchpad Components/FilterSummary",
     tags: ["autodocs"],
     component: FilterSummary,
     args: {

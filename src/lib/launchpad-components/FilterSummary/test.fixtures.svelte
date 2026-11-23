@@ -2,7 +2,7 @@
   import type {
     FilterRepresentationConfig,
     FilterTextPart,
-  } from "#lib/filter/index.js";
+  } from "#lib/modules/filtering/representation.js";
   import { FilterSummary } from "./index.js";
 
   export { actions, children };

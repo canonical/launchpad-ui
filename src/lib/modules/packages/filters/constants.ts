@@ -1,5 +1,5 @@
 import type { SourcePackagePublishingHistoryFull } from "@canonical/launchpad-client/schemas/models/source_package_publishing_history";
-import type { FilterRepresentationConfig } from "#lib/filter/index.js";
+import type { FilterRepresentationConfig } from "#lib/modules/filtering/representation.js";
 import type { PackagesFilters } from "./schema.js";
 
 export const MAX_PACKAGES_SEARCH_LENGTH = 200;

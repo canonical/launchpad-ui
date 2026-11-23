@@ -60,8 +60,8 @@
   import { isHttpError } from "@sveltejs/kit";
   import { settled, tick, untrack } from "svelte";
   import { ReorderableList } from "#lib/components/ReorderableList/index.js";
-  import { getShortFilterText } from "#lib/filter/index.js";
   import { SidePanel } from "#lib/launchpad-components/index.js";
+  import { getShortFilterText } from "#lib/modules/filtering/representation.js";
   import type { SeriesGroups } from "#lib/modules/filtering/types.js";
   import { filtersDiffer } from "#lib/modules/filtering/utils.js";
   import {

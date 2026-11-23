@@ -60,8 +60,8 @@
   import { isHttpError } from "@sveltejs/kit";
   import { settled, tick, untrack } from "svelte";
   import { ReorderableList } from "#lib/components/ReorderableList/index.js";
-  import { getShortFilterText } from "#lib/filter/index.js";
   import { SidePanel } from "#lib/launchpad-components/index.js";
+  import { getShortFilterText } from "#lib/modules/filtering/representation.js";
   import { filtersDiffer } from "#lib/modules/filtering/utils.js";
   import { MAX_TABLE_VIEW_NAME_LENGTH } from "#lib/modules/table-views/constants.js";
   import type { AddTableViewMode } from "#lib/modules/table-views/constants.js";
