@@ -14,7 +14,7 @@
 
 <script lang="ts">
   import { BookmarkIcon } from "#lib/components/icons/index.js";
-  import { QueryParamsForm } from "#lib/components/index.js";
+  import { QueryParamsForm } from "#lib/launchpad-components/index.js";
   import type { FilterChangeHandler } from "#lib/modules/filtering/types.js";
   import { subId } from "#lib/utils/index.js";
   const id = $props.id();

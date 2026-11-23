@@ -4,7 +4,7 @@
   import { QueryParamsForm } from "./index.js";
 
   const { Story } = defineMeta({
-    title: "Components/QueryParamsForm",
+    title: "Launchpad Components/QueryParamsForm",
     tags: ["autodocs"],
     component: QueryParamsForm,
     argTypes: {

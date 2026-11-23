@@ -25,7 +25,7 @@
   import { CloseIcon } from "@canonical/svelte-icons";
   import { onMount } from "svelte";
   import { BookmarkIcon } from "#lib/components/icons/index.js";
-  import { QueryParamsForm } from "#lib/components/index.js";
+  import { QueryParamsForm } from "#lib/launchpad-components/index.js";
   import type {
     FilterChangeHandler,
     SeriesGroups,
