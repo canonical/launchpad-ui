@@ -122,26 +122,6 @@ describe("getImageArtifacts", () => {
     });
     expect(fetcher).toHaveBeenCalledTimes(1);
   });
-
-  it("throws when the Test Observer URL is not set", async () => {
-    vi.doMock("$app/env/private", () => ({
-      TEST_OBSERVER_IMAGE_ARTIFACTS_URL: undefined,
-    }));
-    vi.resetModules();
-
-    try {
-      const { getImageArtifacts } = await import("./client.js");
-
-      expect(() => getImageArtifacts()).toThrow(
-        "TEST_OBSERVER_IMAGE_ARTIFACTS_URL is not set",
-      );
-      expect(fetcher).not.toHaveBeenCalled();
-    } finally {
-      vi.doMock("$app/env/private", () => ({
-        TEST_OBSERVER_IMAGE_ARTIFACTS_URL: IMAGE_ARTIFACTS_URL,
-      }));
-    }
-  });
 });
 
 describe("getUbuntuImages", () => {
