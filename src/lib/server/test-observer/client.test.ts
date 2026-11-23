@@ -2,18 +2,17 @@ import * as v from "valibot";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { ImageArtifact } from "./types.js";
 
+const IMAGE_ARTIFACTS_URL =
+  "https://observer.example/v1/artefacts?family=image";
+
 // TODO: Reduce repeated env mocks (https://warthogs.atlassian.net/browse/LP-5132)
 vi.mock(
   "$app/env/private",
   () =>
     ({
-      TEST_OBSERVER_IMAGE_ARTIFACTS_URL:
-        "https://observer.example/v1/artefacts?family=image",
+      TEST_OBSERVER_IMAGE_ARTIFACTS_URL: IMAGE_ARTIFACTS_URL,
     }) satisfies Partial<typeof import("$app/env/private")>,
 );
-
-const IMAGE_ARTIFACTS_URL =
-  "https://observer.example/v1/artefacts?family=image";
 
 const imageArtifact: ImageArtifact = {
   id: 1,
@@ -122,6 +121,26 @@ describe("getImageArtifacts", () => {
       message: `Test Observer request to ${IMAGE_ARTIFACTS_URL} failed with status 503`,
     });
     expect(fetcher).toHaveBeenCalledTimes(1);
+  });
+
+  it("throws when the Test Observer URL is not set", async () => {
+    vi.doMock("$app/env/private", () => ({
+      TEST_OBSERVER_IMAGE_ARTIFACTS_URL: undefined,
+    }));
+    vi.resetModules();
+
+    try {
+      const { getImageArtifacts } = await import("./client.js");
+
+      expect(() => getImageArtifacts()).toThrow(
+        "TEST_OBSERVER_IMAGE_ARTIFACTS_URL is not set",
+      );
+      expect(fetcher).not.toHaveBeenCalled();
+    } finally {
+      vi.doMock("$app/env/private", () => ({
+        TEST_OBSERVER_IMAGE_ARTIFACTS_URL: IMAGE_ARTIFACTS_URL,
+      }));
+    }
   });
 });
 
