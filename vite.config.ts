@@ -12,8 +12,6 @@ export default defineConfig({
       preprocess: vitePreprocess(),
       compilerOptions: { experimental: { async: true } },
       adapter: adapter(),
-      // TODO: https://warthogs.atlassian.net/browse/LP-5107
-      paths: { origin: process.env.ORIGIN },
       experimental: { remoteFunctions: true },
     }),
   ],
