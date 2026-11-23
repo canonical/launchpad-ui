@@ -1,17 +1,24 @@
+import type { ComponentProps } from "svelte";
 import { describe, expect, it } from "vitest";
 import type { Locator, LocatorSelectors } from "vitest/browser";
 import { render } from "vitest-browser-svelte";
 import Component from "./FilterSummary.svelte";
 import {
-  actions,
   activeFilters,
   children,
   config,
   emptyFilters,
-  testId,
 } from "./test.fixtures.svelte";
+import type { TaskFilters } from "./test.fixtures.svelte";
 
-const baseProps = { config, "data-testid": testId };
+const testId = "filter-summary";
+
+const baseProps = {
+  config,
+  filters: activeFilters,
+  tableViewName: "Tasks",
+  "data-testid": testId,
+} satisfies ComponentProps<typeof Component<TaskFilters>>;
 
 describe("FilterSummary", () => {
   it("renders nothing when no parts are visible", async () => {
@@ -24,11 +31,11 @@ describe("FilterSummary", () => {
   });
 
   it("renders the default group as one flat list", async () => {
-    const page = await render(Component, {
-      ...baseProps,
-      filters: activeFilters,
-    });
-    const items = componentLocator(page).getByRole("listitem").elements();
+    const page = await render(Component, { ...baseProps });
+    const items = componentLocator(page)
+      .getByRole("list", { name: "Tasks filters" })
+      .getByRole("listitem")
+      .elements();
 
     expect(items.map((item) => item.textContent.trim())).toEqual([
       'Title contains: "login"',
@@ -40,14 +47,13 @@ describe("FilterSummary", () => {
     expect(items[2]).toHaveClass("last-part-in-group");
   });
 
-  it("forwards attributes to the root and labels the list separately", async () => {
+  it("forwards attributes to the root and labels the list from tableViewName", async () => {
     const page = await render(Component, {
       ...baseProps,
-      filters: activeFilters,
       id: "summary",
       class: "custom-class",
       style: "color: orange;",
-      listLabel: "Task filters",
+      tableViewName: "Task",
     });
     const root = componentLocator(page);
 
@@ -55,17 +61,19 @@ describe("FilterSummary", () => {
     await expect.element(root).toHaveClass("custom-class");
     await expect.element(root).toHaveStyle({ color: "orange" });
     await expect
-      .element(root.getByRole("list"))
-      .toHaveAccessibleName("Task filters");
+      .element(root.getByRole("list", { name: "Task filters" }))
+      .toBeVisible();
   });
 
   it("lets the consumer split the visible parts into groups", async () => {
     const page = await render(Component, {
       ...baseProps,
-      filters: activeFilters,
       children,
     });
-    const items = componentLocator(page).getByRole("listitem").elements();
+    const items = componentLocator(page)
+      .getByRole("list", { name: "Tasks filters" })
+      .getByRole("listitem")
+      .elements();
 
     expect(items.map((item) => item.textContent.trim())).toEqual([
       'Title contains: "login"',
@@ -77,23 +85,37 @@ describe("FilterSummary", () => {
     expect(items[2]).toHaveClass("last-part-in-group");
   });
 
-  it("keeps actions outside the list and available when filters are cleared", async () => {
+  it("renders the edit button outside the list when editTableViewHref is set and keeps it when filters are cleared", async () => {
     const page = await render(Component, {
       ...baseProps,
-      filters: activeFilters,
-      actions,
+      editTableViewHref: "/views/tasks/edit",
     });
     const root = componentLocator(page);
-    const list = root.getByRole("list");
-    const edit = root.getByRole("button", { name: "Edit filters" });
+    const list = root.getByRole("list", { name: "Tasks filters" });
+    const edit = root.getByRole("link", { name: "Edit Tasks view" });
 
     await expect.element(edit).toBeVisible();
-    await expect.element(list.getByRole("button")).not.toBeInTheDocument();
+    await expect.element(edit).toHaveAttribute("href", "/views/tasks/edit");
+    await expect.element(list.getByRole("link")).not.toBeInTheDocument();
 
     await page.rerender({ filters: emptyFilters });
 
     await expect.element(list).not.toBeInTheDocument();
     await expect.element(edit).toBeVisible();
+  });
+
+  it("omits the edit button when editTableViewHref is falsy", async () => {
+    const page = await render(Component, {
+      ...baseProps,
+      editTableViewHref: "",
+    });
+    const root = componentLocator(page);
+
+    await expect.element(root.getByRole("link")).not.toBeInTheDocument();
+
+    await page.rerender({ filters: emptyFilters, editTableViewHref: "" });
+
+    await expect.element(root).not.toBeInTheDocument();
   });
 });
 

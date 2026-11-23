@@ -1,6 +1,6 @@
 <script lang="ts">
   import { Button, Link, Table } from "@canonical/svelte-ds-app-launchpad";
-  import { EditIcon, SettingsIcon } from "@canonical/svelte-icons";
+  import { SettingsIcon } from "@canonical/svelte-icons";
   import { Pagination, TableViewBar } from "#lib/components/index.js";
   import {
     FilterSummary,
@@ -103,7 +103,10 @@
       <FilterSummary
         config={PACKAGES_FILTER_REPRESENTATION}
         {filters}
-        listLabel="Saved view filters"
+        tableViewName={currentTableView.name}
+        editTableViewHref={currentTableView.editable
+          ? queryParams.editView(currentTableView.id)
+          : undefined}
       >
         {#snippet children(parts)}
           <FilterSummary.Group
@@ -112,19 +115,6 @@
           <FilterSummary.Group
             parts={parts.filter((part) => part.key !== "search")}
           />
-        {/snippet}
-        {#snippet actions()}
-          {#if currentTableView.editable}
-            <Button
-              href={queryParams.editView(currentTableView.id)}
-              aria-label={`Edit ${currentTableView.name} view`}
-              importance="tertiary"
-            >
-              {#snippet iconLeft()}
-                <EditIcon />
-              {/snippet}
-            </Button>
-          {/if}
         {/snippet}
       </FilterSummary>
     {/if}

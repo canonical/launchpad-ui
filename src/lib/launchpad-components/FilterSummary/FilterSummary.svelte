@@ -1,4 +1,6 @@
 <script lang="ts" generics="TFilters extends object">
+  import { Button } from "@canonical/svelte-ds-app-launchpad";
+  import { EditIcon } from "@canonical/svelte-icons";
   import { getFilterTextParts } from "#lib/modules/filtering/representation.js";
   import { Group } from "./common/index.js";
   import type { FilterSummaryProps } from "./types.js";
@@ -6,9 +8,9 @@
   let {
     config,
     filters,
+    tableViewName,
+    editTableViewHref,
     children,
-    actions,
-    listLabel,
     class: className,
     ...rest
   }: FilterSummaryProps<TFilters> = $props();
@@ -16,10 +18,10 @@
   const parts = $derived(getFilterTextParts(config, filters));
 </script>
 
-{#if parts.length || actions}
+{#if parts.length || editTableViewHref}
   <div class={["filter-summary", className]} {...rest}>
     {#if parts.length}
-      <ul role="list" aria-label={listLabel}>
+      <ul role="list" aria-label={`${tableViewName} filters`}>
         {#if children}
           {@render children(parts)}
         {:else}
@@ -27,8 +29,18 @@
         {/if}
       </ul>
     {/if}
-    {#if actions}
-      <div class="actions">{@render actions()}</div>
+    {#if editTableViewHref}
+      <div class="actions">
+        <Button
+          href={editTableViewHref}
+          aria-label={`Edit ${tableViewName} view`}
+          importance="tertiary"
+        >
+          {#snippet iconLeft()}
+            <EditIcon />
+          {/snippet}
+        </Button>
+      </div>
     {/if}
   </div>
 {/if}
@@ -62,11 +74,6 @@
     :global(> .ds.button) {
       min-block-size: calc(1lh + 2 * var(--filters-summary-spacing-block));
     }
-  }
-
-  .actions:empty,
-  .filter-summary:has(> .actions:only-child:empty) {
-    display: none;
   }
 
   ul + .actions {

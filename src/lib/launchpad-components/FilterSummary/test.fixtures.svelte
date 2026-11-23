@@ -5,11 +5,9 @@
   } from "#lib/modules/filtering/representation.js";
   import { FilterSummary } from "./index.js";
 
-  export { actions, children };
+  export { children };
 
-  export const testId = "filter-summary";
-
-  type TaskFilters = {
+  export type TaskFilters = {
     search?: string;
     match: "contains" | "exact";
     priority?: "High" | "Low";
@@ -47,8 +45,4 @@
 {#snippet children(parts: FilterTextPart<TaskFilters>[])}
   <FilterSummary.Group parts={parts.filter((part) => part.key === "search")} />
   <FilterSummary.Group parts={parts.filter((part) => part.key !== "search")} />
-{/snippet}
-
-{#snippet actions()}
-  <button type="button">Edit filters</button>
 {/snippet}

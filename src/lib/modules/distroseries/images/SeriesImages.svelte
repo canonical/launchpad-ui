@@ -7,7 +7,6 @@
   } from "@canonical/svelte-ds-app-launchpad";
   import {
     DownloadIcon,
-    EditIcon,
     ErrorIcon,
     SettingsIcon,
     SuccessIcon,
@@ -161,22 +160,11 @@
         <FilterSummary
           config={IMAGES_FILTER_REPRESENTATION}
           {filters}
-          listLabel="Saved view filters"
-        >
-          {#snippet actions()}
-            {#if currentTableView.editable}
-              <Button
-                href={queryParams.editView(currentTableView.id)}
-                aria-label={`Edit ${currentTableView.name} view`}
-                importance="tertiary"
-              >
-                {#snippet iconLeft()}
-                  <EditIcon />
-                {/snippet}
-              </Button>
-            {/if}
-          {/snippet}
-        </FilterSummary>
+          tableViewName={currentTableView.name}
+          editTableViewHref={currentTableView.editable
+            ? queryParams.editView(currentTableView.id)
+            : undefined}
+        />
       {/if}
       <div class="image-table-wrapper">
         <!-- TODO: Use the common Table integrated with filters once https://warthogs.atlassian.net/browse/LP-5118 lands -->
