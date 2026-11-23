@@ -16,7 +16,8 @@
   import SeriesFilterMenu from "../filters/SeriesFilterMenu.svelte";
   import {
     MAX_PACKAGES_SEARCH_LENGTH,
-    PACKAGES_FILTER_LABELS as labels,
+    MORE_FILTERS_LABEL,
+    PACKAGES_FILTER_REPRESENTATION,
   } from "../filters/constants.js";
   import {
     TableViewEditFormSchema,
@@ -114,14 +115,16 @@
     TODO: Use fieldset instead of divs once the above issue is fixed.
   -->
   <div class="filter-group" aria-label="Search">
-    <span id={searchModeLabelId}>{labels.match}</span>
+    <span id={searchModeLabelId}
+      >{PACKAGES_FILTER_REPRESENTATION.match.label}</span
+    >
     <SearchModeMenu
       {...fields.filters.match.as("select")}
       aria-labelledby={searchModeLabelId}
       position="block-end span-inline-start"
     />
 
-    <label for={keywordId}>{labels.search}</label>
+    <label for={keywordId}>{PACKAGES_FILTER_REPRESENTATION.search.label}</label>
     <TextInput
       id={keywordId}
       maxlength={MAX_PACKAGES_SEARCH_LENGTH}
@@ -130,7 +133,9 @@
   </div>
 
   <div class="filter-group" aria-label="Filters">
-    <span id={maintainerLabelId}>{labels.maintainer}</span>
+    <span id={maintainerLabelId}
+      >{PACKAGES_FILTER_REPRESENTATION.maintainer.label}</span
+    >
 
     <PersonFilterCombobox
       {...fields.filters.maintainer.as("select")}
@@ -141,7 +146,8 @@
       position="block-end span-inline-start"
     />
 
-    <span id={signerLabelId}>{labels.signer}</span>
+    <span id={signerLabelId}>{PACKAGES_FILTER_REPRESENTATION.signer.label}</span
+    >
 
     <PersonFilterCombobox
       {...fields.filters.signer.as("select")}
@@ -152,7 +158,8 @@
       position="block-end span-inline-start"
     />
 
-    <span id={seriesLabelId}>{labels.series}</span>
+    <span id={seriesLabelId}>{PACKAGES_FILTER_REPRESENTATION.series.label}</span
+    >
     <SeriesFilterMenu
       {...fields.filters.series.as("select")}
       aria-labelledby={seriesLabelId}
@@ -160,7 +167,8 @@
       {seriesGroups}
     />
 
-    <span id={pocketLabelId}>{labels.pocket}</span>
+    <span id={pocketLabelId}>{PACKAGES_FILTER_REPRESENTATION.pocket.label}</span
+    >
     <PocketFilterMenu
       {...fields.filters.pocket.as("select")}
       aria-labelledby={pocketLabelId}
@@ -168,20 +176,20 @@
     />
 
     <span id={moreFiltersLabelId} class="more-filters-label"
-      >{labels.moreFilters}</span
+      >{MORE_FILTERS_LABEL}</span
     >
     <div class="more-filters">
       <label>
         <div>
           <Checkbox {...fields.filters.ubuntuChange.as("checkbox")} />
         </div>
-        {labels.ubuntuChange}
+        {PACKAGES_FILTER_REPRESENTATION.ubuntuChange.label}
       </label>
       <label>
         <div>
           <Checkbox {...fields.filters.allStatuses.as("checkbox")} />
         </div>
-        {labels.allStatuses}
+        {PACKAGES_FILTER_REPRESENTATION.allStatuses.label}
       </label>
     </div>
   </div>

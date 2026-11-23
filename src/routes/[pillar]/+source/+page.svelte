@@ -1,7 +1,11 @@
 <script lang="ts">
   import { Button, Link, Table } from "@canonical/svelte-ds-app-launchpad";
-  import { SettingsIcon } from "@canonical/svelte-icons";
-  import { Pagination, TableViewBar } from "#lib/components/index.js";
+  import { EditIcon, SettingsIcon } from "@canonical/svelte-icons";
+  import {
+    FilterSummary,
+    Pagination,
+    TableViewBar,
+  } from "#lib/components/index.js";
   import {
     PageLayout,
     QueryParamsForm,
@@ -12,7 +16,7 @@
   import BinaryPackageSidePanel from "#lib/modules/packages/binary-package/BinaryPackageSidePanel.svelte";
   import { setPackagesContext } from "#lib/modules/packages/context.js";
   import Filters from "#lib/modules/packages/filters/Filters.svelte";
-  import FiltersSummary from "#lib/modules/packages/filters/FiltersSummary.svelte";
+  import { PACKAGES_FILTER_REPRESENTATION } from "#lib/modules/packages/filters/constants.js";
   import { getSourcePackages } from "#lib/modules/packages/packages.remote.js";
   import {
     PACKAGES_TABLE_COLUMNS,
@@ -99,7 +103,33 @@
     {#if isDefaultView}
       <Filters seriesGroups={await seriesGroupsPromise} />
     {:else}
-      <FiltersSummary tableView={currentTableView} />
+      <FilterSummary
+        config={PACKAGES_FILTER_REPRESENTATION}
+        {filters}
+        listLabel="Saved view filters"
+      >
+        {#snippet children(parts)}
+          <FilterSummary.Group
+            parts={parts.filter((part) => part.key === "search")}
+          />
+          <FilterSummary.Group
+            parts={parts.filter((part) => part.key !== "search")}
+          />
+        {/snippet}
+        {#snippet actions()}
+          {#if currentTableView.editable}
+            <Button
+              href={queryParams.editView(currentTableView.id)}
+              aria-label={`Edit ${currentTableView.name} view`}
+              importance="tertiary"
+            >
+              {#snippet iconLeft()}
+                <EditIcon />
+              {/snippet}
+            </Button>
+          {/if}
+        {/snippet}
+      </FilterSummary>
     {/if}
     <!-- TODO: Use the common Table integrated with filters once https://warthogs.atlassian.net/browse/LP-5118 lands -->
     <Table class="packages-table">

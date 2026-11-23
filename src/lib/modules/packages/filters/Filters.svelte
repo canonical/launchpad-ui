@@ -38,7 +38,10 @@
   import PocketFilterMenu from "./PocketFilterMenu.svelte";
   import SearchModeMenu from "./SearchModeMenu.svelte";
   import SeriesFilterMenu from "./SeriesFilterMenu.svelte";
-  import { PACKAGES_FILTER_LABELS as labels } from "./constants.js";
+  import {
+    MORE_FILTERS_LABEL,
+    PACKAGES_FILTER_REPRESENTATION,
+  } from "./constants.js";
   import { goto } from "$app/navigation";
   import { page } from "$app/state";
 
@@ -93,7 +96,8 @@ https://warthogs.atlassian.net/browse/LP-5118 lands -->
     class="dense"
   >
     <div class="search">
-      <span id={searchModeLabelId} class="visually-hidden">{labels.match}:</span
+      <span id={searchModeLabelId} class="visually-hidden"
+        >{PACKAGES_FILTER_REPRESENTATION.match.label}:</span
       >
       <SearchModeMenu
         name={filterInputsNames.match}
@@ -112,7 +116,9 @@ https://warthogs.atlassian.net/browse/LP-5118 lands -->
     </div>
     <div class="filters">
       <div class="filter">
-        <span id={maintainerLabelId}>{labels.maintainer}:</span>
+        <span id={maintainerLabelId}
+          >{PACKAGES_FILTER_REPRESENTATION.maintainer.label}:</span
+        >
         <PersonFilterCombobox
           name={filterInputsNames.maintainer}
           searchInputProps={{
@@ -126,7 +132,9 @@ https://warthogs.atlassian.net/browse/LP-5118 lands -->
         />
       </div>
       <div class="filter">
-        <span id={signerLabelId}>{labels.signer}:</span>
+        <span id={signerLabelId}
+          >{PACKAGES_FILTER_REPRESENTATION.signer.label}:</span
+        >
         <PersonFilterCombobox
           name={filterInputsNames.signer}
           searchInputProps={{
@@ -140,7 +148,9 @@ https://warthogs.atlassian.net/browse/LP-5118 lands -->
         />
       </div>
       <div class="filter">
-        <span id={seriesLabelId}>{labels.series}:</span>
+        <span id={seriesLabelId}
+          >{PACKAGES_FILTER_REPRESENTATION.series.label}:</span
+        >
         <SeriesFilterMenu
           name={filterInputsNames.series}
           value={queryParams.series}
@@ -150,7 +160,9 @@ https://warthogs.atlassian.net/browse/LP-5118 lands -->
         />
       </div>
       <div class="filter">
-        <span id={pocketLabelId}>{labels.pocket}:</span>
+        <span id={pocketLabelId}
+          >{PACKAGES_FILTER_REPRESENTATION.pocket.label}:</span
+        >
         <PocketFilterMenu
           name={filterInputsNames.pocket}
           value={queryParams.pocket}
@@ -161,18 +173,18 @@ https://warthogs.atlassian.net/browse/LP-5118 lands -->
       <div class="filter-controls">
         <div class="filter">
           <span id={moreFiltersLabelId} class="visually-hidden"
-            >{labels.moreFilters}:</span
+            >{MORE_FILTERS_LABEL}:</span
           >
           <MoreFiltersMenu
             switches={[
               {
                 name: filterInputsNames["ubuntu-change"],
-                text: labels.ubuntuChange,
+                text: PACKAGES_FILTER_REPRESENTATION.ubuntuChange.label,
                 checked: queryParams["ubuntu-change"],
               },
               {
                 name: filterInputsNames["all-statuses"],
-                text: labels.allStatuses,
+                text: PACKAGES_FILTER_REPRESENTATION.allStatuses.label,
                 checked: queryParams["all-statuses"],
               },
             ]}

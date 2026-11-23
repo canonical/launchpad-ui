@@ -60,6 +60,7 @@
   import { isHttpError } from "@sveltejs/kit";
   import { settled, tick, untrack } from "svelte";
   import { ReorderableList } from "#lib/components/ReorderableList/index.js";
+  import { getShortFilterText } from "#lib/filter/index.js";
   import { SidePanel } from "#lib/launchpad-components/index.js";
   import type { SeriesGroups } from "#lib/modules/filtering/types.js";
   import { filtersDiffer } from "#lib/modules/filtering/utils.js";
@@ -70,9 +71,13 @@
     QueryParams,
     toPackagesFilters,
   } from "#lib/modules/packages/superhref.js";
+  import { MAX_TABLE_VIEW_NAME_LENGTH } from "#lib/modules/table-views/constants.js";
   import type { AddTableViewMode } from "#lib/modules/table-views/constants.js";
   import { getPackagesContext } from "../context.js";
-  import { DEFAULT_PACKAGES_FILTERS } from "../filters/constants.js";
+  import {
+    DEFAULT_PACKAGES_FILTERS,
+    PACKAGES_FILTER_REPRESENTATION,
+  } from "../filters/constants.js";
   import TableViewEditForm from "./TableViewEditForm.svelte";
   import {
     createTableView,
@@ -81,7 +86,6 @@
     getTableViews,
     updateTableViews,
   } from "./table-views.remote.js";
-  import { getRecommendedViewName } from "./utils.js";
   import { goto } from "$app/navigation";
   import { page } from "$app/state";
 
@@ -332,7 +336,11 @@
       {distro}
       form={createTableView}
       settings={{
-        name: getRecommendedViewName(urlFilters),
+        name: getShortFilterText(
+          PACKAGES_FILTER_REPRESENTATION,
+          urlFilters,
+          MAX_TABLE_VIEW_NAME_LENGTH,
+        ),
         filters: urlFilters,
       }}
       heading="Adding a new view"

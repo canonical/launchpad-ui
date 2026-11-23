@@ -4,6 +4,7 @@ import { assert, beforeEach, describe, expect, it, vi } from "vitest";
 import { userEvent } from "vitest/browser";
 import type { Locator } from "vitest/browser";
 import { render } from "vitest-browser-svelte";
+import { MAX_TABLE_VIEW_NAME_LENGTH } from "#lib/modules/table-views/constants.js";
 import { DEFAULT_PACKAGES_FILTERS } from "../filters/constants.js";
 import type { TableView } from "./constants.js";
 import { getTableViews, updateTableViews } from "./table-views.remote.js";
@@ -130,13 +131,24 @@ describe("ManageViewsSidePanel", () => {
       ]);
   });
 
+  it("limits the suggested name to the view name length", async () => {
+    const search = "a".repeat(MAX_TABLE_VIEW_NAME_LENGTH);
+    const screen = await renderPanel(
+      `?search=${search}&panel=manage-views&manage-views.add=bookmark`,
+    );
+
+    await expect
+      .element(screen.getByRole("textbox", { name: "* View name" }))
+      .toHaveValue(`"${search.slice(0, MAX_TABLE_VIEW_NAME_LENGTH - 2)}…`);
+  });
+
   it("bookmarks the URL filters as a new view", async () => {
     vi.mocked(updateTableViews).mockResolvedValue([allPackages]);
     const screen = await renderPanel(
       "?search=linux&series=noble&ubuntu-change=1" +
         "&panel=manage-views&manage-views.add=bookmark",
     );
-    const name = '"linux" + Noble + Changed by Ubuntu';
+    const name = '"linux" + noble + Changed by Ubuntu';
 
     await expect
       .element(screen.getByRole("textbox", { name: "* View name" }))
@@ -226,7 +238,7 @@ describe("ManageViewsSidePanel", () => {
   });
 
   it("goes to a bookmarked view without the URL filters", async () => {
-    const name = '"linux" + Noble + Changed by Ubuntu';
+    const name = '"linux" + noble + Changed by Ubuntu';
     vi.mocked(updateTableViews).mockResolvedValue([
       allPackages,
       noble,
@@ -249,7 +261,7 @@ describe("ManageViewsSidePanel", () => {
   });
 
   it("keeps the current view and filters when a staged bookmark is removed", async () => {
-    const name = '"linux" + Noble + Changed by Ubuntu';
+    const name = '"linux" + noble + Changed by Ubuntu';
     vi.mocked(updateTableViews).mockResolvedValue([
       allPackages,
       noble,
