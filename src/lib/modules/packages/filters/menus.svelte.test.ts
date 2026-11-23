@@ -276,6 +276,7 @@ describe("MoreFiltersMenu", () => {
         {
           ...labelledProps,
           switches: switches(false, true),
+          onchange,
         },
         formOptions,
       );

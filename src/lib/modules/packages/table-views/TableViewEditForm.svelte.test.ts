@@ -2,8 +2,8 @@ import type { ComponentProps } from "svelte";
 import { describe, expect, it, vi } from "vitest";
 import { userEvent } from "vitest/browser";
 import { render } from "vitest-browser-svelte";
-import { seriesGroups } from "#lib/modules/distroseries/series.fixtures.js";
 import { DEFAULT_PACKAGES_FILTERS } from "../filters/constants.js";
+import { packageFilters } from "../filters/test.fixtures.svelte";
 import TableViewEditForm from "./TableViewEditForm.svelte";
 import type { TableViewSettings } from "./schema.js";
 import { createTableView, editTableView } from "./table-views.remote.js";
@@ -39,11 +39,12 @@ describe("TableViewEditForm", () => {
     await expect
       .element(screen.getByRole("button", { name: /^Series/ }))
       .toHaveTextContent("24.04 LTS Noble");
+    await screen.getByRole("button", { name: /^More filters/ }).click();
     await expect
-      .element(screen.getByRole("checkbox", { name: /changed by Ubuntu/ }))
+      .element(screen.getByRole("switch", { name: /changed by Ubuntu/ }))
       .toBeChecked();
     await expect
-      .element(screen.getByRole("checkbox", { name: /Superseded/ }))
+      .element(screen.getByRole("switch", { name: /Superseded/ }))
       .not.toBeChecked();
   });
 
@@ -52,7 +53,9 @@ describe("TableViewEditForm", () => {
     const confirm = screen.getByRole("button", { name: "Confirm" });
 
     await expect.element(confirm).toBeDisabled();
-    await screen.getByRole("textbox", { name: "Keyword" }).fill("linux");
+    await screen
+      .getByRole("searchbox", { name: "Search packages" })
+      .fill("linux");
     await expect.element(confirm).toBeEnabled();
   });
 
@@ -81,7 +84,10 @@ describe("TableViewEditForm", () => {
     await pocket.click();
     await screen.getByRole("radio", { name: "Updates" }).click();
     await pocket.click();
-    await screen.getByRole("checkbox", { name: /Superseded/ }).click();
+    const moreFilters = screen.getByRole("button", { name: /^More filters/ });
+    await moreFilters.click();
+    await screen.getByRole("switch", { name: /Superseded/ }).click();
+    await moreFilters.click();
     await screen.getByRole("textbox", { name: "* View name" }).fill(" Mine 2 ");
     await screen.getByRole("button", { name: "Confirm" }).click();
 
@@ -127,7 +133,9 @@ describe("TableViewEditForm", () => {
     };
     const { screen: first } = await renderForm(props);
     await first.getByRole("textbox", { name: "* View name" }).fill("Unsaved");
-    await first.getByRole("textbox", { name: "Keyword" }).fill("linux");
+    await first
+      .getByRole("searchbox", { name: "Search packages" })
+      .fill("linux");
     await first.unmount();
 
     const { screen: second } = await renderForm(props);
@@ -136,7 +144,7 @@ describe("TableViewEditForm", () => {
       .element(second.getByRole("textbox", { name: "* View name" }))
       .toHaveValue("");
     await expect
-      .element(second.getByRole("textbox", { name: "Keyword" }))
+      .element(second.getByRole("searchbox", { name: "Search packages" }))
       .toHaveValue("");
   });
 });
@@ -155,7 +163,7 @@ async function renderForm(
     heading: "Editing – Mine",
     cancelHref: "?panel=manage-views",
     onstage,
-    seriesGroups,
+    filters: packageFilters,
     ...props,
   });
   return { screen, onstage };

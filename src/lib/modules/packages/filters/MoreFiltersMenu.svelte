@@ -4,9 +4,11 @@
   import { FilterIcon } from "@canonical/svelte-icons";
   import { ContextualMenuContent } from "#lib/components/index.js";
   import { PopoverTrigger } from "#lib/launchpad-components/index.js";
+  import type { FilterChangeHandler } from "#lib/modules/filtering/types.js";
 
   const {
     switches,
+    onchange,
     position,
     "aria-labelledby": ariaLabelledBy,
   }: {
@@ -15,6 +17,7 @@
       text: string;
       checked: boolean;
     }[];
+    onchange?: FilterChangeHandler<boolean>;
     position?: PopoverProps["position"];
     "aria-labelledby": string;
   } = $props();
@@ -55,7 +58,7 @@ https://warthogs.atlassian.net/browse/LP-5118 lands -->
           name={filter.name}
           text={filter.text}
           checked={filter.checked}
-          onchange={(e) => e.currentTarget.form?.requestSubmit()}
+          onchange={(e) => onchange?.(e, e.currentTarget.checked)}
         />
       {/each}
     </ContextualMenuContent.Group>

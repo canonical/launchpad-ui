@@ -1,23 +1,12 @@
 <script lang="ts">
-  import {
-    Button,
-    Checkbox,
-    TextInput,
-  } from "@canonical/svelte-ds-app-launchpad";
+  import { Button, TextInput } from "@canonical/svelte-ds-app-launchpad";
   import type { TextInputProps } from "@canonical/svelte-ds-app-launchpad";
+  import type { Snippet } from "svelte";
   import * as v from "valibot";
-  import type { SeriesGroups } from "#lib/modules/filtering/types.js";
   import { filtersDiffer } from "#lib/modules/filtering/utils.js";
   import { MAX_TABLE_VIEW_NAME_LENGTH } from "#lib/modules/table-views/constants.js";
   import { subId } from "#lib/utils/index.js";
-  import PersonFilterCombobox from "../filters/PersonFilterCombobox.svelte";
-  import PocketFilterMenu from "../filters/PocketFilterMenu.svelte";
-  import SearchModeMenu from "../filters/SearchModeMenu.svelte";
-  import SeriesFilterMenu from "../filters/SeriesFilterMenu.svelte";
-  import {
-    MAX_PACKAGES_SEARCH_LENGTH,
-    PACKAGES_FILTER_LABELS as labels,
-  } from "../filters/constants.js";
+  import type { PackageFilterInputs } from "../filters/inputs.js";
   import {
     TableViewEditFormSchema,
     TableViewSettingsSchema,
@@ -35,7 +24,7 @@
     cancelHref,
     onstage,
     requireChange = true,
-    seriesGroups,
+    filters,
   }: {
     form: ReturnType<typeof editTableView.for> | typeof createTableView;
     /** The distro whose table views are edited. */
@@ -48,18 +37,11 @@
     onstage: (settings: TableViewSettings) => void;
     /** Whether confirming is disabled until `settings` are changed. */
     requireChange?: boolean;
-    seriesGroups: SeriesGroups;
+    filters: Snippet<[PackageFilterInputs]>;
   } = $props();
 
   const id = $props.id();
-  const searchModeLabelId = subId(id, "search-mode-label");
-  const keywordId = subId(id, "keyword");
-  const maintainerLabelId = subId(id, "maintainer-label");
-  const signerLabelId = subId(id, "signer-label");
-  const seriesLabelId = subId(id, "series-label");
-  const pocketLabelId = subId(id, "pocket-label");
   const nameId = subId(id, "name");
-  const moreFiltersLabelId = subId(id, "more-filters-label");
 
   const fields = $derived(form.fields);
 
@@ -68,7 +50,7 @@
   if (Object.keys(fields.value()).length === 0)
     fields.set({
       name: settings.name,
-      filters: settings.filters,
+      filters: { ...settings.filters },
     });
 
   const isUnchanged = $derived.by(() => {
@@ -90,10 +72,29 @@
   const intent: RemoteFormField<
     NonNullable<v.InferInput<typeof TableViewEditFormSchema>["intent"]>
   > = $derived(fields.intent);
+
+  const inputs: PackageFilterInputs = {
+    value: (key) => {
+      const field = fields.filters[key] as RemoteFormField<string>;
+      const { name, value, "aria-invalid": ariaInvalid } = field.as("select");
+      return { name, value, "aria-invalid": ariaInvalid };
+    },
+    toggle: (key) => {
+      const { name, checked } = fields.filters[key].as("checkbox");
+      return { name, checked };
+    },
+    personSearch: (key) => ({
+      searchInputProps: fields[`${key}Search`].as("text"),
+      searchButtonProps: intent.as("submit", `search-${key}`),
+    }),
+    position: "block-end span-inline-start",
+  };
 </script>
 
 <form
   {...form.preflight(TableViewEditFormSchema).enhance(({ fields }) => {
+    // Other submit buttons, like the search one, mustn't bypass the disabled Confirm
+    if (submitDisabled) return;
     onstage(v.parse(TableViewSettingsSchema, fields.value()));
   })}
 >
@@ -108,85 +109,9 @@
   <input {...fields.distro.as("hidden", distro)} />
   <h4>{heading}</h4>
 
-  <!-- 
-    A fieldset would be more appropriate here, but there is a bug in Chrome, where it doesn't properly propagate subgrid column definitions: https://issues.chromium.org/issues/40278914
-    
-    TODO: Use fieldset instead of divs once the above issue is fixed.
-  -->
-  <div class="filter-group" aria-label="Search">
-    <span id={searchModeLabelId}>{labels.match}</span>
-    <SearchModeMenu
-      {...fields.filters.match.as("select")}
-      aria-labelledby={searchModeLabelId}
-      position="block-end span-inline-start"
-    />
+  {@render filters(inputs)}
 
-    <label for={keywordId}>{labels.search}</label>
-    <TextInput
-      id={keywordId}
-      maxlength={MAX_PACKAGES_SEARCH_LENGTH}
-      {...fields.filters.search.as("text") as TextInputProps}
-    />
-  </div>
-
-  <div class="filter-group" aria-label="Filters">
-    <span id={maintainerLabelId}>{labels.maintainer}</span>
-
-    <PersonFilterCombobox
-      {...fields.filters.maintainer.as("select")}
-      searchInputProps={fields.maintainerSearch.as("text")}
-      searchButtonProps={intent.as("submit", "search-maintainer")}
-      groupName="maintainers"
-      aria-labelledby={maintainerLabelId}
-      position="block-end span-inline-start"
-    />
-
-    <span id={signerLabelId}>{labels.signer}</span>
-
-    <PersonFilterCombobox
-      {...fields.filters.signer.as("select")}
-      searchInputProps={fields.signerSearch.as("text")}
-      searchButtonProps={intent.as("submit", "search-signer")}
-      groupName="signers"
-      aria-labelledby={signerLabelId}
-      position="block-end span-inline-start"
-    />
-
-    <span id={seriesLabelId}>{labels.series}</span>
-    <SeriesFilterMenu
-      {...fields.filters.series.as("select")}
-      aria-labelledby={seriesLabelId}
-      position="block-end span-inline-start"
-      {seriesGroups}
-    />
-
-    <span id={pocketLabelId}>{labels.pocket}</span>
-    <PocketFilterMenu
-      {...fields.filters.pocket.as("select")}
-      aria-labelledby={pocketLabelId}
-      position="block-end span-inline-start"
-    />
-
-    <span id={moreFiltersLabelId} class="more-filters-label"
-      >{labels.moreFilters}</span
-    >
-    <div class="more-filters">
-      <label>
-        <div>
-          <Checkbox {...fields.filters.ubuntuChange.as("checkbox")} />
-        </div>
-        {labels.ubuntuChange}
-      </label>
-      <label>
-        <div>
-          <Checkbox {...fields.filters.allStatuses.as("checkbox")} />
-        </div>
-        {labels.allStatuses}
-      </label>
-    </div>
-  </div>
-
-  <div class="filter-group">
+  <div class="name">
     <label for={nameId}>* View name</label>
     <TextInput
       id={nameId}
@@ -208,10 +133,9 @@
 
 <style>
   form {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    row-gap: var(--dimension-200);
-    column-gap: var(--dimension-200);
+    display: flex;
+    flex-direction: column;
+    gap: var(--dimension-200);
     padding: var(--dimension-200);
     margin-block: var(--dimension-100);
 
@@ -221,56 +145,19 @@
     h4 {
       font: inherit;
       font-weight: var(--typography-text-primary-bold-font-weight);
-      grid-column: 1 / -1;
     }
 
-    .filter-group {
-      grid-column: 1 / -1;
+    .name {
       display: grid;
-      grid-template-columns: subgrid;
-      row-gap: var(--dimension-150);
+      grid-template-columns: 1fr 1fr;
+      column-gap: var(--dimension-200);
       align-items: center;
-
-      + .filter-group {
-        padding-top: var(--dimension-200);
-        border-top: var(--dimension-stroke-thickness-medium) solid
-          var(--color-border-muted);
-      }
-    }
-
-    .more-filters-label {
-      align-self: start;
-    }
-
-    .more-filters {
-      display: flex;
-      flex-direction: column;
-      gap: var(--dimension-100);
-
-      > label {
-        > div {
-          height: 1lh;
-          display: grid;
-          place-items: center;
-        }
-
-        display: flex;
-        align-items: start;
-        gap: var(--dimension-200);
-      }
     }
 
     .actions {
-      grid-column: 1 / -1;
       display: flex;
       justify-content: flex-end;
       gap: var(--dimension-200);
-    }
-
-    :global {
-      .options-panel {
-        margin-block-start: var(--dimension-050);
-      }
     }
   }
 </style>
