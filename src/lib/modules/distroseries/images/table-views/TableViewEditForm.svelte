@@ -8,7 +8,7 @@
   import BuildStatusFilterMenu from "../filters/BuildStatusFilterMenu.svelte";
   import ProductFilterMenu from "../filters/ProductFilterMenu.svelte";
   import TestStatusFilterMenu from "../filters/TestStatusFilterMenu.svelte";
-  import { IMAGES_FILTER_LABELS as labels } from "../filters/constants.js";
+  import { IMAGES_FILTER_REPRESENTATION } from "../filters/constants.js";
   import {
     TableViewEditFormSchema,
     TableViewSettingsSchema,
@@ -98,19 +98,24 @@
     TODO: Use fieldset instead of divs once the above issue is fixed.
   -->
   <div class="filter-group" aria-label="Filters">
-    <span id={productLabelId}>{labels.product}</span>
+    <span id={productLabelId}>{IMAGES_FILTER_REPRESENTATION.product.label}</span
+    >
     <ProductFilterMenu
       {...fields.filters.product.as("select")}
       aria-labelledby={productLabelId}
     />
 
-    <span id={buildStatusLabelId}>{labels.buildStatus}</span>
+    <span id={buildStatusLabelId}
+      >{IMAGES_FILTER_REPRESENTATION.buildStatus.label}</span
+    >
     <BuildStatusFilterMenu
       {...fields.filters.buildStatus.as("select")}
       aria-labelledby={buildStatusLabelId}
     />
 
-    <span id={testStatusLabelId}>{labels.testStatus}</span>
+    <span id={testStatusLabelId}
+      >{IMAGES_FILTER_REPRESENTATION.testStatus.label}</span
+    >
     <TestStatusFilterMenu
       {...fields.filters.testStatus.as("select")}
       aria-labelledby={testStatusLabelId}

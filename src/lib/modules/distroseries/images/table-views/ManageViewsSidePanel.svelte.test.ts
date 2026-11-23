@@ -138,7 +138,7 @@ describe("ManageViewsSidePanel", () => {
       "?images.product=kubuntu&images.build-status=successful" +
         "&panel=manage-views&manage-views.add=bookmark",
     );
-    const name = "Kubuntu + Successful";
+    const name = "Kubuntu + Build successful";
 
     await expect
       .element(screen.getByRole("textbox", { name: "* View name" }))
@@ -242,7 +242,7 @@ describe("ManageViewsSidePanel", () => {
   });
 
   it("goes to a bookmarked view without the URL filters", async () => {
-    const name = "Kubuntu + Successful";
+    const name = "Kubuntu + Build successful";
     vi.mocked(updateTableViews).mockResolvedValue([
       allImages,
       failedToBuild,
@@ -265,7 +265,7 @@ describe("ManageViewsSidePanel", () => {
   });
 
   it("keeps the current view and filters when a staged bookmark is removed", async () => {
-    const name = "Kubuntu + Successful";
+    const name = "Kubuntu + Build successful";
     vi.mocked(updateTableViews).mockResolvedValue([
       allImages,
       failedToBuild,

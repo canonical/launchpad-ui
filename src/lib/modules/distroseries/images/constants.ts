@@ -56,18 +56,16 @@ export const SORTABLE_IMAGES_TABLE_COLUMNS = IMAGES_TABLE_COLUMNS.flatMap(
 );
 
 export const IMAGE_FILTERS = {
-  product: { key: "images.product", codecKey: "product", label: "Product" },
+  product: { key: "images.product", codecKey: "product" },
   buildStatus: {
     key: "images.build-status",
     codecKey: "build-status",
-    label: "Build status",
   },
   testStatus: {
     key: "images.test-status",
     codecKey: "test-status",
-    label: "Test status",
   },
 } as const satisfies Record<
   string,
-  { key: ImageOwnedQueryKey; codecKey: string; label: string }
+  { key: ImageOwnedQueryKey; codecKey: string }
 >;
