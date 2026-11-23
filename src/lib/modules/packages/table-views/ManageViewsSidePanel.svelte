@@ -59,6 +59,7 @@
   import { DeleteIcon, EditIcon, PlusIcon } from "@canonical/svelte-icons";
   import { isHttpError } from "@sveltejs/kit";
   import { settled, tick, untrack } from "svelte";
+  import type { Snippet } from "svelte";
   import { ReorderableList } from "#lib/components/ReorderableList/index.js";
   import { SidePanel } from "#lib/launchpad-components/index.js";
   import type { SeriesGroups } from "#lib/modules/filtering/types.js";
@@ -73,6 +74,7 @@
   import type { AddTableViewMode } from "#lib/modules/table-views/constants.js";
   import { getPackagesContext } from "../context.js";
   import { DEFAULT_PACKAGES_FILTERS } from "../filters/constants.js";
+  import type { PackageFilterControl } from "../filters/controls.js";
   import TableViewEditForm from "./TableViewEditForm.svelte";
   import {
     createTableView,
@@ -85,8 +87,15 @@
   import { goto } from "$app/navigation";
   import { page } from "$app/state";
 
-  let { open, seriesGroups }: { open: boolean; seriesGroups: SeriesGroups } =
-    $props();
+  let {
+    open,
+    seriesGroups,
+    filters,
+  }: {
+    open: boolean;
+    seriesGroups: SeriesGroups;
+    filters?: Snippet<[PackageFilterControl]>;
+  } = $props();
 
   const context = getPackagesContext();
   const distro = $derived(context.distro);
@@ -270,6 +279,7 @@
           cancelHref={queryParams["manage-views"].closeForm()}
           onstage={(settings) => stageViewSettings(draft.key, settings)}
           {seriesGroups}
+          {filters}
         />
       {:else}
         <ReorderableList.Item item={draft} {index}>
@@ -325,6 +335,7 @@
       cancelHref={queryParams["manage-views"].closeForm()}
       onstage={stageNewView(addMode)}
       {seriesGroups}
+      {filters}
     />
   {:else if addMode === "bookmark"}
     {const urlFilters = $derived(toPackagesFilters(queryParams))}
@@ -340,6 +351,7 @@
       onstage={stageNewView(addMode)}
       requireChange={false}
       {seriesGroups}
+      {filters}
     />
   {:else}
     <ButtonPrimitive
