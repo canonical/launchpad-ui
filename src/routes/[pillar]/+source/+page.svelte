@@ -1,10 +1,7 @@
 <script lang="ts">
   import { Button, Link, Table } from "@canonical/svelte-ds-app-launchpad";
   import { EditIcon, SettingsIcon } from "@canonical/svelte-icons";
-  import {
-    Pagination,
-    TableViewBar,
-  } from "#lib/components/index.js";
+  import { Pagination, TableViewBar } from "#lib/components/index.js";
   import {
     FilterSummary,
     PageLayout,
