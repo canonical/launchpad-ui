@@ -177,5 +177,32 @@ export default ts.config(
       "@typescript-eslint/no-unnecessary-boolean-literal-compare": "warn",
     },
   },
+  componentsImportsConfig(),
   storybook.configs["flat/recommended"],
 );
+
+/**
+ * Generic components must stay independent of the app, so `src/lib/components` may only
+ * import packages and the allowed `src/lib` entries.
+ */
+function componentsImportsConfig() {
+  // TODO: Remove shortcuts from the allowedLibEntries once https://warthogs.atlassian.net/browse/LP-4425 is done
+  const allowedLibEntries = ["components", "shortcuts", "utils", "type-utils"];
+  return {
+    name: "project/components-imports",
+    files: ["src/lib/components/**"],
+    rules: {
+      "no-restricted-imports": [
+        "error",
+        {
+          patterns: [
+            {
+              regex: `^#lib(?!/(${allowedLibEntries.join("|")})([/.]|$))`,
+              message: `src/lib/components may only import #lib/{${allowedLibEntries.join(",")}}.`,
+            },
+          ],
+        },
+      ],
+    },
+  };
+}
