@@ -1,18 +1,23 @@
 <script lang="ts">
-  import { Button, TextInput } from "@canonical/svelte-ds-app-launchpad";
+  import {
+    Button,
+    Checkbox,
+    TextInput,
+  } from "@canonical/svelte-ds-app-launchpad";
   import type { TextInputProps } from "@canonical/svelte-ds-app-launchpad";
-  import type { Snippet } from "svelte";
   import * as v from "valibot";
   import type { SeriesGroups } from "#lib/modules/filtering/types.js";
   import { filtersDiffer } from "#lib/modules/filtering/utils.js";
   import { MAX_TABLE_VIEW_NAME_LENGTH } from "#lib/modules/table-views/constants.js";
   import { subId } from "#lib/utils/index.js";
-  import DefaultPackageFilterControl from "../filters/PackageFilterControl.svelte";
+  import PersonFilterCombobox from "../filters/PersonFilterCombobox.svelte";
+  import PocketFilterMenu from "../filters/PocketFilterMenu.svelte";
+  import SearchModeMenu from "../filters/SearchModeMenu.svelte";
+  import SeriesFilterMenu from "../filters/SeriesFilterMenu.svelte";
   import {
     MAX_PACKAGES_SEARCH_LENGTH,
     PACKAGES_FILTER_LABELS as labels,
   } from "../filters/constants.js";
-  import type { PackageFilterControl } from "../filters/controls.js";
   import {
     TableViewEditFormSchema,
     TableViewSettingsSchema,
@@ -31,7 +36,6 @@
     onstage,
     requireChange = true,
     seriesGroups,
-    filters,
   }: {
     form: ReturnType<typeof editTableView.for> | typeof createTableView;
     /** The distro whose table views are edited. */
@@ -45,7 +49,6 @@
     /** Whether confirming is disabled until `settings` are changed. */
     requireChange?: boolean;
     seriesGroups: SeriesGroups;
-    filters?: Snippet<[PackageFilterControl]>;
   } = $props();
 
   const id = $props.id();
@@ -65,7 +68,7 @@
   if (Object.keys(fields.value()).length === 0)
     fields.set({
       name: settings.name,
-      filters: { ...settings.filters },
+      filters: settings.filters,
     });
 
   const isUnchanged = $derived.by(() => {
@@ -88,14 +91,6 @@
     NonNullable<v.InferInput<typeof TableViewEditFormSchema>["intent"]>
   > = $derived(fields.intent);
 </script>
-
-{#snippet renderFilter(control: PackageFilterControl)}
-  {#if filters}
-    {@render filters(control)}
-  {:else}
-    <DefaultPackageFilterControl {control} />
-  {/if}
-{/snippet}
 
 <form
   {...form.preflight(TableViewEditFormSchema).enhance(({ fields }) => {
@@ -120,76 +115,57 @@
   -->
   <div class="filter-group" aria-label="Search">
     <span id={searchModeLabelId}>{labels.match}</span>
-    {@render renderFilter({
-      kind: "match",
-      props: {
-        ...fields.filters.match.as("select"),
-        "aria-labelledby": searchModeLabelId,
-        position: "block-end span-inline-start",
-      },
-    })}
+    <SearchModeMenu
+      {...fields.filters.match.as("select")}
+      aria-labelledby={searchModeLabelId}
+      position="block-end span-inline-start"
+    />
 
     <label for={keywordId}>{labels.search}</label>
-    {@render renderFilter({
-      kind: "search",
-      mode: "edit",
-      props: {
-        id: keywordId,
-        maxlength: MAX_PACKAGES_SEARCH_LENGTH,
-        ...(fields.filters.search.as("text") as TextInputProps),
-      },
-    })}
+    <TextInput
+      id={keywordId}
+      maxlength={MAX_PACKAGES_SEARCH_LENGTH}
+      {...fields.filters.search.as("text") as TextInputProps}
+    />
   </div>
 
   <div class="filter-group" aria-label="Filters">
     <span id={maintainerLabelId}>{labels.maintainer}</span>
 
-    {@render renderFilter({
-      kind: "maintainer",
-      props: {
-        ...fields.filters.maintainer.as("select"),
-        searchInputProps: fields.maintainerSearch.as("text"),
-        searchButtonProps: intent.as("submit", "search-maintainer"),
-        groupName: "maintainers",
-        "aria-labelledby": maintainerLabelId,
-        position: "block-end span-inline-start",
-      },
-    })}
+    <PersonFilterCombobox
+      {...fields.filters.maintainer.as("select")}
+      searchInputProps={fields.maintainerSearch.as("text")}
+      searchButtonProps={intent.as("submit", "search-maintainer")}
+      groupName="maintainers"
+      aria-labelledby={maintainerLabelId}
+      position="block-end span-inline-start"
+    />
 
     <span id={signerLabelId}>{labels.signer}</span>
 
-    {@render renderFilter({
-      kind: "signer",
-      props: {
-        ...fields.filters.signer.as("select"),
-        searchInputProps: fields.signerSearch.as("text"),
-        searchButtonProps: intent.as("submit", "search-signer"),
-        groupName: "signers",
-        "aria-labelledby": signerLabelId,
-        position: "block-end span-inline-start",
-      },
-    })}
+    <PersonFilterCombobox
+      {...fields.filters.signer.as("select")}
+      searchInputProps={fields.signerSearch.as("text")}
+      searchButtonProps={intent.as("submit", "search-signer")}
+      groupName="signers"
+      aria-labelledby={signerLabelId}
+      position="block-end span-inline-start"
+    />
 
     <span id={seriesLabelId}>{labels.series}</span>
-    {@render renderFilter({
-      kind: "series",
-      props: {
-        ...fields.filters.series.as("select"),
-        "aria-labelledby": seriesLabelId,
-        position: "block-end span-inline-start",
-        seriesGroups,
-      },
-    })}
+    <SeriesFilterMenu
+      {...fields.filters.series.as("select")}
+      aria-labelledby={seriesLabelId}
+      position="block-end span-inline-start"
+      {seriesGroups}
+    />
 
     <span id={pocketLabelId}>{labels.pocket}</span>
-    {@render renderFilter({
-      kind: "pocket",
-      props: {
-        ...fields.filters.pocket.as("select"),
-        "aria-labelledby": pocketLabelId,
-        position: "block-end span-inline-start",
-      },
-    })}
+    <PocketFilterMenu
+      {...fields.filters.pocket.as("select")}
+      aria-labelledby={pocketLabelId}
+      position="block-end span-inline-start"
+    />
 
     <span id={moreFiltersLabelId} class="more-filters-label"
       >{labels.moreFilters}</span
@@ -197,19 +173,13 @@
     <div class="more-filters">
       <label>
         <div>
-          {@render renderFilter({
-            kind: "ubuntuChange",
-            props: fields.filters.ubuntuChange.as("checkbox"),
-          })}
+          <Checkbox {...fields.filters.ubuntuChange.as("checkbox")} />
         </div>
         {labels.ubuntuChange}
       </label>
       <label>
         <div>
-          {@render renderFilter({
-            kind: "allStatuses",
-            props: fields.filters.allStatuses.as("checkbox"),
-          })}
+          <Checkbox {...fields.filters.allStatuses.as("checkbox")} />
         </div>
         {labels.allStatuses}
       </label>

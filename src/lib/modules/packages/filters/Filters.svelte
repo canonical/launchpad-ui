@@ -21,10 +21,9 @@
 </script>
 
 <script lang="ts">
-  import { Button } from "@canonical/svelte-ds-app-launchpad";
+  import { Button, SearchBox } from "@canonical/svelte-ds-app-launchpad";
   import { CloseIcon } from "@canonical/svelte-icons";
   import { onMount } from "svelte";
-  import type { Snippet } from "svelte";
   import { BookmarkIcon } from "#lib/components/icons/index.js";
   import { QueryParamsForm } from "#lib/components/index.js";
   import type {
@@ -34,19 +33,16 @@
   import { subId } from "#lib/utils/index.js";
   import { getPackagesContext } from "../context.js";
   import { CLEARED_FILTER_PARAMS, QueryParams } from "../superhref.js";
-  import DefaultPackageFilterControl from "./PackageFilterControl.svelte";
+  import MoreFiltersMenu from "./MoreFiltersMenu.svelte";
+  import PersonFilterCombobox from "./PersonFilterCombobox.svelte";
+  import PocketFilterMenu from "./PocketFilterMenu.svelte";
+  import SearchModeMenu from "./SearchModeMenu.svelte";
+  import SeriesFilterMenu from "./SeriesFilterMenu.svelte";
   import { PACKAGES_FILTER_LABELS as labels } from "./constants.js";
-  import type { PackageFilterControl } from "./controls.js";
   import { goto } from "$app/navigation";
   import { page } from "$app/state";
 
-  const {
-    seriesGroups,
-    filters,
-  }: {
-    seriesGroups: SeriesGroups;
-    filters?: Snippet<[PackageFilterControl]>;
-  } = $props();
+  const { seriesGroups }: { seriesGroups: SeriesGroups } = $props();
 
   const id = $props.id();
   const searchModeLabelId = subId(id, "search-mode-label");
@@ -85,14 +81,6 @@
   });
 </script>
 
-{#snippet renderFilter(control: PackageFilterControl)}
-  {#if filters}
-    {@render filters(control)}
-  {:else}
-    <DefaultPackageFilterControl {control} />
-  {/if}
-{/snippet}
-
 <!-- TODO: Use the common Filters component once
 https://warthogs.atlassian.net/browse/LP-5118 lands -->
 
@@ -107,111 +95,89 @@ https://warthogs.atlassian.net/browse/LP-5118 lands -->
     <div class="search">
       <span id={searchModeLabelId} class="visually-hidden">{labels.match}:</span
       >
-      {@render renderFilter({
-        kind: "match",
-        props: {
-          name: filterInputsNames.match,
-          value: queryParams.match,
-          onchange: submitFilters,
-          "aria-labelledby": searchModeLabelId,
-        },
-      })}
+      <SearchModeMenu
+        name={filterInputsNames.match}
+        value={queryParams.match}
+        onchange={submitFilters}
+        aria-labelledby={searchModeLabelId}
+      />
       <!-- TODO(DAL): Style the searchbox according to the design -->
-      {@render renderFilter({
-        kind: "search",
-        mode: "bar",
-        props: {
-          name: filterInputsNames.search,
-          value: queryParams.search ?? "",
-          placeholder: "Search",
-          "aria-label": "Search packages",
-          class: "search-box",
-        },
-      })}
+      <SearchBox
+        name={filterInputsNames.search}
+        value={queryParams.search ?? ""}
+        placeholder="Search"
+        aria-label="Search packages"
+        class="search-box"
+      />
     </div>
     <div class="filters">
       <div class="filter">
         <span id={maintainerLabelId}>{labels.maintainer}:</span>
-        {@render renderFilter({
-          kind: "maintainer",
-          props: {
-            name: filterInputsNames.maintainer,
-            searchInputProps: {
-              name: filterInputsNames["maintainer-search"],
-              value: queryParams["maintainer-search"],
-            },
-            value: queryParams.maintainer,
-            groupName: "maintainers",
-            onchange: submitFilters,
-            "aria-labelledby": maintainerLabelId,
-          },
-        })}
+        <PersonFilterCombobox
+          name={filterInputsNames.maintainer}
+          searchInputProps={{
+            name: filterInputsNames["maintainer-search"],
+            value: queryParams["maintainer-search"],
+          }}
+          value={queryParams.maintainer}
+          groupName="maintainers"
+          onchange={submitFilters}
+          aria-labelledby={maintainerLabelId}
+        />
       </div>
       <div class="filter">
         <span id={signerLabelId}>{labels.signer}:</span>
-        {@render renderFilter({
-          kind: "signer",
-          props: {
-            name: filterInputsNames.signer,
-            searchInputProps: {
-              name: filterInputsNames["signer-search"],
-              value: queryParams["signer-search"],
-            },
-            value: queryParams.signer,
-            groupName: "signers",
-            onchange: submitFilters,
-            "aria-labelledby": signerLabelId,
-          },
-        })}
+        <PersonFilterCombobox
+          name={filterInputsNames.signer}
+          searchInputProps={{
+            name: filterInputsNames["signer-search"],
+            value: queryParams["signer-search"],
+          }}
+          value={queryParams.signer}
+          groupName="signers"
+          onchange={submitFilters}
+          aria-labelledby={signerLabelId}
+        />
       </div>
       <div class="filter">
         <span id={seriesLabelId}>{labels.series}:</span>
-        {@render renderFilter({
-          kind: "series",
-          props: {
-            name: filterInputsNames.series,
-            value: queryParams.series,
-            onchange: submitFilters,
-            "aria-labelledby": seriesLabelId,
-            seriesGroups,
-          },
-        })}
+        <SeriesFilterMenu
+          name={filterInputsNames.series}
+          value={queryParams.series}
+          onchange={submitFilters}
+          aria-labelledby={seriesLabelId}
+          {seriesGroups}
+        />
       </div>
       <div class="filter">
         <span id={pocketLabelId}>{labels.pocket}:</span>
-        {@render renderFilter({
-          kind: "pocket",
-          props: {
-            name: filterInputsNames.pocket,
-            value: queryParams.pocket,
-            onchange: submitFilters,
-            "aria-labelledby": pocketLabelId,
-          },
-        })}
+        <PocketFilterMenu
+          name={filterInputsNames.pocket}
+          value={queryParams.pocket}
+          onchange={submitFilters}
+          aria-labelledby={pocketLabelId}
+        />
       </div>
       <div class="filter-controls">
         <div class="filter">
           <span id={moreFiltersLabelId} class="visually-hidden"
             >{labels.moreFilters}:</span
           >
-          {@render renderFilter({
-            kind: "more",
-            props: {
-              switches: [
-                {
-                  name: filterInputsNames["ubuntu-change"],
-                  text: labels.ubuntuChange,
-                  checked: queryParams["ubuntu-change"],
-                },
-                {
-                  name: filterInputsNames["all-statuses"],
-                  text: labels.allStatuses,
-                  checked: queryParams["all-statuses"],
-                },
-              ],
-              "aria-labelledby": moreFiltersLabelId,
-            },
-          })}
+          <MoreFiltersMenu
+            switches={[
+              {
+                name: filterInputsNames["ubuntu-change"],
+                text: labels.ubuntuChange,
+                checked: queryParams["ubuntu-change"],
+              },
+              {
+                name: filterInputsNames["all-statuses"],
+                text: labels.allStatuses,
+                checked: queryParams["all-statuses"],
+              },
+            ]}
+            aria-labelledby={moreFiltersLabelId}
+          />
         </div>
         <noscript>
           <Button
