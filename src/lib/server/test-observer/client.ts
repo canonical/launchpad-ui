@@ -111,6 +111,9 @@ async function getFilteredImages(
 }
 
 export function getImageArtifacts(): Promise<ImageArtifact[]> {
+  if (!TEST_OBSERVER_IMAGE_ARTIFACTS_URL)
+    throw new Error("TEST_OBSERVER_IMAGE_ARTIFACTS_URL is not set");
+
   // TODO: Implement a consistent caching strategy as tracked in https://warthogs.atlassian.net/browse/LP-5124
   if (
     artifactRequest &&

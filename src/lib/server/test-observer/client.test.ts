@@ -2,18 +2,17 @@ import * as v from "valibot";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { ImageArtifact } from "./types.js";
 
+const IMAGE_ARTIFACTS_URL =
+  "https://observer.example/v1/artefacts?family=image";
+
 // TODO: Reduce repeated env mocks (https://warthogs.atlassian.net/browse/LP-5132)
 vi.mock(
   "$app/env/private",
   () =>
     ({
-      TEST_OBSERVER_IMAGE_ARTIFACTS_URL:
-        "https://observer.example/v1/artefacts?family=image",
+      TEST_OBSERVER_IMAGE_ARTIFACTS_URL: IMAGE_ARTIFACTS_URL,
     }) satisfies Partial<typeof import("$app/env/private")>,
 );
-
-const IMAGE_ARTIFACTS_URL =
-  "https://observer.example/v1/artefacts?family=image";
 
 const imageArtifact: ImageArtifact = {
   id: 1,
