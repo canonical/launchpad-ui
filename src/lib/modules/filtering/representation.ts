@@ -1,11 +1,11 @@
 type FilterText = string | readonly [label: string, text: string];
 
 /**
- * Turns a set filter value into text.
+ * Turns a set filter's value into text.
  *
  * @param value The filter's value.
- * @param filters All current filter values, for text that depends on another filter.
- * @returns The text, or `null` to leave the filter out.
+ * @param filters All filter values, for text that depends on another filter.
+ * @returns Plain text, a `[label, text]` pair, or `null` to leave the filter out.
  */
 type FilterTextFn<TValue, TFilters> = (
   value: TValue,
@@ -14,27 +14,21 @@ type FilterTextFn<TValue, TFilters> = (
 
 /** How one filter is turned into text. */
 type FilterEntry<TValue, TFilters> = {
-  /**
-   * The filter's name, such as `"Series"`. Also usable as its form field label.
-   */
+  /** The filter's name, such as `"Series"`. Also usable as its form field label. */
   label: string;
   /**
-   * The filter as text.
+   * The full text, as shown in the filter summary.
    *
-   * Gets the filter's value, never `undefined`, and all filter values.
-   *
-   * @returns The text, or `null` to leave the filter out.
    * @default (value) => [label, String(value)]
    * @example (enabled) => (enabled ? "All statuses" : null)
-   * @example (search, { match }) => [SEARCH_MODE_LABELS[match], `"${search}"`]
+   * @example (search, { match }) => [match === "exact" ? "Is" : "Contains", `"${search}"`]
    */
   text?: FilterTextFn<TValue, TFilters>;
   /**
-   * A shorter form of {@link FilterEntry.text | text}, for where space is tight.
+   * A shorter form of {@link FilterEntry.text | text}, for where space is tight,
+   * such as suggested view names. Returning `null` leaves the filter out of the
+   * short form only.
    *
-   * Gets the same arguments as {@link FilterEntry.text | text}.
-   *
-   * @returns The text, or `null` to leave the filter out of the short form only.
    * @default text
    * @example (series) => series
    */
@@ -42,8 +36,8 @@ type FilterEntry<TValue, TFilters> = {
 };
 
 /**
- * How each filter of a page is represented. Key order is the default display order.
- * Filters whose value is `undefined` always skipped.
+ * How each filter is turned into text. Key order sets the display order.
+ * Unset filters (i.e., those with the value `undefined`) are always left out.
  */
 export type FilterRepresentationConfig<TFilters extends object> = {
   readonly [K in keyof TFilters & string]-?: FilterEntry<
@@ -55,15 +49,16 @@ export type FilterRepresentationConfig<TFilters extends object> = {
 export type FilterTextPart<TFilters extends object> = {
   /** The filter this part shows. */
   key: keyof TFilters & string;
-  /** Shown before {@link FilterTextPart.text | text}, as in `Series: noble`. Missing for plain-text parts. */
+  /** Shown before {@link FilterTextPart.text | text}, as in `Series: noble`. Missing when the filter's text is plain text. */
   label?: string;
   /** The text after {@link FilterTextPart.label | label}, or all of the text when there is no label. */
   text: string;
 };
 
 /**
- * Joins the short-form filter text with `" + "`.
- * @param maxLength Optional character limit, including the ellipsis when truncated.
+ * Joins the short form of each filter with `" + "`, as in `noble + Maintained by jdoe`.
+ * A label and its text are joined with a space.
+ * @param maxLength Optional character limit. Longer text is cut and ends with `…`, which counts towards the limit.
  * @throws {RangeError} If `maxLength` is negative.
  */
 export function getShortFilterText<TFilters extends object>(
@@ -85,8 +80,9 @@ export function getShortFilterText<TFilters extends object>(
 }
 
 /**
- * Returns text parts for defined filters in config order, omitting `null` results.
- * @param form Use `"shortText"` for the short form; otherwise use `"text"`.
+ * Returns a text part for each filter, in config order. Leaves out filters that
+ * are `undefined` or whose text is `null`.
+ * @param form Which text to use. `"shortText"` falls back to `text` for filters without one.
  */
 export function getFilterTextParts<TFilters extends object>(
   config: FilterRepresentationConfig<NoInfer<TFilters>>,
