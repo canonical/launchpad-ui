@@ -46,6 +46,7 @@ https://warthogs.atlassian.net/browse/LP-5118 lands -->
     replaceParams={[...filterKeys, "images.page"]}
     data-sveltekit-keepfocus
     data-sveltekit-noscroll
+    class="dense"
   >
     <div class="filters">
       <div class="filter">
@@ -132,23 +133,32 @@ https://warthogs.atlassian.net/browse/LP-5118 lands -->
 
 <style>
   .filters-bar {
-    padding-block: var(--dimension-025);
     display: flex;
     flex-direction: column;
-    gap: var(--dimension-050);
+    align-items: stretch;
+    column-gap: var(--dimension-050);
+
+    --filters-separator: var(--dimension-stroke-thickness-medium) solid
+      var(--color-border-muted);
+
+    border-block-end: var(--filters-separator);
 
     :global {
       .options-panel {
         margin-block-start: var(--dimension-050);
+      }
+
+      > form {
+        display: contents;
       }
     }
   }
 
   .filters {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     column-gap: var(--dimension-150);
-    padding-block: var(--dimension-025);
+    padding-block: var(--dimension-050);
     padding-inline-start: var(--dimension-100);
 
     .filter {
@@ -167,7 +177,6 @@ https://warthogs.atlassian.net/browse/LP-5118 lands -->
       grid-column: 1 / -1;
       display: flex;
       align-items: center;
-      justify-content: end;
       column-gap: var(--dimension-150);
     }
 
@@ -176,10 +185,21 @@ https://warthogs.atlassian.net/browse/LP-5118 lands -->
     }
   }
 
+  .actions {
+    flex-shrink: 0;
+    display: flex;
+    justify-content: end;
+    align-items: start;
+    border-block-start: var(--filters-separator);
+
+    :global(> .ds.button) {
+      min-block-size: calc(1lh + var(--dimension-200));
+    }
+  }
+
   @media (min-width: 621px) {
     .filters-bar {
       flex-direction: row;
-      align-items: start;
     }
 
     .filters {
@@ -187,9 +207,23 @@ https://warthogs.atlassian.net/browse/LP-5118 lands -->
       display: flex;
       flex-wrap: wrap;
       row-gap: var(--dimension-050);
+      padding-block: calc(var(--dimension-050) + var(--dimension-025));
 
       .filter-controls {
         display: contents;
+      }
+    }
+
+    .actions {
+      border-block-start: none;
+      margin-inline-start: auto;
+
+      &::before {
+        content: "";
+        align-self: stretch;
+        border-inline-start: var(--filters-separator);
+        margin-block: var(--dimension-100);
+        margin-inline-end: var(--dimension-150);
       }
     }
   }

@@ -29,7 +29,7 @@ https://warthogs.atlassian.net/browse/LP-5118 lands -->
     </PopoverTrigger>
   {/snippet}
   <ContextualMenuContent>
-    <ContextualMenuContent.Group groupTitle="Pocket">
+    <ContextualMenuContent.Group groupTitle="Test status">
       <ContextualMenuContent.RadioItem
         {name}
         value=""
