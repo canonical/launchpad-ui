@@ -13,12 +13,13 @@
   } from "@canonical/svelte-icons";
   import { Pagination, TableViewBar } from "#lib/components/index.js";
   import { QueryParamsForm } from "#lib/launchpad-components/index.js";
+  import { FilterSummary } from "#lib/modules/filtering/FilterSummary/index.js";
   import { DEFAULT_PAGE_SIZE } from "#lib/schemas/index.js";
   import ImageStatusSummary from "./ImageStatusSummary.svelte";
   import { IMAGES_TABLE_COLUMNS, NOT_DEFINED } from "./constants.js";
   import { setImagesContext } from "./context.js";
   import Filters from "./filters/Filters.svelte";
-  import FiltersSummary from "./filters/FiltersSummary.svelte";
+  import { IMAGES_FILTER_REPRESENTATION } from "./filters/constants.js";
   import { getSeriesImageCounts, getSeriesImages } from "./images.remote.js";
   import {
     MANAGE_VIEWS_PANEL,
@@ -156,7 +157,14 @@
       {#if isDefaultView}
         <Filters />
       {:else}
-        <FiltersSummary tableView={currentTableView} />
+        <FilterSummary
+          config={IMAGES_FILTER_REPRESENTATION}
+          {filters}
+          tableViewName={currentTableView.name}
+          editTableViewHref={currentTableView.editable
+            ? queryParams.editView(currentTableView.id)
+            : undefined}
+        />
       {/if}
       <div class="image-table-wrapper">
         <!-- TODO: Use the common Table integrated with filters once https://warthogs.atlassian.net/browse/LP-5118 lands -->

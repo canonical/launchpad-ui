@@ -8,11 +8,12 @@
     distroSegment,
   } from "#lib/launchpad-components/index.js";
   import { getSeriesGroups } from "#lib/modules/distroseries/series.remote.js";
+  import { FilterSummary } from "#lib/modules/filtering/FilterSummary/index.js";
   import BinaryPackagesList from "#lib/modules/packages/BinaryPackagesList.svelte";
   import BinaryPackageSidePanel from "#lib/modules/packages/binary-package/BinaryPackageSidePanel.svelte";
   import { setPackagesContext } from "#lib/modules/packages/context.js";
   import Filters from "#lib/modules/packages/filters/Filters.svelte";
-  import FiltersSummary from "#lib/modules/packages/filters/FiltersSummary.svelte";
+  import { PACKAGES_FILTER_REPRESENTATION } from "#lib/modules/packages/filters/constants.js";
   import { getSourcePackages } from "#lib/modules/packages/packages.remote.js";
   import {
     PACKAGES_TABLE_COLUMNS,
@@ -99,7 +100,15 @@
     {#if isDefaultView}
       <Filters seriesGroups={await seriesGroupsPromise} />
     {:else}
-      <FiltersSummary tableView={currentTableView} />
+      <FilterSummary
+        config={PACKAGES_FILTER_REPRESENTATION}
+        {filters}
+        groups={[["search"]]}
+        tableViewName={currentTableView.name}
+        editTableViewHref={currentTableView.editable
+          ? queryParams.editView(currentTableView.id)
+          : undefined}
+      />
     {/if}
     <!-- TODO: Use the common Table integrated with filters once https://warthogs.atlassian.net/browse/LP-5118 lands -->
     <Table class="packages-table">

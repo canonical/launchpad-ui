@@ -7,6 +7,7 @@
   import BuildStatusFilterMenu from "./BuildStatusFilterMenu.svelte";
   import ProductFilterMenu from "./ProductFilterMenu.svelte";
   import TestStatusFilterMenu from "./TestStatusFilterMenu.svelte";
+  import { IMAGES_FILTER_REPRESENTATION } from "./constants.js";
   import { page } from "$app/state";
 
   const filterKeys = Object.values(IMAGE_FILTERS).map(({ key }) => key);
@@ -48,7 +49,9 @@ https://warthogs.atlassian.net/browse/LP-5118 lands -->
   >
     <div class="filters">
       <div class="filter">
-        <span id={productLabelId}>{IMAGE_FILTERS.product.label}:</span>
+        <span id={productLabelId}
+          >{IMAGES_FILTER_REPRESENTATION.product.label}:</span
+        >
         <ProductFilterMenu
           name={IMAGE_FILTERS.product.key}
           value={queryParams.images[IMAGE_FILTERS.product.codecKey]}
@@ -57,7 +60,9 @@ https://warthogs.atlassian.net/browse/LP-5118 lands -->
         />
       </div>
       <div class="filter">
-        <span id={buildStatusLabelId}>{IMAGE_FILTERS.buildStatus.label}:</span>
+        <span id={buildStatusLabelId}
+          >{IMAGES_FILTER_REPRESENTATION.buildStatus.label}:</span
+        >
         <BuildStatusFilterMenu
           name={IMAGE_FILTERS.buildStatus.key}
           value={queryParams.images[IMAGE_FILTERS.buildStatus.codecKey]}
@@ -66,7 +71,9 @@ https://warthogs.atlassian.net/browse/LP-5118 lands -->
         />
       </div>
       <div class="filter">
-        <span id={testStatusLabelId}>{IMAGE_FILTERS.testStatus.label}:</span>
+        <span id={testStatusLabelId}
+          >{IMAGES_FILTER_REPRESENTATION.testStatus.label}:</span
+        >
         <TestStatusFilterMenu
           name={IMAGE_FILTERS.testStatus.key}
           value={queryParams.images[IMAGE_FILTERS.testStatus.codecKey]}

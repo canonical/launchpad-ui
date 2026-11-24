@@ -61,10 +61,15 @@
   import { settled, tick, untrack } from "svelte";
   import { ReorderableList } from "#lib/components/ReorderableList/index.js";
   import { SidePanel } from "#lib/launchpad-components/index.js";
+  import { getShortFilterText } from "#lib/modules/filtering/representation.js";
   import { filtersDiffer } from "#lib/modules/filtering/utils.js";
+  import { MAX_TABLE_VIEW_NAME_LENGTH } from "#lib/modules/table-views/constants.js";
   import type { AddTableViewMode } from "#lib/modules/table-views/constants.js";
   import { getImagesContext } from "../context.js";
-  import { DEFAULT_IMAGES_FILTERS } from "../filters/constants.js";
+  import {
+    DEFAULT_IMAGES_FILTERS,
+    IMAGES_FILTER_REPRESENTATION,
+  } from "../filters/constants.js";
   import {
     CLEARED_FILTER_PARAMS,
     MANAGE_VIEWS_PANEL,
@@ -80,7 +85,6 @@
     getTableViews,
     updateTableViews,
   } from "./table-views.remote.js";
-  import { getRecommendedViewName } from "./utils.js";
   import { goto } from "$app/navigation";
   import { page } from "$app/state";
 
@@ -332,7 +336,11 @@
       {distro}
       form={createTableView}
       settings={{
-        name: getRecommendedViewName(urlFilters),
+        name: getShortFilterText(
+          IMAGES_FILTER_REPRESENTATION,
+          urlFilters,
+          MAX_TABLE_VIEW_NAME_LENGTH,
+        ),
         filters: urlFilters,
       }}
       heading="Adding a new view"

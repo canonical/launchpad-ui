@@ -51,7 +51,7 @@
     },
     {
       id: "lib",
-      name: '"lib" + Resolute + changed by ubuntu',
+      name: '"lib" + resolute + changed by ubuntu',
       editable: true,
       expanded: false,
     },
