@@ -74,7 +74,10 @@ export function getShortFilterText<TFilters extends object>(
   const shortText = getFilterTextParts(config, filters, "shortText")
     .map(({ label, text }) => (label === undefined ? text : `${label} ${text}`))
     .join(" + ");
-  return maxLength !== undefined && shortText.length > maxLength
+
+  if (maxLength === undefined) return shortText;
+
+  return shortText.length > maxLength
     ? `${shortText.slice(0, maxLength - 1)}…`
     : shortText;
 }
