@@ -1,5 +1,5 @@
 <script module lang="ts">
-  import type { FilterTextPart } from "#lib/modules/filtering/representation.js";
+  import type { FilterTextPart } from "../representation.js";
 
   function groupParts<TFilters extends object>(
     parts: FilterTextPart<TFilters>[],
@@ -33,7 +33,7 @@
 <script lang="ts" generics="TFilters extends object">
   import { Button } from "@canonical/svelte-ds-app-launchpad";
   import { EditIcon } from "@canonical/svelte-icons";
-  import { getFilterTextParts } from "#lib/modules/filtering/representation.js";
+  import { getFilterTextParts } from "../representation.js";
   import type { FilterSummaryProps } from "./types.js";
 
   let {

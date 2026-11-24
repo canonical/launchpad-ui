@@ -1,5 +1,5 @@
 import type { HTMLAttributes } from "svelte/elements";
-import type { FilterRepresentationConfig } from "#lib/modules/filtering/representation.js";
+import type { FilterRepresentationConfig } from "../representation.js";
 
 export type FilterSummaryProps<TFilters extends object> = Omit<
   HTMLAttributes<HTMLDivElement>,

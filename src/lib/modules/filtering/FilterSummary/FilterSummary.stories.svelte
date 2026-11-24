@@ -7,7 +7,7 @@
   import type { FilterSummaryProps } from "./types.js";
 
   const { Story } = defineMeta({
-    title: "Launchpad Components/FilterSummary",
+    title: "Modules/Filtering/FilterSummary",
     tags: ["autodocs"],
     component: FilterSummary as Component<FilterSummaryProps<TaskFilters>>,
     args: {

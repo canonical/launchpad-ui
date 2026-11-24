@@ -12,8 +12,8 @@
     SuccessIcon,
   } from "@canonical/svelte-icons";
   import { Pagination, TableViewBar } from "#lib/components/index.js";
-  import { FilterSummary } from "#lib/launchpad-components/FilterSummary/index.js";
   import { QueryParamsForm } from "#lib/launchpad-components/index.js";
+  import { FilterSummary } from "#lib/modules/filtering/FilterSummary/index.js";
   import { DEFAULT_PAGE_SIZE } from "#lib/schemas/index.js";
   import ImageStatusSummary from "./ImageStatusSummary.svelte";
   import { IMAGES_TABLE_COLUMNS, NOT_DEFINED } from "./constants.js";

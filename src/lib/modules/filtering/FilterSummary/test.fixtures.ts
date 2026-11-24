@@ -1,4 +1,4 @@
-import type { FilterRepresentationConfig } from "#lib/modules/filtering/representation.js";
+import type { FilterRepresentationConfig } from "../representation.js";
 
 export type TaskFilters = {
   search?: string;

@@ -3,12 +3,12 @@
   import { SettingsIcon } from "@canonical/svelte-icons";
   import { Pagination, TableViewBar } from "#lib/components/index.js";
   import {
-    FilterSummary,
     PageLayout,
     QueryParamsForm,
     distroSegment,
   } from "#lib/launchpad-components/index.js";
   import { getSeriesGroups } from "#lib/modules/distroseries/series.remote.js";
+  import { FilterSummary } from "#lib/modules/filtering/FilterSummary/index.js";
   import BinaryPackagesList from "#lib/modules/packages/BinaryPackagesList.svelte";
   import BinaryPackageSidePanel from "#lib/modules/packages/binary-package/BinaryPackageSidePanel.svelte";
   import { setPackagesContext } from "#lib/modules/packages/context.js";
