@@ -1,15 +1,15 @@
-import type { ComponentProps } from "svelte";
+import type { Component as SvelteComponent, ComponentProps } from "svelte";
 import { describe, expect, it } from "vitest";
 import type { Locator, LocatorSelectors } from "vitest/browser";
 import { render } from "vitest-browser-svelte";
-import Component from "./FilterSummary.svelte";
-import {
-  activeFilters,
-  children,
-  config,
-  emptyFilters,
-} from "./test.fixtures.svelte";
-import type { TaskFilters } from "./test.fixtures.svelte";
+import FilterSummary from "./FilterSummary.svelte";
+import { activeFilters, config, emptyFilters } from "./test.fixtures.js";
+import type { TaskFilters } from "./test.fixtures.js";
+import type { FilterSummaryProps } from "./types.js";
+
+const Component = FilterSummary as SvelteComponent<
+  FilterSummaryProps<TaskFilters>
+>;
 
 const testId = "filter-summary";
 
@@ -18,7 +18,7 @@ const baseProps = {
   filters: activeFilters,
   tableViewName: "Tasks",
   "data-testid": testId,
-} satisfies ComponentProps<typeof Component<TaskFilters>>;
+} satisfies ComponentProps<typeof Component>;
 
 describe("FilterSummary", () => {
   it("renders nothing when no parts are visible", async () => {
@@ -65,10 +65,10 @@ describe("FilterSummary", () => {
       .toBeVisible();
   });
 
-  it("lets the consumer split the visible parts into groups", async () => {
+  it("splits visible parts into groups and appends unlisted keys as a trailing group", async () => {
     const page = await render(Component, {
       ...baseProps,
-      children,
+      groups: [["search"]],
     });
     const items = componentLocator(page)
       .getByRole("list", { name: "Tasks filters" })
@@ -83,6 +83,25 @@ describe("FilterSummary", () => {
     expect(items[0]).toHaveClass("last-part-in-group");
     expect(items[1]).not.toHaveClass("last-part-in-group");
     expect(items[2]).toHaveClass("last-part-in-group");
+  });
+
+  it("skips empty groups and deduplicates repeated keys across groups", async () => {
+    const page = await render(Component, {
+      ...baseProps,
+      filters: { ...activeFilters, search: undefined },
+      groups: [["search"], ["assignedToMe"], ["assignedToMe", "priority"]],
+    });
+    const items = componentLocator(page)
+      .getByRole("list", { name: "Tasks filters" })
+      .getByRole("listitem")
+      .elements();
+
+    expect(items.map((item) => item.textContent.trim())).toEqual([
+      "Assigned to me",
+      "Priority: High",
+    ]);
+    expect(items[0]).toHaveClass("last-part-in-group");
+    expect(items[1]).toHaveClass("last-part-in-group");
   });
 
   it("renders the edit button outside the list when editTableViewHref is set and keeps it when filters are cleared", async () => {

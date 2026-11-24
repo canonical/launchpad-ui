@@ -3,8 +3,8 @@ import type { RenderResult } from "@canonical/svelte-ssr-test";
 import type { ComponentProps } from "svelte";
 import { describe, expect, it } from "vitest";
 import Component from "./FilterSummary.svelte";
-import { activeFilters, config, emptyFilters } from "./test.fixtures.svelte";
-import type { TaskFilters } from "./test.fixtures.svelte";
+import { activeFilters, config, emptyFilters } from "./test.fixtures.js";
+import type { TaskFilters } from "./test.fixtures.js";
 
 const testId = "filter-summary";
 

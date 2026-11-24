@@ -103,20 +103,12 @@
       <FilterSummary
         config={PACKAGES_FILTER_REPRESENTATION}
         {filters}
+        groups={[["search"]]}
         tableViewName={currentTableView.name}
         editTableViewHref={currentTableView.editable
           ? queryParams.editView(currentTableView.id)
           : undefined}
-      >
-        {#snippet children(parts)}
-          <FilterSummary.Group
-            parts={parts.filter((part) => part.key === "search")}
-          />
-          <FilterSummary.Group
-            parts={parts.filter((part) => part.key !== "search")}
-          />
-        {/snippet}
-      </FilterSummary>
+      />
     {/if}
     <!-- TODO: Use the common Table integrated with filters once https://warthogs.atlassian.net/browse/LP-5118 lands -->
     <Table class="packages-table">

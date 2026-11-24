@@ -1,8 +1,39 @@
+<script module lang="ts">
+  import type { FilterTextPart } from "#lib/modules/filtering/representation.js";
+
+  function groupParts<TFilters extends object>(
+    parts: FilterTextPart<TFilters>[],
+    keyGroups?: (keyof TFilters)[][],
+  ): FilterTextPart<TFilters>[][] {
+    if (!parts.length) return [];
+    if (!keyGroups?.length) return [parts];
+
+    // eslint-disable-next-line svelte/prefer-svelte-reactivity
+    const assigned = new Set<keyof TFilters>();
+    const result: FilterTextPart<TFilters>[][] = [];
+
+    for (const keys of keyGroups) {
+      const group: FilterTextPart<TFilters>[] = [];
+      for (const key of keys) {
+        if (assigned.has(key)) continue;
+        assigned.add(key);
+        const part = parts.find((item) => item.key === key);
+        if (part) group.push(part);
+      }
+      if (group.length) result.push(group);
+    }
+
+    const remaining = parts.filter((part) => !assigned.has(part.key));
+    if (remaining.length) result.push(remaining);
+
+    return result;
+  }
+</script>
+
 <script lang="ts" generics="TFilters extends object">
   import { Button } from "@canonical/svelte-ds-app-launchpad";
   import { EditIcon } from "@canonical/svelte-icons";
   import { getFilterTextParts } from "#lib/modules/filtering/representation.js";
-  import { Group } from "./common/index.js";
   import type { FilterSummaryProps } from "./types.js";
 
   let {
@@ -10,23 +41,28 @@
     filters,
     tableViewName,
     editTableViewHref,
-    children,
+    groups,
     class: className,
     ...rest
   }: FilterSummaryProps<TFilters> = $props();
 
-  const parts = $derived(getFilterTextParts(config, filters));
+  const groupedParts = $derived(
+    groupParts(getFilterTextParts(config, filters), groups),
+  );
 </script>
 
-{#if parts.length || editTableViewHref}
+{#if groupedParts.length || editTableViewHref}
   <div class={["filter-summary", className]} {...rest}>
-    {#if parts.length}
+    {#if groupedParts.length}
       <ul role="list" aria-label={`${tableViewName} filters`}>
-        {#if children}
-          {@render children(parts)}
-        {:else}
-          <Group {parts} />
-        {/if}
+        {#each groupedParts as group (group[0].key)}
+          {#each group as part, index (part.key)}
+            <li class:last-part-in-group={index === group.length - 1}>
+              {#if part.label}<span>{part.label}:</span>{/if}
+              {part.text}
+            </li>
+          {/each}
+        {/each}
       </ul>
     {/if}
     {#if editTableViewHref}
@@ -64,6 +100,28 @@
     display: flex;
     flex-wrap: wrap;
     list-style: none;
+  }
+
+  li {
+    &:not(.last-part-in-group)::after {
+      content: ", ";
+      white-space: pre;
+    }
+
+    &.last-part-in-group {
+      &:not(:last-child) {
+        border-inline-end: var(--filter-summary-separator);
+        padding-inline-end: var(--dimension-150);
+      }
+
+      + li {
+        padding-inline-start: var(--dimension-150);
+      }
+    }
+
+    span {
+      color: var(--color-text-muted);
+    }
   }
 
   .actions {
