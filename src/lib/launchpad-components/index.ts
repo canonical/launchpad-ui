@@ -7,3 +7,4 @@ export { default as SidePanel } from "./SidePanel.svelte";
 export { default as LaunchpadLogo } from "./LaunchpadLogo.svelte";
 export { default as PopoverTrigger } from "./PopoverTrigger.svelte";
 export * from "./Meter/index.js";
+export * from "./QueryParamsForm/index.js";

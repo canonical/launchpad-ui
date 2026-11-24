@@ -1,13 +1,10 @@
 <script lang="ts">
   import { Button, Link, Table } from "@canonical/svelte-ds-app-launchpad";
   import { SettingsIcon } from "@canonical/svelte-icons";
-  import {
-    Pagination,
-    QueryParamsForm,
-    TableViewBar,
-  } from "#lib/components/index.js";
+  import { Pagination, TableViewBar } from "#lib/components/index.js";
   import {
     PageLayout,
+    QueryParamsForm,
     distroSegment,
   } from "#lib/launchpad-components/index.js";
   import { getSeriesGroups } from "#lib/modules/distroseries/series.remote.js";
