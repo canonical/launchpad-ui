@@ -14,7 +14,7 @@ import {
 } from "./table-views.remote.js";
 
 const mocks = vi.hoisted(() => ({
-  userId: "user",
+  visitorId: "visitor",
   url: new URL("https://launchpad.test/ubuntu/+source"),
   setTableViews: vi.fn(),
 }));
@@ -48,7 +48,7 @@ vi.mock("$app/server", () => ({
     }),
   getRequestEvent: () => ({
     url: mocks.url,
-    locals: { user: { id: mocks.userId } },
+    locals: { visitor: { id: mocks.visitorId } },
   }),
 }));
 
@@ -60,7 +60,7 @@ function submit(remoteForm: object, data: unknown) {
 }
 
 function storedViews() {
-  return tableViewsStore.get(mocks.userId, distro);
+  return tableViewsStore.get(mocks.visitorId, distro);
 }
 
 function expectRedirect(location: string) {
@@ -98,11 +98,11 @@ const resolutePackages: TableView = {
 beforeEach(async () => {
   mocks.url = new URL("https://launchpad.test/ubuntu/+source");
   mocks.setTableViews.mockReset();
-  await tableViewsStore.set(mocks.userId, distro, [
+  await tableViewsStore.set(mocks.visitorId, distro, [
     ...DEFAULT_TABLE_VIEWS,
     mine,
   ]);
-  await tableViewsStore.set(mocks.userId, "debian", DEFAULT_TABLE_VIEWS);
+  await tableViewsStore.set(mocks.visitorId, "debian", DEFAULT_TABLE_VIEWS);
 });
 
 describe("getTableViews", () => {
@@ -339,7 +339,7 @@ describe("createTableView", () => {
     ).rejects.toSatisfy(isRedirect);
 
     expect(await storedViews()).toEqual([...DEFAULT_TABLE_VIEWS, mine]);
-    expect(await tableViewsStore.get(mocks.userId, "debian")).toEqual([
+    expect(await tableViewsStore.get(mocks.visitorId, "debian")).toEqual([
       ...DEFAULT_TABLE_VIEWS,
       expect.objectContaining({ name: "Trixie", slug: "trixie" }),
     ]);
@@ -375,13 +375,13 @@ describe("updateTableViews", () => {
     await updateTableViews({ distro, views: [{ id: allPackages.id }] });
 
     expect(await storedViews()).toEqual([allPackages]);
-    expect(await tableViewsStore.get(mocks.userId, "debian")).toEqual(
+    expect(await tableViewsStore.get(mocks.visitorId, "debian")).toEqual(
       DEFAULT_TABLE_VIEWS,
     );
   });
 
   it("edits views, keeping the slug unless renamed", async () => {
-    await tableViewsStore.set(mocks.userId, distro, [
+    await tableViewsStore.set(mocks.visitorId, distro, [
       allPackages,
       resolutePackages,
       mine,
@@ -429,7 +429,7 @@ describe("updateTableViews", () => {
   });
 
   it("doesn't let new or renamed views take a kept slug", async () => {
-    await tableViewsStore.set(mocks.userId, distro, [
+    await tableViewsStore.set(mocks.visitorId, distro, [
       allPackages,
       resolutePackages,
       mine,

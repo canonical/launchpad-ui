@@ -6,7 +6,7 @@ import {
   TableViewIdSchema,
 } from "#lib/modules/table-views/schema.js";
 import { imagesTableViewsStore } from "#lib/server/table-views/index.js";
-import { getCurrentUserId } from "#lib/server/user.js";
+import { getVisitorId } from "#lib/server/visitor.js";
 import { slugify } from "#lib/utils/slugify.js";
 import { CLEARED_FILTER_PARAMS, QueryParams } from "../superhref.js";
 import type { TableView } from "./constants.js";
@@ -18,7 +18,7 @@ import type { TableViewSettings } from "./schema.js";
 import { command, form, getRequestEvent, query } from "$app/server";
 
 export const getTableViews = query(TableViewDistroSchema, (distro) => {
-  return imagesTableViewsStore.get(getCurrentUserId(), distro);
+  return imagesTableViewsStore.get(getVisitorId(), distro);
 });
 
 export const deleteTableView = form(
@@ -27,8 +27,8 @@ export const deleteTableView = form(
     id: TableViewIdSchema,
   }),
   async ({ distro, id }) => {
-    const userId = getCurrentUserId();
-    const tableViews = await imagesTableViewsStore.get(userId, distro);
+    const visitorId = getVisitorId();
+    const tableViews = await imagesTableViewsStore.get(visitorId, distro);
     const index = tableViews.findIndex((view) => view.id === id);
 
     if (index === -1) {
@@ -42,7 +42,7 @@ export const deleteTableView = form(
     }
 
     const [deletedView] = tableViews.splice(index, 1);
-    await imagesTableViewsStore.set(userId, distro, tableViews);
+    await imagesTableViewsStore.set(visitorId, distro, tableViews);
     getTableViews(distro).set(tableViews);
 
     const queryParams = QueryParams.bind(getRequestEvent().url);
@@ -59,8 +59,8 @@ export const deleteTableView = form(
  * A no-JS person search is submitted here too, so that the other fields' values survive it.
  */
 export const editTableView = form(TableViewEditFormSchema, async (data) => {
-  const userId = getCurrentUserId();
-  const tableViews = await imagesTableViewsStore.get(userId, data.distro);
+  const visitorId = getVisitorId();
+  const tableViews = await imagesTableViewsStore.get(visitorId, data.distro);
   const view = tableViews.find((view) => view.id === data.id);
 
   if (!view) {
@@ -88,7 +88,7 @@ export const editTableView = form(TableViewEditFormSchema, async (data) => {
   }
   view.name = data.name;
   view.filters = data.filters;
-  await imagesTableViewsStore.set(userId, data.distro, tableViews);
+  await imagesTableViewsStore.set(visitorId, data.distro, tableViews);
   getTableViews(data.distro).set(tableViews);
 
   if (isEditingCurrentView) {
@@ -112,12 +112,12 @@ export const editTableView = form(TableViewEditFormSchema, async (data) => {
  * and sent with {@link updateTableViews} instead.
  */
 export const createTableView = form(TableViewEditFormSchema, async (data) => {
-  const userId = getCurrentUserId();
+  const visitorId = getVisitorId();
   const tableViews = assignSlugs([
-    ...(await imagesTableViewsStore.get(userId, data.distro)),
+    ...(await imagesTableViewsStore.get(visitorId, data.distro)),
     newTableView(data),
   ]);
-  await imagesTableViewsStore.set(userId, data.distro, tableViews);
+  await imagesTableViewsStore.set(visitorId, data.distro, tableViews);
   getTableViews(data.distro).set(tableViews);
 
   const queryParams = QueryParams.bind(getRequestEvent().url);
@@ -159,8 +159,8 @@ export const updateTableViews = command(
     ),
   }),
   async ({ distro, views }) => {
-    const userId = getCurrentUserId();
-    const currentViews = await imagesTableViewsStore.get(userId, distro);
+    const visitorId = getVisitorId();
+    const currentViews = await imagesTableViewsStore.get(visitorId, distro);
     const viewsById = new Map(currentViews.map((view) => [view.id, view]));
     const ids = views.flatMap((view) => ("id" in view ? [view.id] : []));
 
@@ -193,7 +193,7 @@ export const updateTableViews = command(
         };
       }),
     );
-    await imagesTableViewsStore.set(userId, distro, updatedViews);
+    await imagesTableViewsStore.set(visitorId, distro, updatedViews);
     // `getTableViews` isn't updated here: a single-flight update would apply before the caller
     // navigates to the (possibly renamed) view's URL, so the caller updates it instead.
     return updatedViews;
