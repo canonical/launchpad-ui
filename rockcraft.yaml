@@ -57,6 +57,7 @@ parts:
     override-build: |
       set -eux
       export PATH="${CRAFT_STAGE}/bin:${PATH}"
+      rm -rf .env node_modules
       # pnpm (not npm): honours pnpm-lock.yaml + patchedDependencies + .npmrc.
       npm install -g --prefix "${CRAFT_PART_BUILD}/.npm-global" pnpm@10.6.2
       export PATH="${CRAFT_PART_BUILD}/.npm-global/bin:${PATH}"

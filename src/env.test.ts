@@ -86,4 +86,40 @@ describe("Environment variables", () => {
       },
     );
   });
+
+  describe("POSTGRESQL_DB_CONNECT_STRING", () => {
+    const { schema } = variables.POSTGRESQL_DB_CONNECT_STRING;
+
+    it("stays unset when no database is integrated", () => {
+      expect(parse(schema, undefined)).toBeUndefined();
+    });
+
+    it("rejects an empty string", () => {
+      expect(isRejected(schema, "")).toBe(true);
+    });
+
+    it("accepts a connection string", () => {
+      const url = "postgresql://user:secret@db.internal:5432/launchpad_ui";
+      expect(parse(schema, url)).toBe(url);
+    });
+  });
+
+  describe("DATABASE_SSL_MODE", () => {
+    const { schema } = variables.DATABASE_SSL_MODE;
+
+    it("defaults to require when unset", () => {
+      expect(parse(schema, undefined)).toBe("require");
+    });
+
+    it.each(["disable", "require"])("accepts %j", (value) => {
+      expect(parse(schema, value)).toBe(value);
+    });
+
+    it.each(["", "verify-full", "prefer", "REQUIRE"])(
+      "rejects unsupported mode %j",
+      (value) => {
+        expect(isRejected(schema, value)).toBe(true);
+      },
+    );
+  });
 });

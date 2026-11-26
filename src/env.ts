@@ -22,6 +22,17 @@ export const variables = defineEnvVars({
     description:
       "Skip TLS certificate verification when contacting the main Launchpad service",
   },
+  POSTGRESQL_DB_CONNECT_STRING: {
+    // TODO: Make required once the DBaaS is provisioned everywhere (https://warthogs.atlassian.net/browse/LP-5243)
+    schema: v.optional(v.pipe(v.string(), v.nonEmpty())),
+    description:
+      "PostgreSQL connection string, injected by the charm's postgresql integration",
+  },
+  DATABASE_SSL_MODE: {
+    schema: v.optional(v.picklist(["disable", "require"]), "require"),
+    description:
+      "PostgreSQL TLS mode: disable, or require (encrypt without verifying the certificate)",
+  },
   TEST_OBSERVER_IMAGE_ARTIFACTS_URL: {
     schema: v.optional(v.pipe(v.string(), v.url())),
     description: "URL used to fetch Test Observer image artifacts",

@@ -25,6 +25,8 @@ vi.mock(
       MAIN_LAUNCHPAD_COOKIE_NAME: "lp",
       MAIN_LAUNCHPAD_IP_ADDRESS: undefined,
       MAIN_LAUNCHPAD_SKIP_TLS_VERIFY: false,
+      POSTGRESQL_DB_CONNECT_STRING: undefined,
+      DATABASE_SSL_MODE: "disable",
       TEST_OBSERVER_IMAGE_ARTIFACTS_URL:
         "https://observer.example/v1/artefacts?family=image",
     }) satisfies typeof import("$app/env/private"),
