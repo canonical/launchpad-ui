@@ -3,6 +3,7 @@ import type { LaunchpadResponse } from "@canonical/launchpad-client";
 import { error } from "@sveltejs/kit";
 import * as v from "valibot";
 import { launchpadClient } from "#lib/server/launchpad/client.js";
+import { getCurrentUserHeaders } from "#lib/server/launchpad/session.js";
 import { MAIN_LAUNCHPAD_COOKIE_NAME as lpCookieName } from "$app/env/private";
 import { form, getRequestEvent, query } from "$app/server";
 
@@ -14,20 +15,11 @@ export const getUbuntu = query(() =>
   ),
 );
 
-export const getMe = query(async () => {
-  const { cookies } = getRequestEvent();
-  const lpCookie = cookies.get(lpCookieName);
-  return inspectConnection(() =>
-    launchpadClient.person.me.get(
-      {},
-      {
-        headers: lpCookie
-          ? { cookie: `${lpCookieName}=${lpCookie}` }
-          : undefined,
-      },
-    ),
-  );
-});
+export const getMe = query(async () =>
+  inspectConnection(() =>
+    launchpadClient.person.me.get({}, { headers: getCurrentUserHeaders() }),
+  ),
+);
 
 export const setLpCookie = form(
   v.object({
