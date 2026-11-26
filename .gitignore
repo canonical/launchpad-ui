@@ -30,6 +30,3 @@ storybook-static
 # Rockcraft / Charmcraft build artifacts
 *.rock
 *.charm
-
-# Shared AI instructions
-!/AGENTS.md

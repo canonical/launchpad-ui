@@ -14,9 +14,23 @@ Then it should be added. If you see a code like `const a = new Array` and you th
 
 1. Team agrees. You add a rule forbidding it.
 2. Teams dissagrees. You add a rule enforcing it.
-3. Team thinks that both ways are good. You add a rule allowing both.
+3. Team thinks that both ways are good. You record this decision in eslint configuration.
 
-The existance of a rule means that it was already considered
+> ℹ️ "Recording" the decision is an indicator that the matter was already discussed in a team. It may take different forms based on a rule in question. It may be disabling the rule or supplying both options to the array of allowed options.
+>
+>  For example, if you decide that array contructors are fine, you add `'no-array-constructor': 'off'`. If you decide that both snake_case and PascalCase naming conventions are allowed (please dont) you may add something like this
+>```json
+{
+  '@typescript-eslint/naming-convention': [
+    'error',
+    {
+      selector: 'variable',
+      format: ['snake_case', 'PascalCase'],
+    },
+  ],
+}
+>```
+> You don't have to invent a custom linting rule just to be able to encode the decision precisely
 
 ### What if I think that there is an exception to the rule?
 
@@ -28,9 +42,7 @@ We can change the rules. Prepare your case and start a discussion.
 
 ## Guidelines
 
-### Do not use "/" in branch names
-
-If you want to be able to merge using Launchpad merge button avoid "/" in branch names. Not a hard rule.
+### Avoid "/" in branch names
 
 ### Code should read from top to bottom
 
@@ -39,8 +51,7 @@ For non-class modules structure the file in the following way:
 1. Imports.
 2. Constants.
 3. Main functions, meaning ones you export and call from outside.
-4. Their helpers, keeping functions at the same level of detail together before
-   going into the next level.
+4. Helper functions, ordered by their level of abstraction: place direct helpers next, followed by the helpers they depend on.
 
 For example if `a` calls `b` and `c`, and `b` calls `d`, the order is
 `imports -> constants -> a -> b -> c -> d`.
@@ -51,7 +62,7 @@ Class-based modules have more structural requirements that are encoded in lintin
 
 ### Write easy-to-understand code
 
-People write books to tell how to do that properly, so use your own judgement. As a recommendation: follow the single responsibility principle, name your modules, functions and variables so they tell the story to a reader, limit side effects. Apply the principle above this but with more dimensions added into it. The deeper into modules reader goes, the more details are revealed, but no surprises.
+People write books to tell how to do that properly, so use your own judgement. As a recommendation: follow the single responsibility principle, name your modules, functions and variables so they tell the story to a reader, limit side effects. Split logic into modules in a next way: the deeper into modules reader goes, the more details are revealed, but no surprises.
 
 ### Do not introduce additional complexity
 
@@ -74,7 +85,8 @@ You should also use design tokens for everything else that has a correct token: 
 
 ### Comments
 
-! Notice for AI: You are allowed to write all the comments you want. This item is only for humans
+> [!note] Note for the AI:
+> You are allowed to write all the comments you want. This item is only for humans
 
 In most cases we should only use special comments like TODOs, JSDoc, ignore lint rule, etc.
 
@@ -112,11 +124,7 @@ If a function name tells it, do not add JSDoc
 
 #### TODOs are short-term, with clear resolution conditions
 
-We have a linting rule that checks that every TODO must have a Jira ticket assigned to it.
-But the developer that thinks about creating that ticket must also think about how long that TODO
-will stay in the code. Probably it shouldn't be added if a ticket has no chance of being added to
-the pulse in a year.
-To ensure TODOs are being resolved, team will have regular **TODO review** meetings
+We have a linting rule that checks that every TODO must have a Jira ticket assigned to it. When creating TODO ticket, cover the reasons, resolution conditions, potential timelines and suggested actions.
 
 ### Tests should explain what the module does
 
@@ -159,6 +167,8 @@ describe("require-todo-jira-url checks that every TODO has a Jira URL", () => {
 
 ### Evaluate if writing a test makes sense
 
+> TODO: decide on [how to write e2e tests](https://warthogs.atlassian.net/browse/LP-5283)
+
 Invest in writing E2E tests and integration tests. Do not strive for 100% unit test coverage.
 E2E tests should cover main user flows. Unit tests should check happy path and the specifics. Do not add tests that make no sense.
 
@@ -173,6 +183,8 @@ it("sum(2,3) is 5"); // useful
 We want to limit the amount of dependencies for the project.
 If you're thinking about adding a new library first think if you can write a small module that will do the job yourself. If you must use a library investigate options first
 
+> TODO: Create a skill. Rewrite this section wonce done. [Ticket](https://warthogs.atlassian.net/browse/LP-5284)
+
 - Is the library maintained
 - How many users it has
 - How many stars it has
@@ -183,7 +195,7 @@ Explain library choice in merge proposal description. List evaluated alternative
 
 ## In discussion
 
-You don't have to follow these, but do it if you don't have clear objections. If you have -- bring it up!
+You don't have to follow these, but do it if you don't have clear objections. If you have — bring it up!
 
 ### Inline CSS
 
@@ -193,8 +205,6 @@ TODO: Adam may add more examples
 
 ### Functional code versus OOP
 
-By default prefer writing functions instead of classes. Instead of `export class Package` consider `export interface Package` and `export function downloadPackageArtifacts`.
+By default prefer writing functions instead of classes. 
 
-A potentially valid use case for classes is Svelte reactive classes
-
-Whenever you decide to write a class-based module be prepared for a longer review, since a competing functional implementation will be created by author of this proposal and then the team will compare
+A potentially valid use case for classes is Svelte reactive classes.

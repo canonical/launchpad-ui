@@ -1,8 +1,6 @@
 # Instructions for AI coding assistants
 
-Read and follow [CODING_STANDARDS.md](CODING_STANDARDS.md). Those standards apply
-to you too. This file adds AI-specific working guidance, not a second set of
-coding conventions.
+Read and follow [CODING_STANDARDS.md](CODING_STANDARDS.md).
 
 ## Tests
 
