@@ -1,5 +1,5 @@
 import type { Handle, HandleServerError } from "@sveltejs/kit/hooks";
-import { resolveUser } from "#lib/server/user.js";
+import { resolveVisitor } from "#lib/server/visitor.js";
 
 // When a universal `load` fetches during SSR, SvelteKit serializes the response
 // to replay it on the client and blocks reading any header not allowlisted here.
@@ -9,7 +9,7 @@ const SERIALIZABLE_RESPONSE_HEADERS = new Set([
 ]);
 
 export const handle: Handle = ({ event, resolve }) => {
-  event.locals.user = resolveUser(event);
+  event.locals.visitor = resolveVisitor(event);
 
   return resolve(event, {
     filterSerializedResponseHeaders: (name) =>

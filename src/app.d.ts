@@ -9,7 +9,7 @@ declare global {
       dontFailThePage?: boolean;
     }
     interface Locals {
-      user: { id: string };
+      visitor: { id: string };
     }
     // interface PageData {}
     interface PageState {
