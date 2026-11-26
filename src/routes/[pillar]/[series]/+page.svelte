@@ -9,6 +9,7 @@
   import SeriesHeader from "#lib/modules/distroseries/SeriesHeader.svelte";
   import SeriesMilestones from "#lib/modules/distroseries/SeriesMilestones.svelte";
   import SeriesStats from "#lib/modules/distroseries/SeriesStats.svelte";
+  import { getSeriesAdminLinks } from "#lib/modules/distroseries/admin.remote.js";
   import SeriesImages from "#lib/modules/distroseries/images/SeriesImages.svelte";
   import { getSeriesOverview } from "#lib/modules/distroseries/series.remote.js";
   import type { PageProps } from "./$types.js";
@@ -21,6 +22,7 @@
   });
 
   const overview = $derived(getSeriesOverview(seriesArgs));
+  const adminLinks = $derived(getSeriesAdminLinks(seriesArgs));
 </script>
 
 <svelte:head>
@@ -35,7 +37,7 @@
       {const { displayName, status, description, links, milestones } = $derived(
         await overview,
       )}
-      <SeriesHeader {displayName} {status} />
+      <SeriesHeader {displayName} {status} adminLinks={await adminLinks} />
 
       <div class="overview subgrid">
         <section class="description" aria-label="About this series">
