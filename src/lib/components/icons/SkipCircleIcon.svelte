@@ -22,11 +22,11 @@
         d="M4.57 6.06L6.51231 7.99799L4.57 9.94L5.63 11L8.63363 7.99799L5.63 5L4.57 6.06Z"
         fill="currentColor"
       />
-      <path d="M9.5 5H11V11H9.5V5Z" fill="currentColor"/>
+      <path d="M9.5 5H11V11H9.5V5Z" fill="currentColor" />
     </g>
     <defs>
       <clipPath id="clip0_3683_34882">
-        <rect width="16" height="16" fill="currentColor"/>
+        <rect width="16" height="16" fill="currentColor" />
       </clipPath>
     </defs>
   </svg>

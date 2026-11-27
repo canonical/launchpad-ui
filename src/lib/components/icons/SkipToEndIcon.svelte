@@ -17,6 +17,6 @@
       d="M9.99999 8L4.5 2.5L3.439 3.56L7.87899 8L3.43897 12.439L4.49997 13.5L9.99999 8Z"
       fill="currentColor"
     />
-    <path d="M11.5 1.5H13L13 14.5H11.5L11.5 1.5Z" fill="currentColor"/>
+    <path d="M11.5 1.5H13L13 14.5H11.5L11.5 1.5Z" fill="currentColor" />
   </svg>
 </IconBase>

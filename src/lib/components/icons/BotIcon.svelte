@@ -13,10 +13,8 @@
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
   >
-    <path d="M10.625 10.6V7.85001H9.125V10.6H10.625Z" fill="currentColor"
-    />
-    <path d="M6.875 7.85001V10.6H5.375V7.85001H6.875Z" fill="currentColor"
-    />
+    <path d="M10.625 10.6V7.85001H9.125V10.6H10.625Z" fill="currentColor" />
+    <path d="M6.875 7.85001V10.6H5.375V7.85001H6.875Z" fill="currentColor" />
     <path
       fill-rule="evenodd"
       clip-rule="evenodd"
