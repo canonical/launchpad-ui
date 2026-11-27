@@ -80,6 +80,8 @@ export default ts.config(
       "svelte/prefer-const": "warn",
       "svelte/html-self-closing": "error",
       "svelte/require-event-prefix": "warn",
+      "svelte/shorthand-attribute": "error",
+      "svelte/shorthand-directive": "error",
       "sonarjs/cognitive-complexity": ["warn", 15],
       "import/no-empty-named-blocks": "error",
       "import/order": [
