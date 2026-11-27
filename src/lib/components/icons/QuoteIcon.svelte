@@ -13,9 +13,9 @@
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
   >
-    <path d="M3.5 2H2V14H3.5V2Z" fill="currentColor"></path>
-    <path d="M10 3H5V4.5H10V3Z" fill="currentColor"></path>
-    <path d="M14 7.5H5V9H14V7.5Z" fill="currentColor"></path>
-    <path d="M5 12H12V13.5H5V12Z" fill="currentColor"></path>
+    <path d="M3.5 2H2V14H3.5V2Z" fill="currentColor"/>
+    <path d="M10 3H5V4.5H10V3Z" fill="currentColor"/>
+    <path d="M14 7.5H5V9H14V7.5Z" fill="currentColor"/>
+    <path d="M5 12H12V13.5H5V12Z" fill="currentColor"/>
   </svg>
 </IconBase>

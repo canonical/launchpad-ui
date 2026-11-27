@@ -16,6 +16,6 @@
     <path
       d="M3.29871 13.5V2.5H5.2381V6.8H10.7619V2.5H12.7013V13.5H10.7619V8.46H5.2381V13.5H3.29871Z"
       fill="currentColor"
-    ></path>
+    />
   </svg>
 </IconBase>

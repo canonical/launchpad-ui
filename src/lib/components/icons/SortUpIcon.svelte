@@ -13,6 +13,6 @@
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
   >
-    <path d="M7.99999 2L11.333 7H4.66699L7.99999 2Z" fill="currentColor"></path>
+    <path d="M7.99999 2L11.333 7H4.66699L7.99999 2Z" fill="currentColor"/>
   </svg>
 </IconBase>

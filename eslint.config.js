@@ -78,6 +78,7 @@ export default ts.config(
       "svelte/no-at-const-tags": "error",
       "svelte/no-target-blank": "warn",
       "svelte/prefer-const": "warn",
+      "svelte/html-self-closing": "error",
       "sonarjs/cognitive-complexity": ["warn", 15],
       "import/no-empty-named-blocks": "error",
       "import/order": [
