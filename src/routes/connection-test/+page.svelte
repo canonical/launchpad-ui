@@ -39,7 +39,7 @@
 
 {#snippet output(query: RemoteQueryFunction<void, ConnectionResponse>)}
   <svelte:boundary onerror={(e) => console.error(e)}>
-    {@const response = await query()}
+    {const response = $derived(await query())}
     <p>HTTP status: {response.status}</p>
     {#if "json" in response}
       <pre>{JSON.stringify(response.json, null, 2)}</pre>
