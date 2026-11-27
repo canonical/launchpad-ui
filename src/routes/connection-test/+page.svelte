@@ -1,6 +1,11 @@
 <script lang="ts">
   import { Button, TextInput } from "@canonical/svelte-ds-app-launchpad";
-  import { getMe, getUbuntu, setLpCookie } from "./connection-test.remote.js";
+  import {
+    getDatabase,
+    getMe,
+    getUbuntu,
+    setLpCookie,
+  } from "./connection-test.remote.js";
   import type { ConnectionResponse } from "./connection-test.remote.js";
   import { browser } from "$app/env";
   import type { RemoteQueryFunction } from "$app/server";
@@ -35,12 +40,17 @@
     <h2>Authenticated — <code>/api/devel/people/+me</code></h2>
     {@render output(getMe)}
   </section>
+
+  <section>
+    <h2>Database — <code>select current_database(), major version</code></h2>
+    {@render output(getDatabase)}
+  </section>
 </main>
 
 {#snippet output(query: RemoteQueryFunction<void, ConnectionResponse>)}
   <svelte:boundary onerror={(e) => console.error(e)}>
-    {@const response = await query()}
-    <p>HTTP status: {response.status}</p>
+    {const response = $derived(await query())}
+    <p class:error={response.isError}>{response.status}</p>
     {#if "json" in response}
       <pre>{JSON.stringify(response.json, null, 2)}</pre>
     {:else if response.text}

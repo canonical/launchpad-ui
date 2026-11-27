@@ -8,6 +8,7 @@ A new face for [launchpad.net](https://launchpad.net/) built with Svelte.
 
 - [Node.js](https://nodejs.org/) (version 26 LTS or higher)
 - [pnpm](https://pnpm.io/) (version 10 or higher)
+- [Docker](https://docs.docker.com/engine/install/) with Compose, for the local database
 
 ### Clone and install dependencies
 
@@ -40,11 +41,20 @@ Launchpad UI will be available at [http://localhost:4173](http://localhost:4173)
 
 ### Running the development server
 
+Make sure Docker is running first — `pnpm dev` also starts a local PostgreSQL database.
+
 ```bash
 pnpm dev
 ```
 
 Launchpad UI will be available at [http://localhost:5173](http://localhost:5173).
+
+To start only Vite without the database, run `pnpm exec vite dev`.
+
+You can also manage the local database separately:
+
+- `pnpm db:up` starts the database.
+- `pnpm db:down` stops it. Data is kept in a Docker volume; remove it with `docker compose down -v`.
 
 ## Storybook
 

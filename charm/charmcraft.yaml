@@ -69,17 +69,26 @@ config:
       description: >
         URL for the Test Observer image artefacts API
         (TEST_OBSERVER_IMAGE_ARTIFACTS_URL).
+    database-ssl-mode:
+      type: string
+      default: require
+      description: >
+        PostgreSQL TLS mode (DATABASE_SSL_MODE):
+        - "require" encrypts without verifying the certificate,
+        - "disable" turns TLS off.
 
-# Uncomment the integrations used by your application
 # Integrations set to "optional: false" will block the charm
 # until the applications are integrated.
-# requires:
+requires:
+  postgresql:
+    interface: postgresql_client
+    # TODO: Set to false once every environment is integrated with the DBaaS (https://warthogs.atlassian.net/browse/LP-5243)
+    optional: true
+    limit: 1
+
+# Uncomment integrations used by your application
 #   mysql:
 #     interface: mysql_client
-#     optional: false
-#     limit: 1
-#   postgresql:
-#     interface: postgresql_client
 #     optional: false
 #     limit: 1
 #   mongodb:

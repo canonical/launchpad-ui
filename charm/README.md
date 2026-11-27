@@ -109,12 +109,60 @@ via `juju config` reach the app **without** the `APP_` prefix (stripped in
 
 ## Rebuild loop
 
+Push each build under a new tag.
+
 ```bash
 # from repo root
-cd .. && rockcraft pack && rockcraft.skopeo --insecure-policy copy \
+cd .. && rockcraft pack -v && rockcraft.skopeo --insecure-policy copy \
   oci-archive:launchpad-ui_0.0.1_<arch>.rock \
-  docker://localhost:32000/launchpad-ui:0.0.1 --dest-tls-verify=false
+  docker://localhost:32000/launchpad-ui:<tag> --dest-tls-verify=false
+cd charm && charmcraft pack -v && cd ..
 juju refresh launchpad-ui \
   --path ./charm/launchpad-ui_<arch>.charm \
-  --resource app-image=localhost:32000/launchpad-ui:0.0.1
+  --resource app-image=localhost:32000/launchpad-ui:<tag>
+```
+
+## PostgreSQL
+
+The `postgresql` integration is optional: without it the app runs without a database. When integrated, paas-charm injects `POSTGRESQL_DB_CONNECT_STRING`.
+
+### Direct `postgresql-k8s`
+
+`postgresql-k8s` without a TLS integration offers no TLS, so disable it on the app side:
+
+```bash
+juju deploy postgresql-k8s --channel 14/stable --trust
+juju config launchpad-ui database-ssl-mode=disable
+juju integrate launchpad-ui postgresql-k8s
+```
+
+Once both are `active/idle`, the app receives `POSTGRESQL_DB_CONNECT_STRING`; check it with `pebble plan` (see [Debugging](#debugging)).
+
+### Through pgbouncer (as on PS7)
+
+PS7 deployments connect through `pgbouncer-k8s` with a certificate from `self-signed-certificates`. To mirror that setup:
+
+```bash
+juju remove-relation launchpad-ui postgresql-k8s
+juju deploy self-signed-certificates --channel latest/stable --revision 264
+juju deploy pgbouncer-k8s --channel 1/stable --revision 593 --trust
+juju integrate pgbouncer-k8s:certificates self-signed-certificates:certificates
+juju integrate pgbouncer-k8s:backend-database postgresql-k8s
+juju integrate launchpad-ui:postgresql pgbouncer-k8s:database
+juju config launchpad-ui database-ssl-mode=require
+```
+
+Clean up with:
+
+```bash
+juju remove-application pgbouncer-k8s self-signed-certificates postgresql-k8s --destroy-storage --no-prompt
+juju config launchpad-ui --reset database-ssl-mode
+```
+
+## Debugging
+
+```bash
+juju ssh --container app launchpad-ui/0 /charm/bin/pebble plan     # env vars passed to the app
+juju ssh --container app launchpad-ui/0 /charm/bin/pebble logs go  # app logs
+juju debug-log --include launchpad-ui/0 --replay                    # charm logs
 ```

@@ -18,18 +18,20 @@ Then it should be added. If you see a code like `const a = new Array` and you th
 
 > ℹ️ "Recording" the decision is an indicator that the matter was already discussed in a team. It may take different forms based on a rule in question. It may be disabling the rule or supplying both options to the array of allowed options.
 >
->  For example, if you decide that array contructors are fine, you add `'no-array-constructor': 'off'`. If you decide that both snake_case and PascalCase naming conventions are allowed (please dont) you may add something like this
->```json
-{
-  '@typescript-eslint/naming-convention': [
-    'error',
-    {
-      selector: 'variable',
-      format: ['snake_case', 'PascalCase'],
-    },
-  ],
-}
->```
+> For example, if you decide that array contructors are fine, you add `'no-array-constructor': 'off'`. If you decide that both snake_case and PascalCase naming conventions are allowed (please dont) you may add something like this
+>
+> ```json
+> {
+>   "@typescript-eslint/naming-convention": [
+>     "error",
+>     {
+>       "selector": "variable",
+>       "format": ["snake_case", "PascalCase"]
+>     }
+>   ]
+> }
+> ```
+>
 > You don't have to invent a custom linting rule just to be able to encode the decision precisely
 
 ### What if I think that there is an exception to the rule?
@@ -205,6 +207,6 @@ TODO: Adam may add more examples
 
 ### Functional code versus OOP
 
-By default prefer writing functions instead of classes. 
+By default prefer writing functions instead of classes.
 
 A potentially valid use case for classes is Svelte reactive classes.
