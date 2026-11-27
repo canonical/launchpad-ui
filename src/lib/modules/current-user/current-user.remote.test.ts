@@ -69,8 +69,8 @@ describe("getCurrentUser tells who is logged in to Launchpad", () => {
   it("Uses the session cookie to make a '+me' request and return the person's name, display name and profile link", async () => {
     await expect(getCurrentUser()).resolves.toEqual({
       name: "rosie",
-      displayName: "Rosie Example",
-      webLink: "https://lp.example/~rosie",
+      display_name: "Rosie Example",
+      web_link: "https://lp.example/~rosie",
     });
     expect(sentRequests()).toEqual([[ME, "lp=session-token"]]);
   });

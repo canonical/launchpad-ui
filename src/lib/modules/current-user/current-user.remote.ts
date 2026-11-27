@@ -1,11 +1,11 @@
 import { LaunchpadApiError } from "@canonical/launchpad-client";
-import * as v from "valibot";
+import { zTeamFull } from "@canonical/launchpad-client/schemas/models/team";
 import { launchpadClient } from "#lib/server/launchpad/client.js";
 import { getCurrentUserHeaders } from "#lib/server/launchpad/session.js";
 import { query } from "$app/server";
 
 const LARGEST_LAUNCHPAD_PAGE_SIZE = 300;
-const teamSchema = v.object({ name: v.string() });
+const teamNameSchema = zTeamFull.pick({ name: true });
 
 export const getCurrentUser = query(async () => {
   const headers = getCurrentUserHeaders();
@@ -15,11 +15,11 @@ export const getCurrentUser = query(async () => {
     const { data: me } = await launchpadClient.person.me.get({}, { headers });
     return {
       name: me.name,
-      displayName: me.display_name,
-      webLink: me.web_link,
+      display_name: me.display_name,
+      web_link: me.web_link,
     };
   } catch (requestError) {
-    if (!isRejectedSession(requestError)) {
+    if (!isUnauthorized(requestError)) {
       console.error(
         "Failed to resolve the current Launchpad user",
         requestError,
@@ -36,7 +36,7 @@ export const getCurrentUserTeams = query(async () => {
   try {
     return await fetchAllLaunchpadTeams(headers);
   } catch (requestError) {
-    if (!isRejectedSession(requestError)) {
+    if (!isUnauthorized(requestError)) {
       console.error(
         "Failed to resolve the current Launchpad user's teams",
         requestError,
@@ -64,13 +64,13 @@ async function fetchAllLaunchpadTeams(headers: { cookie?: string }) {
   const teamNames = await Array.fromAsync(
     launchpadClient.items(firstPage, {
       headers,
-      decodeEntry: (entry) => v.parse(teamSchema, entry).name,
+      decodeEntry: (entry) => teamNameSchema.parse(entry).name,
     }),
   );
   return new Set(teamNames);
 }
 
-function isRejectedSession(requestError: unknown) {
+function isUnauthorized(requestError: unknown) {
   return (
     requestError instanceof LaunchpadApiError && requestError.status === 401
   );
