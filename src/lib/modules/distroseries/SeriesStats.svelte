@@ -42,8 +42,8 @@
 </script>
 
 {#snippet imageStats(counts?: ImageCounts)}
-  {@const builds = counts?.building}
-  {@const tests = counts?.testing}
+  {const builds = $derived(counts?.building)}
+  {const tests = $derived(counts?.testing)}
   <Stat>
     <Stat.Item
       term="Images built"
@@ -86,10 +86,12 @@
   {#key `${distro}/${series}`}
     {#if distro === "ubuntu"}
       <svelte:boundary>
-        {@const imageCounts = await getSeriesStatsImageCounts({
-          distro,
-          series,
-        })}
+        {const imageCounts = $derived(
+          await getSeriesStatsImageCounts({
+            distro,
+            series,
+          }),
+        )}
         {#if imageCounts}
           {@render imageStats(imageCounts)}
         {/if}
@@ -101,7 +103,7 @@
     {/if}
 
     <svelte:boundary>
-      {@const bugCounts = await getSeriesBugCounts({ distro, series })}
+      {const bugCounts = $derived(await getSeriesBugCounts({ distro, series }))}
       {@render bugStats(bugCounts)}
 
       {#snippet failed()}

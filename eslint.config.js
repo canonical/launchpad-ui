@@ -75,6 +75,7 @@ export default ts.config(
       // This rule also flags query-parameter strings from helpers like Superhref, forcing many local rule disables.
       // TODO: Consider re-enabling this rule for string literals (https://warthogs.atlassian.net/browse/LP-5088)
       "svelte/no-navigation-without-resolve": "off",
+      "svelte/no-at-const-tags": "error",
       "svelte/no-target-blank": "warn",
       "svelte/prefer-const": "warn",
       "sonarjs/cognitive-complexity": ["warn", 15],

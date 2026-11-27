@@ -283,7 +283,7 @@
             class="test-actions"
           >
             {#each actions as action (action.id)}
-              {@const Icon = action.icon}
+              {const Icon = $derived(action.icon)}
               <MarkdownEditor.Toolbar.ActionButton
                 id={action.id}
                 label={action.label}

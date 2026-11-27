@@ -207,7 +207,9 @@
               >
                 <ContextualMenuContent.Group style="min-width: 280px">
                   {#each themes as themeOption (themeOption)}
-                    {@const { Icon, label } = themesDisplay[themeOption]}
+                    {const { Icon, label } = $derived(
+                      themesDisplay[themeOption],
+                    )}
                     <ContextualMenuContent.ButtonItem
                       text={label}
                       {...setThemeForm.fields.theme.as("submit", themeOption)}
